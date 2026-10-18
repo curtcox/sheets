@@ -9,7 +9,8 @@ subset, Hurmet, a Beancount core subset, and Quarto notebooks with Python. Inclu
 split views, ACE, and
 sanitized HTML/MathML/SVG output. Download source files, export the finished preview
 as standalone HTML, or print it to PDF. Beancount, Org, Numbat, and Hurmet have
-format-specific source highlighting.
+format-specific source highlighting. Offline access is available as an optional
+app-file download.
 
 ## Run locally
 
@@ -50,6 +51,33 @@ python scripts/beancount-expected.py --check
 
 CI runs these reference checks before browser tests. Generated reference outputs
 are committed and also compared with the JavaScript engines by unit tests.
+
+## Offline access
+
+Choose **Download → Offline access → Download offline files** while connected.
+Sheets saves its static app files, vendored engines, docs, and gallery examples in
+this browser, then reloads while preserving your current source/format/view link.
+You can open new source links, switch formats, calculate with the eight vendored
+engines, and browse docs/gallery without a network connection.
+
+Python execution, external images, HashBin, link shortening, and fresh currency
+rates still need a connection. Previously cached ECB rates can be used with the
+existing stale-rate notice. Browser storage can be evicted; source downloads are
+available for independent backups. Offline caches contain static app files only;
+document URLs, OAuth callbacks, CID payloads, and external responses are never
+added to them. Your source remains in your link and browser history as before.
+
+Reopen **Offline access** to check for updates or remove offline files. An update
+is verified in a separate cache and waits for **Use update and reload**; current
+editor source is preserved before open pages reload. A failed download leaves
+the prior release intact. Removing offline files also unregisters this app's
+service worker without touching other apps' caches.
+
+`sw.js` and `offline-assets.json` are the only added root deployment assets.
+Staging creates the manifest from the deployment allowlist, hashes each file, and
+sets the worker's release version. The local development server serves the same
+manifest and worker substitutions on demand. This is deployment metadata; the
+application still uses native ES modules without an application build.
 
 ## Regenerate gallery covers
 
@@ -108,7 +136,7 @@ The Beancount and Org engines intentionally implement subsets; see their format
 guides before relying on advanced syntax. Calca has no public spec, and this is a
 compatible subset. Quarto supports Python and a subset of Pandoc markup; other
 languages are displayed without execution. Optional later features in PLAN.md
-(service worker, webR, equation solving) remain future work.
+(webR and equation solving) remain future work.
 
 ## License
 

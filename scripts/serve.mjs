@@ -2,6 +2,7 @@ import http from "node:http";
 import { readFile, stat } from "node:fs/promises";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
+import { offlineManifest } from "./offline-assets.mjs";
 const port = Number(process.env.PORT || 4173);
 const types = {
   ".html": "text/html",
@@ -23,6 +24,14 @@ export function createStaticServer(root = process.cwd()) {
       const pathname = decodeURIComponent(
         new URL(req.url, "http://localhost").pathname,
       );
+      if (pathname === "/offline-assets.json") {
+        res.writeHead(200, {
+          "Content-Type": "application/json",
+          "Cache-Control": "no-store",
+        });
+        res.end(JSON.stringify(await offlineManifest(root)));
+        return;
+      }
       let file = path.resolve(root, "." + pathname);
       if (!file.startsWith(root + path.sep) && file !== root)
         throw new Error("Forbidden");
@@ -34,7 +43,16 @@ export function createStaticServer(root = process.cwd()) {
         throw new Error("Forbidden");
       if ((await stat(file)).isDirectory())
         file = path.join(file, "index.html");
-      const data = await readFile(file);
+      let data = await readFile(file);
+      if (pathname === "/sw.js" && data.includes("__OFFLINE_VERSION__"))
+        data = Buffer.from(
+          data
+            .toString()
+            .replaceAll(
+              "__OFFLINE_VERSION__",
+              (await offlineManifest(root)).version,
+            ),
+        );
       res.writeHead(200, {
         "Content-Type": types[path.extname(file)] || "text/plain",
         "Cache-Control": "no-cache",

@@ -1,3 +1,5 @@
+import { watchOfflineUpdates } from "./offline.js";
+watchOfflineUpdates();
 import { catalog } from "./formats/registry.js";
 import { renderMarkdown, renderDiagrams } from "./formats/gfm/markdown.js";
 import { setPreview, sanitize } from "./sanitize.js";

@@ -1,3 +1,5 @@
+import { watchOfflineUpdates } from "./offline.js";
+watchOfflineUpdates();
 import { getExamples } from "./examples.js";
 import { catalog } from "./formats/registry.js";
 import { escapeHTML as e } from "./util.js";

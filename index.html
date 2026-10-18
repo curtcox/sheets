@@ -62,6 +62,7 @@
             <button id="download-source">Source file</button>
             <button id="download-html" disabled>Rendered HTML</button>
             <button id="print-preview" disabled>Print / PDF</button>
+            <button id="offline-open">Offline access…</button>
             <p class="subtle">
               Rendered exports become available when the preview is ready.
             </p>
@@ -142,6 +143,31 @@
         <span id="commit">__COMMIT_SHA__</span></span
       >
     </footer>
+    <dialog id="offline-dialog" aria-labelledby="offline-title">
+      <div class="dialog-heading">
+        <h2 id="offline-title">Use Sheets offline</h2>
+        <button id="offline-close" aria-label="Close offline settings">
+          ×
+        </button>
+      </div>
+      <p>
+        Download the app, calculation engines, documentation, and examples to
+        this browser. The page reloads when ready; your source stays in your
+        link.
+      </p>
+      <p class="subtle">
+        Python execution, external images, live exchange rates, HashBin, and
+        link shortening still need a connection. Browser storage may be cleared
+        or evicted.
+      </p>
+      <p id="offline-status" role="status">Preparing offline settings…</p>
+      <div class="dialog-actions">
+        <button id="offline-enable" disabled>Download offline files</button
+        ><button id="offline-update" class="primary" hidden>
+          Use update and reload</button
+        ><button id="offline-remove" hidden>Remove offline files</button>
+      </div>
+    </dialog>
     <dialog id="share-dialog">
       <div class="dialog-heading">
         <h2>Share this sheet</h2>

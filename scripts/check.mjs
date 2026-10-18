@@ -10,7 +10,7 @@ async function walk(dir) {
   return files;
 }
 const files = (await Promise.all(["src", "scripts", "tests"].map(walk))).flat();
-files.push("playwright.config.js");
+files.push("playwright.config.js", "sw.js");
 for (const file of files) {
   const result = spawnSync(process.execPath, ["--check", file], {
     encoding: "utf8",

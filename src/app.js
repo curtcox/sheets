@@ -7,6 +7,7 @@ import { HashBinDocuments, HashBinStore } from "./hashbin.js";
 import { HashBinPanel } from "./hashbin-panel.js";
 import { ShareClient } from "./share-links.js";
 import { loadExample } from "./examples.js";
+import { setupOffline } from "./offline.js";
 import { acePath } from "./ace-path.js";
 import { loadEditorMode } from "./editor-modes.js";
 import { sourceTitle, sourceDownload } from "./downloads.js";
@@ -381,3 +382,4 @@ function navigateFromURL() {
 window.addEventListener("popstate", navigateFromURL);
 window.addEventListener("hashchange", navigateFromURL);
 await restore();
+setupOffline({ beforeReload: persist });

@@ -47,3 +47,17 @@ HashBin finalization is deferred; saving is disabled on this deployment. Public 
 Python loads Pyodide and imported packages from jsDelivr on first use. Numbat and Hurmet are vendored locally. ECB currency rates are requested only for documents that use currencies and cached for one day. Ordinary source links stay in your browser; optional shortening sends the link to is.gd through AllOrigins. Documents can contain external image links, and executable Python or Hurmet fetches can make network requests.
 
 All generated HTML, MathML, and SVG pass through DOMPurify. Source in a shared link is untrusted. Numbat, Hurmet, and Python execute in disposable workers with deadlines; a new render gets a fresh interpreter. Quarto cells within a single render share their interpreter.
+
+## Work offline
+
+Choose **Download → Offline access → Download offline files** while connected. The app
+reloads when ready and preserves your current source link. Vendored formats, math,
+diagrams, docs, and gallery examples then work offline, including newly opened
+source links. The cache contains static app files; it does not save your document
+URLs or HashBin payloads. Download source separately if you want a local backup.
+
+Python execution and external images or services still need a connection. Existing
+cached currency rates may work with a stale-rate notice. Browser storage can be
+cleared or evicted. **Offline access** also lets you check for updates, apply a
+completed update, or remove the offline download. Updates wait until you choose
+**Use update and reload**, preserving current editor source first.
