@@ -25,7 +25,7 @@ try {
     cards.innerHTML = visible
       .map(
         (item) =>
-          `<section class="card"><span class="tag">${e(catalog.find((f) => f.id === item.format)?.label)}</span><h2>${e(item.title)}</h2><p>${e(item.description)}</p><a href="index.html?example=${encodeURIComponent(item.id)}">Load in editor <span aria-hidden="true">↗</span></a></section>`,
+          `<section class="card"><img class="card-cover" src="examples/covers/${encodeURIComponent(item.id)}.png" alt="" width="640" height="400" loading="lazy" decoding="async"><div class="card-content"><span class="tag">${e(catalog.find((f) => f.id === item.format)?.label)}</span><h2>${e(item.title)}</h2><p>${e(item.description)}</p><a href="index.html?example=${encodeURIComponent(item.id)}">Load in editor <span aria-hidden="true">↗</span></a></div></section>`,
       )
       .join("");
     status.textContent = visible.length

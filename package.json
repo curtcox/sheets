@@ -6,6 +6,7 @@
   "description": "Buildless, shareable calculation documents",
   "scripts": {
     "dev": "node scripts/serve.mjs",
+    "gallery:covers": "node scripts/render-gallery.mjs",
     "check": "node scripts/check.mjs",
     "test": "node --test tests/unit/*.test.js",
     "test:browser": "playwright test",

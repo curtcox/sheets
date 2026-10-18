@@ -186,10 +186,22 @@ test("gallery search and docs render through the application pipeline", async ({
 }) => {
   await page.goto("/gallery.html");
   await expect(page.locator(".card")).toHaveCount(36);
+  await expect(page.locator(".card-cover")).toHaveCount(36);
   await page.getByLabel("Filter by format").selectOption("org");
   await expect(page.locator(".card")).toHaveCount(4);
   await page.getByLabel("Search examples").fill("purchase");
   await expect(page.locator(".card")).toHaveCount(1);
+  await expect(page.locator(".card-cover")).toHaveAttribute(
+    "src",
+    "examples/covers/org-typical.png",
+  );
+  await expect
+    .poll(() =>
+      page
+        .locator(".card-cover")
+        .evaluate((image) => image.complete && image.naturalWidth === 640),
+    )
+    .toBe(true);
   await page.getByRole("link", { name: "Load in editor" }).click();
   await ready(page);
   await expect(page.locator("#format")).toHaveValue("org");

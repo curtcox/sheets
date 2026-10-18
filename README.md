@@ -5,7 +5,8 @@ format, and view live in the URL. Optional HashBin storage provides CID links.
 
 Supports GitHub Markdown, AsciiMath, Numbat, CalcFile, Org tables, a Calca-compatible
 subset, Hurmet, a Beancount core subset, and Quarto notebooks with Python. Includes
-36 gallery examples, format guides, diagnostics, responsive split views, ACE, and
+36 gallery examples with rendered previews, format guides, diagnostics, responsive
+split views, ACE, and
 sanitized HTML/MathML/SVG output. Download source files, export the finished preview
 as standalone HTML, or print it to PDF. Beancount, Org, Numbat, and Hurmet have
 format-specific source highlighting.
@@ -50,6 +51,23 @@ python scripts/beancount-expected.py --check
 CI runs these reference checks before browser tests. Generated reference outputs
 are committed and also compared with the JavaScript engines by unit tests.
 
+## Regenerate gallery covers
+
+The gallery loads committed PNG previews; browsing it does not execute examples.
+After changing example source or preview styling, regenerate the covers with:
+
+```sh
+npx playwright install chromium
+npm run gallery:covers
+```
+
+The script starts and stops its own temporary local server, renders all 36
+examples through the editor, and updates `examples/covers/`. Python examples need
+jsDelivr access. Covers use a 640 × 400 viewport; Beancount examples show the trial
+balance, except the error example, which shows diagnostics. Unit tests check
+coverage, dimensions, and source hashes so changed examples cannot silently keep
+stale images. The application and Pages deployment still need no build.
+
 ## Deployment
 
 GitHub Pages is configured with **GitHub Actions** as its source. Push to `main`
@@ -90,7 +108,7 @@ The Beancount and Org engines intentionally implement subsets; see their format
 guides before relying on advanced syntax. Calca has no public spec, and this is a
 compatible subset. Quarto supports Python and a subset of Pandoc markup; other
 languages are displayed without execution. Optional later features in PLAN.md
-(service worker, webR, gallery covers) remain future work.
+(service worker, webR, equation solving) remain future work.
 
 ## License
 

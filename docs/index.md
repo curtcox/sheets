@@ -4,7 +4,7 @@ Notes that do the math. Sheets is a buildless editor for calculation documents. 
 
 ## Start a sheet
 
-Choose a format or leave **Auto detect** selected. Auto recognizes strong language signals and falls back to GitHub Markdown. CalcFile has deliberately low confidence; select it explicitly. The [gallery](../gallery.html) contains four examples for each format, including edge and error cases.
+Choose a format or leave **Auto detect** selected. Auto recognizes strong language signals and falls back to GitHub Markdown. CalcFile has deliberately low confidence; select it explicitly. The [gallery](../gallery.html) contains four examples for each format, including edge and error cases. Each card includes a preview of the rendered document; examples run only when opened in the editor.
 
 - **Source**, **Split**, and **Preview** control the workspace. Use **Ctrl+Alt+1**, **Ctrl+Alt+2**, and **Ctrl+Alt+3** respectively.
 - Drag the divider to resize. Focus it and use the arrow keys, Home, or End for keyboard resizing.
