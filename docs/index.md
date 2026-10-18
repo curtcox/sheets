@@ -22,7 +22,7 @@ Choose a format or leave **Auto detect** selected. Auto recognizes strong langua
 | [Numbat](formats/numbat.md) | Dimensional analysis and unit-aware calculations |
 | [CalcFile](formats/calcfile.md) | Prose-friendly, line-by-line arithmetic |
 | [Org tables](formats/org.md) | Recalculating tables with `#+TBLFM:` |
-| [Calca](formats/calca.md) | Markdown notes with `=>` calculations |
+| [Calca](formats/calca.md) | Markdown notes with `=>` calculations and linear/quadratic equations |
 | [Hurmet](formats/hurmet.md) | Typeset engineering calculations |
 | [Beancount](formats/beancount.md) | A core double-entry ledger and reports |
 | [Quarto](formats/quarto.md) | Markdown notebooks with Python cells |

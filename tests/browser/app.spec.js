@@ -368,3 +368,34 @@ test("preview references preserve a saved document CID through reload", async ({
   await ready(page);
   await expect(page.locator("#preview h1")).toHaveText("Saved source");
 });
+
+test("Calca equations recalculate, diagnose unsupported queries, and survive shared reload", async ({
+  page,
+  context,
+}) => {
+  const source =
+    "# Equations\n\n```calca\ntempF=1.8*tempC+32\ntempF=212\ntempC =>\nwidth^2-5*width+6=0\nwidth =>\nunknown^3=8\nunknown =>\n2+2 =>\n```";
+  await page.goto(
+    writeURL("http://127.0.0.1:4173/", { src: source, format: "calca" }),
+  );
+  await ready(page);
+  await expect(page.locator("#preview")).toContainText("tempC => 100");
+  await expect(page.locator("#preview")).toContainText("width => [2, 3]");
+  await expect(page.locator("#preview")).toContainText("polynomials only");
+  await expect(page.locator("#preview")).toContainText("2+2 => 4");
+  await expect(page.locator("#render-status")).toContainText("1 diagnostic");
+  const previousURL = page.url();
+  const edited = source.replace("tempF=212", "tempF=32");
+  await setSource(page, edited);
+  await expect(page.locator("#preview")).toContainText("tempC => 0");
+  await expect.poll(() => page.url()).not.toBe(previousURL);
+  // Open the source link in a fresh page, so the solver cannot reuse the old scope.
+  await expect
+    .poll(() => page.evaluate(() => ace.edit("editor").getValue()))
+    .toBe(edited);
+  const shared = await context.newPage();
+  await shared.goto(page.url());
+  await ready(shared);
+  await expect(shared.locator("#preview")).toContainText("tempC => 0");
+  await expect(shared.locator("#preview")).toContainText("width => [2, 3]");
+});

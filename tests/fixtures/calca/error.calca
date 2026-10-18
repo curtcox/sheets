@@ -1,4 +1,14 @@
 # An unknown variable
 
 missing + 3 =>
+
+Cubic equations exceed the supported linear and quadratic subset.
+
+```calca
+unknown^3 = 8
+unknown =>
+```
+
+The next calculation still runs.
+
 2 + 2 =>

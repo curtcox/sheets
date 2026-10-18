@@ -1,9 +1,9 @@
 import { plugin } from "../registry.js";
 import { renderMarkdown } from "../gfm/markdown.js";
-import { evaluate, formatValue } from "../../math.js";
-import { escapeHTML } from "../../util.js";
+import { formatValue } from "../../math.js";
+import { createCalca } from "./engine.js";
 export function renderCalca(src) {
-  const scope = new Map(),
+  const calculate = createCalca(),
     diagnostics = [],
     lines = src.split("\n");
   let fenced = false;
@@ -18,9 +18,7 @@ export function renderCalca(src) {
     const expression = line.split("=>")[0].trim();
     if (!expression || expression.startsWith("//")) return line;
     try {
-      const value = evaluate(expression.replace(/\s+in\s+/g, " to "), scope, {
-        assign: true,
-      });
+      const value = calculate(expression.replace(/\s+in\s+/g, " to "));
       const result = formatValue(value);
       return arrow ? `${line.split("=>")[0]}=> ${result}` : line;
     } catch (error) {

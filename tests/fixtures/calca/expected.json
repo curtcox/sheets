@@ -10,6 +10,9 @@
   {
     "file": "typical.calca",
     "contains": [
+      "=&gt; 4",
+      "[2, 3]",
+      "=&gt; 100",
       "25.92"
     ],
     "diagnostics": 0
@@ -28,8 +31,9 @@
     "file": "error.calca",
     "contains": [
       "Undefined symbol missing",
-      "=&gt; 4"
+      "=&gt; 4",
+      "polynomials only"
     ],
-    "diagnostics": 1
+    "diagnostics": 2
   }
 ]

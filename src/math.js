@@ -40,7 +40,7 @@ const allowed = new Set([
   "unit",
 ]);
 /** Constrain the mathjs language to calculation syntax. No imports or object access. */
-export function evaluate(
+export function parseExpression(
   expression,
   scope = new Map(),
   { assign = false } = {},
@@ -84,7 +84,10 @@ export function evaluate(
     )
       throw new Error("Reserved variable name.");
   });
-  return node.evaluate(scope);
+  return node;
+}
+export function evaluate(expression, scope = new Map(), options = {}) {
+  return parseExpression(expression, scope, options).evaluate(scope);
 }
 export function formatValue(value) {
   return typeof value === "string"

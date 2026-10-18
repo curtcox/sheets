@@ -171,8 +171,8 @@
     "id": "calca-typical",
     "format": "calca",
     "kind": "typical",
-    "title": "A function for the job",
-    "description": "Variables and user functions share a document scope.",
+    "title": "Equations and functions",
+    "description": "Solve linear and quadratic equations, reverse a definition, and call a function.",
     "path": "examples/calca/typical.calca"
   },
   {

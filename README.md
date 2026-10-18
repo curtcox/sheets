@@ -10,7 +10,7 @@ split views, ACE, and
 sanitized HTML/MathML/SVG output. Download source files, export the finished preview
 as standalone HTML, or print it to PDF. Beancount, Org, Numbat, and Hurmet have
 format-specific source highlighting. Offline access is available as an optional
-app-file download.
+app-file download. Calca supports numeric linear and quadratic equation solving.
 
 ## Run locally
 
@@ -135,8 +135,9 @@ account sign-in and charged save need registration and manual verification.
 The Beancount and Org engines intentionally implement subsets; see their format
 guides before relying on advanced syntax. Calca has no public spec, and this is a
 compatible subset. Quarto supports Python and a subset of Pandoc markup; other
-languages are displayed without execution. Optional later features in PLAN.md
-(webR and equation solving) remain future work.
+languages are displayed without execution. Calca solves real scalar linear and
+quadratic equations, with limits described in its guide. Quarto R execution through
+webR remains optional future work in PLAN.md.
 
 ## License
 

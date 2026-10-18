@@ -1,6 +1,20 @@
-# A function for the job
+# Equations and functions
 
 ```calca
+2*x + 3 = 11
+x =>
+
+width^2 - 5*width + 6 = 0
+width =>
+```
+
+Definitions can also be used in reverse.
+
+```calca
+tempF = 1.8*tempC + 32
+tempF = 212
+tempC =>
+
 price = 24
 tax = 0.08
 f(x) = x * (1 + tax)
