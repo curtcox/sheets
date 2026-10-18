@@ -68,6 +68,24 @@ test("opt-in offline files support new source links, vendored workers, docs and 
   });
   await ready(page);
   expect(await page.evaluate(() => ace.edit("editor").getValue())).toBe(source);
+  // Simulate eviction while the registration remains active, then restore the files.
+  await page.evaluate(async () =>
+    Promise.all(
+      (await caches.keys())
+        .filter((name) => name.startsWith("sheets-offline:"))
+        .map((name) => caches.delete(name)),
+    ),
+  );
+  await settings(page);
+  await expect(page.locator("#offline-enable")).toHaveText(
+    "Download offline files",
+  );
+  await page.locator("#offline-enable").click();
+  await expect(page.locator("#offline-open")).toHaveText("Offline access ✓", {
+    timeout: 60000,
+  });
+  await ready(page);
+  expect(await page.evaluate(() => ace.edit("editor").getValue())).toBe(source);
   await context.setOffline(true);
   await page.goto(
     writeURL(base, {
@@ -170,9 +188,6 @@ test("failed installs leave no partial cache and can be retried", async ({
   } finally {
     await writeFile(path, original);
   }
-  await page.reload();
-  await ready(page);
-  await settings(page);
   await page.locator("#offline-enable").click();
   await expect(page.locator("#offline-open")).toHaveText("Offline access ✓", {
     timeout: 60000,

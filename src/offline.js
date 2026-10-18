@@ -43,9 +43,11 @@ export async function setupOffline({ beforeReload } = {}) {
   open.onclick = () => {
     document.getElementById("download-menu").open = false;
     dialog.showModal();
+    refresh().catch((error) => (status.textContent = error.message));
   };
   document.getElementById("offline-close").onclick = () => dialog.close();
-  let registration;
+  let registration,
+    rebuilding = false;
   async function refresh() {
     update.hidden = !registration?.waiting;
     remove.hidden = !registration;
@@ -54,9 +56,7 @@ export async function setupOffline({ beforeReload } = {}) {
     const ready =
       registration?.active && (await workerStatus(registration.active)).ready;
     open.textContent = ready ? "Offline access ✓" : "Offline access…";
-    enable.textContent = registration?.active
-      ? "Check for updates"
-      : "Download offline files";
+    enable.textContent = ready ? "Check for updates" : "Download offline files";
     status.textContent = registration?.waiting
       ? "Updated offline files are ready. Reload to use them."
       : registration?.installing
@@ -73,6 +73,13 @@ export async function setupOffline({ beforeReload } = {}) {
         enable.disabled = false;
         status.textContent =
           "Offline download failed. Check your connection or browser storage, then retry.";
+      } else if (
+        worker.state === "installed" &&
+        rebuilding &&
+        registration.waiting
+      ) {
+        rebuilding = false;
+        registration.waiting.postMessage({ type: "ACTIVATE" });
       } else if (["installed", "activated"].includes(worker.state))
         await refresh().catch((error) => (status.textContent = error.message));
     });
@@ -92,7 +99,7 @@ export async function setupOffline({ beforeReload } = {}) {
   navigator.serviceWorker.addEventListener("message", (event) => {
     if (
       event.data?.channel !== "sheets-offline" ||
-      event.source?.scriptURL !== workerURL.href
+      event.source?.scriptURL?.split("?")[0] !== workerURL.href
     )
       return;
     if (event.data.type === "progress")
@@ -105,8 +112,17 @@ export async function setupOffline({ beforeReload } = {}) {
     enable.disabled = true;
     status.textContent = "Preparing offline files…";
     try {
-      if (!registration) {
-        registration = await navigator.serviceWorker.register(workerURL, {
+      const missing =
+        registration?.active &&
+        !(await workerStatus(registration.active)).ready;
+      if (missing || !registration?.active) {
+        const url = new URL(workerURL);
+        // A new script URL forces reinstall even when Chromium keeps the prior
+        // registration alive for the current page after its files were evicted.
+        if (registration)
+          url.searchParams.set("restore", Date.now().toString());
+        rebuilding = Boolean(missing);
+        registration = await navigator.serviceWorker.register(url, {
           scope: base.href,
           updateViaCache: "none",
         });
