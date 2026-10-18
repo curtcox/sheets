@@ -29,6 +29,11 @@ Choose a format or leave **Auto detect** selected. Auto recognizes strong langua
 
 Plain text is also available for viewing escaped source.
 
+Use the [feature comparison and glossary](format-comparison.md) to compare calculations,
+units, tables, equations, diagrams, notebook execution, and offline support across
+all ten choices. Each format guide includes a starting example, syntax reference,
+and the limits of its implementation in Sheets.
+
 ## Save and share
 
 **Share** copies a complete source link. No account or server storage is required. Links longer than about 8 KB get a reminder to use [HashBin](hashbin.md). Browser, messaging, and proxy limits vary; the app does not truncate your source.
@@ -42,7 +47,9 @@ Source view; choose your browser’s **Save as PDF** destination to keep a PDF.
 Rendered exports become available after rendering finishes and stay disabled while
 new edits are pending or after cancellation.
 
-HashBin finalization is deferred; saving is disabled on this deployment. Public CIDs load without registration. Saving requires the site operator's public client ID and your HashBin account. A save displays the price and retention before you confirm.
+[HashBin](hashbin.md) saving is enabled on this deployment. Public CIDs load without
+signing in. Saving connects your HashBin account and displays the price, retention,
+and balance before you confirm.
 
 Python loads Pyodide and imported packages from jsDelivr on first use; R loads webR from webr.r-wasm.org. Numbat and Hurmet are vendored locally. ECB currency rates are requested only for documents that use currencies and cached for one day. Ordinary source links stay in your browser; optional shortening sends the link to is.gd through AllOrigins. Documents can contain external image links, and executable Python, R, or Hurmet fetches can make network requests.
 

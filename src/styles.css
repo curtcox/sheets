@@ -673,6 +673,19 @@ dialog label {
   border-radius: 9px;
   min-height: 70vh;
 }
+.docs-table-scroll {
+  overflow-x: auto;
+  margin: 20px 0;
+}
+.docs-table-scroll table {
+  min-width: 640px;
+  margin: 0;
+}
+.docs-table-scroll th,
+.docs-table-scroll td {
+  min-width: 110px;
+  overflow-wrap: normal;
+}
 .page-footer {
   max-width: 1120px;
   margin: 30px auto;
