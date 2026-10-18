@@ -45,7 +45,9 @@ test("documentation examples open their source with the required context and lim
     }
     if (id.startsWith("formats/"))
       await expect(
-        page.locator('#docs-content a[href="docs.html?page=limitations"]'),
+        page
+          .locator('#docs-content a[href="docs.html?page=limitations"]')
+          .first(),
       ).toBeVisible();
   }
 
@@ -64,6 +66,15 @@ test("documentation examples open their source with the required context and lim
   await page.goto("/docs.html?page=url-format");
   await page.getByRole("link", { name: "#<cid>", exact: true }).click();
   await expect(page.locator("#preview")).toContainText("2 + 2 => 4");
+
+  await page.goto("/docs.html?page=formats/beancount");
+  await page
+    .getByRole("link", { name: "0.00 ~ 0.005 USD", exact: true })
+    .click();
+  await expect(page.locator("#render-status")).toHaveText(/^Ready/);
+  await expect(page.locator("#report-errors")).toContainText(
+    "The ledger balances",
+  );
 
   await page.goto("/docs.html");
   await page

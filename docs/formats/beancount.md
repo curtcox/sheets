@@ -61,7 +61,38 @@ The preview includes **Diagnostics**, **Balance sheet**, **Income statement**, *
 
 Diagnostics cover unbalanced transactions, failed assertions, unsupported includes/plugins, missing or closed accounts, restricted commodities, unmatched lots, and unused pads. A pad supplies the difference at its next assertion and balances the source account. A balance directive observes the start of its date, before that day's transactions.
 
-Known gaps: advanced booking methods and lot selectors, total-cost syntax, tolerances and rounding rules, inventory interpolation across multiple missing commodities, advanced options, includes, and plugins. Arithmetic uses JavaScript numbers with a fixed `1e-8` transaction tolerance, rather than Beancount's exact Decimal and inferred tolerances. Error reports remain visible alongside partial balances; they do not certify a ledger.
+Amounts retain their decimal input values. Arithmetic uses a 28-significant-digit,
+half-even decimal context, matching the pinned Python reference context. Reports
+and journals preserve the resulting decimal text instead of converting through
+binary numbers or rounding every quantity to eight decimal places. Numeric
+literals are bounded at 256 digits.
+
+Transaction tolerances are inferred separately for each commodity from the decimal
+places written in posting quantities; integer quantities contribute no inferred
+tolerance. The coarsest fractional precision wins, multiplied by the default 0.5.
+Supported options are `tolerance_multiplier`, repeatable
+`inferred_tolerance_default` commodity/default pairs, and
+`infer_tolerance_from_cost`. Cost/price contributions are capped as in the reference.
+Balance assertions infer their own tolerance or accept an explicit override such
+as `0.00 ~ 0.005 USD`. Precision settings are nonnegative. A tolerance accepts a
+residual; it does not rewrite the quantities you entered.
+
+For example, this quantity exceeds binary floating-point integer precision, but
+its fractional digits are kept in the reports:
+
+```text
+2026-01-01 open Assets:Bank USD
+2026-01-01 open Equity:Opening USD
+2026-01-02 * "Exact quantity"
+  Assets:Bank 9007199254740993.0000000001 USD
+  Equity:Opening -9007199254740993.0000000001 USD
+```
+
+Known gaps: advanced booking methods and lot selectors, total-cost syntax,
+inventory interpolation across multiple missing commodities, other advanced
+options (including automatic rounding-account postings), includes, and plugins.
+An attempted `account_rounding` option produces an unsupported-setting diagnostic.
+Error reports remain visible alongside partial balances; they do not certify a ledger.
 
 Fixtures are checked independently with pinned `bean-check` and `bean-query` tools in CI. Auto detects dated account directives and transaction flags. Extensions are `.bean` and `.beancount` when a filename is available.
 
@@ -75,3 +106,18 @@ local and works with offline files installed. See the
 postings, assertions, and the distinction from physical units.
 
 See [Limitations and compatibility](../limitations.md) for the consolidated disclosures across formats.
+
+<!-- compatibility:start -->
+## Tracked compatibility status
+
+These entries share the [central limitations ledger](../limitations.md). “Needs detailed audit” means the disclosure is recorded, while its complete upstream case coverage is still being developed.
+
+| ID | Status | Area |
+| --- | --- | --- |
+| BEAN-01 | Needs detailed audit | This is a project-owned core JavaScript engine, not Python Beancount or a full query environment |
+| BEAN-02 | Needs detailed audit | Transactions infer at most one missing posting amount |
+| BEAN-03 | Needs detailed audit | Price directives are retained but do not revalue reports |
+| BEAN-04 | Resolved | Decimal arithmetic and precision tolerances |
+| BEAN-05 | Needs detailed audit | Balance assertions observe the start of their date, before that day's transactions |
+| BEAN-06 | Known gap | Decimal resource bounds and remaining rounding options |
+<!-- compatibility:end -->

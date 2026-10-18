@@ -1,0 +1,7 @@
+2026-01-01 open Assets:Stock STOCK
+2026-01-01 open Assets:Bank USD
+2026-01-01 open Equity:Opening USD
+2026-01-02 * "Quantize inferred units to the transaction tolerance"
+  Assets:Stock 2.345 STOCK {1.234 USD}
+  Assets:Bank 0.00 USD
+  Equity:Opening

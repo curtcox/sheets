@@ -34,3 +34,14 @@ calculate it, choose the appropriate language from the
 [feature comparison and glossary](../format-comparison.md).
 
 See [Limitations and compatibility](../limitations.md) for the consolidated disclosures across formats.
+
+<!-- compatibility:start -->
+## Tracked compatibility status
+
+These entries share the [central limitations ledger](../limitations.md). “Needs detailed audit” means the disclosure is recorded, while its complete upstream case coverage is still being developed.
+
+| ID | Status | Area |
+| --- | --- | --- |
+| TEXT-01 | Intentional | Plain text intentionally displays escaped source |
+| TEXT-02 | Intentional | Auto detection never selects it; choose it explicitly |
+<!-- compatibility:end -->

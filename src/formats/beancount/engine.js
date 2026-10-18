@@ -1,10 +1,20 @@
 /** Sheets' permissive Beancount core. Quantities stay separate by commodity. */
+import {
+  D,
+  zero,
+  decimal,
+  scale,
+  canonical,
+  plain,
+  precisionOptions,
+  tolerances,
+  quantizeInferred,
+} from "./decimal.js";
 const accountPattern =
   "(?:Assets|Liabilities|Equity|Income|Expenses)(?::[A-Z][A-Za-z0-9-]*)+";
 const accountRE = new RegExp(`^(${accountPattern})(?:\\s+|$)(.*)$`);
 const numberPattern = "[+-]?(?:\\d[\\d,]*(?:\\.\\d*)?|\\.\\d+)";
 const amountRE = new RegExp(`^(${numberPattern})\\s+([A-Z][A-Z0-9._'-]*)`);
-const tolerance = 1e-8;
 const unquote = (value) => {
   try {
     return JSON.parse(value);
@@ -16,7 +26,8 @@ function amount(text) {
   const m = amountRE.exec(text);
   return m
     ? {
-        number: Number(m[1].replaceAll(",", "")),
+        number: decimal(m[1]),
+        scale: scale(m[1]),
         currency: m[2],
         tail: text.slice(m[0].length).trim(),
       }
@@ -25,136 +36,159 @@ function amount(text) {
 export function parseBeancount(src) {
   const entries = [],
     diagnostics = [],
-    options = {};
+    options = {},
+    optionEntries = [];
   let entry = null,
     posting = null;
   const error = (line, message) => diagnostics.push({ line, message });
   src.split("\n").forEach((raw, i) => {
-    const line = i + 1,
-      text = raw.replace(/\s+;.*$/, "").trim();
-    if (!text || text.startsWith(";")) return;
-    if (/^option\s/.test(text)) {
-      const m = /^option\s+"([^"]+)"\s+"([^"]*)"/.exec(text);
-      if (m) options[m[1]] = m[2];
-      else error(line, "Invalid option.");
-      return;
-    }
-    if (/^(?:include|plugin|pushtag|poptag|pushmeta|popmeta)\b/.test(text)) {
-      error(line, `${text.split(/\s/)[0]} is unsupported.`);
-      return;
-    }
-    if (/^\s/.test(raw) && entry) {
-      if (/^[a-z][\w-]*:/.test(text)) {
-        const m = /^([\w-]+):\s*(.*)$/.exec(text);
-        (posting || entry).metadata[m[1]] = unquote(m[2]);
+    const line = i + 1;
+    try {
+      const text = raw.replace(/\s+;.*$/, "").trim();
+      if (!text || text.startsWith(";")) return;
+      if (/^option\s/.test(text)) {
+        const m = /^option\s+"([^"]+)"\s+"([^"]*)"/.exec(text);
+        if (m) {
+          options[m[1]] = m[2];
+          optionEntries.push({ name: m[1], value: m[2], line });
+        } else error(line, "Invalid option.");
         return;
       }
-      if (entry.kind !== "transaction") {
-        error(line, "Unexpected indented line.");
+      if (/^(?:include|plugin|pushtag|poptag|pushmeta|popmeta)\b/.test(text)) {
+        error(line, `${text.split(/\s/)[0]} is unsupported.`);
         return;
       }
-      const match = accountRE.exec(text.replace(/^[*!]\s+/, ""));
+      if (/^\s/.test(raw) && entry) {
+        if (/^[a-z][\w-]*:/.test(text)) {
+          const m = /^([\w-]+):\s*(.*)$/.exec(text);
+          (posting || entry).metadata[m[1]] = unquote(m[2]);
+          return;
+        }
+        if (entry.kind !== "transaction") {
+          error(line, "Unexpected indented line.");
+          return;
+        }
+        const match = accountRE.exec(text.replace(/^[*!]\s+/, ""));
+        if (!match) {
+          error(line, "Invalid posting.");
+          return;
+        }
+        const a = amount(match[2]);
+        if (match[2] && !a) {
+          error(line, "Invalid posting amount.");
+          return;
+        }
+        posting = {
+          line,
+          account: match[1],
+          ...(a
+            ? { number: a.number, currency: a.currency, scale: a.scale }
+            : {}),
+          metadata: {},
+        };
+        if (a) {
+          const cost = /\{\s*([^}]+)\s*\}/.exec(a.tail);
+          if (cost) {
+            const c = amount(cost[1].trim());
+            if (c) posting.cost = { number: c.number, currency: c.currency };
+            else error(line, "Only simple per-unit cost lots are supported.");
+          }
+          const price = /(@@?)\s+(.+)$/.exec(a.tail);
+          if (price) {
+            const p = amount(price[2]);
+            if (p)
+              posting.price = {
+                number: p.number,
+                currency: p.currency,
+                total: price[1] === "@@",
+              };
+          }
+        }
+        entry.postings.push(posting);
+        return;
+      }
+      const match = /^(\d{4}-\d{2}-\d{2})\s+(\S+)(?:\s+(.*))?$/.exec(text);
       if (!match) {
-        error(line, "Invalid posting.");
+        error(line, "Unsupported or invalid directive.");
+        entry = null;
         return;
       }
-      const a = amount(match[2]);
-      if (match[2] && !a) {
-        error(line, "Invalid posting amount.");
-        return;
-      }
-      posting = {
-        line,
-        account: match[1],
-        ...(a ? { number: a.number, currency: a.currency } : {}),
-        metadata: {},
-      };
-      if (a) {
-        const cost = /\{\s*([^}]+)\s*\}/.exec(a.tail);
-        if (cost) {
-          const c = amount(cost[1].trim());
-          if (c) posting.cost = { number: c.number, currency: c.currency };
-          else error(line, "Only simple per-unit cost lots are supported.");
-        }
-        const price = /(@@?)\s+(.+)$/.exec(a.tail);
-        if (price) {
-          const p = amount(price[2]);
-          if (p)
-            posting.price = {
-              number: p.number,
-              currency: p.currency,
-              total: price[1] === "@@",
-            };
-        }
-      }
-      entry.postings.push(posting);
-      return;
-    }
-    const match = /^(\d{4}-\d{2}-\d{2})\s+(\S+)(?:\s+(.*))?$/.exec(text);
-    if (!match) {
-      error(line, "Unsupported or invalid directive.");
-      entry = null;
-      return;
-    }
-    const [, date, kind, rest = ""] = match;
-    if (
-      !/^\d{4}-\d{2}-\d{2}$/.test(date) ||
-      !Number.isFinite(Date.parse(date)) ||
-      new Date(date).toISOString().slice(0, 10) !== date
-    ) {
-      error(line, "Invalid date.");
-      return;
-    }
-    posting = null;
-    entry = {
-      date,
-      kind: ["*", "!", "txn"].includes(kind) ? "transaction" : kind,
-      line,
-      metadata: {},
-      raw: rest,
-    };
-    if (entry.kind === "transaction") {
-      const strings = rest.match(/"(?:[^"\\]|\\.)*"/g) || [];
-      entry.payee = strings.length > 1 ? unquote(strings[0]) : "";
-      entry.narration = unquote(strings.at(-1) || "");
-      entry.flag = kind;
-      entry.tags = [...rest.matchAll(/#([\w-]+)/g)].map((m) => m[1]);
-      entry.links = [...rest.matchAll(/\^([\w-]+)/g)].map((m) => m[1]);
-      entry.postings = [];
-    } else {
-      const m = accountRE.exec(rest);
-      entry.account = m?.[1];
-      if (["open", "close", "balance", "pad", "note"].includes(kind) && !m)
-        error(line, `Invalid ${kind} account.`);
-      if (kind === "balance") entry.amount = amount(m?.[2] || "");
-      if (kind === "pad") entry.sourceAccount = m?.[2].trim();
-      if (kind === "open")
-        entry.currencies = (m?.[2].match(/^[A-Z][A-Z0-9, ]*/)?.[0] || "")
-          .split(/[, ]+/)
-          .filter(Boolean);
-      if (kind === "commodity") entry.currency = rest.trim();
-      if (kind === "price") {
-        const p = /^(\S+)\s+(.+)$/.exec(rest);
-        entry.currency = p?.[1];
-        entry.amount = amount(p?.[2] || "");
-      }
+      const [, date, kind, rest = ""] = match;
       if (
-        ![
-          "open",
-          "close",
-          "commodity",
-          "balance",
-          "pad",
-          "price",
-          "note",
-          "event",
-        ].includes(kind)
-      )
-        error(line, `${kind} is unsupported.`);
+        !/^\d{4}-\d{2}-\d{2}$/.test(date) ||
+        !Number.isFinite(Date.parse(date)) ||
+        new Date(date).toISOString().slice(0, 10) !== date
+      ) {
+        error(line, "Invalid date.");
+        return;
+      }
+      posting = null;
+      entry = {
+        date,
+        kind: ["*", "!", "txn"].includes(kind) ? "transaction" : kind,
+        line,
+        metadata: {},
+        raw: rest,
+      };
+      if (entry.kind === "transaction") {
+        const strings = rest.match(/"(?:[^"\\]|\\.)*"/g) || [];
+        entry.payee = strings.length > 1 ? unquote(strings[0]) : "";
+        entry.narration = unquote(strings.at(-1) || "");
+        entry.flag = kind;
+        entry.tags = [...rest.matchAll(/#([\w-]+)/g)].map((m) => m[1]);
+        entry.links = [...rest.matchAll(/\^([\w-]+)/g)].map((m) => m[1]);
+        entry.postings = [];
+      } else {
+        const m = accountRE.exec(rest);
+        entry.account = m?.[1];
+        if (["open", "close", "balance", "pad", "note"].includes(kind) && !m)
+          error(line, `Invalid ${kind} account.`);
+        if (kind === "balance") {
+          const explicit = new RegExp(
+            `^(${numberPattern})\\s+~\\s+(${numberPattern})\\s+([A-Z][A-Z0-9._'-]*)$`,
+          ).exec(m?.[2] || "");
+          entry.amount = explicit
+            ? amount(`${explicit[1]} ${explicit[3]}`)
+            : amount(m?.[2] || "");
+          if (explicit) {
+            entry.tolerance = decimal(explicit[2]);
+            if (entry.tolerance.isNegative())
+              throw new Error("Balance tolerance must not be negative.");
+          }
+        }
+        if (kind === "pad") entry.sourceAccount = m?.[2].trim();
+        if (kind === "open")
+          entry.currencies = (m?.[2].match(/^[A-Z][A-Z0-9, ]*/)?.[0] || "")
+            .split(/[, ]+/)
+            .filter(Boolean);
+        if (kind === "commodity") entry.currency = rest.trim();
+        if (kind === "price") {
+          const p = /^(\S+)\s+(.+)$/.exec(rest);
+          entry.currency = p?.[1];
+          entry.amount = amount(p?.[2] || "");
+        }
+        if (
+          ![
+            "open",
+            "close",
+            "commodity",
+            "balance",
+            "pad",
+            "price",
+            "note",
+            "event",
+          ].includes(kind)
+        )
+          error(line, `${kind} is unsupported.`);
+      }
+      entries.push(entry);
+    } catch (e) {
+      error(line, e.message);
+      entry = null;
+      posting = null;
     }
-    entries.push(entry);
   });
-  return { entries, diagnostics, options };
+  return { entries, diagnostics, options, optionEntries };
 }
 export function evaluateBeancount(src) {
   const result = parseBeancount(src),
@@ -166,11 +200,13 @@ export function evaluateBeancount(src) {
     prices = [],
     pads = new Map();
   const error = (line, message) => diagnostics.push({ line, message });
-  const get = (account, currency) => balances.get(account)?.get(currency) || 0;
+  const config = precisionOptions(result.optionEntries, error);
+  const get = (account, currency) =>
+    balances.get(account)?.get(currency) ?? zero;
   function add(account, currency, quantity) {
     if (!balances.has(account)) balances.set(account, new Map());
     const row = balances.get(account);
-    row.set(currency, (row.get(currency) || 0) + quantity);
+    row.set(currency, (row.get(currency) ?? zero).plus(quantity));
   }
   function validate(account, currency, line) {
     const state = accounts.get(account);
@@ -181,13 +217,15 @@ export function evaluateBeancount(src) {
   }
   const weight = (p) =>
     p.cost
-      ? { currency: p.cost.currency, number: p.number * p.cost.number }
+      ? { currency: p.cost.currency, number: p.number.times(p.cost.number) }
       : p.price
         ? {
             currency: p.price.currency,
             number: p.price.total
-              ? Math.sign(p.number) * p.price.number
-              : p.number * p.price.number,
+              ? p.price.number.times(
+                  p.number.isZero() ? 0 : p.number.isNegative() ? -1 : 1,
+                )
+              : p.number.times(p.price.number),
           }
         : { currency: p.currency, number: p.number };
   function book(txn) {
@@ -196,28 +234,31 @@ export function evaluateBeancount(src) {
       return;
     }
     const missing = txn.postings.filter((p) => p.number === undefined),
-      totals = new Map();
+      totals = new Map(),
+      tolerance = tolerances(txn.postings, config);
     for (const p of txn.postings)
       if (p.number !== undefined) {
         const w = weight(p);
-        totals.set(w.currency, (totals.get(w.currency) || 0) + w.number);
+        totals.set(w.currency, (totals.get(w.currency) ?? zero).plus(w.number));
       }
-    const nonzero = [...totals].filter(([, n]) => Math.abs(n) > tolerance);
-    if (missing.length === 1 && nonzero.length === 1) {
-      missing[0].currency = nonzero[0][0];
-      missing[0].number = -nonzero[0][1];
-      totals.set(nonzero[0][0], 0);
-    } else if (missing.length)
+    const nonzero = [...totals].filter(([, n]) => !n.isZero());
+    const candidate = nonzero.length === 1 ? nonzero[0] : null;
+    if (missing.length === 1 && candidate) {
+      const [currency, n] = candidate;
+      missing[0].currency = currency;
+      missing[0].number = quantizeInferred(n.negated(), tolerance(currency));
+      totals.set(currency, n.plus(missing[0].number));
+    } else if (
+      missing.length &&
+      !(missing.length === 1 && !nonzero.length && totals.size)
+    )
       error(
         txn.line,
         "Cannot infer posting: exactly one missing amount and one balancing commodity are required.",
       );
     for (const [currency, n] of totals)
-      if (Math.abs(n) > tolerance)
-        error(
-          txn.line,
-          `Unbalanced transaction: ${n.toFixed(8).replace(/0+$/, "").replace(/\.$/, "")} ${currency}.`,
-        );
+      if (n.abs().gt(tolerance(currency)))
+        error(txn.line, `Unbalanced transaction: ${canonical(n)} ${currency}.`);
     for (const p of txn.postings) {
       if (p.number === undefined) continue;
       validate(p.account, p.currency, p.line);
@@ -225,23 +266,22 @@ export function evaluateBeancount(src) {
       const key = `${p.account}\0${p.currency}`;
       if (!lots.has(key)) lots.set(key, []);
       const inventory = lots.get(key);
-      if (p.number > 0 && p.cost)
+      if (p.number.gt(0) && p.cost)
         inventory.push({ quantity: p.number, ...p.cost, date: txn.date });
-      if (p.number < 0 && inventory.length) {
-        let remaining = -p.number;
+      if (p.number.lt(0) && inventory.length) {
+        let remaining = p.number.negated();
         for (const lot of inventory) {
           if (
             p.cost &&
-            (lot.currency !== p.cost.currency ||
-              Math.abs(lot.number - p.cost.number) > tolerance)
+            (lot.currency !== p.cost.currency || !lot.number.eq(p.cost.number))
           )
             continue;
-          const used = Math.min(lot.quantity, remaining);
-          lot.quantity -= used;
-          remaining -= used;
-          if (remaining < tolerance) break;
+          const used = D.min(lot.quantity, remaining);
+          lot.quantity = lot.quantity.minus(used);
+          remaining = remaining.minus(used);
+          if (remaining.isZero()) break;
         }
-        if (p.cost && remaining > tolerance)
+        if (p.cost && remaining.gt(0))
           error(p.line, "Insufficient matching cost lots (FIFO).");
       }
       journal.push({
@@ -280,7 +320,7 @@ export function evaluateBeancount(src) {
         else {
           accounts.get(e.account).closed = true;
           for (const [currency, n] of balances.get(e.account) || [])
-            if (Math.abs(n) > tolerance)
+            if (!n.isZero())
               error(e.line, `Nonzero balance on close: ${n} ${currency}.`);
         }
         break;
@@ -288,7 +328,9 @@ export function evaluateBeancount(src) {
         book(e);
         break;
       case "pad":
-        pads.set(e.account, e);
+        if (pads.has(e.account) && !pads.get(e.account).used)
+          error(pads.get(e.account).line, "Unused pad directive.");
+        pads.set(e.account, { ...e, used: false, seen: new Set() });
         break;
       case "balance": {
         if (!e.amount) {
@@ -296,12 +338,19 @@ export function evaluateBeancount(src) {
           break;
         }
         const { currency, number } = e.amount,
-          difference = number - get(e.account, currency),
-          pad = pads.get(e.account);
-        if (pad) {
+          difference = number.minus(get(e.account, currency)),
+          pad = pads.get(e.account),
+          tolerance =
+            e.tolerance ??
+            (e.amount.scale
+              ? new D(10).pow(-e.amount.scale).times(config.multiplier).times(2)
+              : zero);
+        if (pad && !pad.seen.has(currency)) {
+          pad.seen.add(currency);
           if (pad.date === e.date)
             error(e.line, "Padding must precede its balance assertion date.");
-          else if (Math.abs(difference) > tolerance)
+          else if (difference.abs().gt(tolerance)) {
+            pad.used = true;
             book({
               date: pad.date,
               line: pad.line,
@@ -317,13 +366,13 @@ export function evaluateBeancount(src) {
                   line: pad.line,
                   account: pad.sourceAccount,
                   currency,
-                  number: -difference,
+                  number: difference.negated(),
                 },
               ],
             });
-          pads.delete(e.account);
+          }
         }
-        if (Math.abs(get(e.account, currency) - number) > tolerance)
+        if (get(e.account, currency).minus(number).abs().gt(tolerance))
           error(
             e.line,
             `Balance assertion failed for ${e.account}: expected ${number} ${currency}, got ${get(e.account, currency)}.`,
@@ -336,7 +385,8 @@ export function evaluateBeancount(src) {
         break;
     }
   }
-  for (const pad of pads.values()) error(pad.line, "Unused pad directive.");
+  for (const pad of pads.values())
+    if (!pad.used) error(pad.line, "Unused pad directive.");
   const balancesObject = Object.fromEntries(
     [...balances]
       .sort(([a], [b]) => a.localeCompare(b))
@@ -345,11 +395,11 @@ export function evaluateBeancount(src) {
         Object.fromEntries([...values].sort(([a], [b]) => a.localeCompare(b))),
       ]),
   );
-  return {
+  return plain({
     ...result,
     balances: balancesObject,
     journal,
     lots: Object.fromEntries(lots),
     prices,
-  };
+  });
 }

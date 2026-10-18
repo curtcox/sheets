@@ -89,3 +89,16 @@ their static SVG in an export. See the [feature comparison and glossary](../form
 for the difference between notation, calculations, diagrams, and plots.
 
 See [Limitations and compatibility](../limitations.md) for the consolidated disclosures across formats.
+
+<!-- compatibility:start -->
+## Tracked compatibility status
+
+These entries share the [central limitations ledger](../limitations.md). “Needs detailed audit” means the disclosure is recorded, while its complete upstream case coverage is still being developed.
+
+| ID | Status | Area |
+| --- | --- | --- |
+| GFM-01 | Needs detailed audit | The pinned GFM corpus matches 582 of 672 exact HTML examples (86.6%); 90 deviations are documented |
+| GFM-02 | Intentional | HTML is sanitized after parsing |
+| GFM-03 | Needs detailed audit | Math uses Temml's supported TeX notation, not a complete TeX document engine |
+| GFM-04 | Needs detailed audit | Code fences display code; Markdown formulas and table cells do not calculate |
+<!-- compatibility:end -->

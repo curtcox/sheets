@@ -11,6 +11,7 @@ const packages = {
   temml: "default",
   dompurify: "default",
   "lz-string": "default",
+  "decimal.js": "default",
   asciimath2tex: "default",
   mathjs: "*",
   orga: "*",
@@ -26,6 +27,7 @@ const names = {
   temml: "temml",
   dompurify: "DOMPurify",
   "lz-string": "LZString",
+  "decimal.js": "Decimal",
   asciimath2tex: "AsciiMathParser",
   mathjs: "math",
   orga: "orga",
@@ -67,7 +69,7 @@ for (const [name, type] of Object.entries(packages)) {
       });
   }
   await writeFile(
-    `vendor/${name === "highlight.js" ? name : name + ".js"}`,
+    `vendor/${["highlight.js", "decimal.js"].includes(name) ? name : name + ".js"}`,
     type === "*"
       ? `export * from './${name}@${pkg.version}/index.js';\n`
       : `export {default} from './${name}@${pkg.version}/index.js';\n`,
@@ -156,5 +158,5 @@ inventory += `| ace-builds | ${ace.version} | BSD-3-Clause | https://github.com/
 await writeFile(
   "vendor/README.md",
   inventory +
-    "\nNumbat and Hurmet retain dependency notices in their own `licenses/` directories. Hurmet includes a small build wrapper to expose AST diagnostics and initialize its own Temml global; its source is in `scripts/vendor/build-hurmet.mjs`.\n\nSource-built engines are documented in `engines.json`; rebuild with `scripts/vendor/{numbat,calcfile,hurmet}.sh`. Pyodide 0.27.7 (MPL-2.0) is loaded on demand from https://cdn.jsdelivr.net/pyodide/v0.27.7/full/.\n",
+    "\nNumbat and Hurmet retain dependency notices in their own `licenses/` directories. Hurmet includes a small build wrapper to expose AST diagnostics and initialize its own Temml global; its source is in `scripts/vendor/build-hurmet.mjs`.\n\nSource-built engines are documented in `engines.json`; rebuild with `scripts/vendor/{numbat,calcfile,hurmet}.sh`. Pyodide 0.27.7 (MPL-2.0) is loaded on demand from https://cdn.jsdelivr.net/pyodide/v0.27.7/full/.\n\nR is loaded on demand from https://webr.r-wasm.org/v0.6.0/ (webR 0.6.0).\nThe JavaScript loader is MIT; the R/webR distribution binaries are GPL-3.0.\nSee the [upstream licenses](https://github.com/r-wasm/webr/blob/v0.6.0/LICENSE.md)\nand [release sources](https://github.com/r-wasm/webr/releases/tag/v0.6.0).\nThese runtime assets are downloaded from upstream and are not vendored or included\nin the offline app cache. `src/webr-client.js` and its same-origin bootstrap\n`src/workers/webr-worker.js` pin the runtime URLs. The bootstrap creates webR’s\nown worker directly, so cancellation also stops its initial CDN download.\n",
 );

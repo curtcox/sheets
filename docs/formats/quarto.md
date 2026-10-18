@@ -106,3 +106,20 @@ tables, figures, and captions without rerunning code; packages and interpreter s
 are not exported. See the [feature comparison and glossary](../format-comparison.md).
 
 See [Limitations and compatibility](../limitations.md) for the consolidated disclosures across formats.
+
+<!-- compatibility:start -->
+## Tracked compatibility status
+
+These entries share the [central limitations ledger](../limitations.md). “Needs detailed audit” means the disclosure is recorded, while its complete upstream case coverage is still being developed.
+
+| ID | Status | Area |
+| --- | --- | --- |
+| QT-01 | Needs detailed audit | This is a browser subset, not the Quarto CLI or full Pandoc |
+| QT-02 | Needs detailed audit | Metadata support is limited to title, author, date, and execution defaults |
+| QT-03 | Needs detailed audit | Python and R execute; OJS and Julia are displayed without execution. Ordinary language fences only display… |
+| QT-04 | Needs detailed audit | Python uses pinned Pyodide 0.27.7 |
+| QT-05 | Needs detailed audit | R uses pinned webR 0.6.0 |
+| QT-06 | Needs detailed audit | R data frames print as console text rather than rich HTML |
+| QT-07 | Needs detailed audit | State is shared only within each language during one render |
+| QT-08 | Needs detailed audit | Each language has a 90-second deadline, including runtime/package loading |
+<!-- compatibility:end -->

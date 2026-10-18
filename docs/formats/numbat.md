@@ -54,3 +54,16 @@ installed; fresh currency rates require a connection. See the
 [feature comparison and glossary](../format-comparison.md).
 
 See [Limitations and compatibility](../limitations.md) for the consolidated disclosures across formats.
+
+<!-- compatibility:start -->
+## Tracked compatibility status
+
+These entries share the [central limitations ledger](../limitations.md). “Needs detailed audit” means the disclosure is recorded, while its complete upstream case coverage is still being developed.
+
+| ID | Status | Area |
+| --- | --- | --- |
+| NUM-01 | Needs detailed audit | Sheets runs pinned Numbat 1.24.0 through its WASM interpreter |
+| NUM-02 | Needs detailed audit | Terminal commands, a persistent interactive REPL, and a Sheets plot viewer are not provided |
+| NUM-03 | Intentional | A fresh worker starts for every render, with a 20-second deadline |
+| NUM-04 | Needs detailed audit | Some short names are predefined units and cannot be redefined |
+<!-- compatibility:end -->

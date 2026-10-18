@@ -1,11 +1,61 @@
 {
+  "balance-outside.bean": {
+    "balances": {
+      "Assets:Bank": {
+        "USD": "0.005"
+      },
+      "Equity:Opening": {
+        "USD": "-0.005"
+      }
+    },
+    "valid": false
+  },
+  "balance-tolerance.bean": {
+    "balances": {
+      "Assets:Bank": {
+        "USD": "0.005"
+      },
+      "Equity:Opening": {
+        "USD": "-0.005"
+      }
+    },
+    "valid": true
+  },
   "basic.bean": {
     "balances": {
       "Assets:Bank": {
-        "USD": 1000.0
+        "USD": "1000"
       },
       "Equity:Opening": {
-        "USD": -1000.0
+        "USD": "-1000"
+      }
+    },
+    "valid": true
+  },
+  "cost-tolerance-cap.bean": {
+    "balances": {
+      "Assets:Bank": {
+        "USD": "-120.6"
+      },
+      "Assets:Stock": {
+        "STOCK": "0.12"
+      }
+    },
+    "valid": false
+  },
+  "cost-tolerance.bean": {
+    "balances": {
+      "Assets:Bank": {
+        "USD": "-48.12"
+      },
+      "Assets:Metal": {
+        "OZT": "1.23"
+      },
+      "Assets:Stock": {
+        "STOCK": "2.34"
+      },
+      "Assets:Token": {
+        "TOKEN": "1.23"
       }
     },
     "valid": true
@@ -13,13 +63,13 @@
   "edge.bean": {
     "balances": {
       "Assets:Bank": {
-        "USD": 800.0
+        "USD": "800"
       },
       "Assets:Shares": {
-        "HOOL": 2.0
+        "HOOL": "2"
       },
       "Equity:Opening": {
-        "USD": -1000.0
+        "USD": "-1000"
       }
     },
     "valid": true
@@ -27,10 +77,143 @@
   "error.bean": {
     "balances": {
       "Assets:Bank": {
-        "USD": -15.0
+        "USD": "-15"
       },
       "Expenses:Food": {
-        "USD": 20.0
+        "USD": "20"
+      }
+    },
+    "valid": false
+  },
+  "half-even.bean": {
+    "balances": {
+      "Assets:Bank": {
+        "USD": "0"
+      },
+      "Assets:Stock": {
+        "STOCK": "4.7"
+      },
+      "Equity:Opening": {
+        "USD": "-4.7"
+      }
+    },
+    "valid": true
+  },
+  "inferred-precision.bean": {
+    "balances": {
+      "Assets:Bank": {
+        "USD": "0"
+      },
+      "Assets:Stock": {
+        "STOCK": "2.345"
+      },
+      "Equity:Opening": {
+        "USD": "-2.89"
+      }
+    },
+    "valid": true
+  },
+  "precision-lots.bean": {
+    "balances": {
+      "Assets:Bank": {
+        "USD": "-0.02"
+      },
+      "Assets:Stock": {
+        "STOCK": "0.2"
+      }
+    },
+    "valid": true
+  },
+  "precision-options.bean": {
+    "balances": {
+      "Assets:Bank": {
+        "EUR": "-0.998",
+        "GBP": "-1",
+        "USD": "-10.9"
+      },
+      "Assets:Stock": {
+        "STOCK": "1"
+      },
+      "Expenses:Food": {
+        "EUR": "1",
+        "USD": "11"
+      }
+    },
+    "valid": true
+  },
+  "precision-pad.bean": {
+    "balances": {
+      "Assets:Bank": {
+        "USD": "0.0000000002"
+      },
+      "Equity:Opening": {
+        "USD": "-0.0000000002"
+      }
+    },
+    "valid": true
+  },
+  "precision.bean": {
+    "balances": {
+      "Assets:Bank": {
+        "USD": "9007199254740993.0000000002"
+      },
+      "Equity:Opening": {
+        "USD": "-9007199254740993.0000000002"
+      }
+    },
+    "valid": true
+  },
+  "tiny-inferred.bean": {
+    "balances": {
+      "Assets:Bank": {
+        "USD": "0.0000000001"
+      },
+      "Equity:Opening": {
+        "USD": "-0.0000000001"
+      }
+    },
+    "valid": true
+  },
+  "tiny-unbalanced.bean": {
+    "balances": {
+      "Assets:Bank": {
+        "USD": "-1.0000000001"
+      },
+      "Expenses:Food": {
+        "USD": "1"
+      }
+    },
+    "valid": false
+  },
+  "tolerance-boundary.bean": {
+    "balances": {
+      "Assets:Bank": {
+        "USD": "-3.995"
+      },
+      "Expenses:Food": {
+        "USD": "4"
+      }
+    },
+    "valid": true
+  },
+  "tolerance-outside.bean": {
+    "balances": {
+      "Assets:Bank": {
+        "USD": "-3.994"
+      },
+      "Expenses:Food": {
+        "USD": "4"
+      }
+    },
+    "valid": false
+  },
+  "total-price-tolerance-outside.bean": {
+    "balances": {
+      "Assets:Bank": {
+        "USD": "-12.356"
+      },
+      "Assets:Token": {
+        "TOKEN": "1.23"
       }
     },
     "valid": false
@@ -38,13 +221,25 @@
   "typical.bean": {
     "balances": {
       "Assets:Bank": {
-        "USD": 2934.5
+        "USD": "2934.5"
       },
       "Expenses:Food": {
-        "USD": 65.5
+        "USD": "65.5"
       },
       "Income:Salary": {
-        "USD": -3000.0
+        "USD": "-3000"
+      }
+    },
+    "valid": true
+  },
+  "unused-pad.bean": {
+    "balances": {},
+    "valid": false
+  },
+  "zero-inferred.bean": {
+    "balances": {
+      "Assets:Bank": {
+        "USD": "0"
       }
     },
     "valid": true

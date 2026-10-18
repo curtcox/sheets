@@ -1,0 +1,6 @@
+option "infer_tolerance_from_cost" "TRUE"
+2026-01-01 open Assets:Bank USD
+2026-01-01 open Assets:Token TOKEN
+2026-01-02 * "Total price tolerance must use its per-unit price"
+  Assets:Token 1.23 TOKEN @@ 12.30 USD
+  Assets:Bank -12.356 USD

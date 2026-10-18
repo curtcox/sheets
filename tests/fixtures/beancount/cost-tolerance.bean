@@ -1,0 +1,14 @@
+option "infer_tolerance_from_cost" "TRUE"
+2026-01-01 open Assets:Bank USD
+2026-01-01 open Assets:Stock STOCK
+2026-01-01 open Assets:Metal OZT
+2026-01-01 open Assets:Token TOKEN
+2026-01-02 * "Cost contribution"
+  Assets:Stock 2.34 STOCK {10 USD}
+  Assets:Bank -23.44 USD
+2026-01-03 * "Unit price contribution"
+  Assets:Metal 1.23 OZT @ 10 USD
+  Assets:Bank -12.34 USD
+2026-01-04 * "Total price is normalized to a unit price"
+  Assets:Token 1.23 TOKEN @@ 12.30 USD
+  Assets:Bank -12.34 USD

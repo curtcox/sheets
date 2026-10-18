@@ -18,7 +18,7 @@ export function renderBeancount(src) {
       .flatMap(([a, values]) =>
         Object.entries(values).map(
           ([c, n]) =>
-            `<tr><td>${e(a)}</td><td>${e(Number(n.toFixed(8)))}</td><td>${e(c)}</td></tr>`,
+            `<tr><td>${e(a)}</td><td>${e(n)}</td><td>${e(c)}</td></tr>`,
         ),
       )
       .join("")}</tbody></table>`;

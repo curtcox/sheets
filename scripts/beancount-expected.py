@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 """Independent bean-check / bean-query fixture oracle. Requires pinned tools in README."""
 import csv
+from decimal import Decimal
 import io
 import json
 import os
@@ -23,7 +24,15 @@ for file in sorted(folder.glob('*.bean')):
         check=True, capture_output=True, text=True)
     balances = {}
     for row in csv.DictReader(io.StringIO(queried.stdout)):
-        balances.setdefault(row['account'], {})[row['currency']] = float(row['sum(number)'].strip())
+        number = Decimal(row['sum(number)'].strip())
+        # Formatting must not normalize through the 28-digit decimal context or
+        # binary floats: both can discard digits from the independent oracle.
+        canonical = format(number, 'f')
+        if '.' in canonical:
+            canonical = canonical.rstrip('0').rstrip('.')
+        if number.is_zero():
+            canonical = '0'
+        balances.setdefault(row['account'], {})[row['currency']] = canonical
     result[file.name] = {'valid': checked.returncode == 0, 'balances': balances}
 expected = folder / 'reference.json'
 if '--check' in sys.argv:

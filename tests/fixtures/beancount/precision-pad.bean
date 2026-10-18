@@ -1,0 +1,4 @@
+2026-01-01 open Assets:Bank USD
+2026-01-01 open Equity:Opening USD
+2026-01-02 pad Assets:Bank Equity:Opening
+2026-01-03 balance Assets:Bank 0.0000000002 USD

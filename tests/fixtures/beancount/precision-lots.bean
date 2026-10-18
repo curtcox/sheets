@@ -1,0 +1,10 @@
+2026-01-01 open Assets:Bank USD
+2026-01-01 open Assets:Stock STOCK
+2026-01-02 * "Fractional acquisition"
+  Assets:Stock 0.3 STOCK {0.1 USD}
+  Assets:Bank
+2026-01-03 * "Fractional reduction"
+  Assets:Stock -0.1 STOCK {0.1 USD}
+  Assets:Bank 0.01 USD
+2026-01-04 balance Assets:Stock 0.2 STOCK
+2026-01-04 balance Assets:Bank -0.02 USD

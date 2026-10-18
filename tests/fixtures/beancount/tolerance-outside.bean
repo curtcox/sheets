@@ -1,0 +1,5 @@
+2026-01-01 open Assets:Bank USD
+2026-01-01 open Expenses:Food USD
+2026-01-02 * "Outside the inferred tolerance"
+  Expenses:Food 4.00 USD
+  Assets:Bank -3.994 USD

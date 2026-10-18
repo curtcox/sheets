@@ -1,0 +1,5 @@
+2026-01-01 open Assets:Bank USD
+2026-01-01 open Equity:Opening USD
+2026-01-02 * "No residual needs an inferred posting"
+  Assets:Bank 0 USD
+  Equity:Opening

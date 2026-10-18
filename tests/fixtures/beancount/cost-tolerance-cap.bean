@@ -1,0 +1,6 @@
+option "infer_tolerance_from_cost" "TRUE"
+2026-01-01 open Assets:Bank USD
+2026-01-01 open Assets:Stock STOCK
+2026-01-02 * "A cost contribution is capped at half a unit"
+  Assets:Stock 0.12 STOCK {1000 USD}
+  Assets:Bank -120.6 USD

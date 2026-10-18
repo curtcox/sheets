@@ -125,6 +125,24 @@ ${block("mermaid", "graph LR\n  Measure --> Review")}
   ],
   beancount: [
     sample(
+      `option "tolerance_multiplier" "0.5"
+option "inferred_tolerance_default" "USD:0.001"
+option "infer_tolerance_from_cost" "TRUE"
+2026-01-01 open Assets:Bank USD
+2026-01-01 open Equity:Opening USD
+2026-01-02 * "Within assertion tolerance"
+  Assets:Bank 0.005 USD
+  Equity:Opening -0.005 USD
+2026-01-03 balance Assets:Bank 0.00 ~ 0.005 USD
+`,
+      [
+        "tolerance_multiplier",
+        "inferred_tolerance_default",
+        "infer_tolerance_from_cost",
+        "0.00 ~ 0.005 USD",
+      ],
+    ),
+    sample(
       `2026-01-01 open Assets:Bank USD
 2026-01-01 open Equity:Opening USD
 2026-01-01 open Assets:Stock HOOL

@@ -1,0 +1,5 @@
+2026-01-01 open Assets:Bank USD
+2026-01-01 open Expenses:Food USD
+2026-01-02 * "A real imbalance smaller than the old fixed epsilon"
+  Expenses:Food 1 USD
+  Assets:Bank -1.0000000001 USD

@@ -56,3 +56,16 @@ support for a function or unit outside the pinned draft. See the
 [feature comparison and glossary](../format-comparison.md).
 
 See [Limitations and compatibility](../limitations.md) for the consolidated disclosures across formats.
+
+<!-- compatibility:start -->
+## Tracked compatibility status
+
+These entries share the [central limitations ledger](../limitations.md). “Needs detailed audit” means the disclosure is recorded, while its complete upstream case coverage is still being developed.
+
+| ID | Status | Area |
+| --- | --- | --- |
+| CF-01 | Needs detailed audit | This is a pinned v0.1 draft reference engine, not a compatibility promise for every application using the… |
+| CF-02 | Known gap | All 37 required upstream conformance cases pass, including cases with supplied exchange rates |
+| CF-03 | Needs detailed audit | Auto detection deliberately does not select CalcFile from ambiguous prose |
+| CF-04 | Needs detailed audit | Output is a line calculator with headers and text, not a Markdown renderer or an interactive spreadsheet |
+<!-- compatibility:end -->

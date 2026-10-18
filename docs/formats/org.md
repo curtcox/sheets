@@ -58,3 +58,16 @@ does not repeatedly iterate formulas until they converge. See the
 [feature comparison and glossary](../format-comparison.md).
 
 See [Limitations and compatibility](../limitations.md) for the consolidated disclosures across formats.
+
+<!-- compatibility:start -->
+## Tracked compatibility status
+
+These entries share the [central limitations ledger](../limitations.md). “Needs detailed audit” means the disclosure is recorded, while its complete upstream case coverage is still being developed.
+
+| ID | Status | Area |
+| --- | --- | --- |
+| ORG-01 | Needs detailed audit | This is a JavaScript spreadsheet subset, not Emacs Org, Babel, or the complete Emacs Calc language |
+| ORG-02 | Needs detailed audit | Named fields, remote tables, iteration modes, arbitrary Calc syntax, and exact Emacs display-width… |
+| ORG-03 | Needs detailed audit | Surrounding prose supports basic headings, lists, emphasis, and links, rather than the full Org… |
+| ORG-04 | Needs detailed audit | Recalculation updates the preview |
+<!-- compatibility:end -->

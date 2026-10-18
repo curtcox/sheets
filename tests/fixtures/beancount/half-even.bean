@@ -1,0 +1,12 @@
+2026-01-01 open Assets:Bank USD
+2026-01-01 open Assets:Stock STOCK
+2026-01-01 open Equity:Opening USD
+2026-01-02 * "Half-even rounds a cent tie down"
+  Assets:Stock 2.345 STOCK {1 USD}
+  Assets:Bank 0.00 USD
+  Equity:Opening
+2026-01-03 * "Half-even rounds a cent tie up"
+  Assets:Stock 2.355 STOCK {1 USD}
+  Assets:Bank 0.00 USD
+  Equity:Opening
+2026-01-04 balance Equity:Opening -4.70 USD

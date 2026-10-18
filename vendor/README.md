@@ -14,6 +14,7 @@ Transitive license notices are in `licenses/` and in esbuild `.LEGAL.txt` files.
 | temml | 0.14.0 | MIT | https://github.com/ronkok/Temml | npm run vendor |
 | dompurify | 3.4.17 | (MPL-2.0 OR Apache-2.0) | https://github.com/cure53/DOMPurify | npm run vendor |
 | lz-string | 1.5.0 | MIT | https://github.com/pieroxy/lz-string | npm run vendor |
+| decimal.js | 10.6.0 | MIT | https://github.com/MikeMcl/decimal.js | npm run vendor |
 | asciimath2tex | 1.5.0 | Apache-2.0 | https://github.com/christianp/asciimath2tex | npm run vendor |
 | mathjs | 15.2.0 | Apache-2.0 | https://github.com/josdejong/mathjs | npm run vendor |
 | orga | 5.0.0 | MIT | https://github.com/orgapp/orgajs | npm run vendor |

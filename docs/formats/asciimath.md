@@ -56,3 +56,16 @@ Markdown tables, links, and Mermaid diagrams. Math renders locally and is includ
 in rendered HTML exports. See the [feature comparison and glossary](../format-comparison.md).
 
 See [Limitations and compatibility](../limitations.md) for the consolidated disclosures across formats.
+
+<!-- compatibility:start -->
+## Tracked compatibility status
+
+These entries share the [central limitations ledger](../limitations.md). “Needs detailed audit” means the disclosure is recorded, while its complete upstream case coverage is still being developed.
+
+| ID | Status | Area |
+| --- | --- | --- |
+| AM-01 | Needs detailed audit | Formula support follows the pinned asciimath2tex translator, then Temml |
+| AM-02 | Needs detailed audit | Incomplete expressions may still render without a diagnostic because the translator is permissive |
+| AM-03 | Needs detailed audit | A document switches from one-formula-per-line mode to mixed Markdown mode when it contains Markdown… |
+| AM-04 | Needs detailed audit | Mixed prose inherits the Markdown rendering and sanitization limits above. |
+<!-- compatibility:end -->

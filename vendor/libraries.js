@@ -6,6 +6,7 @@ export { default as highlight } from './highlight.js@11.12.0/index.js';
 export { default as temml } from './temml@0.14.0/index.js';
 export { default as DOMPurify } from './dompurify@3.4.17/index.js';
 export { default as LZString } from './lz-string@1.5.0/index.js';
+export { default as Decimal } from './decimal.js@10.6.0/index.js';
 export { default as AsciiMathParser } from './asciimath2tex@1.5.0/index.js';
 export * as math from './mathjs@15.2.0/index.js';
 export * as orga from './orga@5.0.0/index.js';

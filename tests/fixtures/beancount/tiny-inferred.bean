@@ -1,0 +1,5 @@
+2026-01-01 open Assets:Bank USD
+2026-01-01 open Equity:Opening USD
+2026-01-02 * "Infer even a tiny amount exactly"
+  Assets:Bank 0.0000000001 USD
+  Equity:Opening

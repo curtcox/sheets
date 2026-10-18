@@ -23,8 +23,11 @@ and examples; Python, R, and external services still require a connection.
 Calca now solves real scalar linear and quadratic equations, including reverse
 definitions and multiple real roots, with bounds and explicit subset diagnostics.
 Quarto R cells run through pinned webR 0.6.0, with state, console output, PNG plots,
-cell diagnostics, cancellation and deadlines. All non-deferred plan items, including
-the optional offline and equation/R execution work, are implemented.
+cell diagnostics, cancellation and deadlines. All items in the original phases
+0–10, including the optional offline and equation/R execution work, are implemented.
+The compatibility roadmap below has started: the baseline disclosure ledger and
+profile design are in place, and the first Beancount decimal/tolerance work is
+implemented. Further auditing and compatibility features remain open.
 HashBin is registered and enabled using its public client ID and exact Pages
 callback. Live PKCE authorization, quoted save confirmation, and an anonymous
 saved-document round-trip have been verified. The repository uses MIT and Pages
@@ -309,7 +312,7 @@ Every format phase must deliver all of the following:
 
 ## Later and optional
 
-The optional work listed in this plan is implemented.
+The optional work in the original phases 0–10 is implemented.
 
 ## HashBin integration
 
@@ -322,3 +325,241 @@ approved $0.01 save of the public Calca gallery example for 12 months. Its CID l
 loaded in a fresh browser without signing in, preserving the exact source, format,
 Split view, and calculated answers. See README.md and the HashBin guide for
 deployment settings.
+
+---
+
+## Compatibility roadmap: prioritize and eliminate limitations
+
+Status: **in progress**, based on the limitations inventory at commit `d99cb58`.
+This roadmap extends the completed original plan; it does not mark future
+capabilities as implemented. The current baseline is 146 passing unit tests,
+123 passing browser tests, 37 passing required CalcFile cases, and 582/672 exact
+GFM matches with 90 recorded deviations.
+
+First increment: `docs/compatibility.json` imports the existing disclosures with
+stable IDs, priorities, classifications, audit status, and evidence fields.
+`scripts/compatibility-docs.mjs` generates the central page and guide status tables;
+unit tests reject drift. Compound entries without atomic reproducers remain
+explicitly marked for detailed audit, so Phase 11 is not complete.
+`design/compatibility-profiles.md` records the migration contract without changing
+URL or HashBin behavior. The Beancount oracle now preserves decimal strings, with
+21 independent fixtures covering supported arithmetic/tolerance behavior, including
+large/tiny amounts, costs/prices, inference, assertions, padding, and lots. BEAN-1's
+first slice implements decimal arithmetic, supported tolerance options, and exact
+report text. Other booking/rounding options and wider audits remain open.
+
+### Goal and prioritization
+
+Close gaps that change results first, then widely used missing capabilities, then
+larger language and runtime features. Within a priority, prefer changes that reuse
+an existing engine or benefit several formats. Effort labels are relative:
+**S** is a bounded adapter change, **M** changes a subsystem, and **L** introduces
+a language/runtime or architectural boundary. These are scope estimates, not
+delivery dates; re-estimate after the first reference fixtures.
+
+The limitations page mixes four kinds of entries. Classify them before counting
+progress:
+
+| Kind | Treatment |
+| --- | --- |
+| Implementation defect or missing upstream behavior | Add a reproducer and implement a verified fix. |
+| Upstream behavior or format purpose | Retain and explain it. Reserved unit names, dimensional errors, and non-executable Markdown/AsciiMath/plain text are not missing evaluators. |
+| Deliberate safety or reproducibility policy | Preserve the default. Add a bounded, explicit alternative only when useful; do not remove sanitization, cancellation, payload bounds, or interpreter isolation to claim parity. |
+| Browser or deployment constraint | First test a browser implementation; otherwise provide an optional native execution route with an explicit architecture decision. Do not label an unimplemented route as resolved. |
+
+### Phase 11 — P0: establish a complete compatibility backlog (M)
+
+1. Give every limitation an ID, format, upstream version/reference, smallest
+   reproducer, expected behavior, current behavior, priority, dependencies, and
+   disposition. Split compound disclosures into independently closable items.
+2. Audit upstream examples as well as the present inventory. In particular, check
+   Calca's named/multiline definitions, argument binding, indexing/ranges, local
+   definitions, locale handling, and symbolic behavior. The current list is not an
+   exhaustive specification of the original applications.
+3. Pin the compatibility targets. Keep the existing GFM corpus, CalcFile draft,
+   and Numbat/Hurmet revisions initially. Use the pinned Beancount/bean-query and
+   Emacs reference tools for new fixtures. For Calca, use public reference examples
+   and clearly identify cases that still require verification in a licensed app.
+4. Make one structured limitation ledger drive the central page and guide
+   disclosures, with links to fixtures and status. Keep prose explanations in the
+   guides, but check them against the ledger so resolved gaps cannot remain stale.
+5. Define behavior versioning before changing established semantics. Old source
+   links and version-1 HashBin documents must retain their documented behavior;
+   record a compatibility profile in new links/envelopes when behavior changes,
+   with explicit migration rather than silent reinterpretation.
+   Profiles preserve intentional language semantics, not known incorrect
+   arithmetic. Numeric correctness fixes apply to supported documents with
+   reference-backed result comparisons and release notes; original source remains
+   intact.
+
+Done when: every existing disclosure has a disposition and work item; newly found
+gaps are recorded; the reference baseline is reproducible; and the profile/migration
+design has fixtures for old URLs and saved documents. This is an enabling milestone,
+not permission to postpone known correctness fixes indefinitely.
+
+### Phase 12 — P0: eliminate result-changing correctness gaps
+
+| Order / ID | Work | Effort | Completion check |
+| --- | --- | --- | --- |
+| 1 / BEAN-1 | Preserve numeric source lexemes as exact decimal values throughout parsing, posting weights, inventories, pads, assertions, and reports. Implement the pinned upstream tolerance inference and supported precision options. | L | Decimal quantities and accepted/rejected transactions match the reference on rounding boundaries, prices/costs, mixed precision, large amounts, and very small quantities. |
+| 2 / CALCA-1 | Replace line/fence guessing with a parsed document model that distinguishes calculation blocks from literal code, TeX, and Mermaid. Keep the legacy profile for existing documents. | M | Literal fences produce no calculation diagnostics; calculation blocks and arrow lines still run with accurate source locations; old links retain old behavior. |
+| 3 / CALCA-2 | Define and implement reference-backed definition availability, reassignment/equation distinctions, dependency resolution, and heading scopes in the new profile. Report conflicting or unsupported relations explicitly. | L | Reference cases for parent/child/sibling headings, reassignment, reverse definitions, and contradictory relations have deliberate, tested results. |
+
+The first BEAN-1 increment fixes the independent oracle:
+`scripts/beancount-expected.py` now stores canonical decimal strings instead of
+Python floats, so the test cannot hide a precision defect. Reports and serialized
+fixture expectations preserve those strings; 21 reference fixtures cover the
+supported arithmetic and tolerance rules, including half-even rounding ties.
+
+Do not broaden solver behavior while its definition/scoping rules are unsettled.
+Security and cancellation regressions block this milestone even if numeric output
+improves.
+
+### Phase 13 — P1: close high-value adapter gaps
+
+Implement in this order after the relevant Phase 11 contracts are recorded;
+CF-1 can ship while the larger correctness work proceeds.
+
+| Order / ID | Work | Effort | Completion check |
+| --- | --- | --- | --- |
+| 1 / CF-1 | Connect CalcFile to `src/exchange-rates.js`, converting the cached ECB data to the reference engine's rate environment. Preserve decimal rate text and show rate date/stale/unavailable notices. Fetch only when needed; propagate cancellation. | S | Real UI conversions work with supplied rates; offline cached, missing, malformed, and aborted requests behave deliberately; all 37 draft cases still pass. |
+| 2 / GFM-1 | Classify all 90 failures as semantic parsing, extension/serialization, or intentional post-parse sanitization differences. Fix semantic failures first across the shared Markdown pipeline. | M–L | No unexplained failures; original corpus and all existing math, diagrams, task lists, and export examples remain covered. |
+| 3 / NUM-1 | Improve Numbat statement boundaries using upstream parser/source information where available, with a tested tokenizer fallback. Map engine diagnostics to actual source spans. | M | Multiline strings, escaped quotes, comments, nesting, continuations, and later-statement recovery match the pinned interpreter. |
+| 4 / AM-1 | Add an explicit, shareable formula-list/mixed-prose mode and useful source-line diagnostics for demonstrably malformed formulas. Preserve Auto and permissive upstream parsing where appropriate. | M | Adding prose no longer unexpectedly changes an explicitly selected mode; malformed-input warnings do not reject valid upstream notation. |
+| 5 / QT-1 | Replace regex-only nested-div and cross-reference handling with a structured document pass. Validate supported metadata/cell options and report unsupported settings instead of silently implying they work. | M | Nested callouts, duplicate/missing figure labels, references, and option precedence have fixtures with precise line locations. |
+
+For GFM-1, maintain separate raw-parser and final-render metrics. Canonical GFM
+compatibility should target all 672 pinned examples before presentation extensions
+and sanitization; extension markup and intentional filtering need their own
+expectations. Do not normalize away semantic errors or weaken the sanitizer to
+increase a percentage. If adapter fixes require recreating the grammar, evaluate
+a pinned upstream parser build instead, retaining the buildless deployment model.
+
+### Phase 14 — P2: expand language compatibility
+
+| ID | Ordered implementation slices | Dependencies / completion check |
+| --- | --- | --- |
+| ORG-1 | Named fields/columns and constants; named tables and same-document remote references; remaining numeric Calc functions/modes; bounded iteration with convergence/cycle diagnostics; Unicode display-width alignment; broader Org prose. | Compare each slice with Emacs fixtures. Cross-file references wait for FILE-1. Arbitrary Emacs Lisp belongs to NATIVE-1, not a JavaScript imitation. |
+| BEAN-2 | Supported option semantics; total-cost lots and explicit lot selection; additional booking methods; multi-commodity missing-amount inference; price-date selection and explicitly requested valuation reports; richer query/report views. | Requires BEAN-1. Match `bean-check`/`bean-query` including rejected ambiguous bookings, missing prices, and valuation dates. Keep native holdings distinct from valued reports. |
+| CALCA-3 | Complete reference-backed lexical/core-language behavior first: multiline and named definitions/arguments, local bindings, safe matrix indexing/ranges, locale input, and supported standard functions. Then add symbolic simplification/solutions, linear systems, unit-aware equations, and function inversion in separately bounded slices. | Requires CALCA-1/2 and profile migration. Each advertised family must match its reference cases, including underdetermined, conflicting, and no-solution cases. Add higher-order/transcendental methods only where a verified target justifies them; do not advertise a universal solver. |
+| NUM-2 | Audit remaining pinned interpreter functionality and expose useful structured output/plots supported by its actual browser API. Improve result navigation rather than adding a second language implementation. | API feasibility check first. Test parity with the pinned interpreter and keep source/result and worker boundaries intact. |
+| HUR-1 | Audit the pinned Hurmet AST/render path for dropped spreadsheet/drawing output. Restore supported output before adding editing tools. | Compare representative upstream documents; preserve scoped styles, sanitization, diagnostics, and cancellation. |
+| FORMAT-1 | Add missing math/notation support through pinned translator/Temml upgrades or focused fixes, and expand CalcFile only against a named newer reference target. | Differential fixtures and license/vendor rebuild records. Keep old profiles reproducible; a newer library version alone does not establish compatibility. |
+
+Every slice updates a guide, the central ledger, feature comparison, runnable docs
+examples, and relevant gallery fixtures in the same change. Do not combine an
+entire format rewrite and an unrelated runtime expansion in one release.
+
+### Phase 15 — P2/P3: remove browser-shell and execution restrictions
+
+1. **QT-2 — notebook outputs and controls (M):** add figure dimensions/alt text,
+   warning/error/include controls and supported raw-output modes with sanitization.
+   Add rich R data-frame tables and inline language expressions in document order.
+   Keep execution defaults, skipped cells, and error continuation explicit. Compare
+   supported cases against pinned Quarto/knitr/Jupyter reference outputs; full knitr
+   rendering is a separate native-runtime target.
+2. **FILE-1 — project inputs (L):** introduce an explicit manifest of user-selected
+   files for Beancount includes, cross-file Org tables, and notebook data. Resolve
+   only supplied files, detect cycles, and bound aggregate size/depth. Version the
+   bundle/share representation while preserving single-document links and existing
+   CID precedence. Never infer access to arbitrary local files from an include.
+3. **OFFLINE-1 — optional scientific runtimes (L):** investigate self-hosting pinned,
+   verified Python/R runtime assets and an explicit package set in a separate
+   opt-in download. Measure transfer size, startup, storage, and memory first.
+   Test fresh offline execution, interrupted installs, eviction, updates, and
+   removal in all browsers. Arbitrary external packages/data remain network inputs.
+4. **RUN-1 — explicit run/session controls (L):** keep fresh-per-render execution as
+   the default. Evaluate manual Run/Run all and optional per-document live sessions
+   for long computations. Isolate documents, show stale output, and verify cancel,
+   restart, and full replay. Any Python/R exchange must use explicit typed data and
+   defined ordering; shared implicit variable state is not assumed to be an upstream
+   compatibility requirement.
+5. **OJS-1 — reactive cells and widgets (L):** time-box an upstream-compatible
+   Observable runtime experiment with isolated execution and a bounded output
+   protocol. Use a separate sandbox for interactive content; never grant widgets
+   access to editor storage or insert unsanitized HTML into the editor document.
+   Prove cleanup, network behavior, and replay before enabling the feature.
+6. **UI-1 — source-backed editing tools (L):** evaluate task toggles, Org recalculation
+   application, Hurmet table/drawing controls, and a dedicated REPL as separate
+   opt-in tools. Changes must round-trip through source, undo, URL/HashBin, and
+   reload. They do not replace the reproducible source editor or turn Plain text
+   into a markup/calculation format.
+
+Browser package, memory, and storage limits cannot be made unbounded. Publish a
+measured support matrix and a usable alternative for unsupported cases rather
+than simply increasing global timeouts or hiding failed imports.
+
+### Phase 16 — P3: a route to full native upstream behavior (L)
+
+Some remaining gaps require applications or runtimes absent from this browser
+build: full Quarto/Pandoc and native packages, Julia kernels, arbitrary Emacs Lisp,
+Beancount plugins, desktop filesystem operations, or complete TeX document rendering.
+
+Design an optional **local companion execution service** first. It would run pinned
+upstream tools against an explicitly supplied project, return diagnostics and
+artifacts through the existing document interface, and support cancellation and
+resource limits. The static GitHub Pages editor remains independently usable.
+Authenticated origin-bound communication and isolated job directories are part of
+the design, not an assumption that a web document may execute desktop commands.
+
+This milestone requires a separate decision on installation, supported platforms,
+distribution/licenses, and execution trust before implementation. A hosted service
+is a further hosting, cost, and data-handling decision, not an implicit dependency.
+Closed Calca functionality still needs independently verified compatible behavior;
+a generic native backend does not provide access to Calca's proprietary engine.
+
+Done when: each native-only target either works against its pinned upstream tool
+with reference fixtures and an end-to-end project round-trip, or remains explicitly
+open with its required architecture decision. An unbuilt companion is not a fix.
+
+### Coverage and completion rules
+
+| Inventory area | Resolution path |
+| --- | --- |
+| GFM parser/serialization and math coverage | GFM-1 and FORMAT-1; intentional sanitization remains documented. |
+| AsciiMath ambiguity/incomplete-input feedback | AM-1 and FORMAT-1; notation-only evaluation semantics remain. |
+| Numbat grouping, diagnostics, output and REPL | NUM-1/2 and UI-1; reserved units and dimensional checks remain. |
+| CalcFile currency feed and draft coverage | CF-1 and FORMAT-1; ambiguous Auto detection stays conservative. |
+| Org formulas, references, iteration, layout and editing | ORG-1, FILE-1, UI-1; full Lisp uses Phase 16. |
+| Calca block parsing, scopes, language and solvers | CALCA-1/2/3; retain bounded evaluation and explicit profiles. |
+| Hurmet output, drawing/table editing and session limits | HUR-1, UI-1, RUN-1; browser network rules still apply. |
+| Beancount numeric correctness, inventories, valuation, includes/plugins | BEAN-1/2, FILE-1, Phase 16. |
+| Quarto syntax, options, rich output, runtime/packages and languages | QT-1/2, OFFLINE-1, RUN-1, OJS-1, Phase 16. |
+| Plain text behavior, Auto choice and raw-payload detection | Preserve intentional literal mode; explicit stored format/profile continues to override Auto. |
+| Shared bounds, offline services, exports and external resources | FILE-1, OFFLINE-1, RUN-1 and Phase 16 where applicable; retain safe defaults and disclose unavoidable resource/network limits. |
+
+A work item closes only after an independent reference or clearly specified
+behavioral test passes, old links and exports still work, and the docs and runnable
+examples agree with the shipped feature. Cancellation, stale-render protection,
+sanitization, offline lifecycle, and all three browser projects are release gates
+when affected. Keep conformance changes explicit; never merely rewrite expected
+results to match a new implementation.
+
+Report separate counts for fixed defects, added upstream capabilities, retained
+intentional behavior, and unresolved environment/native-runtime requirements.
+The target is zero unclassified limitations and zero known result-changing defects
+within an advertised profile, not a misleading claim that every original desktop
+feature runs in every browser.
+
+### First implementation batch
+
+1. Create the atomic ledger and profile design (Phase 11).
+2. Change the Beancount reference oracle to decimal strings and add precision/
+   tolerance boundary fixtures, then implement BEAN-1.
+3. Implement CALCA-1 with legacy-link coverage.
+4. Ship CF-1 as the first bounded missing-capability fix.
+5. Classify all GFM failures and take the first verified semantic fixes.
+
+### Reference starting points
+
+- [Current limitation disclosures](docs/limitations.md) and format-specific guides.
+- [Calca reference](https://calca.io/reference), especially definition availability
+  and its broader language examples; verify behavior rather than assuming mathjs parity.
+- [Org spreadsheet manual](https://orgmode.org/manual/The-Spreadsheet.html) and the
+  existing `scripts/org-expected.sh` reference runner.
+- [Quarto execution options](https://quarto.org/docs/computations/execution-options.html),
+  used to define explicit option/output compatibility cases.
+- The pinned Beancount/bean-query tools and `scripts/beancount-expected.py`;
+  `tests/fixtures/gfm-conformance.json`; the committed CalcFile corpus; and actual
+  vendored Numbat/Hurmet engines. These are starting oracles, not substitutes for
+  adding cases for newly supported behavior.

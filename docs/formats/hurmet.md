@@ -66,3 +66,15 @@ a connection. A rendered HTML export keeps the finished typesetting and results,
 without a live interpreter. See the [feature comparison and glossary](../format-comparison.md).
 
 See [Limitations and compatibility](../limitations.md) for the consolidated disclosures across formats.
+
+<!-- compatibility:start -->
+## Tracked compatibility status
+
+These entries share the [central limitations ledger](../limitations.md). “Needs detailed audit” means the disclosure is recorded, while its complete upstream case coverage is still being developed.
+
+| ID | Status | Area |
+| --- | --- | --- |
+| HUR-01 | Needs detailed audit | Sheets embeds a pinned upstream calculation/rendering engine, not Hurmet's rich-text editing application |
+| HUR-02 | Intentional | Every render gets a fresh worker with a 20-second deadline |
+| HUR-03 | Needs detailed audit | Remote-data fetches follow upstream behavior and browser CORS rules |
+<!-- compatibility:end -->

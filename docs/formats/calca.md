@@ -77,3 +77,18 @@ ordinary calculations run locally after offline files are installed. See the
 [feature comparison and glossary](../format-comparison.md).
 
 See [Limitations and compatibility](../limitations.md) for the consolidated disclosures across formats.
+
+<!-- compatibility:start -->
+## Tracked compatibility status
+
+These entries share the [central limitations ledger](../limitations.md). “Needs detailed audit” means the disclosure is recorded, while its complete upstream case coverage is still being developed.
+
+| ID | Status | Area |
+| --- | --- | --- |
+| CALCA-01 | Needs detailed audit | This is a compatible subset implemented with constrained mathjs, not the original commercial Calca… |
+| CALCA-02 | Needs detailed audit | Equation solving supports real scalar linear and quadratic polynomials with numeric coefficients |
+| CALCA-03 | Needs detailed audit | Explicit assignments take priority |
+| CALCA-04 | Needs detailed audit | Numeric definitions use assignment-time values; unresolved definitions use current values when queried |
+| CALCA-05 | Needs detailed audit | Results use floating-point arithmetic with up to 12 significant displayed digits |
+| CALCA-06 | Needs detailed audit | Every fenced or indented code block is calculation input, regardless of its language label |
+<!-- compatibility:end -->
