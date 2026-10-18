@@ -1,0 +1,33 @@
+[
+  {
+    "file": "basic.am",
+    "contains": [
+      "Show TeX",
+      "<msqrt>"
+    ],
+    "diagnostics": 0
+  },
+  {
+    "file": "typical.am",
+    "contains": [
+      "Sums and sequences",
+      "<math"
+    ],
+    "diagnostics": 0
+  },
+  {
+    "file": "edge.am",
+    "contains": [
+      "<mtable",
+      "Show TeX"
+    ],
+    "diagnostics": 0
+  },
+  {
+    "file": "error.am",
+    "contains": [
+      "Show TeX"
+    ],
+    "diagnostics": 0
+  }
+]

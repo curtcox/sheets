@@ -1,0 +1,6 @@
+2026-01-01 open Assets:Bank USD
+2026-01-01 open Expenses:Food USD
+2026-01-02 * "An incorrect entry"
+  Expenses:Food 20 USD
+  Assets:Bank -15 USD
+2026-01-03 balance Assets:Bank 0 USD

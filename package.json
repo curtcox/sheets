@@ -1,0 +1,33 @@
+{
+  "name": "sheets",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Buildless, shareable calculation documents",
+  "scripts": {
+    "dev": "node scripts/serve.mjs",
+    "check": "node scripts/check.mjs",
+    "test": "node --test tests/unit/*.test.js",
+    "test:browser": "playwright test",
+    "test:conformance": "node scripts/conformance.mjs",
+    "vendor": "node scripts/vendor/libraries.mjs"
+  },
+  "devDependencies": {
+    "@playwright/test": "1.64.1",
+    "ace-builds": "1.45.0",
+    "asciimath2tex": "1.5.0",
+    "dompurify": "3.4.17",
+    "esbuild": "0.28.2",
+    "highlight.js": "11.12.0",
+    "js-yaml": "5.5.0",
+    "lz-string": "1.5.0",
+    "markdown-it": "15.0.3",
+    "markdown-it-footnote": "4.0.0",
+    "markdown-it-github-alerts": "1.0.1",
+    "markdown-it-task-lists": "2.1.1",
+    "mathjs": "15.2.0",
+    "mermaid": "12.2.0",
+    "orga": "5.0.0",
+    "temml": "0.14.0"
+  }
+}

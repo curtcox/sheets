@@ -1,0 +1,30 @@
+[
+  {
+    "file": "basic.nbt",
+    "contains": [
+      "60 km/h"
+    ],
+    "diagnostics": 0
+  },
+  {
+    "file": "typical.nbt",
+    "contains": [
+      "44.145 m"
+    ],
+    "diagnostics": 0
+  },
+  {
+    "file": "edge.nbt",
+    "contains": [
+      "620.136 m"
+    ],
+    "diagnostics": 0
+  },
+  {
+    "file": "error.nbt",
+    "contains": [
+      "incompatible dimensions"
+    ],
+    "diagnostics": 1
+  }
+]

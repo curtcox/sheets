@@ -1,0 +1,31 @@
+[
+  {
+    "file": "basic.calc",
+    "contains": [
+      "0.3"
+    ],
+    "diagnostics": 0
+  },
+  {
+    "file": "typical.calc",
+    "contains": [
+      "545 EUR"
+    ],
+    "diagnostics": 0
+  },
+  {
+    "file": "edge.calc",
+    "contains": [
+      "1240",
+      "10000 m"
+    ],
+    "diagnostics": 0
+  },
+  {
+    "file": "error.calc",
+    "contains": [
+      "Currency conversion needs supplied exchange rates"
+    ],
+    "diagnostics": 1
+  }
+]

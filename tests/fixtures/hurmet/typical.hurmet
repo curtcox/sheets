@@ -1,0 +1,7 @@
+# A simply supported beam
+
+¢` L = 12 'ft' `
+
+¢` w = 110 'lbf/ft' `
+
+¢` M = (w L^2)/8 = ?? lbf-ft `

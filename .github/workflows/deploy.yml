@@ -1,0 +1,46 @@
+name: Deploy to GitHub Pages
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+concurrency:
+  group: pages
+  cancel-in-progress: false
+jobs:
+  test:
+    uses: ./.github/workflows/test.yml
+  deploy:
+    needs: test
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - uses: actions/configure-pages@v5
+      - name: Stage only public assets
+        run: node scripts/stage.mjs
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: _site
+      - uses: actions/deploy-pages@v4
+        id: deployment
+      - name: Verify the deployed editor
+        env:
+          PAGE_URL: ${{ steps.deployment.outputs.page_url }}
+        run: |
+          for attempt in $(seq 1 10); do
+            if curl --fail --silent --show-error "${PAGE_URL}?deploy=${GITHUB_SHA}" | grep -q 'sheets-editor-v1'; then
+              exit 0
+            fi
+            sleep 6
+          done
+          echo 'Deployed page did not contain the Sheets editor marker.' >&2
+          exit 1

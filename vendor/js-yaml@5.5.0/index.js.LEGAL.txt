@@ -1,0 +1,4 @@
+Bundled license information:
+
+js-yaml/dist/js-yaml.mjs:
+  /*! js-yaml 5.5.0 https://github.com/nodeca/js-yaml @license MIT */

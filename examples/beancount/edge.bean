@@ -1,0 +1,12 @@
+2026-01-01 open Assets:Bank USD
+2026-01-01 open Assets:Shares HOOL
+2026-01-01 open Equity:Opening USD
+2026-01-01 commodity HOOL
+2026-01-02 pad Assets:Bank Equity:Opening
+2026-01-03 balance Assets:Bank 1000 USD
+2026-01-04 * "Buy shares"
+  Assets:Shares 2 HOOL {100 USD}
+  Assets:Bank -200 USD
+2026-01-05 price HOOL 110 USD
+2026-01-05 note Assets:Shares "Long term holding"
+2026-01-05 event "location" "Home"

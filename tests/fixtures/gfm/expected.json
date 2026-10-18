@@ -1,0 +1,35 @@
+[
+  {
+    "file": "basic.md",
+    "contains": [
+      "<table>",
+      "<math>",
+      "checkbox"
+    ],
+    "diagnostics": 0
+  },
+  {
+    "file": "typical.md",
+    "contains": [
+      "markdown-alert",
+      "data-mermaid",
+      "footnote"
+    ],
+    "diagnostics": 0
+  },
+  {
+    "file": "edge.md",
+    "contains": [
+      "<math",
+      "<del>"
+    ],
+    "diagnostics": 0
+  },
+  {
+    "file": "error.md",
+    "contains": [
+      "Untrusted notes"
+    ],
+    "diagnostics": 0
+  }
+]

@@ -1,0 +1,938 @@
+{
+  "formatVersion": "0.1-draft",
+  "description": "Mandatory initial CalcFile language conformance corpus. Values are canonical semantics, not localized editor strings.",
+  "cases": [
+    {
+      "id": "basic.add",
+      "title": "Basic addition",
+      "locale": "en-US",
+      "source": "2 + 2",
+      "environment": {},
+      "expect": {
+        "lines": [
+          {
+            "line": 1,
+            "status": "valid",
+            "value": {
+              "type": "number",
+              "value": "4"
+            }
+          }
+        ]
+      },
+      "tags": ["basic"]
+    },
+    {
+      "id": "basic.precision",
+      "title": "Decimal precision",
+      "locale": "en-US",
+      "source": "0.1 + 0.2",
+      "environment": {},
+      "expect": {
+        "lines": [
+          {
+            "line": 1,
+            "status": "valid",
+            "value": {
+              "type": "number",
+              "value": "0.3"
+            }
+          }
+        ]
+      },
+      "tags": ["basic", "precision"]
+    },
+    {
+      "id": "prose.simple",
+      "title": "Free prose",
+      "locale": "en-US",
+      "source": "500 for tickets + 70 for taxi",
+      "environment": {},
+      "expect": {
+        "lines": [
+          {
+            "line": 1,
+            "status": "valid",
+            "value": {
+              "type": "number",
+              "value": "570"
+            }
+          }
+        ]
+      },
+      "tags": ["prose"]
+    },
+    {
+      "id": "prose.description",
+      "title": "Colon description",
+      "locale": "en-US",
+      "source": "Hotel: 120 EUR * 6",
+      "environment": {},
+      "expect": {
+        "lines": [
+          {
+            "line": 1,
+            "status": "valid",
+            "value": {
+              "type": "currency",
+              "value": "720",
+              "currency": "EUR"
+            }
+          }
+        ]
+      },
+      "tags": ["prose", "currency"]
+    },
+    {
+      "id": "prose.text",
+      "title": "Prose-only text",
+      "locale": "en-US",
+      "source": "Maybe compare this with Airbnb later",
+      "environment": {},
+      "expect": {
+        "lines": [
+          {
+            "line": 1,
+            "status": "text"
+          }
+        ]
+      },
+      "tags": ["prose"]
+    },
+    {
+      "id": "vars.friendly",
+      "title": "Friendly variables",
+      "locale": "en-US",
+      "source": "Monthly rent = 1400 EUR\nInternet bill = 50 EUR\nMonthly rent + Internet bill",
+      "environment": {},
+      "expect": {
+        "lines": [
+          {
+            "line": 1,
+            "status": "valid",
+            "value": {
+              "type": "currency",
+              "value": "1400",
+              "currency": "EUR"
+            }
+          },
+          {
+            "line": 2,
+            "status": "valid",
+            "value": {
+              "type": "currency",
+              "value": "50",
+              "currency": "EUR"
+            }
+          },
+          {
+            "line": 3,
+            "status": "valid",
+            "value": {
+              "type": "currency",
+              "value": "1450",
+              "currency": "EUR"
+            }
+          }
+        ]
+      },
+      "tags": ["variables"]
+    },
+    {
+      "id": "vars.case",
+      "title": "Case-insensitive variables",
+      "locale": "en-US",
+      "source": "iPhone 15 = 998 EUR\niphone 15 - 200 EUR",
+      "environment": {},
+      "expect": {
+        "lines": [
+          {
+            "line": 1,
+            "status": "valid",
+            "value": {
+              "type": "currency",
+              "value": "998",
+              "currency": "EUR"
+            }
+          },
+          {
+            "line": 2,
+            "status": "valid",
+            "value": {
+              "type": "currency",
+              "value": "798",
+              "currency": "EUR"
+            }
+          }
+        ]
+      },
+      "tags": ["variables"]
+    },
+    {
+      "id": "vars.longest",
+      "title": "Longest variable match",
+      "locale": "en-US",
+      "source": "New York hotel = 1000 EUR\nYork hotel = 500 EUR\nNew York hotel - York hotel",
+      "environment": {},
+      "expect": {
+        "lines": [
+          {
+            "line": 1,
+            "status": "valid",
+            "value": {
+              "type": "currency",
+              "value": "1000",
+              "currency": "EUR"
+            }
+          },
+          {
+            "line": 2,
+            "status": "valid",
+            "value": {
+              "type": "currency",
+              "value": "500",
+              "currency": "EUR"
+            }
+          },
+          {
+            "line": 3,
+            "status": "valid",
+            "value": {
+              "type": "currency",
+              "value": "500",
+              "currency": "EUR"
+            }
+          }
+        ]
+      },
+      "tags": ["variables"]
+    },
+    {
+      "id": "ans.basic",
+      "title": "Previous result",
+      "locale": "en-US",
+      "source": "100 + 20\nans * 2",
+      "environment": {},
+      "expect": {
+        "lines": [
+          {
+            "line": 1,
+            "status": "valid",
+            "value": {
+              "type": "number",
+              "value": "120"
+            }
+          },
+          {
+            "line": 2,
+            "status": "valid",
+            "value": {
+              "type": "number",
+              "value": "240"
+            }
+          }
+        ]
+      },
+      "tags": ["ans"]
+    },
+    {
+      "id": "continuation.chain",
+      "title": "Continuation chain",
+      "locale": "en-US",
+      "source": "100\n+ 20\n* 2\n- 5",
+      "environment": {},
+      "expect": {
+        "lines": [
+          {
+            "line": 1,
+            "status": "valid",
+            "value": {
+              "type": "number",
+              "value": "100"
+            }
+          },
+          {
+            "line": 2,
+            "status": "valid",
+            "value": {
+              "type": "number",
+              "value": "120"
+            }
+          },
+          {
+            "line": 3,
+            "status": "valid",
+            "value": {
+              "type": "number",
+              "value": "240"
+            }
+          },
+          {
+            "line": 4,
+            "status": "valid",
+            "value": {
+              "type": "number",
+              "value": "235"
+            }
+          }
+        ]
+      },
+      "tags": ["continuation"]
+    },
+    {
+      "id": "continuation.blank-break",
+      "title": "Blank breaks continuation",
+      "locale": "en-US",
+      "source": "100\n\n+ 20",
+      "environment": {},
+      "expect": {
+        "lines": [
+          {
+            "line": 1,
+            "status": "valid",
+            "value": {
+              "type": "number",
+              "value": "100"
+            }
+          },
+          {
+            "line": 2,
+            "status": "empty"
+          },
+          {
+            "line": 3,
+            "status": "incomplete"
+          }
+        ]
+      },
+      "tags": ["continuation"]
+    },
+    {
+      "id": "percent.of",
+      "title": "Percent of",
+      "locale": "en-US",
+      "source": "25% of 100",
+      "environment": {},
+      "expect": {
+        "lines": [
+          {
+            "line": 1,
+            "status": "valid",
+            "value": {
+              "type": "number",
+              "value": "25"
+            }
+          }
+        ]
+      },
+      "tags": ["percentage"]
+    },
+    {
+      "id": "percent.add",
+      "title": "Percentage addition",
+      "locale": "en-US",
+      "source": "100 + 25%",
+      "environment": {},
+      "expect": {
+        "lines": [
+          {
+            "line": 1,
+            "status": "valid",
+            "value": {
+              "type": "number",
+              "value": "125"
+            }
+          }
+        ]
+      },
+      "tags": ["percentage"]
+    },
+    {
+      "id": "percent.sub",
+      "title": "Percentage subtraction",
+      "locale": "en-US",
+      "source": "100 - 25%",
+      "environment": {},
+      "expect": {
+        "lines": [
+          {
+            "line": 1,
+            "status": "valid",
+            "value": {
+              "type": "number",
+              "value": "75"
+            }
+          }
+        ]
+      },
+      "tags": ["percentage"]
+    },
+    {
+      "id": "percent.mul",
+      "title": "Percentage multiplication",
+      "locale": "en-US",
+      "source": "100 * 25%",
+      "environment": {},
+      "expect": {
+        "lines": [
+          {
+            "line": 1,
+            "status": "valid",
+            "value": {
+              "type": "number",
+              "value": "25"
+            }
+          }
+        ]
+      },
+      "tags": ["percentage"]
+    },
+    {
+      "id": "percent.modulo",
+      "title": "Modulo",
+      "locale": "en-US",
+      "source": "12 % 10",
+      "environment": {},
+      "expect": {
+        "lines": [
+          {
+            "line": 1,
+            "status": "valid",
+            "value": {
+              "type": "number",
+              "value": "2"
+            }
+          }
+        ]
+      },
+      "tags": ["percentage", "operator"]
+    },
+    {
+      "id": "aggregate.subtotal",
+      "title": "Subtotal",
+      "locale": "en-US",
+      "source": "100\n200\nsubtotal",
+      "environment": {},
+      "expect": {
+        "lines": [
+          {
+            "line": 1,
+            "status": "valid",
+            "value": {
+              "type": "number",
+              "value": "100"
+            }
+          },
+          {
+            "line": 2,
+            "status": "valid",
+            "value": {
+              "type": "number",
+              "value": "200"
+            }
+          },
+          {
+            "line": 3,
+            "status": "valid",
+            "value": {
+              "type": "number",
+              "value": "300"
+            }
+          }
+        ]
+      },
+      "tags": ["aggregate"]
+    },
+    {
+      "id": "aggregate.total",
+      "title": "Total crosses blank",
+      "locale": "en-US",
+      "source": "100\n\n200\ntotal",
+      "environment": {},
+      "expect": {
+        "lines": [
+          {
+            "line": 1,
+            "status": "valid",
+            "value": {
+              "type": "number",
+              "value": "100"
+            }
+          },
+          {
+            "line": 2,
+            "status": "empty"
+          },
+          {
+            "line": 3,
+            "status": "valid",
+            "value": {
+              "type": "number",
+              "value": "200"
+            }
+          },
+          {
+            "line": 4,
+            "status": "valid",
+            "value": {
+              "type": "number",
+              "value": "300"
+            }
+          }
+        ]
+      },
+      "tags": ["aggregate"]
+    },
+    {
+      "id": "aggregate.section",
+      "title": "Header resets total",
+      "locale": "en-US",
+      "source": "# A\n100\n# B\n200\ntotal",
+      "environment": {},
+      "expect": {
+        "lines": [
+          {
+            "line": 1,
+            "status": "header"
+          },
+          {
+            "line": 2,
+            "status": "valid",
+            "value": {
+              "type": "number",
+              "value": "100"
+            }
+          },
+          {
+            "line": 3,
+            "status": "header"
+          },
+          {
+            "line": 4,
+            "status": "valid",
+            "value": {
+              "type": "number",
+              "value": "200"
+            }
+          },
+          {
+            "line": 5,
+            "status": "valid",
+            "value": {
+              "type": "number",
+              "value": "200"
+            }
+          }
+        ]
+      },
+      "tags": ["aggregate", "header"]
+    },
+    {
+      "id": "aggregate.grand",
+      "title": "Grand total",
+      "locale": "en-US",
+      "source": "# A\n100\n# B\n200\ngrand total",
+      "environment": {},
+      "expect": {
+        "lines": [
+          {
+            "line": 1,
+            "status": "header"
+          },
+          {
+            "line": 2,
+            "status": "valid",
+            "value": {
+              "type": "number",
+              "value": "100"
+            }
+          },
+          {
+            "line": 3,
+            "status": "header"
+          },
+          {
+            "line": 4,
+            "status": "valid",
+            "value": {
+              "type": "number",
+              "value": "200"
+            }
+          },
+          {
+            "line": 5,
+            "status": "valid",
+            "value": {
+              "type": "number",
+              "value": "300"
+            }
+          }
+        ]
+      },
+      "tags": ["aggregate", "header"]
+    },
+    {
+      "id": "aggregate.incompatible",
+      "title": "Incompatible aggregate",
+      "locale": "en-US",
+      "source": "10 EUR\n5 km\ntotal",
+      "environment": {},
+      "expect": {
+        "lines": [
+          {
+            "line": 1,
+            "status": "valid",
+            "value": {
+              "type": "currency",
+              "value": "10",
+              "currency": "EUR"
+            }
+          },
+          {
+            "line": 2,
+            "status": "valid",
+            "value": {
+              "type": "unit",
+              "value": "5",
+              "unit": "km"
+            }
+          },
+          {
+            "line": 3,
+            "status": "error",
+            "diagnostic": "incompatible-aggregate-types"
+          }
+        ]
+      },
+      "tags": ["aggregate", "error"]
+    },
+    {
+      "id": "locale.de.decimal",
+      "title": "German decimal comma",
+      "locale": "en-US",
+      "source": "@locale de-DE\n1,5 * 2",
+      "environment": {},
+      "expect": {
+        "lines": [
+          {
+            "line": 1,
+            "status": "directive"
+          },
+          {
+            "line": 2,
+            "status": "valid",
+            "value": {
+              "type": "number",
+              "value": "3"
+            }
+          }
+        ]
+      },
+      "tags": ["locale"]
+    },
+    {
+      "id": "locale.de.grouping",
+      "title": "German grouping",
+      "locale": "en-US",
+      "source": "@locale de-DE\n1.234,56 + 10",
+      "environment": {},
+      "expect": {
+        "lines": [
+          {
+            "line": 1,
+            "status": "directive"
+          },
+          {
+            "line": 2,
+            "status": "valid",
+            "value": {
+              "type": "number",
+              "value": "1244.56"
+            }
+          }
+        ]
+      },
+      "tags": ["locale"]
+    },
+    {
+      "id": "locale.en.grouping",
+      "title": "English grouping",
+      "locale": "en-US",
+      "source": "@locale en-US\n1,234.56 + 10",
+      "environment": {},
+      "expect": {
+        "lines": [
+          {
+            "line": 1,
+            "status": "directive"
+          },
+          {
+            "line": 2,
+            "status": "valid",
+            "value": {
+              "type": "number",
+              "value": "1244.56"
+            }
+          }
+        ]
+      },
+      "tags": ["locale"]
+    },
+    {
+      "id": "unit.convert",
+      "title": "Unit conversion",
+      "locale": "en-US",
+      "source": "2 inch to cm",
+      "environment": {},
+      "expect": {
+        "lines": [
+          {
+            "line": 1,
+            "status": "valid",
+            "value": {
+              "type": "unit",
+              "value": "5.08",
+              "unit": "cm"
+            }
+          }
+        ]
+      },
+      "tags": ["unit"]
+    },
+    {
+      "id": "unit.derived",
+      "title": "Derived unit",
+      "locale": "en-US",
+      "source": "200 km / 2.5 hour",
+      "environment": {},
+      "expect": {
+        "lines": [
+          {
+            "line": 1,
+            "status": "valid",
+            "value": {
+              "type": "unit",
+              "value": "80",
+              "unit": "km/hour"
+            }
+          }
+        ]
+      },
+      "tags": ["unit"]
+    },
+    {
+      "id": "conversion.prose",
+      "title": "Prose in is not conversion",
+      "locale": "en-US",
+      "source": "Hotel in Berlin 120 EUR",
+      "environment": {},
+      "expect": {
+        "lines": [
+          {
+            "line": 1,
+            "status": "valid",
+            "value": {
+              "type": "currency",
+              "value": "120",
+              "currency": "EUR"
+            }
+          }
+        ]
+      },
+      "tags": ["prose", "currency"]
+    },
+    {
+      "id": "currency.same",
+      "title": "Same currency",
+      "locale": "en-US",
+      "source": "100 EUR + 50 EUR",
+      "environment": {},
+      "expect": {
+        "lines": [
+          {
+            "line": 1,
+            "status": "valid",
+            "value": {
+              "type": "currency",
+              "value": "150",
+              "currency": "EUR"
+            }
+          }
+        ]
+      },
+      "tags": ["currency"]
+    },
+    {
+      "id": "currency.convert",
+      "title": "Currency fixture conversion",
+      "locale": "en-US",
+      "source": "100 USD in EUR",
+      "environment": {
+        "currencyRates": {
+          "base": "USD",
+          "rates": {
+            "EUR": "0.85"
+          },
+          "asOf": "2026-08-09T00:00:00Z",
+          "source": "fixture"
+        }
+      },
+      "expect": {
+        "lines": [
+          {
+            "line": 1,
+            "status": "valid",
+            "value": {
+              "type": "currency",
+              "value": "85",
+              "currency": "EUR"
+            }
+          }
+        ]
+      },
+      "tags": ["currency"]
+    },
+    {
+      "id": "currency.missing",
+      "title": "Missing currency rates",
+      "locale": "en-US",
+      "source": "100 USD in EUR",
+      "environment": {},
+      "expect": {
+        "lines": [
+          {
+            "line": 1,
+            "status": "error",
+            "diagnostic": "missing-external-data"
+          }
+        ]
+      },
+      "tags": ["currency", "error"]
+    },
+    {
+      "id": "function.sqrt",
+      "title": "Square root",
+      "locale": "en-US",
+      "source": "sqrt(25)",
+      "environment": {},
+      "expect": {
+        "lines": [
+          {
+            "line": 1,
+            "status": "valid",
+            "value": {
+              "type": "number",
+              "value": "5"
+            }
+          }
+        ]
+      },
+      "tags": ["function"]
+    },
+    {
+      "id": "function.de.separator",
+      "title": "German function separator",
+      "locale": "en-US",
+      "source": "@locale de-DE\nround(10,234; 2)",
+      "environment": {},
+      "expect": {
+        "lines": [
+          {
+            "line": 1,
+            "status": "directive"
+          },
+          {
+            "line": 2,
+            "status": "valid",
+            "value": {
+              "type": "number",
+              "value": "10.23"
+            }
+          }
+        ]
+      },
+      "tags": ["function", "locale"]
+    },
+    {
+      "id": "incomplete.operator",
+      "title": "Trailing operator incomplete",
+      "locale": "en-US",
+      "source": "100 +",
+      "environment": {},
+      "expect": {
+        "lines": [
+          {
+            "line": 1,
+            "status": "incomplete"
+          }
+        ]
+      },
+      "tags": ["incomplete"]
+    },
+    {
+      "id": "incomplete.assignment",
+      "title": "Empty assignment incomplete",
+      "locale": "en-US",
+      "source": "Hotel =",
+      "environment": {},
+      "expect": {
+        "lines": [
+          {
+            "line": 1,
+            "status": "incomplete"
+          }
+        ]
+      },
+      "tags": ["incomplete"]
+    },
+    {
+      "id": "incomplete.conversion",
+      "title": "Missing conversion target incomplete",
+      "locale": "en-US",
+      "source": "100 USD in",
+      "environment": {},
+      "expect": {
+        "lines": [
+          {
+            "line": 1,
+            "status": "incomplete"
+          }
+        ]
+      },
+      "tags": ["incomplete"]
+    },
+    {
+      "id": "error.types",
+      "title": "Incompatible typed addition",
+      "locale": "en-US",
+      "source": "10 EUR + 5 km",
+      "environment": {},
+      "expect": {
+        "lines": [
+          {
+            "line": 1,
+            "status": "error",
+            "diagnostic": "incompatible-types"
+          }
+        ]
+      },
+      "tags": ["error"]
+    },
+    {
+      "id": "comment.forced",
+      "title": "Forced comment",
+      "locale": "en-US",
+      "source": "// 100 + 200",
+      "environment": {},
+      "expect": {
+        "lines": [
+          {
+            "line": 1,
+            "status": "comment"
+          }
+        ]
+      },
+      "tags": ["comment"]
+    }
+  ]
+}

@@ -1,0 +1,30 @@
+[
+  {
+    "file": "basic.hurmet",
+    "contains": [
+      "<mn>9</mn>"
+    ],
+    "diagnostics": 0
+  },
+  {
+    "file": "typical.hurmet",
+    "contains": [
+      "1,980"
+    ],
+    "diagnostics": 0
+  },
+  {
+    "file": "edge.hurmet",
+    "contains": [
+      "<mn>16</mn>"
+    ],
+    "diagnostics": 0
+  },
+  {
+    "file": "error.hurmet",
+    "contains": [
+      "not found"
+    ],
+    "diagnostics": 1
+  }
+]

@@ -1,0 +1,10 @@
+---
+title: Your first Python cell
+format: html
+---
+
+A note and a calculation, together.
+
+```{python}
+2 + 2
+```

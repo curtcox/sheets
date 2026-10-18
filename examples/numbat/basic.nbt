@@ -1,0 +1,4 @@
+# Distance over time
+let distance = 120 km
+let duration = 2 h
+distance / duration -> km/h

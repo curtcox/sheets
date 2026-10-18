@@ -1,0 +1,5 @@
+{
+  "calcfile": {"repository":"https://github.com/peetzweg/calcfile", "commit":"b11ecb44e4a558e3b55879e70266fae714e774d5", "license":"Apache-2.0", "rebuild":"bash scripts/vendor/calcfile.sh"},
+  "hurmet": {"repository":"https://github.com/ronkok/Hurmet", "commit":"24abefdaecbc84a10e628326a235391db41caf83", "license":"MIT", "rebuild":"bash scripts/vendor/hurmet.sh"},
+  "numbat": {"repository":"https://github.com/sharkdp/numbat", "tag":"v1.24.0", "commit":"79046422203060e296da41c8c762c506200d2c93", "license":"MIT OR Apache-2.0", "rebuild":"bash scripts/vendor/numbat.sh"}
+}

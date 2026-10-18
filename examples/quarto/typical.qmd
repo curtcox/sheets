@@ -1,0 +1,20 @@
+---
+title: A stateful notebook
+author: Sheets
+execute:
+  echo: true
+---
+
+```{python}
+values = [3, 7, 11]
+print("Measurements:", values)
+```
+
+::: {.callout-note}
+Variables carry over to the next cell.
+:::
+
+```{python}
+#| echo: false
+sum(values) / len(values)
+```

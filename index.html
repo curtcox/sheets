@@ -1,0 +1,156 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta
+      name="description"
+      content="Notes that do the math. Edit, calculate, and share a whole document in one link."
+    />
+    <meta name="sheets-app" content="sheets-editor-v1" />
+    <meta name="hashbin-client-id" content="" />
+    <title>Sheets · Notes that do the math</title>
+    <link rel="icon" href="src/icon.svg" type="image/svg+xml" />
+    <link rel="stylesheet" href="src/styles.css" />
+    <link rel="stylesheet" href="vendor/temml.css" />
+    <link rel="stylesheet" href="vendor/highlight.css" />
+    <link rel="stylesheet" href="vendor/hurmet/style.css" />
+    <script src="vendor/ace-builds@1.45.0/ace.js" defer></script>
+    <script type="module" src="src/app.js"></script>
+  </head>
+  <body class="editor-page">
+    <header class="site-header">
+      <a class="brand" href="index.html"
+        ><svg viewBox="0 0 24 24" aria-hidden="true">
+          <rect x="2" y="2" width="20" height="20" rx="5" />
+          <path d="M8 7h9M8 12h6M8 17h9" /></svg
+        >Sheets<span class="brand-note">notes that do the math</span></a
+      >
+      <nav aria-label="Main">
+        <a href="docs.html">Docs</a
+        ><a href="gallery.html">Gallery <span aria-hidden="true">↗</span></a
+        ><button id="hashbin-open">HashBin</button
+        ><button class="primary" id="share">
+          Share <span aria-hidden="true">↗</span>
+        </button>
+      </nav>
+    </header>
+    <div class="toolbar">
+      <div class="format-control">
+        <label for="format">Format</label
+        ><select id="format">
+          <option value="auto">Auto detect</option></select
+        ><span id="detected" class="subtle"></span>
+      </div>
+      <div class="view-toggle" role="group" aria-label="View mode">
+        <button data-view="source" title="Source only (Ctrl+Alt+1)">
+          Source</button
+        ><button data-view="split" title="Split view (Ctrl+Alt+2)">Split</button
+        ><button data-view="preview" title="Preview only (Ctrl+Alt+3)">
+          Preview
+        </button>
+      </div>
+    </div>
+    <section
+      id="hashbin-panel"
+      class="storage-panel"
+      aria-label="HashBin storage"
+      hidden
+    >
+      <div>
+        <strong>HashBin</strong
+        ><span class="subtle">Save a document, share a shorter link.</span
+        ><button id="hashbin-panel-close" aria-label="Close HashBin panel">
+          ×
+        </button>
+      </div>
+      <label for="hashbin-cid">CID or saved link</label>
+      <div class="input-row">
+        <input
+          id="hashbin-cid"
+          placeholder="Paste a HashBin CID or link"
+        /><button id="hashbin-load">Load</button
+        ><button id="hashbin-save">Save to HashBin</button>
+      </div>
+      <p id="hashbin-config" class="subtle"></p>
+      <p id="hashbin-status" role="status"></p>
+    </section>
+    <main id="workspace" data-view="split">
+      <section id="source-pane" aria-label="Source pane">
+        <div class="pane-header">
+          <span><span class="pane-icon">≡</span> Source</span
+          ><span id="source-size" class="subtle">0 characters</span>
+        </div>
+        <div id="editor" aria-label="Document source"></div>
+        <textarea
+          id="source-fallback"
+          aria-label="Document source"
+          spellcheck="false"
+        ></textarea>
+      </section>
+      <div
+        id="divider"
+        role="separator"
+        aria-label="Resize source and preview"
+        aria-orientation="vertical"
+        tabindex="0"
+        aria-valuemin="20"
+        aria-valuemax="80"
+        aria-valuenow="50"
+      >
+        <span></span>
+      </div>
+      <section id="preview-pane" aria-label="Preview pane">
+        <div class="pane-header">
+          <span><span class="live-dot"></span> Preview</span
+          ><a id="format-docs" href="docs.html">Format guide ↗</a>
+        </div>
+        <article
+          id="preview"
+          class="document"
+          aria-label="Rendered document"
+          aria-busy="false"
+        ></article>
+      </section>
+    </main>
+    <footer class="statusbar">
+      <div>
+        <span id="render-status" role="status">Starting…</span
+        ><button id="cancel-render" hidden>Cancel</button>
+      </div>
+      <span id="url-notice"></span
+      ><span class="footer-meta"
+        >Saved in your link <span aria-hidden="true">·</span>
+        <span id="commit">__COMMIT_SHA__</span></span
+      >
+    </footer>
+    <dialog id="share-dialog">
+      <div class="dialog-heading">
+        <h2>Share this sheet</h2>
+        <button id="share-close" aria-label="Close share dialog">×</button>
+      </div>
+      <p>The link contains your source, format, and view.</p>
+      <label for="share-url">Document link</label
+      ><input id="share-url" readonly />
+      <div class="dialog-actions">
+        <button id="shorten-link">Shorten with is.gd</button
+        ><button class="primary" id="copy-link">Copy link</button>
+      </div>
+      <p class="subtle">
+        Shortening sends the document link to is.gd through AllOrigins.
+      </p>
+      <p id="share-status" role="status"></p>
+    </dialog>
+    <dialog id="hashbin-dialog">
+      <div class="dialog-heading">
+        <h2>Save to HashBin</h2>
+        <button id="hashbin-close" aria-label="Close save dialog">×</button>
+      </div>
+      <p id="hashbin-message" role="status"></p>
+      <div class="dialog-actions">
+        <button id="hashbin-disconnect" hidden>Disconnect</button
+        ><button id="hashbin-confirm" class="primary">Save</button>
+      </div>
+    </dialog>
+  </body>
+</html>

@@ -1,0 +1,7 @@
+#+TITLE: Recalculate a table
+
+| Quantity | Price | Total |
+|----------+-------+-------|
+| 3        | 4     | 0     |
+| 2        | 7     | 0     |
+#+TBLFM: $3=$1*$2

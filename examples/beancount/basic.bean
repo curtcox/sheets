@@ -1,0 +1,10 @@
+option "title" "A balanced beginning"
+
+2026-01-01 open Assets:Bank USD
+2026-01-01 open Equity:Opening USD
+
+2026-01-02 * "Opening balance"
+  Assets:Bank 1000 USD
+  Equity:Opening
+
+2026-01-03 balance Assets:Bank 1000 USD

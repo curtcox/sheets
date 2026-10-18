@@ -1,0 +1,4 @@
+| Value | Result |
+|-------+--------|
+| 2     | 0      |
+#+TBLFM: $2='(identity 42)

@@ -1,0 +1,7 @@
+# Sums and sequences
+
+The first $n$ integers add to $n(n+1)/2$.
+
+```asciimath
+sum_(i=1)^n i = (n(n+1))/2
+```

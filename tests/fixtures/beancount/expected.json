@@ -1,0 +1,34 @@
+[
+  {
+    "file": "basic.bean",
+    "contains": [
+      "The ledger balances",
+      "1000"
+    ],
+    "diagnostics": 0
+  },
+  {
+    "file": "typical.bean",
+    "contains": [
+      "2934.5",
+      "65.5"
+    ],
+    "diagnostics": 0
+  },
+  {
+    "file": "edge.bean",
+    "contains": [
+      "Assets:Shares",
+      "800"
+    ],
+    "diagnostics": 0
+  },
+  {
+    "file": "error.bean",
+    "contains": [
+      "Unbalanced transaction",
+      "Balance assertion failed"
+    ],
+    "diagnostics": 2
+  }
+]

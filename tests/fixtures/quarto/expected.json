@@ -1,0 +1,30 @@
+[
+  {
+    "file": "basic.qmd",
+    "contains": [
+      "Your first Python cell"
+    ],
+    "diagnostics": 0
+  },
+  {
+    "file": "typical.qmd",
+    "contains": [
+      "A stateful notebook"
+    ],
+    "diagnostics": 0
+  },
+  {
+    "file": "edge.qmd",
+    "contains": [
+      "not executed in the browser"
+    ],
+    "diagnostics": 0
+  },
+  {
+    "file": "error.qmd",
+    "contains": [
+      "Errors stay with their cells"
+    ],
+    "diagnostics": 0
+  }
+]

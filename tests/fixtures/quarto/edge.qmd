@@ -1,0 +1,17 @@
+---
+title: A notebook with other languages
+format: html
+---
+
+```{r}
+mean(c(1, 2, 3))
+```
+
+```{julia}
+sum([1, 2, 3])
+```
+
+```{python}
+#| eval: false
+print("This cell is deliberately skipped")
+```

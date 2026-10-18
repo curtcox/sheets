@@ -1,0 +1,35 @@
+[
+  {
+    "file": "basic.calca",
+    "contains": [
+      "=&gt; 4",
+      "=&gt; 84"
+    ],
+    "diagnostics": 0
+  },
+  {
+    "file": "typical.calca",
+    "contains": [
+      "25.92"
+    ],
+    "diagnostics": 0
+  },
+  {
+    "file": "edge.calca",
+    "contains": [
+      "5000 m",
+      "4",
+      "10",
+      "3 * x ^ 2"
+    ],
+    "diagnostics": 0
+  },
+  {
+    "file": "error.calca",
+    "contains": [
+      "Undefined symbol missing",
+      "=&gt; 4"
+    ],
+    "diagnostics": 1
+  }
+]

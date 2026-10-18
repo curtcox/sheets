@@ -1,0 +1,290 @@
+[
+  {
+    "id": "gfm-basic",
+    "format": "gfm",
+    "kind": "basic",
+    "title": "A small, useful note",
+    "description": "Tables, task lists, links, and a little math.",
+    "path": "examples/gfm/basic.md"
+  },
+  {
+    "id": "gfm-typical",
+    "format": "gfm",
+    "kind": "typical",
+    "title": "A research notebook",
+    "description": "Alerts, footnotes, highlighted code, and a Mermaid diagram.",
+    "path": "examples/gfm/typical.md"
+  },
+  {
+    "id": "gfm-edge",
+    "format": "gfm",
+    "kind": "edge",
+    "title": "Math in the margins",
+    "description": "Display TeX, a fenced formula, strikethrough, and Unicode.",
+    "path": "examples/gfm/edge.md"
+  },
+  {
+    "id": "gfm-error",
+    "format": "gfm",
+    "kind": "error",
+    "title": "Untrusted notes",
+    "description": "A sanitization example: unsafe HTML becomes inert.",
+    "path": "examples/gfm/error.md"
+  },
+  {
+    "id": "asciimath-basic",
+    "format": "asciimath",
+    "kind": "basic",
+    "title": "Equations without backslashes",
+    "description": "Write one AsciiMath display formula per line.",
+    "path": "examples/asciimath/basic.am"
+  },
+  {
+    "id": "asciimath-typical",
+    "format": "asciimath",
+    "kind": "typical",
+    "title": "Sums and sequences",
+    "description": "Mix Markdown prose with inline and display AsciiMath.",
+    "path": "examples/asciimath/typical.am"
+  },
+  {
+    "id": "asciimath-edge",
+    "format": "asciimath",
+    "kind": "edge",
+    "title": "Matrices and limits",
+    "description": "A small matrix and a limit in plain notation.",
+    "path": "examples/asciimath/edge.am"
+  },
+  {
+    "id": "asciimath-error",
+    "format": "asciimath",
+    "kind": "error",
+    "title": "An incomplete expression",
+    "description": "See the TeX translation of an unfinished formula.",
+    "path": "examples/asciimath/error.am"
+  },
+  {
+    "id": "numbat-basic",
+    "format": "numbat",
+    "kind": "basic",
+    "title": "A dimensional first step",
+    "description": "A real unit-aware interpreter, running in a worker.",
+    "path": "examples/numbat/basic.nbt"
+  },
+  {
+    "id": "numbat-typical",
+    "format": "numbat",
+    "kind": "typical",
+    "title": "A falling object",
+    "description": "Functions, constants, units, and conversions.",
+    "path": "examples/numbat/typical.nbt"
+  },
+  {
+    "id": "numbat-edge",
+    "format": "numbat",
+    "kind": "edge",
+    "title": "Dimensions keep you honest",
+    "description": "Define a new unit and convert it back.",
+    "path": "examples/numbat/edge.nbt"
+  },
+  {
+    "id": "numbat-error",
+    "format": "numbat",
+    "kind": "error",
+    "title": "Apples and seconds",
+    "description": "A dimensional error is attached to the calculation line.",
+    "path": "examples/numbat/error.nbt"
+  },
+  {
+    "id": "calcfile-basic",
+    "format": "calcfile",
+    "kind": "basic",
+    "title": "The back of an envelope",
+    "description": "Plain arithmetic with decimal precision.",
+    "path": "examples/calcfile/basic.calc"
+  },
+  {
+    "id": "calcfile-typical",
+    "format": "calcfile",
+    "kind": "typical",
+    "title": "A weekend away",
+    "description": "Friendly variable names and a running total.",
+    "path": "examples/calcfile/typical.calc"
+  },
+  {
+    "id": "calcfile-edge",
+    "format": "calcfile",
+    "kind": "edge",
+    "title": "A different locale",
+    "description": "German numeric notation and physical units.",
+    "path": "examples/calcfile/edge.calc"
+  },
+  {
+    "id": "calcfile-error",
+    "format": "calcfile",
+    "kind": "error",
+    "title": "An unavailable exchange rate",
+    "description": "Currency conversion reports missing external data.",
+    "path": "examples/calcfile/error.calc"
+  },
+  {
+    "id": "org-basic",
+    "format": "org",
+    "kind": "basic",
+    "title": "Recalculate a table",
+    "description": "A column formula, the way Org tables work.",
+    "path": "examples/org/basic.org"
+  },
+  {
+    "id": "org-typical",
+    "format": "org",
+    "kind": "typical",
+    "title": "A small purchase order",
+    "description": "Column and field formulas, ranges, and formatting.",
+    "path": "examples/org/typical.org"
+  },
+  {
+    "id": "org-edge",
+    "format": "org",
+    "kind": "edge",
+    "title": "Relative and boundary references",
+    "description": "Carry values forward, then sum between horizontal lines.",
+    "path": "examples/org/edge.org"
+  },
+  {
+    "id": "org-error",
+    "format": "org",
+    "kind": "error",
+    "title": "A formula outside the browser",
+    "description": "Emacs Lisp gets a clear unsupported diagnostic.",
+    "path": "examples/org/error.org"
+  },
+  {
+    "id": "calca-basic",
+    "format": "calca",
+    "kind": "basic",
+    "title": "Answers in your notes",
+    "description": "Each arrow asks for a calculation.",
+    "path": "examples/calca/basic.calca"
+  },
+  {
+    "id": "calca-typical",
+    "format": "calca",
+    "kind": "typical",
+    "title": "A function for the job",
+    "description": "Variables and user functions share a document scope.",
+    "path": "examples/calca/typical.calca"
+  },
+  {
+    "id": "calca-edge",
+    "format": "calca",
+    "kind": "edge",
+    "title": "Units, matrices, and a derivative",
+    "description": "Some of the mathjs tools behind the Calca-compatible subset.",
+    "path": "examples/calca/edge.calca"
+  },
+  {
+    "id": "calca-error",
+    "format": "calca",
+    "kind": "error",
+    "title": "An unknown variable",
+    "description": "A calculation error does not stop the rest of the note.",
+    "path": "examples/calca/error.calca"
+  },
+  {
+    "id": "hurmet-basic",
+    "format": "hurmet",
+    "kind": "basic",
+    "title": "A calculation in a sentence",
+    "description": "Hurmet calculation cells retain their mathematical typesetting.",
+    "path": "examples/hurmet/basic.hurmet"
+  },
+  {
+    "id": "hurmet-typical",
+    "format": "hurmet",
+    "kind": "typical",
+    "title": "A simply supported beam",
+    "description": "Variables, units, and an engineering calculation.",
+    "path": "examples/hurmet/typical.hurmet"
+  },
+  {
+    "id": "hurmet-edge",
+    "format": "hurmet",
+    "kind": "edge",
+    "title": "Calculations in a table",
+    "description": "A tiny table containing dependent calculation cells.",
+    "path": "examples/hurmet/edge.hurmet"
+  },
+  {
+    "id": "hurmet-error",
+    "format": "hurmet",
+    "kind": "error",
+    "title": "A missing value",
+    "description": "Hurmet explains an undefined calculation variable.",
+    "path": "examples/hurmet/error.hurmet"
+  },
+  {
+    "id": "beancount-basic",
+    "format": "beancount",
+    "kind": "basic",
+    "title": "A balanced beginning",
+    "description": "Open accounts, infer a posting, and inspect ledger reports.",
+    "path": "examples/beancount/basic.bean"
+  },
+  {
+    "id": "beancount-typical",
+    "format": "beancount",
+    "kind": "typical",
+    "title": "A month in the ledger",
+    "description": "Income, expenses, tags, links, metadata, and balance assertions.",
+    "path": "examples/beancount/typical.bean"
+  },
+  {
+    "id": "beancount-edge",
+    "format": "beancount",
+    "kind": "edge",
+    "title": "A cost lot and a pad",
+    "description": "A padded opening balance and a simple costed investment.",
+    "path": "examples/beancount/edge.bean"
+  },
+  {
+    "id": "beancount-error",
+    "format": "beancount",
+    "kind": "error",
+    "title": "Catch an unbalanced entry",
+    "description": "An unbalanced transaction and a failed balance assertion.",
+    "path": "examples/beancount/error.bean"
+  },
+  {
+    "id": "quarto-basic",
+    "format": "quarto",
+    "kind": "basic",
+    "title": "Your first Python cell",
+    "description": "Run Python in a worker, with the last expression as output.",
+    "path": "examples/quarto/basic.qmd"
+  },
+  {
+    "id": "quarto-typical",
+    "format": "quarto",
+    "kind": "typical",
+    "title": "A stateful notebook",
+    "description": "Two Python cells share variables; options control echoed source.",
+    "path": "examples/quarto/typical.qmd"
+  },
+  {
+    "id": "quarto-edge",
+    "format": "quarto",
+    "kind": "edge",
+    "title": "A notebook with other languages",
+    "description": "Show R and Julia cells without running them.",
+    "path": "examples/quarto/edge.qmd"
+  },
+  {
+    "id": "quarto-error",
+    "format": "quarto",
+    "kind": "error",
+    "title": "Errors stay with their cells",
+    "description": "Python errors appear in the preview and editor diagnostics.",
+    "path": "examples/quarto/error.qmd"
+  }
+]

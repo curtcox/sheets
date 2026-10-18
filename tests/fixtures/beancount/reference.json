@@ -1,0 +1,52 @@
+{
+  "basic.bean": {
+    "balances": {
+      "Assets:Bank": {
+        "USD": 1000.0
+      },
+      "Equity:Opening": {
+        "USD": -1000.0
+      }
+    },
+    "valid": true
+  },
+  "edge.bean": {
+    "balances": {
+      "Assets:Bank": {
+        "USD": 800.0
+      },
+      "Assets:Shares": {
+        "HOOL": 2.0
+      },
+      "Equity:Opening": {
+        "USD": -1000.0
+      }
+    },
+    "valid": true
+  },
+  "error.bean": {
+    "balances": {
+      "Assets:Bank": {
+        "USD": -15.0
+      },
+      "Expenses:Food": {
+        "USD": 20.0
+      }
+    },
+    "valid": false
+  },
+  "typical.bean": {
+    "balances": {
+      "Assets:Bank": {
+        "USD": 2934.5
+      },
+      "Expenses:Food": {
+        "USD": 65.5
+      },
+      "Income:Salary": {
+        "USD": -3000.0
+      }
+    },
+    "valid": true
+  }
+}

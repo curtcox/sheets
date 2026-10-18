@@ -1,0 +1,47 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Gallery · Sheets</title>
+    <link rel="icon" href="src/icon.svg" />
+    <link rel="stylesheet" href="src/styles.css" />
+    <script type="module" src="src/gallery.js"></script>
+  </head>
+  <body>
+    <header class="site-header">
+      <a class="brand" href="index.html"
+        ><svg viewBox="0 0 24 24" aria-hidden="true">
+          <rect x="2" y="2" width="20" height="20" rx="5" />
+          <path d="M8 7h9M8 12h6M8 17h9" /></svg
+        >Sheets<span class="brand-note">notes that do the math</span></a
+      >
+      <nav aria-label="Main">
+        <a href="docs.html">Docs</a><a href="index.html">Open editor ↗</a>
+      </nav>
+    </header>
+    <main class="page-main">
+      <p class="eyebrow">The example library</p>
+      <h1>A little inspiration.<br />A lot of possibility.</h1>
+      <p class="lede">
+        From a back-of-the-envelope calculation to a reproducible notebook. Pick
+        a sheet, make it yours, and share what you discover.
+      </p>
+      <div class="gallery-controls">
+        <input
+          id="search"
+          type="search"
+          aria-label="Search examples"
+          placeholder="Search examples…"
+        /><select id="filter" aria-label="Filter by format">
+          <option value="all">All formats</option>
+        </select>
+      </div>
+      <p id="gallery-status" role="status" class="subtle">Loading examples…</p>
+      <div id="cards" class="cards"></div>
+    </main>
+    <footer class="page-footer">
+      Every example is a plain text document. Your changes live in the link.
+    </footer>
+  </body>
+</html>

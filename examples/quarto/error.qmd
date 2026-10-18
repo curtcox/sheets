@@ -1,0 +1,12 @@
+---
+title: Errors stay with their cells
+format: html
+---
+
+```{python}
+1 / 0
+```
+
+```{python}
+print("The next cell still runs")
+```

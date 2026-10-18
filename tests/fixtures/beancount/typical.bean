@@ -1,0 +1,14 @@
+2026-01-01 open Assets:Bank USD
+2026-01-01 open Income:Salary USD
+2026-01-01 open Expenses:Food USD
+
+2026-01-02 * "Employer" "Salary" #work ^payroll
+  reference: "January"
+  Assets:Bank 3000 USD
+  Income:Salary
+
+2026-01-04 * "Market" "Groceries" #food
+  Expenses:Food 65.50 USD
+  Assets:Bank
+
+2026-01-05 balance Assets:Bank 2934.50 USD
