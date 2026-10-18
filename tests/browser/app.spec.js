@@ -149,7 +149,7 @@ test("HashBin public CID, stale load protection, and save configuration", async 
   await expect(page.locator("#format")).toHaveValue("auto");
   await expect(page.locator("#detected")).toContainText("Numbat");
   await page.getByRole("button", { name: "HashBin", exact: true }).click();
-  await expect(page.locator("#hashbin-save")).toBeDisabled();
+  await expect(page.locator("#hashbin-save")).toBeEnabled();
   const remoteCID =
     Buffer.from([0, 0, 0, 0, 0, 65]).toString("base64url") +
     "a".repeat(85) +

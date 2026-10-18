@@ -1,4 +1,4 @@
-/** Provisional Sheets document persistence; finalized HashBin integration is deferred. */
+/** Sheets document persistence and OAuth source restoration. */
 const HashBinDocuments = {
   MAX_BYTES: 5 * 1024 * 1024,
   bytes(value) {

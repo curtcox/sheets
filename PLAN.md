@@ -25,9 +25,10 @@ definitions and multiple real roots, with bounds and explicit subset diagnostics
 Quarto R cells run through pinned webR 0.6.0, with state, console output, PNG plots,
 cell diagnostics, cancellation and deadlines. All non-deferred plan items, including
 the optional offline and equation/R execution work, are implemented.
-Finalized HashBin load/save support is deferred by request; its provisional client
-remains, with saving disabled. The repository uses MIT and Pages deployment is
-enabled through GitHub Actions.
+HashBin is registered and enabled using its public client ID and exact Pages
+callback. PKCE registration validation passes; account authorization and the final
+charged-save confirmation are manual verification steps. The repository uses MIT
+and Pages deployment is enabled through GitHub Actions.
 
 ## Decisions
 
@@ -310,8 +311,11 @@ Every format phase must deliver all of the following:
 
 The optional work listed in this plan is implemented.
 
-## Deferred integration
+## HashBin integration
 
-HashBin app registration and real account load/save verification remain deferred.
-No client ID is required for the rest of the application. See README.md and the
-HashBin guide before enabling saving in a future release.
+Sheets is registered with client ID `app_8e03e133-83b4-4ee2-b3d5-39397f573879`
+and callback `https://curtcox.github.io/sheets/index.html`. Saving is enabled.
+Registration has been validated through HashBin’s real PKCE authorization endpoint;
+callbacks, quotes, confirmation, and source round-trips also have automated coverage.
+Live account authorization and the final per-save charge confirmation are manual
+verification steps. See README.md and the HashBin guide for deployment settings.

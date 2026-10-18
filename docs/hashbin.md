@@ -1,6 +1,6 @@
-# HashBin storage (deferred)
+# HashBin storage
 
-Finalized load/save support is deferred. The current client is provisional, and saving is intentionally disabled. The following describes the existing scaffolding and setup for a future integration.
+Sheets has a registered public client ID and saving is enabled. Public documents can be loaded without signing in; saving connects a HashBin account and asks for confirmation after showing the quote.
 
 [HashBin](https://hashbin.org) is optional content-addressed storage. Open **HashBin** in the toolbar and paste a CID or saved link to load a document.
 
@@ -14,14 +14,16 @@ Format IDs match the [URL format](url-format.md). Plain text uses Auto detection
 
 ## Save a document
 
-The site must have a registered public HashBin client ID. Until the operator adds it to `<meta name="hashbin-client-id">` in `index.html`, **Save to HashBin** is disabled and public loading remains available.
+Choose **HashBin → Save to HashBin**. On first use, choose **Connect to HashBin**, sign in, and approve the requested permissions. Sign-in returns to the editor with the source, format, and view restored. Open **Save to HashBin** again to see the quote.
 
-When configured, saving connects your account with the HashBin OAuth SDK. The callback returns to `index.html`, and a session-storage snapshot preserves your source and format during sign-in. The editor requests `content:write` and `balance:read` permissions.
+Saving connects your account with the HashBin OAuth SDK and PKCE. The callback returns to `index.html`, and a session-storage snapshot preserves your source and format during sign-in. The editor requests `content:write` and `balance:read` permissions.
 
 The save dialog shows source size, retention months, price, and account balance. You confirm the save before a charge. If you edit while the quote is open, the dialog prepares a fresh snapshot and quote. Failed or timed-out requests show a message. Editing during a load prevents its older result from replacing your document.
 
 ## Operator setup
 
-Register `https://curtcox.github.io/sheets/` with a callback at `https://curtcox.github.io/sheets/index.html`. Set the returned public client ID in the meta tag, commit the change, and deploy. The ID is public configuration; no client secret belongs in this repository. Real account authorization and charged saves require this registration and are not exercised by automated tests.
+The deployed Sheets registration uses public client ID `app_8e03e133-83b4-4ee2-b3d5-39397f573879` and redirect URI `https://curtcox.github.io/sheets/index.html`. HashBin has accepted a real PKCE authorization request for this combination and rejects an unregistered redirect.
+
+For another deployment, register its exact callback URI and set its public client ID in the `hashbin-client-id` meta tag in `index.html`. The ID is public configuration; no client secret belongs in this repository. Removing the ID disables saving while preserving public loads. Real account authorization and charged saves are manual verification steps; automated tests cover callbacks, quote confirmation, and source round-trips with controlled responses.
 
 The client and save panel are adapted from [ManimOnline](https://github.com/curtcox/ManimOnline).

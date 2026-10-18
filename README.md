@@ -106,18 +106,24 @@ SHA during staging. The intended URL is <https://curtcox.github.io/sheets/>.
 
 Deployment runs only after the complete test workflow succeeds.
 
-## HashBin setup (deferred)
+## HashBin setup
 
-Final HashBin load/save integration is deferred. The current client and public-CID
-loading are provisional; account registration and real save/load verification
-remain future work. Saving is intentionally disabled in this deployment.
+Sheets is registered with public client ID
+`app_8e03e133-83b4-4ee2-b3d5-39397f573879`. Its redirect URI is
+`https://curtcox.github.io/sheets/index.html`. Registration, redirect validation,
+and the `content:write` / `balance:read` scope request have been checked against
+HashBin's authorization endpoint. Saving is enabled through the toolbar panel.
 
-Public CIDs load without configuration. Saving stays disabled until a public
-HashBin app client ID is added to the `hashbin-client-id` meta tag in `index.html`.
-Register the app for `https://curtcox.github.io/sheets/`, with a callback at
-`https://curtcox.github.io/sheets/index.html`. Do not commit secrets. OAuth
-snapshot/restore, quotes and payload round-trips are tested with mocks; a real
-account sign-in and charged save need registration and manual verification.
+Public CIDs load without sign-in. Saving uses the hosted OAuth SDK with PKCE and
+preserves source, format, and view across sign-in. The save dialog shows the
+retention period, cost, and account balance before its final Save confirmation.
+Source edited while a quote is open gets a fresh quote before uploading.
+
+The `hashbin-client-id` meta tag in `index.html` is public configuration; no client
+secret belongs in this repository. OAuth callbacks, quote handling, and document
+round-trips have automated coverage. Live account authorization and a charged
+save require the user's account and the final per-save confirmation. See the
+[HashBin guide](docs/hashbin.md).
 
 ## Source map
 
