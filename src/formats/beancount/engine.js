@@ -152,7 +152,7 @@ export function parseBeancount(src) {
             : amount(m?.[2] || "");
           if (explicit) {
             entry.tolerance = decimal(explicit[2]);
-            if (entry.tolerance.isNegative())
+            if (entry.tolerance.lt(0))
               throw new Error("Balance tolerance must not be negative.");
           }
         }

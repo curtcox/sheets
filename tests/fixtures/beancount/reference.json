@@ -163,6 +163,17 @@
     },
     "valid": true
   },
+  "signed-zero.bean": {
+    "balances": {
+      "Assets:Bank": {
+        "USD": "1"
+      },
+      "Equity:Opening": {
+        "USD": "-1"
+      }
+    },
+    "valid": true
+  },
   "tiny-inferred.bean": {
     "balances": {
       "Assets:Bank": {

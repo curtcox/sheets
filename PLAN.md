@@ -343,7 +343,7 @@ unit tests reject drift. Compound entries without atomic reproducers remain
 explicitly marked for detailed audit, so Phase 11 is not complete.
 `design/compatibility-profiles.md` records the migration contract without changing
 URL or HashBin behavior. The Beancount oracle now preserves decimal strings, with
-21 independent fixtures covering supported arithmetic/tolerance behavior, including
+22 independent fixtures covering supported arithmetic/tolerance behavior, including
 large/tiny amounts, costs/prices, inference, assertions, padding, and lots. BEAN-1's
 first slice implements decimal arithmetic, supported tolerance options, and exact
 report text. Other booking/rounding options and wider audits remain open.
@@ -408,7 +408,7 @@ not permission to postpone known correctness fixes indefinitely.
 The first BEAN-1 increment fixes the independent oracle:
 `scripts/beancount-expected.py` now stores canonical decimal strings instead of
 Python floats, so the test cannot hide a precision defect. Reports and serialized
-fixture expectations preserve those strings; 21 reference fixtures cover the
+fixture expectations preserve those strings; 22 reference fixtures cover the
 supported arithmetic and tolerance rules, including half-even rounding ties.
 
 Do not broaden solver behavior while its definition/scoping rules are unsettled.

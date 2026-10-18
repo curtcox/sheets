@@ -36,7 +36,7 @@ export function precisionOptions(entries, error) {
     try {
       if (name === "tolerance_multiplier") {
         const n = decimal(value);
-        if (n.isNegative()) throw new Error("Tolerance must not be negative.");
+        if (n.lt(0)) throw new Error("Tolerance must not be negative.");
         config.multiplier = n;
       } else if (name === "inferred_tolerance_default") {
         const m = /^(\*|[A-Z][A-Z0-9._'-]*):([\d.]+)$/.exec(value);
