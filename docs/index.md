@@ -25,7 +25,7 @@ Choose a format or leave **Auto detect** selected. Auto recognizes strong langua
 | [Calca](formats/calca.md) | Markdown notes with `=>` calculations and linear/quadratic equations |
 | [Hurmet](formats/hurmet.md) | Typeset engineering calculations |
 | [Beancount](formats/beancount.md) | A core double-entry ledger and reports |
-| [Quarto](formats/quarto.md) | Markdown notebooks with Python cells |
+| [Quarto](formats/quarto.md) | Markdown notebooks with Python and R cells |
 
 Plain text is also available for viewing escaped source.
 
@@ -35,7 +35,7 @@ Plain text is also available for viewing escaped source.
 
 **Download → Source** saves the exact current source with the selected or detected
 format’s file extension. **Rendered HTML** saves the finished preview with embedded
-styles, MathML, and completed SVG diagrams. For Beancount, choose a report first;
+styles, MathML, and completed SVG diagrams and embedded R plot images. For Beancount, choose a report first;
 only that report is exported. HTML files need no JavaScript, but external images
 still need their original server. **Print / PDF** prints only the preview, even in
 Source view; choose your browser’s **Save as PDF** destination to keep a PDF.
@@ -44,9 +44,9 @@ new edits are pending or after cancellation.
 
 HashBin finalization is deferred; saving is disabled on this deployment. Public CIDs load without registration. Saving requires the site operator's public client ID and your HashBin account. A save displays the price and retention before you confirm.
 
-Python loads Pyodide and imported packages from jsDelivr on first use. Numbat and Hurmet are vendored locally. ECB currency rates are requested only for documents that use currencies and cached for one day. Ordinary source links stay in your browser; optional shortening sends the link to is.gd through AllOrigins. Documents can contain external image links, and executable Python or Hurmet fetches can make network requests.
+Python loads Pyodide and imported packages from jsDelivr on first use; R loads webR from webr.r-wasm.org. Numbat and Hurmet are vendored locally. ECB currency rates are requested only for documents that use currencies and cached for one day. Ordinary source links stay in your browser; optional shortening sends the link to is.gd through AllOrigins. Documents can contain external image links, and executable Python, R, or Hurmet fetches can make network requests.
 
-All generated HTML, MathML, and SVG pass through DOMPurify. Source in a shared link is untrusted. Numbat, Hurmet, and Python execute in disposable workers with deadlines; a new render gets a fresh interpreter. Quarto cells within a single render share their interpreter.
+All generated HTML, MathML, and SVG pass through DOMPurify. Source in a shared link is untrusted. Numbat, Hurmet, Python, and R execute in disposable workers with deadlines; a new render gets a fresh interpreter. Quarto cells within a single render share the interpreter for their language; Python and R have independent state.
 
 ## Work offline
 
@@ -56,7 +56,7 @@ diagrams, docs, and gallery examples then work offline, including newly opened
 source links. The cache contains static app files; it does not save your document
 URLs or HashBin payloads. Download source separately if you want a local backup.
 
-Python execution and external images or services still need a connection. Existing
+Python/R execution and external images or services still need a connection. Existing
 cached currency rates may work with a stale-rate notice. Browser storage can be
 cleared or evicted. **Offline access** also lets you check for updates, apply a
 completed update, or remove the offline download. Updates wait until you choose

@@ -1,11 +1,20 @@
 ---
-title: A notebook with other languages
+title: R statistics and plots
 format: html
 ---
 
 ```{r}
-mean(c(1, 2, 3))
+measurements <- c(3, 7, 11)
+mean(measurements)
 ```
+
+```{r}
+#| label: fig-measurements
+#| fig-cap: Measurements calculated in R
+plot(measurements, type = "b", col = "steelblue", pch = 19)
+```
+
+R cells share their own session. See @fig-measurements.
 
 ```{julia}
 sum([1, 2, 3])

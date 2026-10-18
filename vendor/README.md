@@ -24,3 +24,12 @@ Transitive license notices are in `licenses/` and in esbuild `.LEGAL.txt` files.
 Numbat and Hurmet retain dependency notices in their own `licenses/` directories. Hurmet includes a small build wrapper to expose AST diagnostics and initialize its own Temml global; its source is in `scripts/vendor/build-hurmet.mjs`.
 
 Source-built engines are documented in `engines.json`; rebuild with `scripts/vendor/{numbat,calcfile,hurmet}.sh`. Pyodide 0.27.7 (MPL-2.0) is loaded on demand from https://cdn.jsdelivr.net/pyodide/v0.27.7/full/.
+
+R is loaded on demand from https://webr.r-wasm.org/v0.6.0/ (webR 0.6.0).
+The JavaScript loader is MIT; the R/webR distribution binaries are GPL-3.0.
+See the [upstream licenses](https://github.com/r-wasm/webr/blob/v0.6.0/LICENSE.md)
+and [release sources](https://github.com/r-wasm/webr/releases/tag/v0.6.0).
+These runtime assets are downloaded from upstream and are not vendored or included
+in the offline app cache. `src/webr-client.js` and its same-origin bootstrap
+`src/workers/webr-worker.js` pin the runtime URLs. The bootstrap creates webR’s
+own worker directly, so cancellation also stops its initial CDN download.

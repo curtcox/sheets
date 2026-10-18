@@ -2,40 +2,54 @@ import { plugin } from "../registry.js";
 import { parseQuarto } from "./parse.js";
 import { renderMarkdown } from "../gfm/markdown.js";
 import { runWorker } from "../../worker-client.js";
+import { runR } from "../../webr-client.js";
 import { escapeHTML as e } from "../../util.js";
-export async function renderQuarto(src, { signal, executePython } = {}) {
+export async function renderQuarto(
+  src,
+  { signal, executePython, executeR } = {},
+) {
   const parsed = parseQuarto(src),
     { metadata, parts, diagnostics } = parsed;
   const defaults = typeof metadata.execute === "object" ? metadata.execute : {};
+  const supported = new Set(["python", "r"]);
   const executable = parts.filter(
     (p) =>
       p.kind === "cell" &&
-      p.language === "python" &&
+      supported.has(p.language) &&
       metadata.execute !== false &&
       defaults.enabled !== false &&
       (p.options.eval ?? defaults.eval) !== false,
   );
-  let outputs = [];
-  if (executable.length) {
-    try {
-      const result = await (
+  const outputs = new Map();
+  // Each language retains document order and its own interpreter. Both jobs share
+  // the render's AbortSignal; neither language can read the other's variables.
+  await Promise.all(
+    [
+      [
+        "python",
         executePython ||
-        ((cells) =>
-          runWorker(
-            new URL("../../workers/pyodide.worker.js", import.meta.url),
-            { cells },
-            { signal, timeout: 90000 },
-          ))
-      )(executable);
-      outputs = result.outputs;
-    } catch (error) {
-      if (error.name === "AbortError") throw error;
-      diagnostics.push({ line: executable[0].line, message: error.message });
-      outputs = executable.map(() => ({ error: error.message }));
-    }
-  }
-  let cursor = 0,
-    figureCount = 0;
+          ((cells) =>
+            runWorker(
+              new URL("../../workers/pyodide.worker.js", import.meta.url),
+              { cells },
+              { signal, timeout: 90000 },
+            )),
+      ],
+      ["r", executeR || ((cells) => runR(cells, { signal, timeout: 90000 }))],
+    ].map(async ([language, execute]) => {
+      const cells = executable.filter((p) => p.language === language);
+      if (!cells.length) return;
+      try {
+        const result = await execute(cells);
+        cells.forEach((cell, i) => outputs.set(cell, result.outputs[i]));
+      } catch (error) {
+        if (error.name === "AbortError") throw error;
+        // One diagnostic at each affected cell, without duplicating the first one.
+        cells.forEach((cell) => outputs.set(cell, { error: error.message }));
+      }
+    }),
+  );
+  let figureCount = 0;
   const labels = new Map(),
     mermaid = [];
   for (const p of parts) {
@@ -75,11 +89,10 @@ export async function renderQuarto(src, { signal, executePython } = {}) {
       continue;
     }
     const options = { ...defaults, ...part.options },
-      executed = executable.includes(part),
-      output = executed ? outputs[cursor++] : null;
+      output = outputs.get(part);
     if (options.echo !== false)
       html += `<pre><code class="language-${e(part.language)}">${e(part.source)}</code></pre>`;
-    if (part.language !== "python") {
+    if (!supported.has(part.language)) {
       html += `<p class="notice">${e(part.language)}: not executed in the browser.</p>`;
       continue;
     }
@@ -91,7 +104,12 @@ export async function renderQuarto(src, { signal, executePython } = {}) {
     if (output?.stdout || output?.text || output?.stderr)
       html += `<pre class="cell-output">${e([output.stdout, output.text, output.stderr].filter(Boolean).join("\n"))}</pre>`;
     if (output?.html) html += output.html;
-    for (const svg of output?.figures || [])
+    for (const svg of [
+      ...(output?.figures || []),
+      ...(output?.images || []).map(
+        (url) => `<img src="${e(url)}" alt="R plot">`,
+      ),
+    ])
       html += `<figure${options.label ? ` id="${e(options.label)}"` : ""}>${svg}${options["fig-cap"] ? `<figcaption>${e(options["fig-cap"])}</figcaption>` : ""}</figure>`;
   }
   return { html, diagnostics, mermaid };

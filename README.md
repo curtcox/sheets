@@ -4,7 +4,7 @@ A buildless, single-page editor for calculation-oriented text documents. Source,
 format, and view live in the URL. Optional HashBin storage provides CID links.
 
 Supports GitHub Markdown, AsciiMath, Numbat, CalcFile, Org tables, a Calca-compatible
-subset, Hurmet, a Beancount core subset, and Quarto notebooks with Python. Includes
+subset, Hurmet, a Beancount core subset, and Quarto notebooks with Python and R. Includes
 36 gallery examples with rendered previews, format guides, diagnostics, responsive
 split views, ACE, and
 sanitized HTML/MathML/SVG output. Download source files, export the finished preview
@@ -22,8 +22,8 @@ npm run dev
 ```
 
 Open <http://127.0.0.1:4173/>. Any static server can serve the repository directly.
-Vendored libraries and WASM are committed. Only Python downloads its pinned
-Pyodide runtime/packages on demand. HashBin's OAuth SDK is loaded only for sign-in.
+Vendored libraries and WASM are committed. Python and R download their pinned
+Pyodide/webR runtimes on demand. HashBin's OAuth SDK is loaded only for sign-in.
 
 ## Verify
 
@@ -38,7 +38,7 @@ npm run test:browser
 Unit tests run real Numbat WASM and Hurmet, all 37 required CalcFile conformance
 cases, URL/detection/HashBin/sharing tests, and the recorded GFM corpus (582/672
 exact HTML matches; deviations listed in the format guide). Browser tests render
-all 36 examples in Chromium, Firefox, and WebKit, including real Python, and check
+all 36 examples in Chromium, Firefox, and WebKit, including real Python and R, and check
 sharing, cancellation, XSS boundaries, mobile layouts, docs, gallery and reports.
 
 Independent fixture checks require Emacs and Python reference tools:
@@ -60,7 +60,7 @@ this browser, then reloads while preserving your current source/format/view link
 You can open new source links, switch formats, calculate with the eight vendored
 engines, and browse docs/gallery without a network connection.
 
-Python execution, external images, HashBin, link shortening, and fresh currency
+Python and R execution, external images, HashBin, link shortening, and fresh currency
 rates still need a connection. Previously cached ECB rates can be used with the
 existing stale-rate notice. Browser storage can be evicted; source downloads are
 available for independent backups. Offline caches contain static app files only;
@@ -91,7 +91,7 @@ npm run gallery:covers
 
 The script starts and stops its own temporary local server, renders all 36
 examples through the editor, and updates `examples/covers/`. Python examples need
-jsDelivr access. Covers use a 640 × 400 viewport; Beancount examples show the trial
+jsDelivr access; R examples need webr.r-wasm.org. Covers use a 640 × 400 viewport; Beancount examples show the trial
 balance, except the error example, which shows diagnostics. Unit tests check
 coverage, dimensions, and source hashes so changed examples cannot silently keep
 stale images. The application and Pages deployment still need no build.
@@ -124,7 +124,7 @@ account sign-in and charged save need registration and manual verification.
 - `src/app.js`: shell, editor, diagnostics, startup and sharing.
 - `src/editor-modes.js`: project-owned ACE highlighting, including Hurmet cells in Markdown.
 - `src/formats/`: lazy plugins and DOM-free engines.
-- `src/workers/`: disposable Numbat, Hurmet and Python interpreters.
+- `src/workers/`: disposable Numbat, Hurmet, Python and R interpreters.
 - `src/url-state.js`, `render-scheduler.js`, `hashbin*.js`: state and persistence.
 - `examples/`: four examples per format and the gallery catalog.
 - `docs/`: supported subsets, gaps, sharing and storage guides.
@@ -134,10 +134,11 @@ account sign-in and charged save need registration and manual verification.
 
 The Beancount and Org engines intentionally implement subsets; see their format
 guides before relying on advanced syntax. Calca has no public spec, and this is a
-compatible subset. Quarto supports Python and a subset of Pandoc markup; other
+compatible subset. Quarto supports Python, R and a subset of Pandoc markup; other
 languages are displayed without execution. Calca solves real scalar linear and
-quadratic equations, with limits described in its guide. Quarto R execution through
-webR remains optional future work in PLAN.md.
+quadratic equations, with limits described in its guide. Quarto R execution uses
+webR 0.6.0 with console output, PNG plots, per-language state, cancellation and
+deadlines.
 
 ## License
 

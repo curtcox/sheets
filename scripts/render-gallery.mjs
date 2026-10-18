@@ -46,7 +46,7 @@ try {
     const status = await page.locator("#render-status").textContent();
     const output = await page.locator("#preview").textContent();
     if (
-      /Worker failed to start|Python could not start|Calculation exceeded/.test(
+      /Worker failed to start|Python could not start|R could not start|Calculation exceeded/.test(
         output,
       ) ||
       (item.id === "quarto-error" &&

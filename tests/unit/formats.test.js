@@ -64,6 +64,9 @@ for (const { id } of catalog.filter((f) => f.id !== "text")) {
                   executePython: async (cells) => ({
                     outputs: cells.map(() => ({ text: "mocked result" })),
                   }),
+                  executeR: async (cells) => ({
+                    outputs: cells.map(() => ({ text: "mocked R result" })),
+                  }),
                 })
               : await (await loadFormat(id)).render(src, {});
       assert.equal(
@@ -165,7 +168,7 @@ test("calculation syntax cannot access objects or import functions", () => {
 });
 test("Quarto stateful cell execution, front matter, options, figures and diagnostics", async () => {
   const src =
-    "---\ntitle: Demo\nexecute:\n  echo: false\n---\n\n::: {.callout-note}\nSee @fig-demo.\n:::\n\n```{python}\n#| label: fig-demo\n#| fig-cap: A figure\nx=2\n```\n\n```{python}\n#| output: false\nx+1\n```\n\n```{python}\n#| eval: false\nraise Exception()\n```\n\n```{r}\nx\n```";
+    "---\ntitle: Demo\nexecute:\n  echo: false\n---\n\n::: {.callout-note}\nSee @fig-demo.\n:::\n\n```{python}\n#| label: fig-demo\n#| fig-cap: A figure\nx=2\n```\n\n```{python}\n#| output: false\nx+1\n```\n\n```{python}\n#| eval: false\nraise Exception()\n```\n\n```{julia}\nx\n```";
   const result = await renderQuarto(src, {
     executePython: async (cells) => {
       assert.equal(cells.length, 2);

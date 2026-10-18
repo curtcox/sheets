@@ -275,8 +275,8 @@
     "id": "quarto-edge",
     "format": "quarto",
     "kind": "edge",
-    "title": "A notebook with other languages",
-    "description": "Show R and Julia cells without running them.",
+    "title": "R statistics and plots",
+    "description": "R cells share data and draw a plot; Julia stays visible without execution.",
     "path": "examples/quarto/edge.qmd"
   },
   {
