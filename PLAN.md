@@ -11,6 +11,15 @@ structure and conventions: buildless static site, ACE editor, URL sharing, HashB
 client, gallery, Node unit tests, and Playwright browser tests in CI. This project
 supports a different set of formats.
 
+## Implementation status
+
+Phases 0–10 are implemented and deployed on GitHub Pages, with the supported
+subsets and compatibility gaps recorded in the format guides. Source downloads,
+standalone rendered HTML exports, and preview printing/PDF are also implemented.
+Finalized HashBin load/save support is deferred by request; its provisional client
+remains, with saving disabled. The repository uses MIT and Pages deployment is
+enabled through GitHub Actions.
+
 ## Decisions
 
 | Topic | Decision |
@@ -284,16 +293,12 @@ Every format phase must deliver all of the following:
 ## Later and optional
 
 - Offline support with a service worker (ManimOnline's `offline-assets.js` pattern).
-- Export rendered HTML or PDF. Download source with the format's file extension.
 - ACE highlighting modes for Beancount, Org, Numbat and Hurmet.
 - Quarto R cells through webR. Calca equation solving.
 - Gallery cover images pre-rendered by a script, like ManimOnline's `render-gallery.cjs`.
 
-## Still needed from you
+## Deferred integration
 
-1. **Enable Pages** with source "GitHub Actions" (Phase 0, step 1). I can do it with `gh` if you approve.
-2. **HashBin app registration** for `https://curtcox.github.io/sheets/`, to get a public
-   client ID (Phase 1, step 6). Until then, saving is disabled and loading still works.
-3. **Repository license.** The plan assumes MIT. All planned dependencies are permissively
-   licensed: Temml MIT, markdown-it MIT, Hurmet MIT, CalcFile Apache-2.0, Numbat MIT/Apache-2.0,
-   asciimath2tex Apache-2.0, ACE BSD, Pyodide MPL-2.0 (loaded at runtime, not modified).
+HashBin app registration and real account load/save verification remain deferred.
+No client ID is required for the rest of the application. See README.md and the
+HashBin guide before enabling saving in a future release.

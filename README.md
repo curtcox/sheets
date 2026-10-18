@@ -6,7 +6,8 @@ format, and view live in the URL. Optional HashBin storage provides CID links.
 Supports GitHub Markdown, AsciiMath, Numbat, CalcFile, Org tables, a Calca-compatible
 subset, Hurmet, a Beancount core subset, and Quarto notebooks with Python. Includes
 36 gallery examples, format guides, diagnostics, responsive split views, ACE, and
-sanitized HTML/MathML/SVG output.
+sanitized HTML/MathML/SVG output. Download source files, export the finished preview
+as standalone HTML, or print it to PDF.
 
 ## Run locally
 
@@ -87,7 +88,7 @@ The Beancount and Org engines intentionally implement subsets; see their format
 guides before relying on advanced syntax. Calca has no public spec, and this is a
 compatible subset. Quarto supports Python and a subset of Pandoc markup; other
 languages are displayed without execution. Optional later features in PLAN.md
-(service worker, exports, webR, gallery covers) remain future work.
+(service worker, webR, gallery covers) remain future work.
 
 ## License
 

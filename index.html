@@ -42,13 +42,31 @@
           <option value="auto">Auto detect</option></select
         ><span id="detected" class="subtle"></span>
       </div>
-      <div class="view-toggle" role="group" aria-label="View mode">
-        <button data-view="source" title="Source only (Ctrl+Alt+1)">
-          Source</button
-        ><button data-view="split" title="Split view (Ctrl+Alt+2)">Split</button
-        ><button data-view="preview" title="Preview only (Ctrl+Alt+3)">
-          Preview
-        </button>
+      <div class="toolbar-actions">
+        <div class="view-toggle" role="group" aria-label="View mode">
+          <button data-view="source" title="Source only (Ctrl+Alt+1)">
+            Source</button
+          ><button data-view="split" title="Split view (Ctrl+Alt+2)">
+            Split</button
+          ><button data-view="preview" title="Preview only (Ctrl+Alt+3)">
+            Preview
+          </button>
+        </div>
+        <details id="download-menu" class="download-menu">
+          <summary>Download</summary>
+          <div
+            class="download-options"
+            role="group"
+            aria-label="Download options"
+          >
+            <button id="download-source">Source file</button>
+            <button id="download-html" disabled>Rendered HTML</button>
+            <button id="print-preview" disabled>Print / PDF</button>
+            <p class="subtle">
+              Rendered exports become available when the preview is ready.
+            </p>
+          </div>
+        </details>
       </div>
     </div>
     <section

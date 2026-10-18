@@ -32,7 +32,16 @@ Plain text is also available for viewing escaped source.
 
 **Share** copies a complete source link. No account or server storage is required. Links longer than about 8 KB get a reminder to use [HashBin](hashbin.md). Browser, messaging, and proxy limits vary; the app does not truncate your source.
 
-HashBin is optional. Public CIDs load without registration. Saving requires the site operator's public client ID and your HashBin account. A save displays the price and retention before you confirm.
+**Download → Source** saves the exact current source with the selected or detected
+format’s file extension. **Rendered HTML** saves the finished preview with embedded
+styles, MathML, and completed SVG diagrams. For Beancount, choose a report first;
+only that report is exported. HTML files need no JavaScript, but external images
+still need their original server. **Print / PDF** prints only the preview, even in
+Source view; choose your browser’s **Save as PDF** destination to keep a PDF.
+Rendered exports become available after rendering finishes and stay disabled while
+new edits are pending or after cancellation.
+
+HashBin finalization is deferred; saving is disabled on this deployment. Public CIDs load without registration. Saving requires the site operator's public client ID and your HashBin account. A save displays the price and retention before you confirm.
 
 Python loads Pyodide and imported packages from jsDelivr on first use. Numbat and Hurmet are vendored locally. ECB currency rates are requested only for documents that use currencies and cached for one day. Ordinary source links stay in your browser; optional shortening sends the link to is.gd through AllOrigins. Documents can contain external image links, and executable Python or Hurmet fetches can make network requests.
 

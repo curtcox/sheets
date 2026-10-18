@@ -8,6 +8,8 @@ import { HashBinPanel } from "./hashbin-panel.js";
 import { ShareClient } from "./share-links.js";
 import { loadExample } from "./examples.js";
 import { acePath } from "./ace-path.js";
+import { sourceTitle, sourceDownload } from "./downloads.js";
+import { htmlDownload, downloadFile } from "./export-document.js";
 import { optionalStorage } from "./util.js";
 const elements = new Map(
   [...document.querySelectorAll("[id]")].map((element) => [
@@ -75,6 +77,13 @@ const snapshot = () => ({
   view: view.getView(),
 });
 const fingerprint = () => JSON.stringify(snapshot());
+function updateDownloadOptions(ready = false) {
+  const extension =
+    catalog.find((item) => item.id === selectedType())?.extensions[0] || ".txt";
+  $("download-source").textContent = `Source (${extension})`;
+  $("download-html").disabled = !ready;
+  $("print-preview").disabled = !ready;
+}
 function persist() {
   clearTimeout(persistTimer);
   const url = writeURL(location.href, { ...snapshot(), cid: currentCID });
@@ -123,6 +132,7 @@ const scheduler = new RenderScheduler({
     }
   },
   onStatus(status, detail) {
+    updateDownloadOptions(status === "done");
     const busy = status === "rendering";
     preview.setAttribute("aria-busy", busy);
     $("cancel-render").hidden = !busy;
@@ -195,6 +205,7 @@ if (editor) editor.session.on("change", changed);
 else $("source-fallback").addEventListener("input", changed);
 format.onchange = changed;
 $("cancel-render").onclick = () => {
+  updateDownloadOptions(false);
   scheduler.cancel();
   renderController?.abort();
   $("render-status").textContent =
@@ -235,6 +246,32 @@ preview.addEventListener("click", async (event) => {
       $("render-status").textContent =
         "Clipboard unavailable. Allow clipboard access and retry.";
     }
+});
+$("download-source").onclick = () => {
+  downloadFile(sourceDownload(getSource(), selectedType()));
+  $("download-menu").open = false;
+};
+$("download-html").onclick = () => {
+  if ($("download-html").disabled) return;
+  const title =
+    preview.querySelector("h1")?.textContent || sourceTitle(getSource());
+  downloadFile(htmlDownload(preview, { title }));
+  $("download-menu").open = false;
+};
+$("print-preview").onclick = () => {
+  if ($("print-preview").disabled) return;
+  $("download-menu").open = false;
+  window.print();
+};
+document.addEventListener("click", (event) => {
+  if (!$("download-menu").contains(event.target))
+    $("download-menu").open = false;
+});
+$("download-menu").addEventListener("keydown", (event) => {
+  if (event.key === "Escape") {
+    $("download-menu").open = false;
+    $("download-menu").querySelector("summary").focus();
+  }
 });
 const share = new ShareClient();
 $("share").onclick = () => {
@@ -277,6 +314,7 @@ const starter =
   "# Notes that do the math\n\nA sheet is a small document with a little more power. Write on the left; see the result on the right.\n\n## Start with an idea\n\n| Item | Quantity | Unit cost |\n| :--- | ---: | ---: |\n| Notebooks | 12 | $4 |\n| Pencils | 24 | $1 |\n| Good ideas | ∞ | Free |\n\nThe area of a circle is $A = \\pi r^2$.\n\n> [!TIP]\n> Choose a calculation format above to turn expressions into answers. Visit the **[gallery](gallery.html)** for examples in all nine formats.\n\n- [x] Write something useful\n- [ ] Make it calculate\n- [ ] Share the link\n";
 async function restore() {
   navigationURL = location.href;
+  updateDownloadOptions(false);
   const revision = ++sourceRevision;
   try {
     const callback = await store.callback(location.search);

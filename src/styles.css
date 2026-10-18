@@ -808,3 +808,106 @@ dialog label {
       color 0.12s ease;
   }
 }
+
+.toolbar-actions {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.download-menu {
+  position: relative;
+}
+.download-menu > summary {
+  cursor: pointer;
+  list-style: none;
+  background: white;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 8px 13px;
+  font-size: 12px;
+}
+.download-menu > summary::-webkit-details-marker {
+  display: none;
+}
+.download-menu > summary::after {
+  content: " ▾";
+  color: var(--muted);
+}
+.download-options {
+  position: absolute;
+  z-index: 20;
+  right: 0;
+  top: calc(100% + 8px);
+  width: 235px;
+  max-width: calc(100vw - 30px);
+  padding: 8px;
+  background: white;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  box-shadow: 0 8px 28px #243b3920;
+}
+.download-options button {
+  display: block;
+  width: 100%;
+  text-align: left;
+  border: 0;
+}
+.download-options p {
+  margin: 8px;
+  font-size: 11px;
+  line-height: 1.5;
+}
+@media print {
+  :root {
+    background: white;
+  }
+  @page {
+    margin: 18mm;
+  }
+  html,
+  body.editor-page {
+    height: auto;
+    min-height: 0;
+    background: white;
+  }
+  .editor-page > .site-header,
+  .toolbar,
+  .storage-panel,
+  .statusbar,
+  dialog,
+  #source-pane,
+  #divider,
+  .pane-header,
+  .report-tabs,
+  #preview button {
+    display: none !important;
+  }
+  #workspace,
+  #workspace[data-view] {
+    display: block;
+    margin: 0;
+    border: 0;
+    border-radius: 0;
+    overflow: visible;
+    box-shadow: none;
+  }
+  #workspace #preview-pane {
+    display: block !important;
+    overflow: visible;
+  }
+  #preview {
+    overflow: visible;
+    padding: 0;
+    font-size: 11pt;
+  }
+  #preview pre,
+  #preview figure,
+  #preview tr {
+    break-inside: avoid;
+  }
+  #preview h1,
+  #preview h2,
+  #preview h3 {
+    break-after: avoid;
+  }
+}
