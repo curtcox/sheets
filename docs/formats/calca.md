@@ -75,3 +75,5 @@ function list includes common trigonometric, logarithmic, rounding, statistical,
 matrix, and symbolic helpers; it does not expose every mathjs function. Units and
 ordinary calculations run locally after offline files are installed. See the
 [feature comparison and glossary](../format-comparison.md).
+
+See [Limitations and compatibility](../limitations.md) for the consolidated disclosures across formats.

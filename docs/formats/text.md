@@ -32,3 +32,5 @@ Displaying text needs no runtime download beyond the app's own assets and works
 with offline files installed. To format the content, choose GitHub Markdown; to
 calculate it, choose the appropriate language from the
 [feature comparison and glossary](../format-comparison.md).
+
+See [Limitations and compatibility](../limitations.md) for the consolidated disclosures across formats.

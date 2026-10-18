@@ -56,3 +56,5 @@ An out-of-range address produces a diagnostic instead of silently creating a cel
 If a result is unexpected, check row numbering and assignment order; this adapter
 does not repeatedly iterate formulas until they converge. See the
 [feature comparison and glossary](../format-comparison.md).
+
+See [Limitations and compatibility](../limitations.md) for the consolidated disclosures across formats.

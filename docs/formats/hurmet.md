@@ -64,3 +64,5 @@ check both quoted input units and the requested result unit. Ordinary calculatio
 work with the offline files installed; external data and fresh exchange rates need
 a connection. A rendered HTML export keeps the finished typesetting and results,
 without a live interpreter. See the [feature comparison and glossary](../format-comparison.md).
+
+See [Limitations and compatibility](../limitations.md) for the consolidated disclosures across formats.

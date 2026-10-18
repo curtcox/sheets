@@ -54,3 +54,5 @@ it or fill in the answer. Use **Show TeX** when grouping looks wrong. To calcula
 with variables or units, choose Numbat or Calca instead. Mixed documents inherit
 Markdown tables, links, and Mermaid diagrams. Math renders locally and is included
 in rendered HTML exports. See the [feature comparison and glossary](../format-comparison.md).
+
+See [Limitations and compatibility](../limitations.md) for the consolidated disclosures across formats.

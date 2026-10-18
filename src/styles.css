@@ -686,6 +686,10 @@ dialog label {
   min-width: 110px;
   overflow-wrap: normal;
 }
+.docs-example-link {
+  font-size: 13px;
+  font-weight: 600;
+}
 .page-footer {
   max-width: 1120px;
   margin: 30px auto;

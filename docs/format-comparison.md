@@ -5,6 +5,9 @@ capability of the original language or desktop application. Follow a format name
 for syntax, examples, and compatibility limits. The glossary below defines the
 feature names. On a narrow screen, scroll the comparison tables horizontally.
 
+The [limitations page](limitations.md) collects the compatibility gaps described
+throughout the individual guides.
+
 ## Calculations
 
 **Yes** means a built-in capability. **No** means no built-in support in this

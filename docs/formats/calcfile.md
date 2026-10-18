@@ -54,3 +54,5 @@ convert on this deployment because the adapter does not supply the required rate
 environment; use Numbat or Hurmet for the integrated ECB rate path. Do not assume
 support for a function or unit outside the pinned draft. See the
 [feature comparison and glossary](../format-comparison.md).
+
+See [Limitations and compatibility](../limitations.md) for the consolidated disclosures across formats.

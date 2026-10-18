@@ -73,3 +73,5 @@ a separate check and does not rewrite earlier transactions. Ledger evaluation is
 local and works with offline files installed. See the
 [feature comparison and glossary](../format-comparison.md) for commodities,
 postings, assertions, and the distinction from physical units.
+
+See [Limitations and compatibility](../limitations.md) for the consolidated disclosures across formats.

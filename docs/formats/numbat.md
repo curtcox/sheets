@@ -52,3 +52,5 @@ descriptive identifier. If units fail to combine, inspect dimensions before
 removing unit labels. Ordinary unit calculations work after the offline files are
 installed; fresh currency rates require a connection. See the
 [feature comparison and glossary](../format-comparison.md).
+
+See [Limitations and compatibility](../limitations.md) for the consolidated disclosures across formats.

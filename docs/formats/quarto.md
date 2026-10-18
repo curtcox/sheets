@@ -104,3 +104,5 @@ longer while runtimes/packages download. Use **Cancel** for a long-running rende
 use `execute: false` to read only the prose offline. Rendered HTML includes completed
 tables, figures, and captions without rerunning code; packages and interpreter state
 are not exported. See the [feature comparison and glossary](../format-comparison.md).
+
+See [Limitations and compatibility](../limitations.md) for the consolidated disclosures across formats.

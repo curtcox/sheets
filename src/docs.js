@@ -1,6 +1,7 @@
 import { watchOfflineUpdates } from "./offline.js";
 watchOfflineUpdates();
 import { catalog } from "./formats/registry.js";
+import { linkExamples } from "./docs-examples.js";
 import { renderMarkdown, renderDiagrams } from "./formats/gfm/markdown.js";
 import { setPreview, sanitize } from "./sanitize.js";
 const pages = [
@@ -8,6 +9,7 @@ const pages = [
   ["url-format", "Sharing links"],
   ["hashbin", "HashBin storage"],
   ["format-comparison", "Compare formats & glossary"],
+  ["limitations", "Limitations & compatibility"],
   ...catalog.map((f) => [`formats/${f.id}`, f.label]),
 ];
 const selected = new URL(location.href).searchParams.get("page") || "index";
@@ -55,6 +57,7 @@ try {
     table.before(scroll);
     scroll.append(table);
   }
+  linkExamples(content, page, location.href);
   await renderDiagrams(content, result.mermaid, { sanitize });
 } catch (error) {
   content.textContent = error.message;

@@ -34,6 +34,12 @@ units, tables, equations, diagrams, notebook execution, and offline support acro
 all ten choices. Each format guide includes a starting example, syntax reference,
 and the limits of its implementation in Sheets.
 
+Every code block has an **Open example in editor** link. Short syntax examples in
+prose and tables are clickable too; they open a complete example with the needed
+definitions or surrounding document. Examples of errors keep their intentional
+errors. Use [Limitations and compatibility](limitations.md) for the known gaps
+collected from all format guides.
+
 ## Save and share
 
 **Share** copies a complete source link. No account or server storage is required. Links longer than about 8 KB get a reminder to use [HashBin](hashbin.md). Browser, messaging, and proxy limits vary; the app does not truncate your source.

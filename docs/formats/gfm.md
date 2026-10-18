@@ -37,7 +37,7 @@ calculations or Quarto for Python/R output.
 | `# Heading`, `## Subheading` | Document sections |
 | `**strong**`, `*emphasis*`, `~~removed~~` | Text emphasis and strikethrough |
 | `[label](https://example.com)` | A link; bare web addresses are also linkified |
-| `![description](https://example.com/image.png)` | An image; a remote image needs its server |
+| `![Sheets icon](src/icon.svg)` | An image; a remote image needs its server |
 | `- [ ] Task`, `- [x] Done` | A displayed task checklist; edit its state in source |
 | `[^detail]` and a later `[^detail]: Explanation` | A footnote |
 | `$x^2$`, `$$x^2$$`, or a `math` fence | Inline or display TeX math |
@@ -87,3 +87,5 @@ An unrendered formula usually means the dollar delimiters are incomplete or the
 TeX command is unsupported. Use **Rendered HTML** after diagrams finish to keep
 their static SVG in an export. See the [feature comparison and glossary](../format-comparison.md)
 for the difference between notation, calculations, diagrams, and plots.
+
+See [Limitations and compatibility](../limitations.md) for the consolidated disclosures across formats.
