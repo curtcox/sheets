@@ -137,6 +137,24 @@ test("R deadlines and cancellation close the interpreter and keep the editor res
 }) => {
   await page.goto("/");
   await ready(page);
+  if (browserName === "firefox") {
+    // Firefox can retain a debugger target for a terminated, loading worker.
+    // Observe the native terminate() call as well, rather than that stale list.
+    await page.evaluate(() => {
+      const NativeWorker = Worker;
+      globalThis.rActiveWorkers = new Set();
+      globalThis.Worker = class extends NativeWorker {
+        constructor(...args) {
+          super(...args);
+          globalThis.rActiveWorkers.add(this);
+        }
+        terminate() {
+          globalThis.rActiveWorkers.delete(this);
+          return super.terminate();
+        }
+      };
+    });
+  }
   const cdp =
     browserName === "chromium" ? await browser.newBrowserCDPSession() : null;
   const workers = async () =>
@@ -144,7 +162,9 @@ test("R deadlines and cancellation close the interpreter and keep the editor res
       ? (await cdp.send("Target.getTargets")).targetInfos.filter(
           (t) => t.type === "worker",
         )
-      : page.workers();
+      : browserName === "firefox"
+        ? page.evaluate(() => [...globalThis.rActiveWorkers].map(() => null))
+        : page.workers();
   await expect.poll(async () => (await workers()).length).toBe(0);
   const message = await page.evaluate(async () => {
     const { runR } = await import("./src/webr-client.js");
@@ -174,8 +194,10 @@ test("R deadlines and cancellation close the interpreter and keep the editor res
   await requested;
   await page.locator("#cancel-render").click();
   await expect(page.locator("#render-status")).toContainText("Cancelled");
-  await expect.poll(async () => (await workers()).length).toBe(0);
+  // Release the artificial network stall before checking debugger targets.
+  // Firefox retains a loading worker target while that request is held open.
   releaseBootstrap();
+  await expect.poll(async () => (await workers()).length).toBe(0);
   await setSource(page, "```{r}\nrepeat {}\n# Try a fresh worker\n```");
   await expect.poll(async () => (await workers()).length).toBeGreaterThan(0);
   await page.locator("#cancel-render").click();
