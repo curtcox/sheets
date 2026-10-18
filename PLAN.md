@@ -26,9 +26,9 @@ Quarto R cells run through pinned webR 0.6.0, with state, console output, PNG pl
 cell diagnostics, cancellation and deadlines. All non-deferred plan items, including
 the optional offline and equation/R execution work, are implemented.
 HashBin is registered and enabled using its public client ID and exact Pages
-callback. PKCE registration validation passes; account authorization and the final
-charged-save confirmation are manual verification steps. The repository uses MIT
-and Pages deployment is enabled through GitHub Actions.
+callback. Live PKCE authorization, quoted save confirmation, and an anonymous
+saved-document round-trip have been verified. The repository uses MIT and Pages
+deployment is enabled through GitHub Actions.
 
 ## Decisions
 
@@ -317,5 +317,8 @@ Sheets is registered with client ID `app_8e03e133-83b4-4ee2-b3d5-39397f573879`
 and callback `https://curtcox.github.io/sheets/index.html`. Saving is enabled.
 Registration has been validated through HashBin’s real PKCE authorization endpoint;
 callbacks, quotes, confirmation, and source round-trips also have automated coverage.
-Live account authorization and the final per-save charge confirmation are manual
-verification steps. See README.md and the HashBin guide for deployment settings.
+Live verification on 2026-10-18 completed account authorization and an explicitly
+approved $0.01 save of the public Calca gallery example for 12 months. Its CID link
+loaded in a fresh browser without signing in, preserving the exact source, format,
+Split view, and calculated answers. See README.md and the HashBin guide for
+deployment settings.

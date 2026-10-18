@@ -24,6 +24,8 @@ The save dialog shows source size, retention months, price, and account balance.
 
 The deployed Sheets registration uses public client ID `app_8e03e133-83b4-4ee2-b3d5-39397f573879` and redirect URI `https://curtcox.github.io/sheets/index.html`. HashBin has accepted a real PKCE authorization request for this combination and rejects an unregistered redirect.
 
-For another deployment, register its exact callback URI and set its public client ID in the `hashbin-client-id` meta tag in `index.html`. The ID is public configuration; no client secret belongs in this repository. Removing the ID disables saving while preserving public loads. Real account authorization and charged saves are manual verification steps; automated tests cover callbacks, quote confirmation, and source round-trips with controlled responses.
+For another deployment, register its exact callback URI and set its public client ID in the `hashbin-client-id` meta tag in `index.html`. The ID is public configuration; no client secret belongs in this repository. Removing the ID disables saving while preserving public loads. Automated tests cover callbacks, quote confirmation, and source round-trips with controlled responses.
+
+Live verification on 2026-10-18 completed account authorization and an explicitly approved $0.01 save of the public Calca gallery example for 12 months. A fresh browser loaded its CID link without signing in and restored the exact source, Calca format, Split view, and calculated answers.
 
 The client and save panel are adapted from [ManimOnline](https://github.com/curtcox/ManimOnline).
