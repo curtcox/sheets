@@ -1,0 +1,299 @@
+# Sheets: Development Plan
+
+A single-page web app, deployed to GitHub Pages by GitHub Actions, for editing and
+previewing calculation-oriented text documents. The whole document state lives in
+the URL. Saving to and loading from HashBin is optional. Users can edit source, look
+at the rendered document, or show only one of the two. Header links lead to
+documentation and an example gallery.
+
+[ManimOnline](https://github.com/curtcox/ManimOnline) is the reference for
+structure and conventions: buildless static site, ACE editor, URL sharing, HashBin
+client, gallery, Node unit tests, and Playwright browser tests in CI. This project
+supports a different set of formats.
+
+## Decisions
+
+| Topic | Decision |
+|---|---|
+| Build | **Buildless.** No bundler at deploy time. Native ES modules in `src/`. Third-party code is vendored under `vendor/` at pinned versions. A library that only ships as source (Numbat, CalcFile, Hurmet) is built once by a script in `scripts/vendor/`, and the output is committed. |
+| Editor | ACE, vendored, as in ManimOnline. |
+| Math rendering | [Temml](https://temml.org) (MIT; TeX to MathML). Shared by GFM, AsciiMath, Quarto and Calca. Hurmet bundles its own copy. |
+| Sanitizing | All rendered HTML goes through DOMPurify. Anyone can craft a shared URL, so treat every document as untrusted input. |
+| Heavy engines | Numbat and Python run in Web Workers, with a timeout and cancellation (terminate the worker). Stale results are discarded by revision number. |
+| Beancount | Own permissively licensed JS engine for a core subset. (@rustledger/wasm is GPL-3.0, and Python Beancount needs C/C++ extensions that Pyodide does not provide.) |
+| Quarto | Markdown plus `{python}` cells run with Pyodide. R and OJS cells are shown but not executed. |
+| CalcFile | [peetzweg/calcfile](https://github.com/peetzweg/calcfile) v0.1 draft (Apache-2.0). Pin a commit, because the format is pre-1.0. |
+| Format order | Easiest first: GFM, AsciiMath, Numbat, CalcFile, Org tables, Calca, Hurmet, Beancount, Quarto. |
+
+## Architecture
+
+```
+index.html              editor + preview shell
+gallery.html            example gallery (cards, search, filter by format)
+docs.html               renders docs/*.md with the site's own GFM renderer
+docs/                   index.md, url-format.md, hashbin.md, formats/<id>.md
+src/
+  app.js                wiring: editor, toolbar, view modes, scheduler
+  url-state.js          read/write ?format, ?view, ?compressed, #<cid>
+  view-modes.js         split | source | preview, resizable divider, narrow-screen stacking
+  render-scheduler.js   debounce, revision counter, cancellation
+  sanitize.js           DOMPurify config shared by all formats
+  hashbin.js            ported from ManimOnline (CID parsing, OAuth, load/save)
+  hashbin-panel.js      ported load/save UI
+  share-links.js        copy link, optional shortening
+  examples.js           gallery catalog + ?example=<id> loading
+  formats/
+    registry.js         format list, lazy loading, auto-detection
+    <id>/index.js       { id, label, extensions, aceMode, detect, load, render, docs }
+  workers/              numbat.worker.js, pyodide.worker.js
+vendor/<lib>@<ver>/     pinned third-party code + its LICENSE
+vendor/README.md        source, version or commit, license, rebuild command for each entry
+scripts/vendor/         numbat.sh, calcfile.sh, hurmet.sh (rebuild vendored bundles)
+examples/<id>/          gallery sources; examples/catalog.json
+tests/unit/             node --test (engines, URL state, detection, HashBin)
+tests/fixtures/<id>/    input + expected output; conformance corpora
+tests/browser/          Playwright scripts (chromium, firefox, webkit)
+.github/workflows/      test.yml, deploy.yml
+AGENTS.md               project map for coding agents (as in ManimOnline)
+```
+
+### Format plugin contract
+
+```js
+export default {
+  id: 'numbat',                    // used in the URL and in HashBin documents
+  label: 'Numbat',
+  extensions: ['.nbt'],
+  aceMode: 'ace/mode/text',
+  detect(src) { return 0..1 },     // confidence; only used by Auto
+  async load() { /* import engine, start worker */ },
+  async render(src, { signal }) { return { html, diagnostics: [{ line, message }] } },
+  docs: 'docs/formats/numbat.md',
+};
+```
+
+Engines are kept free of DOM code so `node --test` can import and test them
+directly. `render` returns HTML that the shell sanitizes and puts in the preview.
+Diagnostics show up as ACE gutter annotations and in a status bar.
+
+### URL state
+
+ManimOnline's parameter names are kept so its share-link and HashBin code ports
+with minimal changes:
+
+- `?format=<id>` sets the format. If it is missing, Auto detection picks one.
+- `?view=split|source|preview` sets the view. Split is the default.
+- `?compressed=<lz-string>` holds the source.
+- `#<cid>` loads the document from HashBin.
+- `?example=<id>` loads a gallery example once. The source is then stored in `compressed`.
+
+The URL is updated with `history.replaceState`, debounced, so typing does not fill
+up browser history. When the URL gets longer than roughly 8 KB, the status bar
+suggests saving to HashBin.
+
+### HashBin document
+
+```json
+{ "format": "sheets-document", "version": 1, "type": "<format id>", "src": "...", "view": "split" }
+```
+
+Plain-text payloads also load, and in that case Auto detection picks the format.
+Accepted link hosts are hashbin.org, 256t.us and curtcox.github.io.
+
+---
+
+## Phase 0: Deploy to GitHub Pages
+
+Goal: a page at <https://curtcox.github.io/sheets/> deployed by Actions on every push to `main`.
+
+1. In the repository's **Settings → Pages**, set Source to **GitHub Actions**
+   (or run `gh api -X POST repos/curtcox/sheets/pages -f build_type=workflow`).
+2. Add `.github/workflows/deploy.yml`, based on ManimOnline's: checkout, configure-pages,
+   upload-pages-artifact, deploy-pages, with `pages: write` and `id-token: write`.
+   The only change from ManimOnline is a staging step that copies only the served
+   files (`index.html gallery.html docs.html docs src vendor examples .nojekyll`)
+   into `_site/`. That way `tests/` and `scripts/` are not published.
+3. Add a minimal `index.html` containing the toolbar skeleton, a `<textarea>`, a preview
+   that shows escaped text, and a footer with the commit SHA. Add `.nojekyll`.
+4. Add a post-deploy step that fetches `page_url` and checks for a marker string, so a
+   broken deploy fails the workflow.
+5. Add `test.yml` (runs on push and PR): `node --check` on all scripts and `node --test`.
+   Make deploy depend on tests passing.
+
+Done when: pushing to `main` updates the live page, and the workflow fails if the deployed page is wrong.
+
+## Phase 1: Editor shell
+
+Everything except the formats themselves, tested with a built-in plain-text format.
+
+1. **Layout and editor.** Vendor ACE. Add the toolbar (format selector with Auto, view
+   toggle, Share, HashBin, Docs, Gallery) and a resizable split.
+2. **View modes.** Split, Source only and Preview only. Buttons plus keyboard shortcuts.
+   The view is stored in `?view=`. Below 760 px the panes stack vertically, and the
+   toggle switches between them.
+3. **URL state.** Implement `url-state.js` as described above. Unit tests cover round-trips,
+   precedence (`#cid` over `?compressed` over `?example`) and removing old parameters.
+4. **Render scheduler.** 300 ms debounce, revision counter, `AbortSignal` passed to
+   `render`, and a status bar showing rendering, error or done.
+5. **Format registry.** Lazy `load()`, Auto detection (highest confidence above a
+   threshold, otherwise GFM), and a manual override that is stored in the URL.
+6. **HashBin.** Port `hashbin.js` and `hashbin-panel.js` from ManimOnline and change the
+   document format. Register a HashBin app for `https://curtcox.github.io/sheets/` and put
+   its public client ID in a `<meta name="hashbin-client-id">` tag. Loading public CIDs
+   works without registration. Saving needs it.
+7. **Share.** Copy-link button and optional is.gd shortening, ported from `share-links.js`.
+8. **Docs and gallery skeleton.** `docs.html` renders `docs/*.md`. Until Phase 2 lands it
+   shows them as preformatted text. `gallery.html` reads `examples/catalog.json`, with
+   cards, search and a format filter. Each card has a **Load in editor** link
+   (`index.html?example=<id>`).
+9. **Browser tests.** Port the Playwright setup: editing updates the URL, reload restores
+   the state, view modes work, and examples load. Run on chromium, firefox and webkit.
+
+Done when: a shared link reproduces source, format and view in another browser, and HashBin save and load round-trip.
+
+---
+
+## Phases 2–10: one format at a time
+
+Every format phase must deliver all of the following:
+
+- an engine in `src/formats/<id>/`, plus vendored dependencies with entries in `vendor/README.md`
+- `detect()` with unit tests, including tests that it does *not* claim other formats' examples
+- at least four gallery examples covering basic, typical, edge and error cases
+- `docs/formats/<id>.md`: what the format is, the supported subset, known gaps, and upstream links
+- unit tests against fixtures, plus a browser test that renders every gallery example for that format
+- a HashBin round-trip test that keeps the format
+
+### Phase 2: GitHub Flavored Markdown
+
+- **Engine:** markdown-it plus plugins for task lists, footnotes and GitHub alerts
+  (`> [!NOTE]`). Tables, strikethrough and autolinks are built in. Code is highlighted
+  with highlight.js. `$…$` and `$$…$$` and ```` ```math ```` blocks render with Temml,
+  as GitHub does. Mermaid is loaded lazily, and only if a ```` ```mermaid ```` block is present.
+- **Conformance:** run the GFM spec examples from `github/cmark-gfm`'s `spec.txt`.
+  Record the pass rate and list known deviations in the docs. markdown-it is close to
+  GFM but not exact.
+- **Shared output:** the GFM pipeline (`renderMarkdown(src, { math })`) is reused for
+  prose in AsciiMath, Calca and Quarto, and for `docs.html`.
+- **Detection:** this is the fallback format, with low confidence.
+
+### Phase 3: AsciiMath
+
+- **Engine:** asciimath2tex (Apache-2.0), then Temml.
+- **Document model:** GFM prose where `$…$` and `$$…$$` are read as AsciiMath instead of
+  TeX, plus ```` ```asciimath ```` fenced blocks. A file with no Markdown structure is
+  treated as one display formula per line.
+- **Extras:** a "Show TeX" toggle under each formula, to help with debugging and learning.
+- **Detection:** AsciiMath fences, or a high share of AsciiMath-only tokens such as
+  `sum_(i=1)^n` or `sqrt` without a backslash.
+
+### Phase 4: Numbat
+
+- **Vendor:** `scripts/vendor/numbat.sh` checks out `sharkdp/numbat` at a pinned tag
+  (currently v1.24.0) and runs `numbat-wasm/build.sh` (`wasm-pack --target web`).
+  The script commits `vendor/numbat@<ver>/` (pkg JS + `.wasm`). Dual MIT/Apache-2.0.
+- **Engine:** runs in a worker. `new Numbat(true, true, FormatType.Html)`, then
+  `interpret()` on the document one statement at a time in a single context. Each
+  statement gets one result row, shown beside its line. Errors attach to their line.
+- **Exchange rates:** fetch the ECB XML, call `set_exchange_rates`, and cache the result.
+  If the fetch fails, show a notice and leave currency units without rates.
+- **Detection:** `let`, `fn`, `->` conversions, or `unit` / `dimension` declarations.
+
+### Phase 5: CalcFile
+
+- **Vendor:** `scripts/vendor/calcfile.sh` checks out `peetzweg/calcfile` at a pinned commit.
+  It uses esbuild to bundle `packages/core/src/index.ts` (and mathjs) into one ES module,
+  `vendor/calcfile@<sha>/core.mjs`, and copies `fixtures/conformance/calcfile-v0.1.json`.
+  (`packages/core` is private and not on npm.) This is a one-time vendoring step; the
+  site itself stays buildless.
+- **Engine:** `evaluateDocument()`, with results shown beside lines the way CalcFile Web
+  shows them. Text, header and comment lines are styled by `LineKind`.
+- **Conformance:** run all v0.1 conformance cases in `node --test` (37 required ones as of today).
+- **Detection:** low. CalcFile looks like prose with numbers. Pick it through
+  `?format=calcfile` or the `.calc` extension when loading HashBin plain text.
+
+### Phase 6: Org-mode tables
+
+- **Engine:** own code. orga (MIT) parses the surrounding Org structure (headings,
+  lists, emphasis, links). A new evaluator handles tables and `#+TBLFM:`.
+- **Formula subset:** column (`$3=$1*$2`) and field (`@2$3=`) formulas; references
+  `@<` `@>` `$<` `$>`, relative `@-1`, hline `@I`/`@II`; ranges `@2$1..@>$1`;
+  `vsum vmean vmin vmax vcount vprod`, arithmetic and common Calc functions; format
+  specifiers `;%.2f`; and modes `;N`. `'(elisp)` formulas show an "unsupported" diagnostic.
+- **Output:** the recalculated table, plus a **Copy recalculated source** button that
+  works like `C-c C-c` in Emacs.
+- **Fixtures:** `scripts/org-expected.sh` runs `emacs --batch` with
+  `org-table-recalculate-buffer-tables` to produce expected outputs. The test workflow
+  installs `emacs-nox` and checks that the committed expected outputs still match.
+- **Detection:** `#+TBLFM:`, `|---+` hlines, or `#+TITLE:`-style keywords.
+
+### Phase 7: Calca
+
+- **Risk:** Calca is a closed commercial app with no published spec, so the target is
+  the behavior shown in Calca's documentation and examples. The docs page will say
+  "Calca-compatible subset". Check atom-calca (MIT) as prior art.
+- **Engine:** GFM for prose. Calculation lines are code blocks (indented or fenced) or
+  lines containing `=>`. mathjs handles numbers, variables, user functions
+  `f(x) = x^2`, units and conversions (`in`), and matrices. Results replace the text after
+  `=>`. Symbolic results are partial: mathjs `simplify` and `derivative` cover simple
+  cases, and solving equations is out of scope at first.
+- **Detection:** lines matching `… => …`.
+
+### Phase 8: Hurmet
+
+- **Vendor:** `scripts/vendor/hurmet.sh` checks out `ronkok/Hurmet` at a pinned commit and
+  runs its rollup config on `src/hurmet.js` with `format: "es"` instead of CJS. It
+  commits the bundle (about 1.3 MB, loaded lazily) and Hurmet's CSS. MIT license.
+- **Engine:** compute the calculation cells (as `updateAndSave` does), then `md2html`.
+  Supports `¢ … ¢` calculations, units, and spreadsheet tables.
+- **Currency rates:** fill `globalThis.currencyRates` from the same cached ECB fetch used by Numbat.
+- **Detection:** `¢` calculation delimiters.
+
+### Phase 9: Beancount
+
+- **Engine:** own JS code, MIT-licensed. Directives: `option`, `open`, `close`,
+  `commodity`, transactions (`*`/`!`/`txn`) with postings, inferring one missing amount,
+  tags, links and metadata; `balance`, `pad`, `price`, `note`, `event`. `include` and
+  plugins are reported as unsupported. Inventories are per account and commodity, with
+  simple `{cost}` lots. Lot-matching rules beyond FIFO come later.
+- **Reports in the preview:** errors (unbalanced transactions, failed balance
+  assertions, postings to closed accounts), balance sheet, income statement, trial
+  balance, and a per-account journal. Reports come from tabs inside the preview.
+- **Fixtures:** the test workflow runs `pip install beancount` and checks that the
+  committed expected outputs still match `bean-check` and `bean-query` results for each fixture.
+- **Detection:** lines matching `^\d{4}-\d{2}-\d{2} (open|close|balance|price|\*|!|txn)`.
+
+### Phase 10: Quarto
+
+- **Engine:** js-yaml (front matter: `title`, `author`, `date`, `execute`). The document
+  is split into prose and executable cells. Prose uses the GFM pipeline plus Pandoc-style
+  fenced divs (`::: {.callout-note}`), `{#fig-…}` labels with basic `@fig-…` cross-references, and Temml math.
+- **Python:** Pyodide (pinned version, loaded from jsDelivr on first use) runs in a
+  worker. All cells share one interpreter, so state carries over. Cell options are read
+  from `#|` lines (`echo`, `eval`, `output`, `label`, `fig-cap`). Output can be stdout,
+  the repr of the last expression, a DataFrame `_repr_html_`, or a matplotlib figure
+  as SVG. Packages imported by the cells load through `pyodide.loadPackagesFromImports`.
+  Cells rerun after edits are debounced, the worker is terminated on cancel, and there
+  is a 90-second deadline.
+- **Other languages:** `{r}`, `{ojs}` and `{julia}` cells are shown with a "not executed
+  in the browser" note.
+- **Detection:** YAML front matter with Quarto keys, or ```` ```{python} ```` cells.
+
+---
+
+## Later and optional
+
+- Offline support with a service worker (ManimOnline's `offline-assets.js` pattern).
+- Export rendered HTML or PDF. Download source with the format's file extension.
+- ACE highlighting modes for Beancount, Org, Numbat and Hurmet.
+- Quarto R cells through webR. Calca equation solving.
+- Gallery cover images pre-rendered by a script, like ManimOnline's `render-gallery.cjs`.
+
+## Still needed from you
+
+1. **Enable Pages** with source "GitHub Actions" (Phase 0, step 1). I can do it with `gh` if you approve.
+2. **HashBin app registration** for `https://curtcox.github.io/sheets/`, to get a public
+   client ID (Phase 1, step 6). Until then, saving is disabled and loading still works.
+3. **Repository license.** The plan assumes MIT. All planned dependencies are permissively
+   licensed: Temml MIT, markdown-it MIT, Hurmet MIT, CalcFile Apache-2.0, Numbat MIT/Apache-2.0,
+   asciimath2tex Apache-2.0, ACE BSD, Pyodide MPL-2.0 (loaded at runtime, not modified).
