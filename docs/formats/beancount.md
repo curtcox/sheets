@@ -20,3 +20,5 @@ Diagnostics cover unbalanced transactions, failed assertions, unsupported includ
 Known gaps: advanced booking methods and lot selectors, total-cost syntax, tolerances and rounding rules, inventory interpolation across multiple missing commodities, advanced options, includes, and plugins. Arithmetic uses JavaScript numbers with a fixed `1e-8` transaction tolerance, rather than Beancount's exact Decimal and inferred tolerances. Error reports remain visible alongside partial balances; they do not certify a ledger.
 
 Fixtures are checked independently with pinned `bean-check` and `bean-query` tools in CI. Auto detects dated account directives and transaction flags. Extensions are `.bean` and `.beancount` when a filename is available.
+
+The source editor highlights dates, directives, accounts, amounts, commodities, tags, links, strings, and metadata. Semicolon comments stay separate from quoted text. Highlighting is a lexical aid; rendering diagnostics report evaluation errors.

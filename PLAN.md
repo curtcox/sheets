@@ -15,7 +15,8 @@ supports a different set of formats.
 
 Phases 0–10 are implemented and deployed on GitHub Pages, with the supported
 subsets and compatibility gaps recorded in the format guides. Source downloads,
-standalone rendered HTML exports, and preview printing/PDF are also implemented.
+standalone rendered HTML exports, preview printing/PDF, and dedicated ACE modes
+for Beancount, Org, Numbat, and Hurmet are also implemented.
 Finalized HashBin load/save support is deferred by request; its provisional client
 remains, with saving disabled. The repository uses MIT and Pages deployment is
 enabled through GitHub Actions.
@@ -293,7 +294,6 @@ Every format phase must deliver all of the following:
 ## Later and optional
 
 - Offline support with a service worker (ManimOnline's `offline-assets.js` pattern).
-- ACE highlighting modes for Beancount, Org, Numbat and Hurmet.
 - Quarto R cells through webR. Calca equation solving.
 - Gallery cover images pre-rendered by a script, like ManimOnline's `render-gallery.cjs`.
 

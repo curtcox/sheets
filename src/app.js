@@ -8,6 +8,7 @@ import { HashBinPanel } from "./hashbin-panel.js";
 import { ShareClient } from "./share-links.js";
 import { loadExample } from "./examples.js";
 import { acePath } from "./ace-path.js";
+import { loadEditorMode } from "./editor-modes.js";
 import { sourceTitle, sourceDownload } from "./downloads.js";
 import { htmlDownload, downloadFile } from "./export-document.js";
 import { optionalStorage } from "./util.js";
@@ -106,7 +107,11 @@ const scheduler = new RenderScheduler({
     $("format-docs").href = `docs.html?page=formats/${currentType}`;
     const plugin = await loadFormat(currentType);
     combined.throwIfAborted();
-    editor?.session.setMode(plugin.aceMode);
+    if (editor) {
+      const mode = await loadEditorMode(ace, plugin.aceMode);
+      combined.throwIfAborted();
+      editor.session.setMode(mode);
+    }
     return {
       ...(await plugin.render(src, { signal: combined })),
       signal: combined,

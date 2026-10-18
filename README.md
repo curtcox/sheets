@@ -7,7 +7,8 @@ Supports GitHub Markdown, AsciiMath, Numbat, CalcFile, Org tables, a Calca-compa
 subset, Hurmet, a Beancount core subset, and Quarto notebooks with Python. Includes
 36 gallery examples, format guides, diagnostics, responsive split views, ACE, and
 sanitized HTML/MathML/SVG output. Download source files, export the finished preview
-as standalone HTML, or print it to PDF.
+as standalone HTML, or print it to PDF. Beancount, Org, Numbat, and Hurmet have
+format-specific source highlighting.
 
 ## Run locally
 
@@ -75,6 +76,7 @@ account sign-in and charged save need registration and manual verification.
 ## Source map
 
 - `src/app.js`: shell, editor, diagnostics, startup and sharing.
+- `src/editor-modes.js`: project-owned ACE highlighting, including Hurmet cells in Markdown.
 - `src/formats/`: lazy plugins and DOM-free engines.
 - `src/workers/`: disposable Numbat, Hurmet and Python interpreters.
 - `src/url-state.js`, `render-scheduler.js`, `hashbin*.js`: state and persistence.

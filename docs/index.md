@@ -9,6 +9,7 @@ Choose a format or leave **Auto detect** selected. Auto recognizes strong langua
 - **Source**, **Split**, and **Preview** control the workspace. Use **Ctrl+Alt+1**, **Ctrl+Alt+2**, and **Ctrl+Alt+3** respectively.
 - Drag the divider to resize. Focus it and use the arrow keys, Home, or End for keyboard resizing.
 - Below 760 pixels, split panes stack vertically. Source and Preview use the full workspace.
+- Source highlighting follows the selected or detected format. Beancount, Org, Numbat, and Hurmet have dedicated modes; highlighting does not validate a document.
 - Calculations run after a 300 ms pause. Diagnostics appear in the status bar and ACE gutter.
 - **Cancel** terminates a running worker. An edit cancels older work automatically.
 

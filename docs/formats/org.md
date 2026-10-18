@@ -17,3 +17,5 @@ Supported references include `$3`, `@2$3`, relative `@-1`, boundaries `@<`, `@>`
 **Copy recalculated source** copies updated, aligned tables and the original surrounding source. Auto detects `#+TBLFM:`, Org keywords, and table hlines. Headings, simple lists, emphasis, and links are rendered through the Org AST.
 
 Emacs Lisp formulas produce an explicit unsupported diagnostic. This is a core subset: named fields, remote tables, iteration modes, arbitrary Calc syntax, and exact Emacs display-width alignment are not implemented. Reference checks compare supported numeric tables against `emacs --batch`; the Lisp error example is excluded from that comparison.
+
+The source editor highlights headings, table separators and numbers, keywords, and formula references. Source blocks remain distinct from surrounding Org prose. Highlighting is a lexical aid; rendering diagnostics report evaluation errors.
