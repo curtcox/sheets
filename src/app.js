@@ -203,6 +203,21 @@ $("cancel-render").onclick = () => {
   preview.setAttribute("aria-busy", "false");
 };
 preview.addEventListener("click", async (event) => {
+  const reference = event.target.closest('a[href^="#"]');
+  if (reference) {
+    // The fragment can hold a HashBin CID. References scroll within the preview
+    // without replacing any part of the document address.
+    event.preventDefault();
+    try {
+      const id = decodeURIComponent(reference.getAttribute("href").slice(1));
+      preview
+        .querySelector(`#${CSS.escape(id)}`)
+        ?.scrollIntoView({ block: "start" });
+    } catch {
+      /* Malformed references leave the document address intact. */
+    }
+    return;
+  }
   const report = event.target.closest("[data-report]");
   if (report) {
     preview

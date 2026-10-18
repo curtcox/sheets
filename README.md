@@ -58,7 +58,11 @@ SHA during staging. The intended URL is <https://curtcox.github.io/sheets/>.
 
 Deployment runs only after the complete test workflow succeeds.
 
-## HashBin setup
+## HashBin setup (deferred)
+
+Final HashBin load/save integration is deferred. The current client and public-CID
+loading are provisional; account registration and real save/load verification
+remain future work. Saving is intentionally disabled in this deployment.
 
 Public CIDs load without configuration. Saving stays disabled until a public
 HashBin app client ID is added to the `hashbin-client-id` meta tag in `index.html`.

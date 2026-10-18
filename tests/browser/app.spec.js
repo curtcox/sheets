@@ -273,6 +273,7 @@ test("Python renders pandas tables and matplotlib figures", async ({
     .locator("#preview figure path[style]")
     .evaluateAll((paths) => paths.map((p) => p.getAttribute("style")));
   expect(styles.some((style) => style.includes("stroke:"))).toBe(true);
+  const documentURL = page.url();
   await page.locator('#preview a[href="#fig-demo"]').click();
   const hash = await page.evaluate(
     () =>
@@ -282,7 +283,8 @@ test("Python renders pandas tables and matplotlib figures", async ({
         ),
       ),
   );
-  expect(hash).toBe("#fig-demo");
+  expect(hash).toBe(new URL(documentURL).hash);
+  expect(page.url()).toBe(documentURL);
 });
 test("HashBin links preserve query format and view overrides", async ({
   page,
@@ -323,4 +325,34 @@ test("source links work when browser storage is blocked", async ({ page }) => {
   await expect(page.locator("#preview h1")).toContainText(
     "A small, useful note",
   );
+});
+
+test("preview references preserve a saved document CID through reload", async ({
+  page,
+}) => {
+  const cid =
+    Buffer.from([0, 0, 0, 0, 0, 65]).toString("base64url") +
+    "a".repeat(85) +
+    "A";
+  const source =
+    '# Saved source\n\n[Jump to section](#section)\n\n<h2 id="section">A section</h2>';
+  await page.route("https://256t.us/" + cid, (route) =>
+    route.fulfill({
+      body: JSON.stringify({
+        format: "sheets-document",
+        version: 1,
+        type: "gfm",
+        view: "split",
+        src: source,
+      }),
+    }),
+  );
+  await page.goto("/index.html#" + cid);
+  await ready(page);
+  const savedURL = page.url();
+  await page.getByRole("link", { name: "Jump to section" }).click();
+  await expect(page).toHaveURL(savedURL, { timeout: 1500 });
+  await page.reload();
+  await ready(page);
+  await expect(page.locator("#preview h1")).toHaveText("Saved source");
 });

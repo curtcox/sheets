@@ -1,4 +1,4 @@
-/** Shared HashBin persistence. Payloads remain readable by the modl-only editor. */
+/** Provisional Sheets document persistence; finalized HashBin integration is deferred. */
 const HashBinDocuments = {
   MAX_BYTES: 5 * 1024 * 1024,
   bytes(value) {

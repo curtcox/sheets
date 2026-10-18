@@ -1,4 +1,6 @@
-# HashBin storage
+# HashBin storage (deferred)
+
+Finalized load/save support is deferred. The current client is provisional, and saving is intentionally disabled. The following describes the existing scaffolding and setup for a future integration.
 
 [HashBin](https://hashbin.org) is optional content-addressed storage. Open **HashBin** in the toolbar and paste a CID or saved link to load a document.
 

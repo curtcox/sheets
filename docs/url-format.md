@@ -19,3 +19,5 @@ The supported format IDs are `gfm`, `asciimath`, `numbat`, `calcfile`, `org`, `c
 ## Optional short links
 
 Choose **Shorten with is.gd** in the Share dialog. This explicitly sends the complete source link through AllOrigins to is.gd. The app validates the returned HTTPS is.gd URL. If shortening fails, the original source link remains ready to copy. HashBin provides a separate content-storage option for large documents.
+
+References and footnotes inside the preview scroll to their targets without changing the document URL. This preserves saved CIDs and avoids rerunning notebook cells.
