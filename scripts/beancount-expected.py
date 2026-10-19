@@ -4,10 +4,17 @@ import csv
 from decimal import Decimal
 import io
 import json
-import os
 from pathlib import Path
 import subprocess
 import sys
+from beancount import loader
+from beancount.core import data, inventory
+
+def canonical(number):
+    text = format(number, "f")
+    if "." in text:
+        text = text.rstrip("0").rstrip(".")
+    return "0" if number.is_zero() else text
 
 root = Path(__file__).resolve().parents[1]
 folder = root / 'tests/fixtures/beancount'
@@ -27,13 +34,25 @@ for file in sorted(folder.glob('*.bean')):
         number = Decimal(row['sum(number)'].strip())
         # Formatting must not normalize through the 28-digit decimal context or
         # binary floats: both can discard digits from the independent oracle.
-        canonical = format(number, 'f')
-        if '.' in canonical:
-            canonical = canonical.rstrip('0').rstrip('.')
-        if number.is_zero():
-            canonical = '0'
-        balances.setdefault(row['account'], {})[row['currency']] = canonical
-    result[file.name] = {'valid': checked.returncode == 0, 'balances': balances}
+        balances.setdefault(row['account'], {})[row['currency']] = canonical(number)
+    # Inspect native booked positions independently too: account balances alone
+    # cannot distinguish FIFO from LIFO or detect a wrong cost/date/label match.
+    entries, _, _ = loader.load_file(str(file))
+    holdings = {}
+    for entry in entries:
+        if isinstance(entry, data.Transaction):
+            for posting in entry.postings:
+                if posting.cost is not None:
+                    key = posting.account + "\0" + posting.units.currency
+                    holdings.setdefault(key, inventory.Inventory()).add_position(posting)
+    lots = {}
+    for key, positions in holdings.items():
+        rows = [{"quantity": canonical(p.units.number), "number": canonical(p.cost.number),
+                 "currency": p.cost.currency, "date": str(p.cost.date), "label": p.cost.label}
+                for p in positions if p.cost is not None]
+        if rows:
+            lots[key] = sorted(rows, key=lambda row: json.dumps(row, sort_keys=True))
+    result[file.name] = {'valid': checked.returncode == 0, 'balances': balances, 'lots': lots}
 expected = folder / 'reference.json'
 if '--check' in sys.argv:
     if json.loads(expected.read_text()) != result:

@@ -10,6 +10,13 @@ import {
   tolerances,
   quantizeInferred,
 } from "./decimal.js";
+import {
+  annotations,
+  bookingMethod,
+  costCurrency,
+  bookLots,
+  applyLot,
+} from "./booking.js";
 const accountPattern =
   "(?:Assets|Liabilities|Equity|Income|Expenses)(?::[A-Z][A-Za-z0-9-]*)+";
 const accountRE = new RegExp(`^(${accountPattern})(?:\\s+|$)(.*)$`);
@@ -44,7 +51,10 @@ export function parseBeancount(src) {
   src.split("\n").forEach((raw, i) => {
     const line = i + 1;
     try {
-      const text = raw.replace(/\s+;.*$/, "").trim();
+      // A semicolon inside a quoted narration/lot label is data.
+      const text = (
+        raw.match(/^(?:"(?:[^"\\]|\\.)*"|[^";])*/)?.[0] || ""
+      ).trim();
       if (!text || text.startsWith(";")) return;
       if (/^option\s/.test(text)) {
         const m = /^option\s+"([^"]+)"\s+"([^"]*)"/.exec(text);
@@ -86,24 +96,7 @@ export function parseBeancount(src) {
             : {}),
           metadata: {},
         };
-        if (a) {
-          const cost = /\{\s*([^}]+)\s*\}/.exec(a.tail);
-          if (cost) {
-            const c = amount(cost[1].trim());
-            if (c) posting.cost = { number: c.number, currency: c.currency };
-            else error(line, "Only simple per-unit cost lots are supported.");
-          }
-          const price = /(@@?)\s+(.+)$/.exec(a.tail);
-          if (price) {
-            const p = amount(price[2]);
-            if (p)
-              posting.price = {
-                number: p.number,
-                currency: p.currency,
-                total: price[1] === "@@",
-              };
-          }
-        }
+        if (a) Object.assign(posting, annotations(a.tail, a.number, amount));
         entry.postings.push(posting);
         return;
       }
@@ -157,10 +150,15 @@ export function parseBeancount(src) {
           }
         }
         if (kind === "pad") entry.sourceAccount = m?.[2].trim();
-        if (kind === "open")
-          entry.currencies = (m?.[2].match(/^[A-Z][A-Z0-9, ]*/)?.[0] || "")
-            .split(/[, ]+/)
-            .filter(Boolean);
+        if (kind === "open") {
+          const opened = /^(.*?)(?:\s*("(?:[^"\\]|\\.)*"))?$/.exec(
+            m?.[2] || "",
+          );
+          entry.currencies = opened[1].split(/[, ]+/).filter(Boolean);
+          if (entry.currencies.some((c) => !/^[A-Z][A-Z0-9._'-]*$/.test(c)))
+            throw new Error("Invalid open commodity or booking declaration.");
+          entry.booking = opened[2] ? bookingMethod(unquote(opened[2])) : null;
+        }
         if (kind === "commodity") entry.currency = rest.trim();
         if (kind === "price") {
           const p = /^(\S+)\s+(.+)$/.exec(rest);
@@ -184,6 +182,7 @@ export function parseBeancount(src) {
       entries.push(entry);
     } catch (e) {
       error(line, e.message);
+      if (entry?.kind === "transaction") entry.invalid = true;
       entry = null;
       posting = null;
     }
@@ -201,6 +200,16 @@ export function evaluateBeancount(src) {
     pads = new Map();
   const error = (line, message) => diagnostics.push({ line, message });
   const config = precisionOptions(result.optionEntries, error);
+  let defaultBooking = "STRICT";
+  for (const option of result.optionEntries.filter(
+    (o) => o.name === "booking_method",
+  )) {
+    try {
+      defaultBooking = bookingMethod(option.value);
+    } catch (e) {
+      error(option.line, e.message);
+    }
+  }
   const get = (account, currency) =>
     balances.get(account)?.get(currency) ?? zero;
   function add(account, currency, quantity) {
@@ -229,13 +238,55 @@ export function evaluateBeancount(src) {
           }
         : { currency: p.currency, number: p.number };
   function book(txn) {
+    if (txn.invalid) return;
+    if (txn.postings.some((p) => p.costSpec)) {
+      // Resolve weight commodities before booking. Failed groups contribute no
+      // postings or lots, as in the native booking pass; other groups can survive.
+      const groups = new Map(),
+        missing = [];
+      try {
+        for (const p of txn.postings) {
+          if (p.number === undefined) {
+            missing.push(p);
+            continue;
+          }
+          const currency = costCurrency(p, lots);
+          if (!groups.has(currency)) groups.set(currency, []);
+          groups.get(currency).push(p);
+        }
+        if (missing.length && (missing.length !== 1 || groups.size !== 1))
+          throw new Error(
+            "Cost transactions require at most one missing amount and one weight commodity when inferring.",
+          );
+        if (missing.length) [...groups.values()][0].push(...missing);
+      } catch (e) {
+        error(e.line ?? txn.line, e.message);
+        return;
+      }
+      const tolerance = tolerances(
+        txn.postings.map((p) => ({ ...p, cost: p.costSpec })),
+        config,
+      );
+      for (const group of groups.values()) {
+        try {
+          record(
+            { ...txn, postings: bookLots(group, lots, accounts, txn.date) },
+            tolerance,
+          );
+        } catch (e) {
+          error(e.line ?? txn.line, e.message);
+        }
+      }
+    } else record(txn);
+  }
+  function record(txn, inheritedTolerance) {
     if (!txn.postings.length) {
       error(txn.line, "Transaction has no postings.");
       return;
     }
     const missing = txn.postings.filter((p) => p.number === undefined),
       totals = new Map(),
-      tolerance = tolerances(txn.postings, config);
+      tolerance = inheritedTolerance ?? tolerances(txn.postings, config);
     for (const p of txn.postings)
       if (p.number !== undefined) {
         const w = weight(p);
@@ -263,27 +314,7 @@ export function evaluateBeancount(src) {
       if (p.number === undefined) continue;
       validate(p.account, p.currency, p.line);
       add(p.account, p.currency, p.number);
-      const key = `${p.account}\0${p.currency}`;
-      if (!lots.has(key)) lots.set(key, []);
-      const inventory = lots.get(key);
-      if (p.number.gt(0) && p.cost)
-        inventory.push({ quantity: p.number, ...p.cost, date: txn.date });
-      if (p.number.lt(0) && inventory.length) {
-        let remaining = p.number.negated();
-        for (const lot of inventory) {
-          if (
-            p.cost &&
-            (lot.currency !== p.cost.currency || !lot.number.eq(p.cost.number))
-          )
-            continue;
-          const used = D.min(lot.quantity, remaining);
-          lot.quantity = lot.quantity.minus(used);
-          remaining = remaining.minus(used);
-          if (remaining.isZero()) break;
-        }
-        if (p.cost && remaining.gt(0))
-          error(p.line, "Insufficient matching cost lots (FIFO).");
-      }
+      applyLot(p, lots);
       journal.push({
         date: txn.date,
         line: p.line,
@@ -312,7 +343,11 @@ export function evaluateBeancount(src) {
         if (accounts.has(e.account))
           error(e.line, `Account ${e.account} is already open.`);
         else
-          accounts.set(e.account, { currencies: e.currencies, closed: false });
+          accounts.set(e.account, {
+            currencies: e.currencies,
+            booking: e.booking ?? defaultBooking,
+            closed: false,
+          });
         break;
       case "close":
         if (!accounts.has(e.account))
@@ -399,7 +434,11 @@ export function evaluateBeancount(src) {
     ...result,
     balances: balancesObject,
     journal,
-    lots: Object.fromEntries(lots),
+    lots: Object.fromEntries(
+      [...lots]
+        .map(([key, row]) => [key, row.filter((l) => !l.quantity.isZero())])
+        .filter(([, row]) => row.length),
+    ),
     prices,
   });
 }

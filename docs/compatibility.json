@@ -764,7 +764,7 @@
       "milestone": "BEAN-2",
       "dependsOn": [],
       "expected": "Verify each behavior against Beancount 3.2.0 / beanquery 0.2.0; separate deliberate policy from unsupported upstream capabilities.",
-      "disclosure": "This is a project-owned core JavaScript engine, not Python Beancount or a full query environment. Includes, plugins, advanced options, advanced booking methods, lot selectors, total-cost syntax, and multi-commodity interpolation across multiple missing amounts are unsupported.",
+      "disclosure": "This is a project-owned core JavaScript engine, not Python Beancount or a full query environment. Includes, plugins, advanced options, combined costs, merge markers, lot cost/quantity interpolation, and multi-commodity interpolation across multiple missing amounts remain unsupported. Per-unit/total costs, date/label selectors, and six booking methods are supported; see BEAN-07/08.",
       "baselineDisclosure": "This is a project-owned core JavaScript engine, not Python Beancount or a full query environment. Includes, plugins, advanced options, advanced booking methods, lot selectors, total-cost syntax, and multi-commodity interpolation across multiple missing amounts are unsupported.",
       "reproducer": null,
       "evidence": []
@@ -779,7 +779,7 @@
       "milestone": "BEAN-2",
       "dependsOn": [],
       "expected": "Verify each behavior against Beancount 3.2.0 / beanquery 0.2.0; separate deliberate policy from unsupported upstream capabilities.",
-      "disclosure": "Transactions infer at most **one missing posting amount**. Supported per-unit cost lots are reduced FIFO. Cost/price weights balance transactions, while displayed holdings retain their native quantities and commodities.",
+      "disclosure": "Transactions infer at most **one missing posting amount**. For cost transactions with a missing posting, one weight commodity must be known. Cost/price weights balance transactions, while displayed holdings retain native quantities and commodities. No consolidated valuation is implied.",
       "baselineDisclosure": "Transactions infer at most **one missing posting amount**. Supported per-unit cost lots are reduced FIFO. Cost/price weights balance transactions, while displayed holdings retain their native quantities and commodities.",
       "reproducer": null,
       "evidence": []
@@ -1250,6 +1250,74 @@
       },
       "evidence": [
         "tests/browser/calcfile-rates.spec.js"
+      ]
+    },
+    {
+      "id": "BEAN-07",
+      "format": "beancount",
+      "title": "Per-unit/total costs and date/label lot selectors",
+      "kind": "gap",
+      "status": "resolved",
+      "priority": "P0",
+      "milestone": "BEAN-2A",
+      "dependsOn": [
+        "BEAN-04"
+      ],
+      "expected": "Validity, exact balances and remaining cost positions agree with Beancount 3.2.0 / beanquery 0.2.0.",
+      "disclosure": "Per-unit and total-cost lots, commodity/date/label selectors, exact decimal normalization, merged identical positions, and short-position covers now match the pinned native fixtures. Older versions silently interpreted total costs as unit costs. This bounded syntax gap is resolved; combined costs, merge markers, lot interpolation, and broader commodity inference remain open in BEAN-09.",
+      "baselineDisclosure": "Only simple per-unit lots were recognized; reductions used FIFO regardless of booking declarations, without rejecting ambiguous matches.",
+      "reproducer": {
+        "path": "tests/fixtures/beancount/total-cost.bean"
+      },
+      "evidence": [
+        "scripts/beancount-expected.py",
+        "tests/fixtures/beancount/reference.json",
+        "tests/unit/beancount.test.js",
+        "tests/browser/beancount-booking.spec.js"
+      ]
+    },
+    {
+      "id": "BEAN-08",
+      "format": "beancount",
+      "title": "Explicit booking policies and ambiguous-reduction rejection",
+      "kind": "gap",
+      "status": "resolved",
+      "priority": "P0",
+      "milestone": "BEAN-2A",
+      "dependsOn": [
+        "BEAN-04"
+      ],
+      "expected": "Validity, exact balances and remaining cost positions agree with Beancount 3.2.0 / beanquery 0.2.0.",
+      "disclosure": "STRICT (the native default), STRICT_WITH_SIZE, FIFO, LIFO, HIFO, and NONE are supported file-wide and per account. Insufficient/unmatched/ambiguous reductions reject their weight-commodity group without changing its inventory; other groups may remain in partial reports. Earlier versions always reduced FIFO. Specify FIFO explicitly to retain that intended policy; unambiguous per-unit ledgers retain their balances. Native fixtures compare remaining cost positions as well as validity and balances.",
+      "baselineDisclosure": "Only simple per-unit lots were recognized; reductions used FIFO regardless of booking declarations, without rejecting ambiguous matches.",
+      "reproducer": {
+        "path": "tests/fixtures/beancount/strict-ambiguous.bean"
+      },
+      "evidence": [
+        "scripts/beancount-expected.py",
+        "tests/fixtures/beancount/reference.json",
+        "tests/unit/beancount.test.js",
+        "tests/browser/beancount-booking.spec.js"
+      ]
+    },
+    {
+      "id": "BEAN-09",
+      "format": "beancount",
+      "title": "Remaining cost grammar, lot interpolation and booking bounds",
+      "kind": "mixed",
+      "status": "open",
+      "priority": "P2",
+      "milestone": "BEAN-2",
+      "dependsOn": [
+        "BEAN-07",
+        "BEAN-08"
+      ],
+      "expected": "Expand only with native fixtures for both accepted and rejected inventory behavior.",
+      "disclosure": "Combined per-unit/total costs, merge markers, cost/quantity interpolation within a lot, arbitrary arithmetic amounts, and automatic lot commodity inference across several cost commodities remain unsupported. Cost transactions with a missing posting require one known weight commodity and one missing amount. AVERAGE is diagnosed as unsupported; the pinned native version also rejects its reductions. Total costs on zero units are diagnosed instead of crashing with the native division-by-zero error. Uncosted and costed positions are distinct; additional mixed-inventory edge cases still need audit.",
+      "baselineDisclosure": "Advanced booking methods, lot selectors and total-cost syntax were unsupported.",
+      "reproducer": null,
+      "evidence": [
+        "design/beancount-booking.md"
       ]
     }
   ]

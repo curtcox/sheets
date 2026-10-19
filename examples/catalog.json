@@ -251,7 +251,7 @@
     "format": "beancount",
     "kind": "edge",
     "title": "A cost lot and a pad",
-    "description": "A padded opening balance and a simple costed investment.",
+    "description": "A padded opening balance, total-cost lots, and an explicit FIFO sale.",
     "path": "examples/beancount/edge.bean"
   },
   {

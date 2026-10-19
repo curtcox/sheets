@@ -142,9 +142,9 @@ See the [Hurmet guide](formats/hurmet.md). Compatibility target: Hurmet 24abefda
 
 See the [Beancount guide](formats/beancount.md). Compatibility target: Beancount 3.2.0 / beanquery 0.2.0.
 
-- **BEAN-01 — This is a project-owned core JavaScript engine, not Python Beancount or a full query environment** (Needs detailed audit). This is a project-owned core JavaScript engine, not Python Beancount or a full query environment. Includes, plugins, advanced options, advanced booking methods, lot selectors, total-cost syntax, and multi-commodity interpolation across multiple missing amounts are unsupported.
+- **BEAN-01 — This is a project-owned core JavaScript engine, not Python Beancount or a full query environment** (Needs detailed audit). This is a project-owned core JavaScript engine, not Python Beancount or a full query environment. Includes, plugins, advanced options, combined costs, merge markers, lot cost/quantity interpolation, and multi-commodity interpolation across multiple missing amounts remain unsupported. Per-unit/total costs, date/label selectors, and six booking methods are supported; see BEAN-07/08.
 
-- **BEAN-02 — Transactions infer at most one missing posting amount** (Needs detailed audit). Transactions infer at most **one missing posting amount**. Supported per-unit cost lots are reduced FIFO. Cost/price weights balance transactions, while displayed holdings retain their native quantities and commodities.
+- **BEAN-02 — Transactions infer at most one missing posting amount** (Needs detailed audit). Transactions infer at most **one missing posting amount**. For cost transactions with a missing posting, one weight commodity must be known. Cost/price weights balance transactions, while displayed holdings retain native quantities and commodities. No consolidated valuation is implied.
 
 - **BEAN-03 — Price directives are retained but do not revalue reports** (Needs detailed audit). Price directives are retained but **do not revalue reports**. There is no consolidated reporting currency or automatic market-price valuation.
 
@@ -152,9 +152,15 @@ See the [Beancount guide](formats/beancount.md). Compatibility target: Beancount
 
 - **BEAN-06 — Decimal resource bounds and remaining rounding options** (Known gap). Numeric literals are bounded at 256 digits, and arithmetic uses a 28-significant-digit context. Other advanced options, including automatic rounding-account postings, remain unsupported. These are separate from the resolved decimal/tolerance work.
 
+- **BEAN-09 — Remaining cost grammar, lot interpolation and booking bounds** (Known gap). Combined per-unit/total costs, merge markers, cost/quantity interpolation within a lot, arbitrary arithmetic amounts, and automatic lot commodity inference across several cost commodities remain unsupported. Cost transactions with a missing posting require one known weight commodity and one missing amount. AVERAGE is diagnosed as unsupported; the pinned native version also rejects its reductions. Total costs on zero units are diagnosed instead of crashing with the native division-by-zero error. Uncosted and costed positions are distinct; additional mixed-inventory edge cases still need audit.
+
 ### Resolved compatibility gaps
 
 - **BEAN-04 — Decimal arithmetic and precision tolerances** (Resolved). Amounts are preserved as decimal values with a 28-significant-digit, half-even arithmetic context. Transactions infer commodity tolerances; supported options control the multiplier, defaults, and cost/price contributions. Balance assertions support inferred and explicit tolerances. Earlier versions used a fixed 1e-8 transaction tolerance and binary numbers; reports also rounded to eight decimal places. These precision gaps are resolved for the supported syntax.
+
+- **BEAN-07 — Per-unit/total costs and date/label lot selectors** (Resolved). Per-unit and total-cost lots, commodity/date/label selectors, exact decimal normalization, merged identical positions, and short-position covers now match the pinned native fixtures. Older versions silently interpreted total costs as unit costs. This bounded syntax gap is resolved; combined costs, merge markers, lot interpolation, and broader commodity inference remain open in BEAN-09.
+
+- **BEAN-08 — Explicit booking policies and ambiguous-reduction rejection** (Resolved). STRICT (the native default), STRICT_WITH_SIZE, FIFO, LIFO, HIFO, and NONE are supported file-wide and per account. Insufficient/unmatched/ambiguous reductions reject their weight-commodity group without changing its inventory; other groups may remain in partial reports. Earlier versions always reduced FIFO. Specify FIFO explicitly to retain that intended policy; unambiguous per-unit ledgers retain their balances. Native fixtures compare remaining cost positions as well as validity and balances.
 
 ## Quarto
 

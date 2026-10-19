@@ -126,7 +126,7 @@ or notebook cells. External image URLs still need their server. See
 | Figure reference | A link such as `@fig-name` to a numbered standalone image, figure div or visible cell plot. Quarto supports forward references and diagnoses duplicate, missing or unavailable targets; subfigure and nonfigure cross-references are unsupported. |
 | YAML front matter | An initial block between `---` lines containing document settings as indented key/value pairs. In Quarto, indentation determines which settings belong under `execute`. |
 | Commodity and posting | A commodity is a ledger's counted item, such as USD or shares. A posting assigns a quantity to an account; postings in a Beancount transaction must balance by their weights. |
-| Cost lot and FIFO | A lot records a quantity's acquisition cost. This Beancount subset reduces supported lots first in, first out (oldest first); it does not implement every booking method. |
+| Cost lot and booking | A lot records a quantity’s acquisition cost, date, and optional label. Beancount supports per-unit/total costs and STRICT, STRICT_WITH_SIZE, FIFO (oldest first), LIFO (newest first), HIFO (highest unit cost), and NONE booking. Selectors filter lots before booking; displayed holdings retain native commodities. Combined costs and lot interpolation remain unsupported. |
 | Balance assertion | A check that a ledger account contains an expected quantity at a date. It reports a mismatch rather than converting all holdings to a common currency. |
 | Formula list | AsciiMath mode that typesets every nonempty source line, including lines that resemble Markdown. |
 | Mixed prose | AsciiMath mode that keeps unmarked text as Markdown prose and typesets only dollar-delimited or fenced formulas. |

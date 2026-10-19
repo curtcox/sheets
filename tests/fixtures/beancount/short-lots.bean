@@ -1,0 +1,8 @@
+2026-01-01 open Assets:Stock STOCK
+2026-01-01 open Assets:Cash USD
+2026-01-02 * "Short sale"
+  Assets:Stock -2 STOCK {{20 USD}}
+  Assets:Cash
+2026-01-03 * "Cover one"
+  Assets:Stock 1 STOCK {}
+  Assets:Cash

@@ -8,6 +8,7 @@
         "USD": "-0.005"
       }
     },
+    "lots": {},
     "valid": false
   },
   "balance-tolerance.bean": {
@@ -19,6 +20,7 @@
         "USD": "-0.005"
       }
     },
+    "lots": {},
     "valid": true
   },
   "basic.bean": {
@@ -30,7 +32,201 @@
         "USD": "-1000"
       }
     },
+    "lots": {},
     "valid": true
+  },
+  "booking-dates.bean": {
+    "balances": {
+      "Assets:Cash": {
+        "USD": "-40"
+      },
+      "Assets:Stock": {
+        "STOCK": "3"
+      }
+    },
+    "lots": {
+      "Assets:Stock\u0000STOCK": [
+        {
+          "currency": "USD",
+          "date": "2025-12-01",
+          "label": null,
+          "number": "20",
+          "quantity": "1"
+        },
+        {
+          "currency": "USD",
+          "date": "2025-12-20",
+          "label": null,
+          "number": "10",
+          "quantity": "2"
+        }
+      ]
+    },
+    "valid": true
+  },
+  "booking-default.bean": {
+    "balances": {
+      "Assets:Cash": {
+        "USD": "-60"
+      },
+      "Assets:Stock": {
+        "STOCK": "4"
+      }
+    },
+    "lots": {
+      "Assets:Stock\u0000STOCK": [
+        {
+          "currency": "USD",
+          "date": "2026-01-02",
+          "label": "old",
+          "number": "10",
+          "quantity": "2"
+        },
+        {
+          "currency": "USD",
+          "date": "2026-01-03",
+          "label": "new",
+          "number": "20",
+          "quantity": "2"
+        }
+      ]
+    },
+    "valid": true
+  },
+  "booking-groups.bean": {
+    "balances": {
+      "Assets:Cash": {
+        "EUR": "-2",
+        "USD": "-80"
+      },
+      "Assets:Stock": {
+        "STOCK": "5"
+      },
+      "Expenses:Food": {
+        "EUR": "2"
+      }
+    },
+    "lots": {
+      "Assets:Stock\u0000STOCK": [
+        {
+          "currency": "USD",
+          "date": "2026-01-02",
+          "label": "old",
+          "number": "10",
+          "quantity": "2"
+        },
+        {
+          "currency": "USD",
+          "date": "2026-01-03",
+          "label": "new",
+          "number": "20",
+          "quantity": "3"
+        }
+      ]
+    },
+    "valid": false
+  },
+  "booking-override.bean": {
+    "balances": {
+      "Assets:Cash": {
+        "USD": "-40"
+      },
+      "Assets:Stock": {
+        "STOCK": "2"
+      }
+    },
+    "lots": {
+      "Assets:Stock\u0000STOCK": [
+        {
+          "currency": "USD",
+          "date": "2026-01-03",
+          "label": "new",
+          "number": "20",
+          "quantity": "2"
+        }
+      ]
+    },
+    "valid": true
+  },
+  "booking-rollback.bean": {
+    "balances": {
+      "Assets:Cash": {
+        "USD": "-70"
+      },
+      "Assets:Stock": {
+        "STOCK": "4"
+      }
+    },
+    "lots": {
+      "Assets:Stock\u0000STOCK": [
+        {
+          "currency": "USD",
+          "date": "2026-01-02",
+          "label": "old",
+          "number": "10",
+          "quantity": "1"
+        },
+        {
+          "currency": "USD",
+          "date": "2026-01-03",
+          "label": "new",
+          "number": "20",
+          "quantity": "3"
+        }
+      ]
+    },
+    "valid": false
+  },
+  "booking-same-transaction.bean": {
+    "balances": {
+      "Assets:Cash": {
+        "USD": "-70"
+      },
+      "Assets:Stock": {
+        "STOCK": "4"
+      }
+    },
+    "lots": {
+      "Assets:Stock\u0000STOCK": [
+        {
+          "currency": "USD",
+          "date": "2026-01-02",
+          "label": null,
+          "number": "10",
+          "quantity": "1"
+        },
+        {
+          "currency": "USD",
+          "date": "2026-01-03",
+          "label": null,
+          "number": "20",
+          "quantity": "3"
+        }
+      ]
+    },
+    "valid": true
+  },
+  "booking-tolerance.bean": {
+    "balances": {
+      "Assets:Cash": {
+        "USD": "-9.06"
+      },
+      "Assets:Stock": {
+        "STOCK": "0.9"
+      }
+    },
+    "lots": {
+      "Assets:Stock\u0000STOCK": [
+        {
+          "currency": "USD",
+          "date": "2026-01-02",
+          "label": null,
+          "number": "10",
+          "quantity": "0.9"
+        }
+      ]
+    },
+    "valid": false
   },
   "cost-tolerance-cap.bean": {
     "balances": {
@@ -40,6 +236,17 @@
       "Assets:Stock": {
         "STOCK": "0.12"
       }
+    },
+    "lots": {
+      "Assets:Stock\u0000STOCK": [
+        {
+          "currency": "USD",
+          "date": "2026-01-02",
+          "label": null,
+          "number": "1000",
+          "quantity": "0.12"
+        }
+      ]
     },
     "valid": false
   },
@@ -58,6 +265,17 @@
         "TOKEN": "1.23"
       }
     },
+    "lots": {
+      "Assets:Stock\u0000STOCK": [
+        {
+          "currency": "USD",
+          "date": "2026-01-02",
+          "label": null,
+          "number": "10",
+          "quantity": "2.34"
+        }
+      ]
+    },
     "valid": true
   },
   "edge.bean": {
@@ -72,6 +290,17 @@
         "USD": "-1000"
       }
     },
+    "lots": {
+      "Assets:Shares\u0000HOOL": [
+        {
+          "currency": "USD",
+          "date": "2026-01-04",
+          "label": null,
+          "number": "100",
+          "quantity": "2"
+        }
+      ]
+    },
     "valid": true
   },
   "error.bean": {
@@ -83,7 +312,30 @@
         "USD": "20"
       }
     },
+    "lots": {},
     "valid": false
+  },
+  "fifo.bean": {
+    "balances": {
+      "Assets:Cash": {
+        "USD": "-40"
+      },
+      "Assets:Stock": {
+        "STOCK": "2"
+      }
+    },
+    "lots": {
+      "Assets:Stock\u0000STOCK": [
+        {
+          "currency": "USD",
+          "date": "2026-01-03",
+          "label": "new",
+          "number": "20",
+          "quantity": "2"
+        }
+      ]
+    },
+    "valid": true
   },
   "half-even.bean": {
     "balances": {
@@ -96,6 +348,46 @@
       "Equity:Opening": {
         "USD": "-4.7"
       }
+    },
+    "lots": {
+      "Assets:Stock\u0000STOCK": [
+        {
+          "currency": "USD",
+          "date": "2026-01-02",
+          "label": null,
+          "number": "1",
+          "quantity": "2.345"
+        },
+        {
+          "currency": "USD",
+          "date": "2026-01-03",
+          "label": null,
+          "number": "1",
+          "quantity": "2.355"
+        }
+      ]
+    },
+    "valid": true
+  },
+  "hifo.bean": {
+    "balances": {
+      "Assets:Cash": {
+        "USD": "-40"
+      },
+      "Assets:Stock": {
+        "STOCK": "2"
+      }
+    },
+    "lots": {
+      "Assets:Stock\u0000STOCK": [
+        {
+          "currency": "USD",
+          "date": "2026-01-03",
+          "label": "new",
+          "number": "20",
+          "quantity": "2"
+        }
+      ]
     },
     "valid": true
   },
@@ -111,6 +403,126 @@
         "USD": "-2.89"
       }
     },
+    "lots": {
+      "Assets:Stock\u0000STOCK": [
+        {
+          "currency": "USD",
+          "date": "2026-01-02",
+          "label": null,
+          "number": "1.234",
+          "quantity": "2.345"
+        }
+      ]
+    },
+    "valid": true
+  },
+  "lifo.bean": {
+    "balances": {
+      "Assets:Cash": {
+        "USD": "-20"
+      },
+      "Assets:Stock": {
+        "STOCK": "2"
+      }
+    },
+    "lots": {
+      "Assets:Stock\u0000STOCK": [
+        {
+          "currency": "USD",
+          "date": "2026-01-02",
+          "label": "old",
+          "number": "10",
+          "quantity": "2"
+        }
+      ]
+    },
+    "valid": true
+  },
+  "lots-insufficient.bean": {
+    "balances": {
+      "Assets:Cash": {
+        "USD": "-80"
+      },
+      "Assets:Stock": {
+        "STOCK": "5"
+      }
+    },
+    "lots": {
+      "Assets:Stock\u0000STOCK": [
+        {
+          "currency": "USD",
+          "date": "2026-01-02",
+          "label": "old",
+          "number": "10",
+          "quantity": "2"
+        },
+        {
+          "currency": "USD",
+          "date": "2026-01-03",
+          "label": "new",
+          "number": "20",
+          "quantity": "3"
+        }
+      ]
+    },
+    "valid": false
+  },
+  "merged-lots.bean": {
+    "balances": {
+      "Assets:Cash": {
+        "USD": "-40"
+      },
+      "Assets:Stock": {
+        "STOCK": "4"
+      }
+    },
+    "lots": {
+      "Assets:Stock\u0000STOCK": [
+        {
+          "currency": "USD",
+          "date": "2026-01-01",
+          "label": "same",
+          "number": "10",
+          "quantity": "4"
+        }
+      ]
+    },
+    "valid": true
+  },
+  "none-lots.bean": {
+    "balances": {
+      "Assets:Cash": {
+        "USD": "-65"
+      },
+      "Assets:Stock": {
+        "STOCK": "4"
+      }
+    },
+    "lots": {
+      "Assets:Stock\u0000STOCK": [
+        {
+          "currency": "USD",
+          "date": "2026-01-02",
+          "label": "old",
+          "number": "10",
+          "quantity": "2"
+        },
+        {
+          "currency": "USD",
+          "date": "2026-01-03",
+          "label": "new",
+          "number": "20",
+          "quantity": "3"
+        },
+        {
+          "currency": "USD",
+          "date": "2026-01-04",
+          "label": null,
+          "number": "15",
+          "quantity": "-1"
+        }
+      ]
+    },
     "valid": true
   },
   "precision-lots.bean": {
@@ -121,6 +533,17 @@
       "Assets:Stock": {
         "STOCK": "0.2"
       }
+    },
+    "lots": {
+      "Assets:Stock\u0000STOCK": [
+        {
+          "currency": "USD",
+          "date": "2026-01-02",
+          "label": null,
+          "number": "0.1",
+          "quantity": "0.2"
+        }
+      ]
     },
     "valid": true
   },
@@ -139,6 +562,17 @@
         "USD": "11"
       }
     },
+    "lots": {
+      "Assets:Stock\u0000STOCK": [
+        {
+          "currency": "GBP",
+          "date": "2026-01-04",
+          "label": null,
+          "number": "1.0003",
+          "quantity": "1"
+        }
+      ]
+    },
     "valid": true
   },
   "precision-pad.bean": {
@@ -150,6 +584,7 @@
         "USD": "-0.0000000002"
       }
     },
+    "lots": {},
     "valid": true
   },
   "precision.bean": {
@@ -160,6 +595,189 @@
       "Equity:Opening": {
         "USD": "-9007199254740993.0000000002"
       }
+    },
+    "lots": {},
+    "valid": true
+  },
+  "selector-date.bean": {
+    "balances": {
+      "Assets:Cash": {
+        "USD": "-60"
+      },
+      "Assets:Stock": {
+        "STOCK": "4"
+      }
+    },
+    "lots": {
+      "Assets:Stock\u0000STOCK": [
+        {
+          "currency": "USD",
+          "date": "2026-01-02",
+          "label": "old",
+          "number": "10",
+          "quantity": "2"
+        },
+        {
+          "currency": "USD",
+          "date": "2026-01-03",
+          "label": "new",
+          "number": "20",
+          "quantity": "2"
+        }
+      ]
+    },
+    "valid": true
+  },
+  "selector-label.bean": {
+    "balances": {
+      "Assets:Cash": {
+        "USD": "-60"
+      },
+      "Assets:Stock": {
+        "STOCK": "4"
+      }
+    },
+    "lots": {
+      "Assets:Stock\u0000STOCK": [
+        {
+          "currency": "USD",
+          "date": "2026-01-02",
+          "label": "old",
+          "number": "10",
+          "quantity": "2"
+        },
+        {
+          "currency": "USD",
+          "date": "2026-01-03",
+          "label": "new",
+          "number": "20",
+          "quantity": "2"
+        }
+      ]
+    },
+    "valid": true
+  },
+  "selector-missing.bean": {
+    "balances": {
+      "Assets:Cash": {
+        "USD": "-80"
+      },
+      "Assets:Stock": {
+        "STOCK": "5"
+      }
+    },
+    "lots": {
+      "Assets:Stock\u0000STOCK": [
+        {
+          "currency": "USD",
+          "date": "2026-01-02",
+          "label": "old",
+          "number": "10",
+          "quantity": "2"
+        },
+        {
+          "currency": "USD",
+          "date": "2026-01-03",
+          "label": "new",
+          "number": "20",
+          "quantity": "3"
+        }
+      ]
+    },
+    "valid": false
+  },
+  "selector-quoted.bean": {
+    "balances": {
+      "Assets:Cash": {
+        "USD": "-1000"
+      },
+      "Assets:Stock": {
+        "STOCK": "1"
+      }
+    },
+    "lots": {
+      "Assets:Stock\u0000STOCK": [
+        {
+          "currency": "USD",
+          "date": "2026-01-02",
+          "label": "brace } comma, semi; quote \" end",
+          "number": "1000",
+          "quantity": "1"
+        }
+      ]
+    },
+    "valid": true
+  },
+  "selector-total.bean": {
+    "balances": {
+      "Assets:Cash": {
+        "USD": "-60"
+      },
+      "Assets:Stock": {
+        "STOCK": "4"
+      }
+    },
+    "lots": {
+      "Assets:Stock\u0000STOCK": [
+        {
+          "currency": "USD",
+          "date": "2026-01-02",
+          "label": "old",
+          "number": "10",
+          "quantity": "2"
+        },
+        {
+          "currency": "USD",
+          "date": "2026-01-03",
+          "label": "new",
+          "number": "20",
+          "quantity": "2"
+        }
+      ]
+    },
+    "valid": true
+  },
+  "short-insufficient.bean": {
+    "balances": {
+      "Assets:Cash": {
+        "USD": "20"
+      },
+      "Assets:Stock": {
+        "STOCK": "-2"
+      }
+    },
+    "lots": {
+      "Assets:Stock\u0000STOCK": [
+        {
+          "currency": "USD",
+          "date": "2026-01-02",
+          "label": null,
+          "number": "10",
+          "quantity": "-2"
+        }
+      ]
+    },
+    "valid": false
+  },
+  "short-lots.bean": {
+    "balances": {
+      "Assets:Cash": {
+        "USD": "10"
+      },
+      "Assets:Stock": {
+        "STOCK": "-1"
+      }
+    },
+    "lots": {
+      "Assets:Stock\u0000STOCK": [
+        {
+          "currency": "USD",
+          "date": "2026-01-02",
+          "label": null,
+          "number": "10",
+          "quantity": "-1"
+        }
+      ]
     },
     "valid": true
   },
@@ -172,6 +790,92 @@
         "USD": "-1"
       }
     },
+    "lots": {},
+    "valid": true
+  },
+  "strict-all.bean": {
+    "balances": {
+      "Assets:Cash": {
+        "USD": "0"
+      },
+      "Assets:Stock": {
+        "STOCK": "0"
+      }
+    },
+    "lots": {},
+    "valid": true
+  },
+  "strict-ambiguous.bean": {
+    "balances": {
+      "Assets:Cash": {
+        "USD": "-80"
+      },
+      "Assets:Stock": {
+        "STOCK": "5"
+      }
+    },
+    "lots": {
+      "Assets:Stock\u0000STOCK": [
+        {
+          "currency": "USD",
+          "date": "2026-01-02",
+          "label": "old",
+          "number": "10",
+          "quantity": "2"
+        },
+        {
+          "currency": "USD",
+          "date": "2026-01-03",
+          "label": "new",
+          "number": "20",
+          "quantity": "3"
+        }
+      ]
+    },
+    "valid": false
+  },
+  "strict-size-tie.bean": {
+    "balances": {
+      "Assets:Cash": {
+        "USD": "-60"
+      },
+      "Assets:Stock": {
+        "STOCK": "3"
+      }
+    },
+    "lots": {
+      "Assets:Stock\u0000STOCK": [
+        {
+          "currency": "USD",
+          "date": "2026-01-03",
+          "label": "new",
+          "number": "20",
+          "quantity": "3"
+        }
+      ]
+    },
+    "valid": true
+  },
+  "strict-size.bean": {
+    "balances": {
+      "Assets:Cash": {
+        "USD": "-20"
+      },
+      "Assets:Stock": {
+        "STOCK": "2"
+      }
+    },
+    "lots": {
+      "Assets:Stock\u0000STOCK": [
+        {
+          "currency": "USD",
+          "date": "2026-01-02",
+          "label": "old",
+          "number": "10",
+          "quantity": "2"
+        }
+      ]
+    },
     "valid": true
   },
   "tiny-inferred.bean": {
@@ -183,6 +887,7 @@
         "USD": "-0.0000000001"
       }
     },
+    "lots": {},
     "valid": true
   },
   "tiny-unbalanced.bean": {
@@ -194,6 +899,7 @@
         "USD": "1"
       }
     },
+    "lots": {},
     "valid": false
   },
   "tolerance-boundary.bean": {
@@ -205,6 +911,7 @@
         "USD": "4"
       }
     },
+    "lots": {},
     "valid": true
   },
   "tolerance-outside.bean": {
@@ -216,7 +923,30 @@
         "USD": "4"
       }
     },
+    "lots": {},
     "valid": false
+  },
+  "total-cost.bean": {
+    "balances": {
+      "Assets:Cash": {
+        "USD": "-6.666666666666666666666666666"
+      },
+      "Assets:Stock": {
+        "STOCK": "2"
+      }
+    },
+    "lots": {
+      "Assets:Stock\u0000STOCK": [
+        {
+          "currency": "USD",
+          "date": "2026-01-02",
+          "label": "fractional",
+          "number": "3.333333333333333333333333333",
+          "quantity": "2"
+        }
+      ]
+    },
+    "valid": true
   },
   "total-price-tolerance-outside.bean": {
     "balances": {
@@ -227,6 +957,7 @@
         "TOKEN": "1.23"
       }
     },
+    "lots": {},
     "valid": false
   },
   "typical.bean": {
@@ -241,10 +972,37 @@
         "USD": "-3000"
       }
     },
+    "lots": {},
+    "valid": true
+  },
+  "uncosted-separate.bean": {
+    "balances": {
+      "Assets:Cash": {
+        "USD": "-20"
+      },
+      "Assets:Stock": {
+        "STOCK": "1"
+      },
+      "Equity:Opening": {
+        "STOCK": "1"
+      }
+    },
+    "lots": {
+      "Assets:Stock\u0000STOCK": [
+        {
+          "currency": "USD",
+          "date": "2026-01-02",
+          "label": null,
+          "number": "10",
+          "quantity": "2"
+        }
+      ]
+    },
     "valid": true
   },
   "unused-pad.bean": {
     "balances": {},
+    "lots": {},
     "valid": false
   },
   "zero-inferred.bean": {
@@ -253,6 +1011,7 @@
         "USD": "0"
       }
     },
+    "lots": {},
     "valid": true
   }
 }

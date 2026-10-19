@@ -49,13 +49,17 @@ partial report output as a reliable balance.
 | `2026-01-02 * "Opening balance"` | Start a cleared transaction; `!` and `txn` are also supported |
 | `Assets:Bank 1000 USD` indented below a transaction | Post a commodity quantity to an account |
 | `2026-01-03 balance Assets:Bank 1000 USD` | Assert an expected balance at the start of that date |
-| `{10 USD}` after a quantity | Attach a supported per-unit cost lot |
+| `{10 USD}` after a quantity | Attach a per-unit cost lot |
+| `{{20 USD}}` after `2 STOCK` | Total acquisition cost; resolves to 10 USD per unit |
+| `{2026-01-02}` or `{"old"}` | Select an existing lot by acquisition date or label |
+| `{}` or `{USD}` on a reduction | Let the account booking method choose matching lots |
+| `open Assets:Stock STOCK "FIFO"` after a date | Override the default booking method for an account |
 | `@ 10 USD` or `@@ 20 USD` after a quantity | Supply a unit or total transaction price |
 | `#tag`, `^link`, or indented `key: "value"` | Retain transaction tags, links, or metadata |
 
 ## Supported subset and limits
 
-Supported directives are `option`, `open`, `close`, `commodity`, transactions (`*`, `!`, `txn`), `balance`, `pad`, `price`, `note`, and `event`. Transactions support tags, links, metadata, and one inferred missing posting amount. Postings can carry simple per-unit `{cost}` lots or `@`/`@@` prices. Cost lots use FIFO when reduced. Metadata and informational directives are retained; price directives are not used to revalue reports.
+Supported directives are `option`, `open`, `close`, `commodity`, transactions (`*`, `!`, `txn`), `balance`, `pad`, `price`, `note`, and `event`. Transactions support tags, links, metadata, and one inferred missing posting amount. Postings can carry per-unit or total-cost lots, date/label selectors, or `@`/`@@` prices. Cost lots use the booking method selected on the account or by the file-wide `booking_method` option; the default is STRICT. Metadata and informational directives are retained; price directives are not used to revalue reports.
 
 The preview includes **Diagnostics**, **Balance sheet**, **Income statement**, **Trial balance**, and an **Account journal**, grouped by account. Balances retain native commodities. Transaction balancing uses cost or price weights; displayed holdings retain their original quantities. There is no consolidated reporting currency or automatic price valuation.
 
@@ -88,11 +92,76 @@ its fractional digits are kept in the reports:
   Equity:Opening -9007199254740993.0000000001 USD
 ```
 
-Known gaps: advanced booking methods and lot selectors, total-cost syntax,
-inventory interpolation across multiple missing commodities, other advanced
-options (including automatic rounding-account postings), includes, and plugins.
-An attempted `account_rounding` option produces an unsupported-setting diagnostic.
-Error reports remain visible alongside partial balances; they do not certify a ledger.
+## Total costs and lot selection
+
+```text
+2026-01-01 open Assets:Stock STOCK "FIFO"
+2026-01-01 open Assets:Cash USD
+2026-01-02 * "First lot"
+  Assets:Stock 2 STOCK {{20 USD, "old"}}
+  Assets:Cash
+2026-01-03 * "Second lot"
+  Assets:Stock 3 STOCK {20 USD, "new"}
+  Assets:Cash
+2026-01-04 * "Sell three using FIFO cost weights"
+  Assets:Stock -3 STOCK {}
+  Assets:Cash
+```
+
+The first lot costs **10 USD per unit**, rather than 20 USD per unit. The sale
+uses the two oldest units and one newer unit: its weight is **-40 USD**, so the
+cash posting is inferred as **40 USD**. Holdings finish at **2 STOCK** and
+**-40 USD**, still shown in their native commodities. A price annotation does not
+replace a lot's cost weight; these reports do not revalue holdings.
+
+Use per-unit `{10 USD}`, total `{{20 USD}}`, cost commodity `{USD}`, date
+`{2026-01-02}`, label `{"old"}`, or combinations such as
+`{10 USD, 2026-01-02, "old"}`. Empty `{}` specifies no selector. Acquisitions
+require an explicit cost amount and commodity; their date defaults to the
+transaction date. Identical cost/commodity/date/label positions merge. A total
+cost divides by the absolute quantity in the decimal context; a recurring
+quotient can leave a tiny decimal residual, just as in the native reference.
+Short cost positions and their matching covers use the same rules. Uncosted
+postings stay separate from positions held at cost.
+
+| Booking method | Behavior when several lots match |
+| --- | --- |
+| STRICT (default) | Reject ambiguity, unless the requested reduction empties all matching lots exactly |
+| STRICT_WITH_SIZE | Apply STRICT first; otherwise select an exact-size lot, oldest acquisition date first |
+| FIFO | Reduce oldest acquisition dates first |
+| LIFO | Reduce newest acquisition dates first |
+| HIFO | Reduce highest unit cost first, within the resolved cost commodity |
+| NONE | Create/merge the explicitly specified signed position without selecting other lots; mixed positive/negative lots are allowed |
+
+Set the file-wide default with `option "booking_method" "FIFO"`, or override it
+on an account's `open` directive as above. A date/label/cost selector filters lots
+before the method runs. FIFO/LIFO/HIFO ties retain inventory insertion order.
+Insufficient or unmatched reductions produce diagnostics. A failed booking group
+contributes no postings or inventory changes; independent weight-commodity groups
+can still appear in the partial report. Multiple reductions in one transaction
+reserve the available lots, while acquisitions become candidates only after that
+transaction. Correct every diagnostic before relying on a report.
+
+**Compatibility change:** older Sheets versions silently used FIFO regardless of
+booking declarations, and could misread `{{total cost}}` as a per-unit cost.
+Omitted methods now use Beancount's STRICT default. Specify FIFO explicitly if
+that is the intended policy; a newly rejected ambiguous entry needs an explicit
+method or a more precise selector. Existing unambiguous per-unit ledgers retain
+their balances.
+
+## Remaining inventory limits
+
+Combined per-unit/total `{10 # 2 USD}` costs, merge markers, cost/quantity
+interpolation within a lot, arbitrary arithmetic in amounts, and automatic lot
+commodity inference across several cost commodities remain unsupported. A cost
+transaction with a missing posting requires one known weight commodity and at
+most one missing amount. AVERAGE is not implemented (the pinned native version
+also rejects reductions under it); it is diagnosed rather than silently treated
+as FIFO. These limits are separate from the supported booking methods and total
+costs. Other advanced options (including automatic rounding-account postings),
+includes, and plugins remain unsupported. Error reports remain visible alongside
+partial balances; they do not certify a ledger. Total costs on zero units produce
+a diagnostic; the pinned native loader instead raises a division-by-zero error.
 
 Fixtures are checked independently with pinned `bean-check` and `bean-query` tools in CI. Auto detects dated account directives and transaction flags. Extensions are `.bean` and `.beancount` when a filename is available.
 
@@ -123,4 +192,7 @@ These entries share the [central limitations ledger](../limitations.md). “Need
 | BEAN-04 | Resolved | Decimal arithmetic and precision tolerances |
 | BEAN-05 | Needs detailed audit | Balance assertions observe the start of their date, before that day's transactions |
 | BEAN-06 | Known gap | Decimal resource bounds and remaining rounding options |
+| BEAN-07 | Resolved | Per-unit/total costs and date/label lot selectors |
+| BEAN-08 | Resolved | Explicit booking policies and ambiguous-reduction rejection |
+| BEAN-09 | Known gap | Remaining cost grammar, lot interpolation and booking bounds |
 <!-- compatibility:end -->

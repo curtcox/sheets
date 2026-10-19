@@ -15,6 +15,33 @@ for (const [file, expected] of Object.entries(references))
       JSON.stringify(result.diagnostics),
     );
     assert.deepEqual(result.balances, expected.balances);
+    // Compare as unordered positions; exact residuals distinguish booking methods.
+    const normalizeLots = (lots) =>
+      Object.fromEntries(
+        Object.entries(lots).map(([key, rows]) => [
+          key,
+          rows
+            .slice()
+            .sort((a, b) =>
+              JSON.stringify([
+                a.currency,
+                a.date,
+                a.label,
+                a.number,
+                a.quantity,
+              ]).localeCompare(
+                JSON.stringify([
+                  b.currency,
+                  b.date,
+                  b.label,
+                  b.number,
+                  b.quantity,
+                ]),
+              ),
+            ),
+        ]),
+      );
+    assert.deepEqual(normalizeLots(result.lots), normalizeLots(expected.lots));
     for (const balances of Object.values(expected.balances))
       for (const value of Object.values(balances))
         assert.equal(
@@ -64,4 +91,51 @@ test("Beancount omits an unnecessary inferred zero posting like the reference", 
   );
   assert.deepEqual(result.diagnostics, []);
   assert.equal(result.balances["Equity:Opening"], undefined);
+});
+
+test("malformed or unsupported lot annotations are diagnosed without booking a different amount", () => {
+  const prefix =
+    '2026-01-01 open Assets:Stock STOCK\n2026-01-01 open Assets:Cash USD\n2026-01-02 * "Bad annotation"\n';
+  for (const annotation of [
+    "{{20 USD}",
+    "{10 # 2 USD}",
+    "{10 USD, *}",
+    "{10 USD} garbage",
+    "{10 USD, 2026-02-30}",
+    "{-10 USD}",
+    "{10 USD, 11 USD}",
+    "{10 USD} @ nope",
+  ]) {
+    const result = evaluateBeancount(
+      prefix + `  Assets:Stock 2 STOCK ${annotation}\n  Assets:Cash`,
+    );
+    assert.ok(
+      result.diagnostics.some((d) => d.line === 4),
+      annotation,
+    );
+    assert.deepEqual(result.balances, {}, annotation);
+    assert.deepEqual(result.lots, {}, annotation);
+  }
+  const zero = evaluateBeancount(
+    prefix + "  Assets:Stock 0 STOCK {{20 USD}}\n  Assets:Cash",
+  );
+  assert.match(zero.diagnostics[0].message, /nonzero quantity/);
+});
+test("unsupported booking and incomplete acquisition costs stay visible", () => {
+  assert.match(
+    evaluateBeancount('option "booking_method" "AVERAGE"').diagnostics[0]
+      .message,
+    /Unsupported booking/,
+  );
+  for (const method of ["UNKNOWN", "fifo", "AVERAGE"])
+    assert.match(
+      evaluateBeancount(`2026-01-01 open Assets:Stock STOCK "${method}"`)
+        .diagnostics[0].message,
+      /Unsupported booking/,
+    );
+  const incomplete = evaluateBeancount(
+    '2026-01-01 open Assets:Stock STOCK\n2026-01-01 open Assets:Cash USD\n2026-01-02 * "Missing cost"\n  Assets:Stock 2 STOCK {USD}\n  Assets:Cash',
+  );
+  assert.match(incomplete.diagnostics[0].message, /complete cost/);
+  assert.deepEqual(incomplete.balances, {});
 });

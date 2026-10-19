@@ -178,6 +178,20 @@ ${block("mermaid", "graph LR\n  Measure --> Review")}
   ],
   beancount: [
     sample(
+      'option "booking_method" "FIFO"\n2026-01-01 open Assets:Stock STOCK "FIFO"\n2026-01-01 open Assets:Cash USD\n2026-01-02 * "Old low-cost lot"\n  Assets:Stock 2 STOCK {{20 USD, "old"}}\n  Assets:Cash\n2026-01-03 * "New high-cost lot"\n  Assets:Stock 3 STOCK {20 USD, "new"}\n  Assets:Cash\n2026-01-04 * "Reduce lots"\n  Assets:Stock -3 STOCK {}\n  Assets:Cash\n',
+      [
+        "{{20 USD}}",
+        "{}",
+        "{USD}",
+        'open Assets:Stock STOCK "FIFO"',
+        "booking_method",
+      ],
+    ),
+    sample(
+      '2026-01-01 open Assets:Stock STOCK\n2026-01-01 open Assets:Cash USD\n2026-01-02 * "Old lot"\n  Assets:Stock 3 STOCK {10 USD, "old"}\n  Assets:Cash\n2026-01-03 * "New lot"\n  Assets:Stock 2 STOCK {20 USD, "new"}\n  Assets:Cash\n2026-01-04 * "Select by date"\n  Assets:Stock -1 STOCK {2026-01-02}\n  Assets:Cash\n2026-01-05 * "Select by label"\n  Assets:Stock -1 STOCK {"old"}\n  Assets:Cash\n2026-01-06 * "Combine selectors"\n  Assets:Stock -1 STOCK {10 USD, 2026-01-02, "old"}\n  Assets:Cash\n',
+      ["{2026-01-02}", '{"old"}', '{10 USD, 2026-01-02, "old"}'],
+    ),
+    sample(
       `option "tolerance_multiplier" "0.5"
 option "inferred_tolerance_default" "USD:0.001"
 option "infer_tolerance_from_cost" "TRUE"

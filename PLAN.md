@@ -596,7 +596,7 @@ independently verifiable releases in this order:
 | 1 / ORG-1A (M, implemented) | Named columns/fields, table parameters, file constants, and marked-row selection. | Compare values, case/precedence, field snapshots, named targets/ranges and protected metadata rows against Emacs. Preserve literal source blocks; provide original-line diagnostics for unsupported bindings. |
 | 2 / ORG-1B (M, implemented) | Remaining evaluation-order differences and same-document named-table references. | Native fixtures for column/field precedence, duplicate targets, dependency order, missing/ambiguous tables and bounded reference chains. Explicitly document any required compatibility migration. |
 | 3 / QT-2A (M, implemented) | Frequently used notebook include/warning/error controls and figure alt text/dimensions. | Match a pinned Quarto/knitr/Jupyter reference for each supported control; verify defaults, overrides, skipped cells, sanitization, exports and cancellation. Rich tables/inline expressions follow separately. |
-| 4 / BEAN-2A (M) | Unsupported booking/lot behavior and total-cost lots. | Differential bean-check/bean-query fixtures, exact decimals, ambiguous-booking rejection and native-commodity reports. New report views follow numeric correctness. |
+| 4 / BEAN-2A (M, implemented) | Unsupported booking/lot behavior and total-cost lots. | Differential bean-check/bean-query fixtures, exact decimals, ambiguous-booking rejection and native-commodity reports. New report views follow numeric correctness. |
 | 5 / CALCA-3A (M) | Named/multiline definitions, local bindings and indexing gaps. | Public reference cases plus explicit licensed-app verification where needed; retain old profiles. Solver expansion waits for dependable grammar. |
 | 6 / NUM-2 + HUR-1 audits (S each, then re-estimate) | Function/output paths dropped by the adapters. | Probe actual pinned browser APIs/ASTs and upstream examples. Restore missing existing-engine output before implementing another language or editing UI. |
 | 7 / FORMAT-1 + remaining ORG-1 (M slices) | Concrete notation failures, numeric modes, bounded iteration and layout gaps. | Differential fixtures for each named gap; compare Org with Emacs and notation with pinned translators/Temml. Keep convergence, numeric precision and display width distinct. |
@@ -655,6 +655,20 @@ wider metadata/output modes, native error/default architecture and exact device
 rendering gaps. Runnable docs and the R gallery cover the controls. See
 `design/quarto-controls.md`. Next: **BEAN-2A**, beginning with native total-cost
 and booking/lot fixtures; rich notebook output/inline expressions follow later.
+
+**BEAN-2A implemented (2026-10-19).** Per-unit/total costs and explicit
+commodity/date/label selectors now feed exact decimal lot booking. STRICT is the
+native default, with file-wide/per-account overrides for STRICT_WITH_SIZE,
+FIFO/LIFO/HIFO and NONE. Ambiguous, unmatched and insufficient reductions reject
+their weight-commodity group without committing lot reservations; supported short
+covers and merged positions retain exact quantities. The independent oracle now
+checks remaining cost positions as well as validity/balances. Original 22 numeric
+fixture results remain unchanged. Runnable docs, migration guidance and the
+gallery disclose the former implicit FIFO/total-cost errors. BEAN-07/08 resolve
+this bounded slice; BEAN-09 retains combined costs, lot interpolation, broader
+commodity inference and mixed-inventory audit. See `design/beancount-booking.md`.
+Next: **CALCA-3A**, beginning with reference-backed definition/binding grammar;
+Beancount valuation and query expansion follow numeric correctness separately.
 
 ### Phase 14 — P2: expand language compatibility
 

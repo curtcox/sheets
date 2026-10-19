@@ -65,7 +65,7 @@ export function tolerances(postings, config) {
     maximum(p.currency, tolerance);
     if (config.fromCost)
       for (const price of [p.cost, p.price]) {
-        if (!price) continue;
+        if (!price || price.number === undefined) continue;
         const unitPrice = price.total
           ? p.number.isZero()
             ? zero

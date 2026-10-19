@@ -1,0 +1,9 @@
+option "infer_tolerance_from_cost" "TRUE"
+2026-01-01 open Assets:Stock STOCK
+2026-01-01 open Assets:Cash USD
+2026-01-02 * "Buy"
+  Assets:Stock 1.0 STOCK {10 USD}
+  Assets:Cash -10.0 USD
+2026-01-03 * "Selector must not invent a cost tolerance"
+  Assets:Stock -0.10 STOCK {}
+  Assets:Cash 0.94 USD

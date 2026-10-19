@@ -67,7 +67,7 @@ autolink differences beyond that corpus; see the format guide. Run
 oracle (requires CMake, a C compiler, curl, and network access).
 
 Independent fixture checks require Emacs and Python reference tools. Beancount
-reference balances use decimal strings, never floats:
+reference balances and remaining cost-lot positions use decimal strings, never floats:
 
 ```sh
 python -m pip install beancount==3.2.0 beanquery==0.2.0

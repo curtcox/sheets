@@ -1,0 +1,8 @@
+2026-01-01 open Assets:Stock STOCK
+2026-01-01 open Assets:Cash USD
+2026-01-02 * "Label punctuation; is data"
+  Assets:Stock 2 STOCK {1,000 USD, "brace } comma, semi; quote \" end"}
+  Assets:Cash
+2026-01-03 * "Match quoted label"
+  Assets:Stock -1 STOCK {"brace } comma, semi; quote \" end"}
+  Assets:Cash

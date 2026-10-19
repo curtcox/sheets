@@ -1,0 +1,8 @@
+2026-01-01 open Assets:Stock STOCK
+2026-01-01 open Assets:Cash USD
+2026-01-02 * "Fractional total cost"
+  Assets:Stock 3 STOCK {{10 USD, "fractional"}}
+  Assets:Cash
+2026-01-03 * "Reduce at original exact unit cost"
+  Assets:Stock -1 STOCK {"fractional"}
+  Assets:Cash

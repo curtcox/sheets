@@ -1,0 +1,12 @@
+option "booking_method" "LIFO"
+2026-01-01 open Assets:Stock STOCK "FIFO"
+2026-01-01 open Assets:Cash USD
+2026-01-02 * "Old low-cost lot"
+  Assets:Stock 2 STOCK {10 USD, "old"}
+  Assets:Cash
+2026-01-03 * "New high-cost lot"
+  Assets:Stock 3 STOCK {{60 USD, "new"}}
+  Assets:Cash
+2026-01-04 * "Reduce lots"
+  Assets:Stock -3 STOCK {}
+  Assets:Cash
