@@ -154,6 +154,7 @@ These checks are numerical, not exact proofs; displayed answers retain 12
 significant digits. Cycles report diagnostics, dependency and relation-expansion depth are limited to 32,
 each query has a work limit, and a document allows 256 definitions and relations.
 Multiline/named/implicit-function definitions and local bindings remain unsupported.
+Nested assignments in expressions or function bodies are rejected in this mode.
 
 ## Equations
 

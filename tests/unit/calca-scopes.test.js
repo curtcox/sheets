@@ -152,6 +152,8 @@ test("scoped definitions retain expression safety and bounded work", () => {
     "constructor=3",
     "f(x)=f(x)",
     "f(evaluate)=1",
+    "f(x)=(value=x)",
+    "f(x)=(g(y)=y)",
   ])
     assert.throws(() => context(source));
   const capped = createScopedCalca();

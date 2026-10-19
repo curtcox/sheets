@@ -13,7 +13,9 @@ as standalone HTML, or print it to PDF. Beancount, Org, Numbat, and Hurmet have
 format-specific source highlighting. Offline access is available as an optional
 app-file download. Calca supports numeric linear and quadratic equation solving.
 Its optional **Structured blocks** mode separates calculation input from literal
-code, TeX, and Mermaid. Existing unprofiled Calca documents retain Legacy rules.
+code, TeX, and Mermaid. **Scoped definitions** adds immutable definitions, heading
+scopes, deferred numeric dependencies, and connected relation checks. Existing
+unprofiled Calca documents retain Legacy rules.
 
 ## Run locally
 

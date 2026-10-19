@@ -83,6 +83,16 @@ test("scoped gallery definitions, shared links and migration retain their delibe
         .map((a) => a.row),
     ),
   ).toEqual([4, 5]);
+  await fresh.goto(
+    writeURL(base, {
+      src: "```calca\nvalue=2\nf(x)=(value=x)\nvalue =>\n```",
+      format: "calca",
+      profile: CALCA_SCOPES,
+    }),
+  );
+  await ready(fresh);
+  await expect(fresh.locator("#render-status")).toContainText("1 diagnostic");
+  await expect(fresh.locator("#preview")).toContainText("value => 2");
   await fresh.close();
 });
 

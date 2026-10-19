@@ -31,6 +31,13 @@ export function createScopedCalca() {
     syntax.traverse((n, path, parent) => {
       if (++nodes > 1000) throw new Error("Expression is too complex.");
       if (
+        n !== syntax &&
+        ["AssignmentNode", "FunctionAssignmentNode"].includes(n.type)
+      )
+        throw new Error(
+          "Nested assignments are unsupported in scoped definitions.",
+        );
+      if (
         n.type === "SymbolNode" &&
         !(parent?.type === "FunctionNode" && path === "fn") &&
         !locals.has(n.name)
