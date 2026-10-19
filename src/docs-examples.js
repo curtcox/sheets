@@ -255,7 +255,15 @@ option "infer_tolerance_from_cost" "TRUE"
 };
 
 export function blockExample(page, source, language = "") {
-  const format = page.startsWith("formats/") ? page.slice(8) : "text";
+  const format = page.startsWith("formats/")
+    ? page.slice(8)
+    : page === "function-comparison"
+      ? language === "asciimath-formulas"
+        ? "asciimath"
+        : Object.hasOwn(syntaxExamples, language)
+          ? language
+          : "text"
+      : "text";
   return {
     format,
     src:
@@ -279,6 +287,9 @@ export function blockExample(page, source, language = "") {
 }
 
 export function inlineExample(page, code) {
+  // Cross-format names are ambiguous (sqrt, mean, etc.). Complete fenced
+  // examples on this comparison page choose their own explicit engine.
+  if (page === "function-comparison") return null;
   if (page === "url-format") {
     if (
       ["?profile=asciimath-formulas-v1", "asciimath-formulas-v1"].includes(code)

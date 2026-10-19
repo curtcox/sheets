@@ -8,6 +8,9 @@ feature names. On a narrow screen, scroll the comparison tables horizontally.
 The [limitations page](limitations.md) collects the compatibility gaps described
 throughout the individual guides.
 
+For callable libraries and reusable definitions, see the
+[built-in and custom function comparison](function-comparison.md).
+
 ## Calculations
 
 **Yes** means a built-in capability. **No** means no built-in support in this

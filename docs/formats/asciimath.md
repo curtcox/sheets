@@ -69,6 +69,9 @@ The pinned upstream corpus contains **436 cases**. The translator matches **430*
 
 See [Limitations and compatibility](../limitations.md) for the consolidated disclosures across formats.
 
+Compare the available libraries and definition syntax in
+[built-in and custom functions](../function-comparison.md).
+
 <!-- compatibility:start -->
 ## Tracked compatibility status
 

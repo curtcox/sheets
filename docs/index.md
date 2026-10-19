@@ -31,7 +31,9 @@ Plain text is also available for viewing escaped source.
 
 Use the [feature comparison and glossary](format-comparison.md) to compare calculations,
 units, tables, equations, diagrams, notebook execution, and offline support across
-all ten choices. Each format guide includes a starting example, syntax reference,
+all ten choices. The [built-in and custom function comparison](function-comparison.md)
+compares function libraries and shows which formats can define reusable functions.
+Each format guide includes a starting example, syntax reference,
 and the limits of its implementation in Sheets.
 
 Every code block has an **Open example in editor** link. Short syntax examples in

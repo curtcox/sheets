@@ -9,6 +9,7 @@ const pages = [
   ["url-format", "Sharing links"],
   ["hashbin", "HashBin storage"],
   ["format-comparison", "Compare formats & glossary"],
+  ["function-comparison", "Built-in & custom functions"],
   ["limitations", "Limitations & compatibility"],
   ...catalog.map((f) => [`formats/${f.id}`, f.label]),
 ];

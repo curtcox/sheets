@@ -22,6 +22,7 @@ test("documentation examples open their source with the required context and lim
     "url-format",
     "hashbin",
     "format-comparison",
+    "function-comparison",
     "limitations",
     ...catalog.map((f) => `formats/${f.id}`),
   ]) {
@@ -32,13 +33,24 @@ test("documentation examples open their source with the required context and lim
       .evaluateAll((codes) =>
         codes.map((code) => ({
           source: code.textContent,
+          language: [...code.classList]
+            .find((c) => c.startsWith("language-"))
+            ?.slice(9),
           href: code.parentElement.nextElementSibling?.querySelector("a")?.href,
         })),
       );
-    for (const { source, href } of blocks) {
+    for (const { source, href, language } of blocks) {
       expect(href).toBeTruthy();
       const doc = readURL(href);
-      expect(doc.format).toBe(id.startsWith("formats/") ? id.slice(8) : "text");
+      expect(doc.format).toBe(
+        id.startsWith("formats/")
+          ? id.slice(8)
+          : id === "function-comparison"
+            ? language === "asciimath-formulas"
+              ? "asciimath"
+              : language
+            : "text",
+      );
       if (doc.format === "calca") expect(doc.src).toContain(source.trimEnd());
       else expect(doc.src).toBe(source);
     }
@@ -196,4 +208,102 @@ test("documentation examples open their source with the required context and lim
   await expect(page.locator("#docs-content")).toContainText(
     "1e-8 transaction tolerance",
   );
+});
+
+test("function comparison examples use their own engines, execute custom definitions and fit mobile", async ({
+  page,
+}) => {
+  test.setTimeout(180000);
+  const errors = [];
+  page.on("pageerror", (error) => errors.push(error.message));
+  await page.goto("/docs.html");
+  await page
+    .getByRole("link", { name: "Built-in & custom functions", exact: true })
+    .click();
+  await expect(page.locator("#docs-content h1")).toHaveText(
+    "Built-in and custom functions",
+  );
+  await expect(page.locator('#docs-nav [aria-current="page"]')).toHaveText(
+    "Built-in & custom functions",
+  );
+  const rows = page.locator("#docs-content table").first().locator("tbody tr");
+  await expect(rows).toHaveCount(11);
+  for (const [format, support] of [
+    ["Numbat", "Yes"],
+    ["CalcFile", "No"],
+    ["Org tables", "No"],
+    ["Calca", "Yes"],
+    ["Hurmet", "Yes"],
+    ["Beancount", "No"],
+    ["Quarto: Python", "Yes"],
+    ["Quarto: R", "Yes"],
+    ["Plain text", "No"],
+  ]) {
+    await expect(
+      rows
+        .filter({ has: page.getByRole("link", { name: format, exact: true }) })
+        .locator("td")
+        .last(),
+    ).toContainText(support);
+  }
+  const examples = await page
+    .locator("#docs-content pre")
+    .evaluateAll((blocks) =>
+      blocks.map((block) => ({
+        source: block.textContent,
+        href: block.nextElementSibling.querySelector("a").href,
+      })),
+    );
+  expect(examples).toHaveLength(8);
+  const expected = [
+    { format: "calcfile", output: "2.35" },
+    { format: "org", output: "12" },
+    { format: "numbat", output: "25 m²" },
+    { format: "calca", output: "square(5) => 25", profile: "calca-blocks-v1" },
+    { format: "hurmet", output: "25" },
+    { format: "quarto", output: "25" },
+    { format: "quarto", output: "[1] 25" },
+    { format: "asciimath", output: "f", profile: "asciimath-formulas-v1" },
+  ];
+  for (const [i, example] of examples.entries()) {
+    const document = readURL(example.href),
+      target = expected[i];
+    expect(document.format).toBe(target.format);
+    expect(document.profile).toBe(target.profile);
+    if (target.format === "calca")
+      expect(document.src).toContain(example.source);
+    else expect(document.src).toBe(example.source);
+    await page.goto(example.href);
+    await expect(page.locator("#render-status")).toHaveText(/^Ready/, {
+      timeout: 110000,
+    });
+    await expect(page.locator("#format")).toHaveValue(target.format);
+    expect(await page.evaluate(() => ace.edit("editor").getValue())).toBe(
+      document.src,
+    );
+    await expect(page.locator("#preview")).toContainText(target.output);
+    if (target.profile)
+      await expect(page.locator("#profile")).toHaveValue(target.profile);
+    if (target.format === "asciimath") {
+      await expect(page.locator("#preview math")).toHaveCount(3);
+      await expect(page.locator("#preview")).not.toContainText("25");
+    }
+  }
+  await page.setViewportSize({ width: 390, height: 844 });
+  await page.goto("/docs.html?page=function-comparison");
+  await expect(page.locator("#docs-content h1")).toBeVisible();
+  await expect(page.locator(".docs-table-scroll")).toHaveCount(1);
+  expect(
+    await page.evaluate(
+      () => document.documentElement.scrollWidth <= innerWidth,
+    ),
+  ).toBe(true);
+  await page.goto("/docs.html?page=formats/hurmet");
+  await page
+    .locator('#docs-content a[href="docs.html?page=function-comparison"]')
+    .click();
+  await expect(page.locator("#docs-content h1")).toHaveText(
+    "Built-in and custom functions",
+  );
+  expect(errors).toEqual([]);
 });
