@@ -37,6 +37,16 @@ const source = `# Aligned notes
 
 Visit www.commonmark.org/help.
 
+www.google.com/search?q=(business))+ok
+
+https://example.com/search?q=word&hl;
+
+www._foo.bar.baz
+
+www.foo._bar.baz
+
+hello@mail+xyz.example and hello+xyz@mail.example.
+
 ****Bold**** and $x^2$.
 
 - [x] Reviewed
@@ -72,6 +82,26 @@ for (const format of ["gfm", "asciimath", "calca", "quarto"])
     await expect(
       page.locator('#preview a[href="http://www.commonmark.org/help"]'),
     ).toHaveText("www.commonmark.org/help");
+    await expect(
+      page.locator(
+        '#preview a[href="http://www.google.com/search?q=(business))+ok"]',
+      ),
+    ).toHaveText("www.google.com/search?q=(business))+ok");
+    await expect(
+      page.locator('#preview a[href="https://example.com/search?q=word"]'),
+    ).toHaveText("https://example.com/search?q=word");
+    await expect(
+      page.locator('#preview a[href="mailto:hello@mail+xyz.example"]'),
+    ).toHaveCount(0);
+    await expect(
+      page.locator('#preview a[href="mailto:hello+xyz@mail.example"]'),
+    ).toBeVisible();
+    await expect(
+      page.locator('#preview a[href="http://www._foo.bar.baz"]'),
+    ).toBeVisible();
+    await expect(
+      page.locator('#preview a[href="http://www.foo._bar.baz"]'),
+    ).toHaveCount(0);
     await expect(page.locator("#preview math")).toBeVisible();
     await expect(
       page.locator("#preview strong strong,#preview title,#preview [onerror]"),
@@ -106,6 +136,12 @@ test("GFM alignment and filtered text survive rendered HTML export", async ({
       .locator('td[align="center"]')
       .evaluate((e) => getComputedStyle(e).textAlign),
   ).toBe("center");
+  await expect(
+    saved.locator('a[href="http://www.google.com/search?q=(business))+ok"]'),
+  ).toHaveText("www.google.com/search?q=(business))+ok");
+  await expect(
+    saved.locator('a[href="mailto:hello@mail+xyz.example"]'),
+  ).toHaveCount(0);
   await expect(saved.locator("body")).toContainText(
     "<title>Visible tag text</title>",
   );

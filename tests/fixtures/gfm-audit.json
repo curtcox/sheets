@@ -171,13 +171,11 @@
       "id": "empty-block-whitespace",
       "category": "serialization",
       "examples": [
-        176,
         187,
-        188,
         217,
         218
       ],
-      "reason": "Empty documents/blockquotes differ only in emitted newlines, not reference resolution."
+      "reason": "Empty blockquotes now emit the reference newline directly from the renderer."
     },
     {
       "id": "task-classes",
@@ -186,7 +184,7 @@
         279,
         280
       ],
-      "reason": "Disabled checked/unchecked inputs match, but the task plugin adds CSS classes. Upstream marks these two examples disabled; Sheets still measures them."
+      "reason": "Canonical mode emits the published checkbox tokens without presentation classes; production retains the task plugin CSS hooks. Both upstream-disabled examples remain measured using their published HTML."
     },
     {
       "id": "nested-strong",
@@ -222,7 +220,7 @@
         624,
         627
       ],
-      "reason": "The missing www prefix now delegates URL validation, balanced trailing parentheses and punctuation to the existing bounded HTTP matcher."
+      "reason": "The www prefix uses bounded host validation plus GFM path endings; common URLs, permitted prefix boundaries and trailing punctuation match the corpus and native fixtures."
     },
     {
       "id": "extended-url-boundaries",
@@ -231,7 +229,7 @@
         625,
         626
       ],
-      "reason": "The HTTP matcher still differs for internal excess closing parentheses and entity-like suffixes; these remain open, not normalized away."
+      "reason": "Internal excess parentheses remain in URLs; unmatched trailing parentheses and alphabetic entity suffixes follow the pinned native reference. HTTP, HTTPS, FTP and www regression fixtures pass."
     },
     {
       "id": "email-domain",
@@ -239,7 +237,7 @@
       "examples": [
         630
       ],
-      "reason": "The email matcher accepts a plus sign in a domain; GFM rejects this case. This remains open."
+      "reason": "Fuzzy email domains containing a plus sign are rejected while plus signs in local parts remain supported. Broader host/email differences are separately tracked by GFM-06."
     },
     {
       "id": "tagfilter",
@@ -264,6 +262,15 @@
         620
       ],
       "reason": "These CommonMark examples have no tagfilter/autolink flag. Raw tests honor that; production consistently enables both GFM extensions. They are not parser regressions."
+    },
+    {
+      "id": "empty-reference-fixture",
+      "category": "corpus-reader",
+      "examples": [
+        176,
+        188
+      ],
+      "reason": "These two old failures were reader artifacts: the upstream expected output has zero lines, but the old reader invented one newline. The reader now preserves empty output, confirmed with native cmark-gfm."
     }
   ]
 }

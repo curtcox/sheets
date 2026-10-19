@@ -48,15 +48,20 @@ for disclosure drift. Imported compound entries remain marked for detailed audit
 they are not claims of completed upstream conformance.
 
 Unit tests run real Numbat WASM and Hurmet, all 37 required CalcFile conformance
-cases, URL/detection/HashBin/sharing tests, and the recorded GFM corpus (662/672
-raw exact HTML matches, 593/672 production HTML; every deviation classified in
+cases, URL/detection/HashBin/sharing tests, and the recorded GFM corpus (672/672
+raw exact HTML matches, 601/672 production HTML; every deviation classified in
 the format guide). Browser tests render
 all 36 examples in Chromium, Firefox, and WebKit, including real Python and R, and check
 sharing, cancellation, XSS boundaries, mobile layouts, docs, gallery and reports.
 
-The GFM browser suite separately checks 619/672 final DOM matches, including
+The GFM browser suite separately checks 627/672 final DOM matches, including
 32 intentional sanitization differences. Reproduce that metric with
 `node scripts/gfm-render-conformance.mjs`.
+
+An additional native GFM audit has 31 matching fixtures and four classified
+host/email differences beyond that corpus; see the format guide. Run
+`bash scripts/gfm-reference.sh --check` to build its checksum-pinned cmark-gfm
+oracle (requires CMake, a C compiler, curl, and network access).
 
 Independent fixture checks require Emacs and Python reference tools. Beancount
 reference balances use decimal strings, never floats:

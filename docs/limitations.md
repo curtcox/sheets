@@ -8,37 +8,29 @@ See the [feature comparison and glossary](format-comparison.md) for capability d
 
 See the [GitHub Markdown guide](formats/gfm.md). Compatibility target: cmark-gfm 0.29.0.gfm.13 / markdown-it 15.0.3.
 
-- **GFM-01 — GFM has three remaining autolink boundary gaps; all corpus differences are classified** (Known gap). The raw parser matches **662/672** exact HTML examples with upstream extension flags; **10 deviations** remain: three autolink boundaries (internal excess parentheses, entity-like URL suffixes, and plus signs in email domains), five newline differences, and two task-list class differences. Production HTML matches **593/672**; the sanitized browser DOM matches **619/672**, including **32 intentional sanitization differences**. Every difference is classified in the checked-in audit. Table alignment, redundant nested bold markup, common `www.` links, and GFM tag filtering are fixed.
-
 - **GFM-02 — HTML is sanitized after parsing** (Intentional). GFM raw-text tags (including script, style, title, and iframe) are escaped as readable text before browser parsing. All output is then sanitized. Active scripts, event handlers, forms, embedded documents, arbitrary styles, SVG foreign objects, and animation cannot survive as active elements, even where the original parser would preserve them. Static SVG and MathML use a restricted presentation allowlist.
 
 - **GFM-03 — Math uses Temml's supported TeX notation, not a complete TeX document engine** (Needs detailed audit). Math uses Temml's supported TeX notation, not a complete TeX document engine. Currency-like dollar pairs are deliberately excluded from math parsing.
 
 - **GFM-04 — Code fences display code; Markdown formulas and table cells do not calculate** (Needs detailed audit). Code fences display code; Markdown formulas and table cells do not calculate. Task state is edited in source, rather than through an interactive checklist. Mermaid output is sanitized static SVG with strict security settings.
 
-The same exact-HTML deviation counts recorded in the format guide are:
+- **GFM-05 — Automatic URL recognition has a bounded candidate length** (Intentional). Automatic URL recognition scans at most 10,000 characters after a recognized prefix, preserving the existing linkify-it resource bound. The remaining text stays visible. Use an explicit Markdown link for a longer address.
 
-| GFM specification section | Deviations |
-| --- | ---: |
-| Tabs | 1 |
-| Thematic breaks | 11 |
-| ATX headings | 1 |
-| Setext headings | 11 |
-| Indented code blocks | 1 |
-| Fenced code blocks | 2 |
-| Link reference definitions | 3 |
-| Paragraphs | 1 |
-| Tables | 1 |
-| Block quotes | 4 |
-| Task list items | 2 |
-| Backslash escapes | 1 |
-| Emphasis and strong emphasis | 9 |
-| Links | 3 |
-| Images | 19 |
-| Autolinks | 4 |
-| Extended autolinks | 8 |
-| Disallowed raw HTML | 1 |
-| Hard line breaks | 7 |
+- **GFM-06 — Host and email recognition still differs from the pinned native GFM implementation outside the corpus** (Known gap). A separate native audit has **31 matching fixtures and four classified differences** beyond the published corpus. URL-host underscores now follow the last-two-segments rule. Two remaining differences involve email-domain underscores or a valid email prefix before a plus sign. Sheets also retains uppercase WWW links and numeric final email-domain characters where this pinned native version leaves text unlinked. Host validation otherwise comes from linkify-it; the GFM path-ending fixes do not establish complete native autolink parity. Use explicit Markdown links where automatic recognition differs.
+
+### Resolved compatibility gaps
+
+- **GFM-01 — All 672 published GFM corpus examples match canonical raw HTML** (Resolved). Canonical raw HTML matches **672/672** published examples with their extension flags, including the two task examples marked disabled upstream. The three original autolink boundary gaps and empty-blockquote serialization are fixed; two old empty-output mismatches were corpus-reader artifacts. Production HTML matches **601/672** and the sanitized browser DOM matches **627/672**, with all remaining corpus differences classified as presentation, extension mode, or sanitization. This is corpus conformance, not full native-engine parity; broader host/email differences are tracked by GFM-06.
+
+Current corpus measurements (see the guide for definitions):
+
+| Layer | Exact matches | Remaining differences |
+| --- | ---: | --- |
+| Canonical raw HTML | 672/672 | None in the published corpus |
+| Production HTML | 601/672 | 58 HTML5 void-tag spellings, two highlighted fences, two task CSS hooks, nine extension-mode differences |
+| Sanitized browser DOM | 627/672 | 32 sanitization-only differences plus 13 presentation/extension-mode differences |
+
+The independent native autolink audit has 31 matches and four classified differences outside this corpus (GFM-06).
 
 ## AsciiMath
 

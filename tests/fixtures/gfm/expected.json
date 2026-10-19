@@ -21,7 +21,9 @@
     "file": "edge.md",
     "contains": [
       "<math",
-      "<del>"
+      "<del>",
+      "href=\"http://www.google.com/search?q=(business))+ok\"",
+      "href=\"mailto:hello+xyz@mail.example\""
     ],
     "diagnostics": 0
   },

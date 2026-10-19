@@ -8,7 +8,7 @@
       "version": "cmark-gfm 0.29.0.gfm.13 / markdown-it 15.0.3",
       "reference": "https://github.github.com/gfm/",
       "guide": "formats/gfm.md",
-      "appendix": "The same exact-HTML deviation counts recorded in the format guide are:\n\n| GFM specification section | Deviations |\n| --- | ---: |\n| Tabs | 1 |\n| Thematic breaks | 11 |\n| ATX headings | 1 |\n| Setext headings | 11 |\n| Indented code blocks | 1 |\n| Fenced code blocks | 2 |\n| Link reference definitions | 3 |\n| Paragraphs | 1 |\n| Tables | 1 |\n| Block quotes | 4 |\n| Task list items | 2 |\n| Backslash escapes | 1 |\n| Emphasis and strong emphasis | 9 |\n| Links | 3 |\n| Images | 19 |\n| Autolinks | 4 |\n| Extended autolinks | 8 |\n| Disallowed raw HTML | 1 |\n| Hard line breaks | 7 |"
+      "appendix": "Current corpus measurements (see the guide for definitions):\n\n| Layer | Exact matches | Remaining differences |\n| --- | ---: | --- |\n| Canonical raw HTML | 672/672 | None in the published corpus |\n| Production HTML | 601/672 | 58 HTML5 void-tag spellings, two highlighted fences, two task CSS hooks, nine extension-mode differences |\n| Sanitized browser DOM | 627/672 | 32 sanitization-only differences plus 13 presentation/extension-mode differences |\n\nThe independent native autolink audit has 31 matches and four classified differences outside this corpus (GFM-06)."
     },
     "asciimath": {
       "label": "AsciiMath",
@@ -75,14 +75,14 @@
     {
       "id": "GFM-01",
       "format": "gfm",
-      "title": "GFM has three remaining autolink boundary gaps; all corpus differences are classified",
+      "title": "All 672 published GFM corpus examples match canonical raw HTML",
       "kind": "mixed",
-      "status": "open",
+      "status": "resolved",
       "priority": "P1",
       "milestone": "GFM-1",
       "dependsOn": [],
       "expected": "Match all 672 pinned examples with their upstream extension flags; measure production extensions and final sanitization separately.",
-      "disclosure": "The raw parser matches **662/672** exact HTML examples with upstream extension flags; **10 deviations** remain: three autolink boundaries (internal excess parentheses, entity-like URL suffixes, and plus signs in email domains), five newline differences, and two task-list class differences. Production HTML matches **593/672**; the sanitized browser DOM matches **619/672**, including **32 intentional sanitization differences**. Every difference is classified in the checked-in audit. Table alignment, redundant nested bold markup, common `www.` links, and GFM tag filtering are fixed.",
+      "disclosure": "Canonical raw HTML matches **672/672** published examples with their extension flags, including the two task examples marked disabled upstream. The three original autolink boundary gaps and empty-blockquote serialization are fixed; two old empty-output mismatches were corpus-reader artifacts. Production HTML matches **601/672** and the sanitized browser DOM matches **627/672**, with all remaining corpus differences classified as presentation, extension mode, or sanitization. This is corpus conformance, not full native-engine parity; broader host/email differences are tracked by GFM-06.",
       "baselineDisclosure": "The pinned GFM corpus matches **582 of 672 exact HTML examples (86.6%)**; **90 deviations** are documented. These include serialization differences in void tags, task-list classes, and highlighted code, as well as differences in reference resolution, tables, nested emphasis, raw HTML, escapes, and extended autolinks. The guide lists the affected specification sections and counts.",
       "reproducer": {
         "path": "tests/fixtures/gfm-spec.txt"
@@ -94,7 +94,11 @@
         "scripts/conformance.mjs",
         "scripts/gfm-render-conformance.mjs",
         "tests/unit/gfm.test.js",
-        "tests/browser/gfm.spec.js"
+        "tests/browser/gfm.spec.js",
+        "tests/fixtures/gfm-autolinks.json",
+        "scripts/gfm-autolink-expected.mjs",
+        "scripts/gfm-reference.sh",
+        "design/gfm-autolinks.md"
       ]
     },
     {
@@ -141,6 +145,49 @@
       "baselineDisclosure": "Code fences display code; Markdown formulas and table cells do not calculate. Task state is edited in source, rather than through an interactive checklist. Mermaid output is sanitized static SVG with strict security settings.",
       "reproducer": null,
       "evidence": []
+    },
+    {
+      "id": "GFM-05",
+      "format": "gfm",
+      "title": "Automatic URL recognition has a bounded candidate length",
+      "kind": "policy",
+      "status": "retained",
+      "priority": "P2",
+      "milestone": "GFM-1",
+      "dependsOn": [],
+      "expected": "Bound automatic candidate scanning while keeping explicit Markdown links available for complete long addresses.",
+      "disclosure": "Automatic URL recognition scans at most 10,000 characters after a recognized prefix, preserving the existing linkify-it resource bound. The remaining text stays visible. Use an explicit Markdown link for a longer address.",
+      "reproducer": {
+        "path": "tests/unit/gfm.test.js"
+      },
+      "evidence": [
+        "src/formats/gfm/autolinks.js",
+        "tests/unit/gfm.test.js"
+      ],
+      "baselineDisclosure": "Automatic URL recognition scans at most 10,000 characters after a recognized prefix, preserving the existing linkify-it resource bound. The remaining text stays visible. Use an explicit Markdown link for a longer address."
+    },
+    {
+      "id": "GFM-06",
+      "format": "gfm",
+      "title": "Host and email recognition still differs from the pinned native GFM implementation outside the corpus",
+      "kind": "mixed",
+      "status": "open",
+      "priority": "P1",
+      "milestone": "GFM-1",
+      "dependsOn": [],
+      "expected": "Audit host, prefix and email recognition against native cmark-gfm 0.29.0.gfm.13, explicitly distinguishing its quirks from the published specification.",
+      "disclosure": "A separate native audit has **31 matching fixtures and four classified differences** beyond the published corpus. URL-host underscores now follow the last-two-segments rule. Two remaining differences involve email-domain underscores or a valid email prefix before a plus sign. Sheets also retains uppercase WWW links and numeric final email-domain characters where this pinned native version leaves text unlinked. Host validation otherwise comes from linkify-it; the GFM path-ending fixes do not establish complete native autolink parity. Use explicit Markdown links where automatic recognition differs.",
+      "reproducer": {
+        "path": "tests/fixtures/gfm-autolinks.json"
+      },
+      "evidence": [
+        "tests/fixtures/gfm-autolinks.json",
+        "tests/unit/gfm.test.js",
+        "scripts/gfm-autolink-expected.mjs",
+        "scripts/gfm-reference.sh",
+        "design/gfm-autolinks.md"
+      ],
+      "baselineDisclosure": "A separate native audit has **31 matching fixtures and four classified differences** beyond the published corpus. URL-host underscores now follow the last-two-segments rule. Two remaining differences involve email-domain underscores or a valid email prefix before a plus sign. Sheets also retains uppercase WWW links and numeric final email-domain characters where this pinned native version leaves text unlinked. Host validation otherwise comes from linkify-it; the GFM path-ending fixes do not establish complete native autolink parity. Use explicit Markdown links where automatic recognition differs."
     },
     {
       "id": "AM-01",

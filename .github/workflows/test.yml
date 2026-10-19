@@ -30,6 +30,8 @@ jobs:
         run: bash scripts/org-expected.sh --check
       - name: Check Beancount fixtures against bean-check and bean-query
         run: python scripts/beancount-expected.py --check
+      - name: Check GFM autolinks against native cmark-gfm
+        run: bash scripts/gfm-reference.sh --check
       - run: npx playwright install --with-deps chromium firefox webkit
       - run: npm run test:browser
       - name: Retain failing browser traces

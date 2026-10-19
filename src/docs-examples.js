@@ -7,6 +7,9 @@ const sample = (source, aliases = []) => ({ source, aliases });
 export const syntaxExamples = {
   gfm: [
     sample(
+      "# Autolink audit\n\nwww._foo.bar.baz\nwww.foo._bar.baz\nwww.foo.bar._baz\nWWW.EXAMPLE.COM\na@b.c1\na@b.c_d\na@b.c+z\n",
+    ),
+    sample(
       `# Heading
 ## Subheading
 **strong**, *emphasis*, ~~removed~~

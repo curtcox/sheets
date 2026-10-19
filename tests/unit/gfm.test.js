@@ -93,3 +93,96 @@ test("tagfilter escapes only GFM raw-text tag names, case-insensitively", () => 
     "<title>visible</title>\n",
   );
 });
+
+test("GFM autolink boundaries match the pinned native reference", async () => {
+  const { readFile } = await import("node:fs/promises");
+  const fixture = JSON.parse(
+    await readFile(
+      new URL("../fixtures/gfm-autolinks.json", import.meta.url),
+      "utf8",
+    ),
+  );
+  for (const example of fixture.cases.filter(
+    (e) => !fixture.knownDeviations.some((gap) => gap.id === e.id),
+  ))
+    assert.equal(
+      renderMarkdown(example.source, { presentation: false }).html,
+      example.expected,
+      example.id,
+    );
+});
+
+test("broader native autolink differences stay explicitly audited", async () => {
+  const { readFile } = await import("node:fs/promises");
+  const fixture = JSON.parse(
+    await readFile(
+      new URL("../fixtures/gfm-autolinks.json", import.meta.url),
+      "utf8",
+    ),
+  );
+  const differences = fixture.cases
+    .filter(
+      (e) =>
+        renderMarkdown(e.source, { presentation: false }).html !== e.expected,
+    )
+    .map((e) => e.id);
+  assert.deepEqual(
+    differences,
+    fixture.knownDeviations.map((gap) => gap.id),
+  );
+});
+
+test("canonical task HTML keeps checkbox state while production keeps CSS hooks", () => {
+  const source = "- [x] Done\n- [ ] Next\n";
+  const canonical = renderMarkdown(source, { presentation: false }).html;
+  const production = renderMarkdown(source).html;
+  assert.equal(
+    canonical,
+    '<ul>\n<li><input checked="" disabled="" type="checkbox"> Done</li>\n<li><input disabled="" type="checkbox"> Next</li>\n</ul>\n',
+  );
+  assert.ok(production.includes('class="contains-task-list"'));
+  assert.ok(
+    production.includes(
+      'class="task-list-item-checkbox" checked="" disabled=""',
+    ),
+  );
+  const html = '<input class="task-list-item-checkbox" type="checkbox">\n';
+  assert.ok(
+    renderMarkdown(html, { presentation: false }).html.includes(
+      'class="task-list-item-checkbox"',
+    ),
+  );
+});
+
+test("GFM empty expected output stays empty and empty blockquotes retain a newline", async () => {
+  const examples = await readExamples();
+  for (const id of [176, 188]) {
+    assert.equal(examples[id - 1].expected, "");
+    assert.equal(renderMarkdown(examples[id - 1].source).html, "");
+  }
+  for (const id of [187, 217, 218])
+    assert.equal(
+      renderMarkdown(examples[id - 1].source).html,
+      examples[id - 1].expected,
+    );
+});
+
+test("automatic link recognition keeps a bounded candidate and explicit links stay complete", () => {
+  const url = "https://example.com/" + "a".repeat(30_000);
+  const md = createMarkdown();
+  const tokens = md.parse(url, {})[1].children;
+  assert.equal(tokens.filter((t) => t.type === "link_open").length, 1);
+  assert.ok(
+    tokens.find((t) => t.type === "link_open").attrGet("href").length < 10_020,
+  );
+  assert.equal(
+    tokens
+      .filter((t) => t.type === "text")
+      .map((t) => t.content)
+      .join(""),
+    url,
+  );
+  assert.ok(
+    renderMarkdown(`[Full link](<${url}>)`).html.includes(`href="${url}"`),
+  );
+});

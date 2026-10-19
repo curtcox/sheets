@@ -19,8 +19,8 @@ export function specExamples(text) {
       id: examples.length + 1,
       section,
       flags,
-      source: input.join("\n") + "\n",
-      expected: expected.join("\n") + "\n",
+      source: input.length ? input.join("\n") + "\n" : "",
+      expected: expected.length ? expected.join("\n") + "\n" : "",
     });
   }
   return examples;

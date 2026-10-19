@@ -487,12 +487,31 @@ escape GFM raw-text tags before browser parsing, and collapse redundant adjacent
 strong delimiters while preserving Calca token maps. Existing math, Mermaid,
 footnotes, alerts, tasks, exports and all shared consumers remain covered.
 
-GFM-1 remains open: the next semantic cases are **625, 626, 630** (internal excess
-URL parentheses, entity-like URL suffixes, and an invalid plus in an email domain).
-Five newline and two task-class serialization differences remain in the raw
-metric. Production also differs for HTML5 void tags, highlighted fences, and nine
-CommonMark cases without GFM extension flags. The sanitizer stays unchanged;
-post-parse policy differences are explicitly measured and retained.
+GFM-1 second increment implemented: the original semantic cases **625, 626, 630**
+now pass for bounded GFM path endings and email-domain plus signs. Native
+cmark-gfm 0.29.0.gfm.13 confirms 31 additional fixtures, including all URL schemes,
+parentheses, entities, existing links, anchors and literal code. Empty-blockquote
+serialization now matches, canonical tasks omit production CSS hooks, and the
+corpus reader no longer invents newlines for empty outputs. Current metrics:
+**672/672 raw**, **601/672 production HTML**, **627/672 final browser DOM** (32
+policy-only differences). The corpus's two disabled task cases remain included
+using their published expectations.
+
+The expanded native audit also exposes **four additional host/email differences**
+outside the corpus, recorded with native expected output in
+`tests/fixtures/gfm-autolinks.json` and tracked by **GFM-06**. Two involve email recognition; two retain useful behavior where the pinned native version is
+more restrictive (uppercase WWW and numeric email-domain endings). **GFM-05**
+records the automatic candidate bound. Thus the original corpus gap GFM-01 is
+resolved, while GFM-1 remains open for broader host/email recognition. Evaluate
+native quirks against the published spec before changing those two policies.
+
+`design/gfm-autolinks.md` records the evaluated pinned alternatives: the mdast
+transform still misses entity-suffix case 626, and micromark's syntax extension
+omits FTP case 628. Retain MarkdownIt's token/source-map contract for now; the
+focused path adapter adds the host-underscore rule and delegates other host checks
+to the existing library. A broader
+host/email replacement requires fresh reference evidence and bounded complexity.
+CI builds the checksum-pinned native oracle and rejects fixture drift.
 
 ### Phase 14 — P2: expand language compatibility
 

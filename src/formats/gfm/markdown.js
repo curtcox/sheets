@@ -6,6 +6,7 @@ import highlight from "../../../vendor/highlight.js";
 import temml from "../../../vendor/temml.js";
 import { escapeHTML } from "../../util.js";
 import { inlineSVGStyles } from "../../svg.js";
+import { gfmAutolinks } from "./autolinks.js";
 export function renderMath(source, display = false) {
   try {
     return temml.renderToString(source, {
@@ -39,20 +40,37 @@ export function createMarkdown({
   });
   for (const name of ["table", "strikethrough"])
     if (!extensions.includes(name)) md.disable(name);
-  if (extensions.includes("tasklist")) md.use(taskLists);
+  if (extensions.includes("tasklist")) {
+    md.use(taskLists);
+    if (!presentation)
+      md.core.ruler.after("github-task-lists", "gfm_task_html", (state) => {
+        // CSS hooks belong to production presentation. In canonical mode emit
+        // the corpus's checkbox HTML directly from the plugin's task tokens.
+        for (let i = state.tokens.length - 1; i >= 0; i--) {
+          const token = state.tokens[i];
+          if (
+            token.type === "inline" &&
+            state.tokens[i - 2]?.attrGet("class") === "task-list-item"
+          )
+            token.children[0].content = token.children[0].content.replace(
+              ' class="task-list-item-checkbox"',
+              "",
+            );
+          if (
+            ["contains-task-list", "task-list-item"].includes(
+              token.attrGet("class"),
+            )
+          )
+            token.attrs = token.attrs.filter(([name]) => name !== "class");
+        }
+      });
+  }
   if (presentation) md.use(footnotes).use(alerts);
-  // linkify-it 6 disables fuzzy URLs by default. Add just the GFM www prefix,
-  // delegating URL validation and punctuation to its bounded HTTP matcher.
-  // Do not turn on fuzzyLink: that also links bare domains outside GFM syntax.
-  md.linkify.add("www.", {
-    validate(text, pos, self) {
-      const match = self.matchAtStart("http://" + text.slice(pos - 4));
-      return match && match.lastIndex > 11 ? match.lastIndex - 11 : 0;
-    },
-    normalize(match) {
-      match.url = "http://" + match.url;
-    },
-  });
+  gfmAutolinks(md);
+  md.renderer.rules.blockquote_open = (tokens, i, options, env, self) => {
+    const html = self.renderToken(tokens, i, options);
+    return html && !html.endsWith("\n") ? html + "\n" : html;
+  };
   // Markdown-it emits alignment as style, which the final sanitizer correctly
   // removes from HTML. Use GFM's constrained align attribute instead.
   for (const type of ["th_open", "td_open"])

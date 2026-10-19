@@ -2,64 +2,13 @@
   "upstream": "github/cmark-gfm@0.29.0.gfm.13/test/spec.txt",
   "total": 672,
   "raw": {
-    "passed": 662,
-    "failed": 10,
-    "failures": [
-      {
-        "id": 176,
-        "section": "Link reference definitions",
-        "classification": "empty-block-whitespace"
-      },
-      {
-        "id": 187,
-        "section": "Link reference definitions",
-        "classification": "empty-block-whitespace"
-      },
-      {
-        "id": 188,
-        "section": "Link reference definitions",
-        "classification": "empty-block-whitespace"
-      },
-      {
-        "id": 217,
-        "section": "Block quotes",
-        "classification": "empty-block-whitespace"
-      },
-      {
-        "id": 218,
-        "section": "Block quotes",
-        "classification": "empty-block-whitespace"
-      },
-      {
-        "id": 279,
-        "section": "Task list items (extension)",
-        "classification": "task-classes"
-      },
-      {
-        "id": 280,
-        "section": "Task list items (extension)",
-        "classification": "task-classes"
-      },
-      {
-        "id": 625,
-        "section": "Autolinks (extension)",
-        "classification": "extended-url-boundaries"
-      },
-      {
-        "id": 626,
-        "section": "Autolinks (extension)",
-        "classification": "extended-url-boundaries"
-      },
-      {
-        "id": 630,
-        "section": "Autolinks (extension)",
-        "classification": "email-domain"
-      }
-    ]
+    "passed": 672,
+    "failed": 0,
+    "failures": []
   },
   "production": {
-    "passed": 593,
-    "failed": 79,
+    "passed": 601,
+    "failed": 71,
     "failures": [
       {
         "id": 11,
@@ -222,21 +171,6 @@
         "classification": "extension-mode"
       },
       {
-        "id": 176,
-        "section": "Link reference definitions",
-        "classification": "empty-block-whitespace"
-      },
-      {
-        "id": 187,
-        "section": "Link reference definitions",
-        "classification": "empty-block-whitespace"
-      },
-      {
-        "id": 188,
-        "section": "Link reference definitions",
-        "classification": "empty-block-whitespace"
-      },
-      {
         "id": 196,
         "section": "Paragraphs",
         "classification": "void-tags"
@@ -245,16 +179,6 @@
         "id": 212,
         "section": "Block quotes",
         "classification": "void-tags"
-      },
-      {
-        "id": 217,
-        "section": "Block quotes",
-        "classification": "empty-block-whitespace"
-      },
-      {
-        "id": 218,
-        "section": "Block quotes",
-        "classification": "empty-block-whitespace"
       },
       {
         "id": 224,
@@ -405,21 +329,6 @@
         "id": 620,
         "section": "Autolinks",
         "classification": "extension-mode"
-      },
-      {
-        "id": 625,
-        "section": "Autolinks (extension)",
-        "classification": "extended-url-boundaries"
-      },
-      {
-        "id": 626,
-        "section": "Autolinks (extension)",
-        "classification": "extended-url-boundaries"
-      },
-      {
-        "id": 630,
-        "section": "Autolinks (extension)",
-        "classification": "email-domain"
       },
       {
         "id": 653,

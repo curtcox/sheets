@@ -1,0 +1,198 @@
+{
+  "upstream": "github/cmark-gfm@0.29.0.gfm.13",
+  "cases": [
+    {
+      "id": "internal-parens-www",
+      "source": "www.google.com/search?q=(business))+ok\n",
+      "expected": "<p><a href=\"http://www.google.com/search?q=(business))+ok\">www.google.com/search?q=(business))+ok</a></p>\n"
+    },
+    {
+      "id": "internal-parens-http",
+      "source": "http://example.com/search?q=(word))+end\n",
+      "expected": "<p><a href=\"http://example.com/search?q=(word))+end\">http://example.com/search?q=(word))+end</a></p>\n"
+    },
+    {
+      "id": "internal-parens-https",
+      "source": "https://example.com/search?q=(word))+end\n",
+      "expected": "<p><a href=\"https://example.com/search?q=(word))+end\">https://example.com/search?q=(word))+end</a></p>\n"
+    },
+    {
+      "id": "internal-parens-ftp",
+      "source": "ftp://example.com/search?q=(word))+end\n",
+      "expected": "<p><a href=\"ftp://example.com/search?q=(word))+end\">ftp://example.com/search?q=(word))+end</a></p>\n"
+    },
+    {
+      "id": "trailing-parens",
+      "source": "(www.example.com/a(b)))\n",
+      "expected": "<p>(<a href=\"http://www.example.com/a(b)\">www.example.com/a(b)</a>))</p>\n"
+    },
+    {
+      "id": "nested-parens",
+      "source": "www.example.com/a((b))\n",
+      "expected": "<p><a href=\"http://www.example.com/a((b))\">www.example.com/a((b))</a></p>\n"
+    },
+    {
+      "id": "punctuation-after-parens",
+      "source": "www.example.com/a(b))).\n",
+      "expected": "<p><a href=\"http://www.example.com/a(b)\">www.example.com/a(b)</a>)).</p>\n"
+    },
+    {
+      "id": "trailing-entity-www",
+      "source": "www.example.com/search?q=word&hl;\n",
+      "expected": "<p><a href=\"http://www.example.com/search?q=word\">www.example.com/search?q=word</a>&amp;hl;</p>\n"
+    },
+    {
+      "id": "trailing-entity-http",
+      "source": "http://example.com/search?q=word&hl;\n",
+      "expected": "<p><a href=\"http://example.com/search?q=word\">http://example.com/search?q=word</a>&amp;hl;</p>\n"
+    },
+    {
+      "id": "trailing-entity-https",
+      "source": "https://example.com/search?q=word&hl;\n",
+      "expected": "<p><a href=\"https://example.com/search?q=word\">https://example.com/search?q=word</a>&amp;hl;</p>\n"
+    },
+    {
+      "id": "trailing-entity-ftp",
+      "source": "ftp://example.com/search?q=word&hl;\n",
+      "expected": "<p><a href=\"ftp://example.com/search?q=word\">ftp://example.com/search?q=word</a>&amp;hl;</p>\n"
+    },
+    {
+      "id": "internal-entity",
+      "source": "www.example.com/a&hl;next\n",
+      "expected": "<p><a href=\"http://www.example.com/a&amp;hl;next\">www.example.com/a&amp;hl;next</a></p>\n"
+    },
+    {
+      "id": "known-entity",
+      "source": "www.example.com/a&copy;\n",
+      "expected": "<p><a href=\"http://www.example.com/a\">www.example.com/a</a>\u00a9</p>\n"
+    },
+    {
+      "id": "query-parameter",
+      "source": "www.example.com/search?q=word&hl=en\n",
+      "expected": "<p><a href=\"http://www.example.com/search?q=word&amp;hl=en\">www.example.com/search?q=word&amp;hl=en</a></p>\n"
+    },
+    {
+      "id": "bare-semicolon",
+      "source": "www.example.com/a;\n",
+      "expected": "<p><a href=\"http://www.example.com/a\">www.example.com/a</a>;</p>\n"
+    },
+    {
+      "id": "punctuation-suffix",
+      "source": "www.example.com/a?!.,:*_~\n",
+      "expected": "<p><a href=\"http://www.example.com/a\">www.example.com/a</a>?!.,:*_~</p>\n"
+    },
+    {
+      "id": "quotes",
+      "source": "www.example.com/a'\"\n",
+      "expected": "<p><a href=\"http://www.example.com/a\">www.example.com/a</a>'&quot;</p>\n"
+    },
+    {
+      "id": "less-than",
+      "source": "www.example.com/he<lp\n",
+      "expected": "<p><a href=\"http://www.example.com/he\">www.example.com/he</a>&lt;lp</p>\n"
+    },
+    {
+      "id": "plus-email-domain",
+      "source": "hello@mail+xyz.example\n",
+      "expected": "<p>hello@mail+xyz.example</p>\n"
+    },
+    {
+      "id": "plus-email-local",
+      "source": "hello+xyz@mail.example\n",
+      "expected": "<p><a href=\"mailto:hello+xyz@mail.example\">hello+xyz@mail.example</a></p>\n"
+    },
+    {
+      "id": "multiple-links",
+      "source": "www.first.com www.second.com http://third.com test@fourth.com\n",
+      "expected": "<p><a href=\"http://www.first.com\">www.first.com</a> <a href=\"http://www.second.com\">www.second.com</a> <a href=\"http://third.com\">http://third.com</a> <a href=\"mailto:test@fourth.com\">test@fourth.com</a></p>\n"
+    },
+    {
+      "id": "no-empty-www",
+      "source": "www.\n",
+      "expected": "<p>www.</p>\n"
+    },
+    {
+      "id": "code-literal",
+      "source": "`www.example.com/a(b))+ok`\n\n```text\nhttp://example.com/a&hl;\n```\n",
+      "expected": "<p><code>www.example.com/a(b))+ok</code></p>\n<pre><code class=\"language-text\">http://example.com/a&amp;hl;\n</code></pre>\n"
+    },
+    {
+      "id": "explicit-link",
+      "source": "[www.example.com/a(b))+ok](https://else.example)\n",
+      "expected": "<p><a href=\"https://else.example\">www.example.com/a(b))+ok</a></p>\n"
+    },
+    {
+      "id": "html-link",
+      "source": "<a href=\"https://else.example\">www.example.com/a(b))+ok</a>\n",
+      "expected": "<p><a href=\"https://else.example\">www.example.com/a(b))+ok</a></p>\n"
+    },
+    {
+      "id": "angle-link",
+      "source": "<http://example.com/a(b))+ok>\n",
+      "expected": "<p><a href=\"http://example.com/a(b))+ok\">http://example.com/a(b))+ok</a></p>\n"
+    },
+    {
+      "id": "entity-in-code",
+      "source": "`www.example.com/a&copy;`\n",
+      "expected": "<p><code>www.example.com/a&amp;copy;</code></p>\n"
+    },
+    {
+      "id": "bracket-boundary",
+      "source": "[www.foo.com]\n",
+      "expected": "<p>[www.foo.com]</p>\n"
+    },
+    {
+      "id": "early-domain-underscore",
+      "source": "www._foo.bar.baz\n",
+      "expected": "<p><a href=\"http://www._foo.bar.baz\">www._foo.bar.baz</a></p>\n"
+    },
+    {
+      "id": "penultimate-domain-underscore",
+      "source": "www.foo._bar.baz\n",
+      "expected": "<p>www.foo._bar.baz</p>\n"
+    },
+    {
+      "id": "last-domain-underscore",
+      "source": "www.foo.bar._baz\n",
+      "expected": "<p>www.foo.bar._baz</p>\n"
+    },
+    {
+      "id": "uppercase-www",
+      "source": "WWW.EXAMPLE.COM\n",
+      "expected": "<p>WWW.EXAMPLE.COM</p>\n"
+    },
+    {
+      "id": "numeric-email-ending",
+      "source": "a@b.c1\n",
+      "expected": "<p>a@b.c1</p>\n"
+    },
+    {
+      "id": "email-domain-underscore",
+      "source": "a@b.c_d\n",
+      "expected": "<p><a href=\"mailto:a@b.c_d\">a@b.c_d</a></p>\n"
+    },
+    {
+      "id": "email-prefix-before-plus",
+      "source": "a@b.c+z\n",
+      "expected": "<p><a href=\"mailto:a@b.c\">a@b.c</a>+z</p>\n"
+    }
+  ],
+  "knownDeviations": [
+    {
+      "id": "uppercase-www",
+      "reason": "Sheets retains case-insensitive www recognition; this pinned native implementation only recognizes lowercase www."
+    },
+    {
+      "id": "numeric-email-ending",
+      "reason": "Sheets retains a numeric final email-domain character; this pinned native implementation leaves it unlinked."
+    },
+    {
+      "id": "email-domain-underscore",
+      "reason": "The native reference accepts this email-domain underscore; linkify-it does not."
+    },
+    {
+      "id": "email-prefix-before-plus",
+      "reason": "The native reference links the valid prefix a@b.c; Sheets leaves the entire invalid-domain address unlinked."
+    }
+  ]
+}

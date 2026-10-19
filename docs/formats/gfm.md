@@ -57,21 +57,15 @@ The committed **github/cmark-gfm 0.29.0.gfm.13** specification has **672 example
 
 | Measurement | Exact matches | What it measures |
 | --- | ---: | --- |
-| Raw parser HTML | 662/672 (98.5%) | Upstream per-example extension flags and XHTML spelling, without highlighting, math, footnotes, alerts, or Mermaid |
-| Production HTML | 593/672 (88.2%) | The actual shared Markdown renderer, before sanitization; all GFM extensions and Sheets presentation features enabled |
-| Final browser DOM | 619/672 (92.1%) | Actual sanitized output compared with the reference parsed in an inert browser template; HTML5 spelling and attribute ordering follow browser serialization |
+| Raw parser HTML | 672/672 (100%) | Upstream per-example extension flags and XHTML spelling, without highlighting, task CSS hooks, math, footnotes, alerts, or Mermaid |
+| Production HTML | 601/672 (89.4%) | The actual shared Markdown renderer, before sanitization; all GFM extensions and Sheets presentation features enabled |
+| Final browser DOM | 627/672 (93.3%) | Actual sanitized output compared with the reference parsed in an inert browser template; HTML5 spelling and attribute ordering follow browser serialization |
 
-The final DOM still preserves text, whitespace, attributes, and element structure: it does not flatten nested markup or remove task classes to inflate the count. Of its 53 differences, 32 are **solely intentional sanitization**: applying the same sanitizer to the reference produces the same DOM. The corpus has no Mermaid post-pass cases; separate browser/export tests cover diagrams and math.
+The final DOM still preserves text, whitespace, attributes, and element structure: it does not flatten nested markup or remove task classes to inflate the count. Of its 45 differences, 32 are **solely intentional sanitization**: applying the same sanitizer to the reference produces the same DOM. The corpus has no Mermaid post-pass cases; separate browser/export tests cover diagrams and math.
 
-The **10 remaining raw-parser differences** are:
+There are **no remaining raw HTML differences in this corpus**. The original URL/email path cases, empty-blockquote newlines, and canonical task serialization now match. The reader also preserves genuinely empty expected output: two former reference-definition mismatches came from an invented newline, not parser behavior. The two task examples marked disabled upstream remain included using their published HTML expectations.
 
-| Classification | Example IDs | Behavior |
-| --- | --- | --- |
-| Semantic gap | 625, 626, 630 | Internal excess closing parentheses in URLs, entity-like URL suffixes, and plus signs in email domains differ from GFM |
-| Serialization | 176, 187, 188, 217, 218 | Empty documents/blockquotes emit different newlines; link reference resolution matches |
-| Serialization | 279, 280 | Task state and disabled checkboxes match, but the plugin adds CSS classes; both examples are marked disabled upstream and still measured here |
-
-Production has 79 exact-string differences: the three semantic gaps, five newline differences, two task-class differences, 58 HTML5 void-tag spellings, two highlighted fences, and nine extension-mode differences. The last nine are CommonMark examples without autolink/tagfilter flags; production consistently enables those GFM extensions. This is documented behavior, not an unexplained parser regression.
+Production retains 71 exact-string differences: 58 HTML5 void-tag spellings, two highlighted fences, two task-list CSS-class differences, and nine extension-mode differences. The last nine are CommonMark examples without autolink/tagfilter flags; production consistently enables those GFM extensions. All remaining corpus differences are presentation, extension mode, or sanitization; none are unexplained.
 
 The shared renderer now preserves left/center/right table alignment in previews and HTML exports, collapses redundant nested bold delimiters, recognizes common `www.` links, and escapes GFM-disallowed raw-text tags. Try these behaviors together:
 
@@ -91,14 +85,40 @@ Visit www.commonmark.org/help.
 <title>Visible tag text</title>
 ```
 
-For URL punctuation that hits the three remaining gaps, use explicit links:
+Internal excess parentheses remain inside bare links; unmatched trailing parentheses and entity-like suffixes are excluded. Plus signs work in email local parts, while an invalid plus in the domain prevents the full address from becoming a link:
+
+```text
+www.google.com/search?q=(business))+ok
+https://example.com/search?q=word&hl;
+hello@mail+xyz.example and hello+xyz@mail.example
+```
+
+For descriptive labels or addresses outside automatic recognition, use explicit links:
 
 ```text
 [Full URL](<https://www.google.com/search?q=(business))+ok>)
 [Address](mailto:hello+xyz@mail.example)
 ```
 
-Run `npm run test:conformance` for raw/production exact HTML and `node scripts/gfm-render-conformance.mjs` for the actual Chromium sanitization measurement. The browser suite checks the same DOM snapshot in Chromium, Firefox, and WebKit. The reviewed classifications and example IDs are in `tests/fixtures/gfm-audit.json`; the two metric reports are `gfm-conformance.json` and `gfm-render-conformance.json` in that directory. No semantic normalization is applied to either HTML string metric.
+## Autolink limits beyond the corpus
+
+Corpus conformance does not imply complete native-engine parity. A separate audit against **native cmark-gfm 0.29.0.gfm.13** contains **35 fixtures: 31 match and four remain classified differences**. URL-host underscores now follow the reference rule: underscores may appear before the last two segments. Email-domain underscores and a valid email prefix before a plus sign still differ. Sheets retains uppercase WWW links and numeric final email-domain characters where that native version leaves text unlinked. These are tracked as **GFM-06** in the central ledger; the fixture records each input, native expected output, and reason.
+
+This example shows the host-underscore rule alongside the four remaining native differences. Use explicit Markdown links when the automatic result differs from what you intend:
+
+```text
+www._foo.bar.baz
+www.foo._bar.baz
+www.foo.bar._baz
+WWW.EXAMPLE.COM
+a@b.c1
+a@b.c_d
+a@b.c+z
+```
+
+Automatic URL recognition scans at most **10,000 characters after its prefix**, retaining the existing linkify-it bound. Remaining source stays visible. Explicit Markdown links can hold longer addresses within the document size limit. Code spans, code fences, existing links, and HTML anchors keep their literal/context behavior.
+
+Run `npm run test:conformance` for raw/production exact HTML and `node scripts/gfm-render-conformance.mjs` for the actual Chromium sanitization measurement. The browser suite checks the same DOM snapshot in Chromium, Firefox, and WebKit. Run `bash scripts/gfm-reference.sh --check` to build the checksum-pinned native oracle and verify all 35 independent fixtures. The reviewed classifications and example IDs are in `tests/fixtures/gfm-audit.json`; the two metric reports are `gfm-conformance.json` and `gfm-render-conformance.json` in that directory. No semantic normalization is applied to either HTML string metric.
 
 The corpus is attributed under CC-BY-SA 4.0 and excluded from deployment. These are reproducible compatibility measurements, not a claim of full GitHub parity.
 
@@ -118,8 +138,10 @@ These entries share the [central limitations ledger](../limitations.md). “Need
 
 | ID | Status | Area |
 | --- | --- | --- |
-| GFM-01 | Known gap | GFM has three remaining autolink boundary gaps; all corpus differences are classified |
+| GFM-01 | Resolved | All 672 published GFM corpus examples match canonical raw HTML |
 | GFM-02 | Intentional | HTML is sanitized after parsing |
 | GFM-03 | Needs detailed audit | Math uses Temml's supported TeX notation, not a complete TeX document engine |
 | GFM-04 | Needs detailed audit | Code fences display code; Markdown formulas and table cells do not calculate |
+| GFM-05 | Intentional | Automatic URL recognition has a bounded candidate length |
+| GFM-06 | Known gap | Host and email recognition still differs from the pinned native GFM implementation outside the corpus |
 <!-- compatibility:end -->
