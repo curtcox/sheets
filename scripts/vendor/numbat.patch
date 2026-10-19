@@ -1,0 +1,179 @@
+diff --git a/numbat-wasm/src/lib.rs b/numbat-wasm/src/lib.rs
+index 2ea0715..cb38278 100644
+--- a/numbat-wasm/src/lib.rs
++++ b/numbat-wasm/src/lib.rs
+@@ -38,15 +38,48 @@ pub struct Numbat {
+     format_type: FormatType,
+ }
+ 
++#[wasm_bindgen]
++#[derive(Debug, Clone)]
++pub struct SourceLabel {
++    source: String,
++    message: String,
++    pub start: u32,
++    pub end: u32,
++    pub primary: bool,
++    pub diagnostic: u32,
++}
++
++#[wasm_bindgen]
++impl SourceLabel {
++    #[wasm_bindgen(getter)]
++    pub fn source(&self) -> String {
++        self.source.clone()
++    }
++    #[wasm_bindgen(getter)]
++    pub fn message(&self) -> String {
++        self.message.clone()
++    }
++}
++
++#[wasm_bindgen]
++pub fn statement_ranges(code: &str) -> Vec<u32> {
++    numbat::source_ranges(code)
++}
++
+ #[wasm_bindgen]
+ #[derive(Debug, Clone)]
+ pub struct InterpreterOutput {
+     output: String,
+     pub is_error: bool,
++    labels: Vec<SourceLabel>,
+ }
+ 
+ #[wasm_bindgen]
+ impl InterpreterOutput {
++    #[wasm_bindgen(getter)]
++    pub fn labels(&self) -> Vec<SourceLabel> {
++        self.labels.clone()
++    }
+     #[wasm_bindgen(getter)]
+     pub fn output(&self) -> String {
+         self.output.clone()
+@@ -155,6 +188,7 @@ impl Numbat {
+                 InterpreterOutput {
+                     output,
+                     is_error: false,
++                    labels: vec![],
+                 }
+             }
+             Err(NumbatError::ResolverError(e)) => self.print_diagnostic(&e),
+@@ -271,13 +305,30 @@ impl Numbat {
+ 
+         let resolver = self.ctx.resolver();
+ 
+-        for diagnostic in error.diagnostics() {
++        let mut labels = vec![];
++        for (index, diagnostic) in error.diagnostics().iter().enumerate() {
++            for label in &diagnostic.labels {
++                let file = resolver.files.get(label.file_id).unwrap();
++                labels.push(SourceLabel {
++                    diagnostic: index as u32,
++                    source: file.name().clone(),
++                    message: if label.message.is_empty() {
++                        diagnostic.message.clone()
++                    } else {
++                        format!("{}: {}", diagnostic.message, label.message)
++                    },
++                    start: label.range.start as u32,
++                    end: label.range.end as u32,
++                    primary: label.style == codespan_reporting::diagnostic::LabelStyle::Primary,
++                });
++            }
+             term::emit(&mut writer, &config, &resolver.files, &diagnostic).unwrap();
+         }
+ 
+         InterpreterOutput {
+             output: writer.to_string(),
+             is_error: true,
++            labels,
+         }
+     }
+ }
+diff --git a/numbat/src/lib.rs b/numbat/src/lib.rs
+index 282b0bf..9554d90 100644
+--- a/numbat/src/lib.rs
++++ b/numbat/src/lib.rs
+@@ -79,7 +79,7 @@ pub use interpreter::InterpreterResult;
+ pub use interpreter::InterpreterSettings;
+ pub use interpreter::{RuntimeError, RuntimeErrorKind};
+ pub use name_resolution::NameResolutionError;
+-pub use parser::ParseError;
++pub use parser::{ParseError, source_ranges};
+ pub use pretty_print::FormatOptions;
+ pub use registry::BaseRepresentation;
+ pub use registry::BaseRepresentationFactor;
+diff --git a/numbat/src/parser.rs b/numbat/src/parser.rs
+index 7c1c7e4..4cbb6e3 100644
+--- a/numbat/src/parser.rs
++++ b/numbat/src/parser.rs
+@@ -279,6 +279,7 @@ static PROCEDURES: &[TokenKind] = &[
+ 
+ struct Parser<'a> {
+     current: usize,
++    source_ranges: Vec<u32>,
+     decorator_stack: Vec<Decorator<'a>>,
+     /// When we split `>=` into `>` and `=`, we store the span of the `=` here.
+     /// This is used for parsing something like `let v: Vec<Length>= ...`, where
+@@ -290,6 +291,7 @@ impl<'a> Parser<'a> {
+     pub(crate) fn new() -> Self {
+         Parser {
+             current: 0,
++            source_ranges: vec![],
+             decorator_stack: vec![],
+             pending_equals: None,
+         }
+@@ -311,6 +313,7 @@ impl<'a> Parser<'a> {
+         self.skip_empty_lines(tokens);
+ 
+         while !self.is_at_end(tokens) {
++            let start = self.peek(tokens).span.start.0;
+             match self.statement(tokens) {
+                 Ok(statement) => statements.push(statement),
+                 Err(e) => {
+@@ -319,6 +322,9 @@ impl<'a> Parser<'a> {
+                 }
+             }
+ 
++            // Record consumed syntax, including recovery, before the separator.
++            self.source_ranges
++                .extend([start, self.peek(tokens).span.start.0]);
+             match self.peek(tokens).kind {
+                 TokenKind::Newline => {
+                     // Skip over empty lines
+@@ -348,6 +354,7 @@ impl<'a> Parser<'a> {
+                     });
+ 
+                     self.recover_from_error(tokens);
++                    *self.source_ranges.last_mut().unwrap() = self.peek(tokens).span.start.0;
+                 }
+                 _ => {
+                     errors.push(ParseError {
+@@ -357,6 +364,7 @@ impl<'a> Parser<'a> {
+                         span: self.peek(tokens).span,
+                     });
+                     self.recover_from_error(tokens);
++                    *self.source_ranges.last_mut().unwrap() = self.peek(tokens).span.start.0;
+                 }
+             }
+         }
+@@ -2166,6 +2174,18 @@ pub fn parse(input: &str, code_source_id: usize) -> ParseResult<'_> {
+     parser.parse(tokens)
+ }
+ 
++// Sheets bridge: use the unchanged parser's consumption/recovery boundaries.
++// An empty result on a lexical error asks the adapter to evaluate the complete
++// document so an unterminated string is never guessed into separate statements.
++pub fn source_ranges(input: &str) -> Vec<u32> {
++    let Ok(tokens) = crate::tokenizer::tokenize(input, 0) else {
++        return vec![];
++    };
++    let mut parser = Parser::new();
++    let _ = parser.parse(&tokens);
++    parser.source_ranges
++}
++
+ #[cfg(test)]
+ pub fn parse_dexpr(input: &str) -> TypeExpression {
+     let tokens = crate::tokenizer::tokenize(input, 0).expect("No tokenizer errors in tests");

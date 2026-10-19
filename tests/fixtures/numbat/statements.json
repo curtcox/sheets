@@ -1,0 +1,312 @@
+{
+  "upstream": "Numbat 1.24.0, commit 79046422203060e296da41c8c762c506200d2c93; unmodified committed WASM before Sheets source-span patch",
+  "cases": [
+    {
+      "id": "independent-indent",
+      "source": "# +\nlet distance = 3 m\n  let duration = 2 s\ndistance / duration",
+      "statements": 3,
+      "contains": "1.5 m/s",
+      "reference": {
+        "isError": false,
+        "output": "\n<span class=\"numbat-keyword\">let</span> <span class=\"numbat-identifier\">distance</span><span class=\"numbat-operator\">:</span> <span class=\"numbat-type-identifier\">Length</span> <span class=\"numbat-operator\">=</span> <span class=\"numbat-value\">3</span> <span class=\"numbat-unit\">metre</span>\n<span class=\"numbat-keyword\">let</span> <span class=\"numbat-identifier\">duration</span><span class=\"numbat-operator\">:</span> <span class=\"numbat-type-identifier\">Time</span> <span class=\"numbat-operator\">=</span> <span class=\"numbat-value\">2</span> <span class=\"numbat-unit\">second</span>\n<span class=\"numbat-identifier\">distance</span> <span class=\"numbat-operator\">/</span> <span class=\"numbat-identifier\">duration</span>\n\n    <span class=\"numbat-operator\">=</span> <span class=\"numbat-value\">1.5</span> <span class=\"numbat-unit\">m/s</span><span class=\"numbat-dimmed\">    [</span><span class=\"numbat-type-identifier\">Velocity</span><span class=\"numbat-dimmed\">]</span>\n"
+      }
+    },
+    {
+      "id": "multiline-string",
+      "source": "let greeting = \"hello\nworld\"\ngreeting",
+      "statements": 2,
+      "contains": "hello\\nworld",
+      "reference": {
+        "isError": false,
+        "output": "\n<span class=\"numbat-keyword\">let</span> <span class=\"numbat-identifier\">greeting</span><span class=\"numbat-operator\">:</span> <span class=\"numbat-type-identifier\">String</span> <span class=\"numbat-operator\">=</span> <span class=\"numbat-operator\">\"</span><span class=\"numbat-string\">hello\\nworld</span><span class=\"numbat-operator\">\"</span>\n<span class=\"numbat-identifier\">greeting</span>\n\n    <span class=\"numbat-operator\">=</span> <span class=\"numbat-operator\">\"</span><span class=\"numbat-string\">hello\\nworld</span><span class=\"numbat-operator\">\"</span><span class=\"numbat-dimmed\">    [</span><span class=\"numbat-type-identifier\">String</span><span class=\"numbat-dimmed\">]</span>\n"
+      }
+    },
+    {
+      "id": "escaped-backslash",
+      "source": "let path = \"a\\\\\"\npath",
+      "statements": 2,
+      "contains": "a\\\\",
+      "reference": {
+        "isError": false,
+        "output": "\n<span class=\"numbat-keyword\">let</span> <span class=\"numbat-identifier\">path</span><span class=\"numbat-operator\">:</span> <span class=\"numbat-type-identifier\">String</span> <span class=\"numbat-operator\">=</span> <span class=\"numbat-operator\">\"</span><span class=\"numbat-string\">a\\\\</span><span class=\"numbat-operator\">\"</span>\n<span class=\"numbat-identifier\">path</span>\n\n    <span class=\"numbat-operator\">=</span> <span class=\"numbat-operator\">\"</span><span class=\"numbat-string\">a\\\\</span><span class=\"numbat-operator\">\"</span><span class=\"numbat-dimmed\">    [</span><span class=\"numbat-type-identifier\">String</span><span class=\"numbat-dimmed\">]</span>\n"
+      }
+    },
+    {
+      "id": "escaped-quote",
+      "source": "let greeting = \"a\\\"b\"\ngreeting",
+      "statements": 2,
+      "contains": "a\\\"b",
+      "reference": {
+        "isError": false,
+        "output": "\n<span class=\"numbat-keyword\">let</span> <span class=\"numbat-identifier\">greeting</span><span class=\"numbat-operator\">:</span> <span class=\"numbat-type-identifier\">String</span> <span class=\"numbat-operator\">=</span> <span class=\"numbat-operator\">\"</span><span class=\"numbat-string\">a\\\"b</span><span class=\"numbat-operator\">\"</span>\n<span class=\"numbat-identifier\">greeting</span>\n\n    <span class=\"numbat-operator\">=</span> <span class=\"numbat-operator\">\"</span><span class=\"numbat-string\">a\\\"b</span><span class=\"numbat-operator\">\"</span><span class=\"numbat-dimmed\">    [</span><span class=\"numbat-type-identifier\">String</span><span class=\"numbat-dimmed\">]</span>\n"
+      }
+    },
+    {
+      "id": "nested-interpolation",
+      "source": "let greeting = \"{if true then \"a\" else \"b\"}\"\ngreeting",
+      "statements": 2,
+      "contains": "= \"a\"",
+      "reference": {
+        "isError": false,
+        "output": "\n<span class=\"numbat-keyword\">let</span> <span class=\"numbat-identifier\">greeting</span><span class=\"numbat-operator\">:</span> <span class=\"numbat-type-identifier\">String</span> <span class=\"numbat-operator\">=</span> <span class=\"numbat-operator\">\"</span><span class=\"numbat-operator\">{</span><span class=\"numbat-keyword\">if</span> <span class=\"numbat-keyword\">true</span> <span class=\"numbat-keyword\">then</span> <span class=\"numbat-operator\">\"</span><span class=\"numbat-string\">a</span><span class=\"numbat-operator\">\"</span> <span class=\"numbat-keyword\">else</span> <span class=\"numbat-operator\">\"</span><span class=\"numbat-string\">b</span><span class=\"numbat-operator\">\"</span><span class=\"numbat-operator\">}</span><span class=\"numbat-operator\">\"</span>\n<span class=\"numbat-identifier\">greeting</span>\n\n    <span class=\"numbat-operator\">=</span> <span class=\"numbat-operator\">\"</span><span class=\"numbat-string\">a</span><span class=\"numbat-operator\">\"</span><span class=\"numbat-dimmed\">    [</span><span class=\"numbat-type-identifier\">String</span><span class=\"numbat-dimmed\">]</span>\n"
+      }
+    },
+    {
+      "id": "multiline-interpolation",
+      "source": "let greeting = \"x = {sum([\n  1,\n  2\n])}; braces {{ }} and # comment\"\ngreeting",
+      "statements": 2,
+      "contains": "x = 3",
+      "reference": {
+        "isError": false,
+        "output": "\n<span class=\"numbat-keyword\">let</span> <span class=\"numbat-identifier\">greeting</span><span class=\"numbat-operator\">:</span> <span class=\"numbat-type-identifier\">String</span> <span class=\"numbat-operator\">=</span> <span class=\"numbat-operator\">\"</span><span class=\"numbat-string\">x = </span><span class=\"numbat-operator\">{</span><span class=\"numbat-identifier\">sum</span><span class=\"numbat-operator\">(</span><span class=\"numbat-operator\">[</span><span class=\"numbat-value\">1</span><span class=\"numbat-operator\">,</span> <span class=\"numbat-value\">2</span><span class=\"numbat-operator\">]</span><span class=\"numbat-operator\">)</span><span class=\"numbat-operator\">}</span><span class=\"numbat-string\">; braces {{ }} and # comment</span><span class=\"numbat-operator\">\"</span>\n<span class=\"numbat-identifier\">greeting</span>\n\n    <span class=\"numbat-operator\">=</span> <span class=\"numbat-operator\">\"</span><span class=\"numbat-string\">x = 3; braces {{ }} and # comment</span><span class=\"numbat-operator\">\"</span><span class=\"numbat-dimmed\">    [</span><span class=\"numbat-type-identifier\">String</span><span class=\"numbat-dimmed\">]</span>\n"
+      }
+    },
+    {
+      "id": "nested-list-comments",
+      "source": "let amount = sum([\n  1, # } ) +\n  2,\n  3\n])\namount",
+      "statements": 2,
+      "contains": "= 6",
+      "reference": {
+        "isError": false,
+        "output": "\n<span class=\"numbat-keyword\">let</span> <span class=\"numbat-identifier\">amount</span><span class=\"numbat-operator\">:</span> <span class=\"numbat-type-identifier\">Scalar</span> <span class=\"numbat-operator\">=</span> <span class=\"numbat-identifier\">sum</span><span class=\"numbat-operator\">(</span><span class=\"numbat-operator\">[</span><span class=\"numbat-value\">1</span><span class=\"numbat-operator\">,</span> <span class=\"numbat-value\">2</span><span class=\"numbat-operator\">,</span> <span class=\"numbat-value\">3</span><span class=\"numbat-operator\">]</span><span class=\"numbat-operator\">)</span>\n<span class=\"numbat-identifier\">amount</span>\n\n    <span class=\"numbat-operator\">=</span> <span class=\"numbat-value\">6</span>\n"
+      }
+    },
+    {
+      "id": "comment-operator",
+      "source": "let greeting = \"# +\" # +\n42",
+      "statements": 2,
+      "contains": "= 42",
+      "reference": {
+        "isError": false,
+        "output": "\n<span class=\"numbat-keyword\">let</span> <span class=\"numbat-identifier\">greeting</span><span class=\"numbat-operator\">:</span> <span class=\"numbat-type-identifier\">String</span> <span class=\"numbat-operator\">=</span> <span class=\"numbat-operator\">\"</span><span class=\"numbat-string\"># +</span><span class=\"numbat-operator\">\"</span>\n<span class=\"numbat-value\">42</span>\n\n    <span class=\"numbat-operator\">=</span> <span class=\"numbat-value\">42</span>\n"
+      }
+    },
+    {
+      "id": "function-local",
+      "source": "fn sheet_twice(x) = result\n  where result = 2*x\nsheet_twice(5)",
+      "statements": 2,
+      "contains": "= 10",
+      "reference": {
+        "isError": false,
+        "output": "\n<span class=\"numbat-keyword\">fn</span> <span class=\"numbat-identifier\">sheet_twice</span><span class=\"numbat-operator\">&lt;</span><span class=\"numbat-type-identifier\">A</span><span class=\"numbat-operator\">:</span> <span class=\"numbat-type-identifier\">Dim</span><span class=\"numbat-operator\">&gt;</span><span class=\"numbat-operator\">(</span><span class=\"numbat-identifier\">x</span><span class=\"numbat-operator\">:</span> <span class=\"numbat-type-identifier\">A</span><span class=\"numbat-operator\">)</span> <span class=\"numbat-operator\">-&gt;</span> <span class=\"numbat-type-identifier\">A</span> <span class=\"numbat-operator\">=</span> <span class=\"numbat-identifier\">result</span>\n  <span class=\"numbat-keyword\">where</span> <span class=\"numbat-identifier\">result</span><span class=\"numbat-operator\">:</span> <span class=\"numbat-type-identifier\">A</span> <span class=\"numbat-operator\">=</span> <span class=\"numbat-value\">2</span> <span class=\"numbat-identifier\">x</span>\n<span class=\"numbat-identifier\">sheet_twice</span><span class=\"numbat-operator\">(</span><span class=\"numbat-value\">5</span><span class=\"numbat-operator\">)</span>\n\n    <span class=\"numbat-operator\">=</span> <span class=\"numbat-value\">10</span>\n"
+      }
+    },
+    {
+      "id": "function-parameters",
+      "source": "fn sheet_area(\nwidth: Length,\nheight: Length,\n) = width * height\nsheet_area(2m,3m)",
+      "statements": 2,
+      "contains": "6 m²",
+      "reference": {
+        "isError": false,
+        "output": "\n<span class=\"numbat-keyword\">fn</span> <span class=\"numbat-identifier\">sheet_area</span><span class=\"numbat-operator\">(</span><span class=\"numbat-identifier\">width</span><span class=\"numbat-operator\">:</span> <span class=\"numbat-type-identifier\">Length</span><span class=\"numbat-operator\">, </span><span class=\"numbat-identifier\">height</span><span class=\"numbat-operator\">:</span> <span class=\"numbat-type-identifier\">Length</span><span class=\"numbat-operator\">)</span> <span class=\"numbat-operator\">-&gt;</span> <span class=\"numbat-type-identifier\">Area</span> <span class=\"numbat-operator\">=</span> <span class=\"numbat-identifier\">width</span> <span class=\"numbat-operator\">×</span> <span class=\"numbat-identifier\">height</span>\n<span class=\"numbat-identifier\">sheet_area</span><span class=\"numbat-operator\">(</span><span class=\"numbat-value\">2</span> <span class=\"numbat-unit\">metre</span><span class=\"numbat-operator\">,</span> <span class=\"numbat-value\">3</span> <span class=\"numbat-unit\">metre</span><span class=\"numbat-operator\">)</span>\n\n    <span class=\"numbat-operator\">=</span> <span class=\"numbat-value\">6</span> <span class=\"numbat-unit\">m²</span><span class=\"numbat-dimmed\">    [</span><span class=\"numbat-type-identifier\">Area</span><span class=\"numbat-dimmed\">]</span>\n"
+      }
+    },
+    {
+      "id": "decorator",
+      "source": "@name(\"step\")\nunit sheetstep = 2 m\n3 sheetstep -> m",
+      "statements": 2,
+      "contains": "6 m",
+      "reference": {
+        "isError": false,
+        "output": "\n<span class=\"numbat-decorator\">@name</span><span class=\"numbat-operator\">(</span><span class=\"numbat-string\">step</span><span class=\"numbat-operator\">)</span>\n<span class=\"numbat-keyword\">unit</span> <span class=\"numbat-unit\">sheetstep</span><span class=\"numbat-operator\">:</span> <span class=\"numbat-type-identifier\">Length</span> <span class=\"numbat-operator\">=</span> <span class=\"numbat-value\">2</span> <span class=\"numbat-unit\">metre</span>\n<span class=\"numbat-value\">3</span> <span class=\"numbat-unit\">sheetstep</span> <span class=\"numbat-operator\">➞</span> <span class=\"numbat-unit\">metre</span>\n\n    <span class=\"numbat-operator\">=</span> <span class=\"numbat-value\">6</span> <span class=\"numbat-unit\">m</span><span class=\"numbat-dimmed\">    [</span><span class=\"numbat-type-identifier\">Length</span><span class=\"numbat-dimmed\">]</span>\n"
+      }
+    },
+    {
+      "id": "semicolon",
+      "source": "let distance = 3 m; let duration = 2 s; distance / duration",
+      "statements": 3,
+      "contains": "1.5 m/s",
+      "reference": {
+        "isError": false,
+        "output": "\n<span class=\"numbat-keyword\">let</span> <span class=\"numbat-identifier\">distance</span><span class=\"numbat-operator\">:</span> <span class=\"numbat-type-identifier\">Length</span> <span class=\"numbat-operator\">=</span> <span class=\"numbat-value\">3</span> <span class=\"numbat-unit\">metre</span>\n<span class=\"numbat-keyword\">let</span> <span class=\"numbat-identifier\">duration</span><span class=\"numbat-operator\">:</span> <span class=\"numbat-type-identifier\">Time</span> <span class=\"numbat-operator\">=</span> <span class=\"numbat-value\">2</span> <span class=\"numbat-unit\">second</span>\n<span class=\"numbat-identifier\">distance</span> <span class=\"numbat-operator\">/</span> <span class=\"numbat-identifier\">duration</span>\n\n    <span class=\"numbat-operator\">=</span> <span class=\"numbat-value\">1.5</span> <span class=\"numbat-unit\">m/s</span><span class=\"numbat-dimmed\">    [</span><span class=\"numbat-type-identifier\">Velocity</span><span class=\"numbat-dimmed\">]</span>\n"
+      }
+    },
+    {
+      "id": "equals-continuation",
+      "source": "let distance =\n  3 m\ndistance",
+      "statements": 2,
+      "contains": "3 m",
+      "reference": {
+        "isError": false,
+        "output": "\n<span class=\"numbat-keyword\">let</span> <span class=\"numbat-identifier\">distance</span><span class=\"numbat-operator\">:</span> <span class=\"numbat-type-identifier\">Length</span> <span class=\"numbat-operator\">=</span> <span class=\"numbat-value\">3</span> <span class=\"numbat-unit\">metre</span>\n<span class=\"numbat-identifier\">distance</span>\n\n    <span class=\"numbat-operator\">=</span> <span class=\"numbat-value\">3</span> <span class=\"numbat-unit\">m</span><span class=\"numbat-dimmed\">    [</span><span class=\"numbat-type-identifier\">Length</span><span class=\"numbat-dimmed\">]</span>\n"
+      }
+    },
+    {
+      "id": "multiline-error",
+      "source": "let greeting = \"hello\nworld\"\nlet broken = sum([\n  1,\n  unknown_name\n])\n42",
+      "statements": 3,
+      "contains": "= 42",
+      "diagnostics": [
+        {
+          "line": 5,
+          "column": 2,
+          "text": "unknown_name"
+        }
+      ],
+      "reference": {
+        "isError": true,
+        "output": "<span class=\"numbat-diagnostic-red\">error</span><span class=\"numbat-diagnostic-bold\">: </span><span class=\"numbat-diagnostic-bold\">while type checking</span>\n  <span class=\"numbat-diagnostic-blue\">┌─</span> <input:1>:5:3\n  <span class=\"numbat-diagnostic-blue\">│</span>\n<span class=\"numbat-diagnostic-blue\">5</span> <span class=\"numbat-diagnostic-blue\">│</span>   <span class=\"numbat-diagnostic-red\">u</span><span class=\"numbat-diagnostic-red\">n</span><span class=\"numbat-diagnostic-red\">k</span><span class=\"numbat-diagnostic-red\">n</span><span class=\"numbat-diagnostic-red\">o</span><span class=\"numbat-diagnostic-red\">w</span><span class=\"numbat-diagnostic-red\">n</span><span class=\"numbat-diagnostic-red\">_</span><span class=\"numbat-diagnostic-red\">n</span><span class=\"numbat-diagnostic-red\">a</span><span class=\"numbat-diagnostic-red\">m</span><span class=\"numbat-diagnostic-red\">e</span>\n  <span class=\"numbat-diagnostic-blue\">│</span>   <span class=\"numbat-diagnostic-red\">^</span><span class=\"numbat-diagnostic-red\">^</span><span class=\"numbat-diagnostic-red\">^</span><span class=\"numbat-diagnostic-red\">^</span><span class=\"numbat-diagnostic-red\">^</span><span class=\"numbat-diagnostic-red\">^</span><span class=\"numbat-diagnostic-red\">^</span><span class=\"numbat-diagnostic-red\">^</span><span class=\"numbat-diagnostic-red\">^</span><span class=\"numbat-diagnostic-red\">^</span><span class=\"numbat-diagnostic-red\">^</span><span class=\"numbat-diagnostic-red\">^</span> <span class=\"numbat-diagnostic-red\">unknown identifier</span>\n\n"
+      }
+    },
+    {
+      "id": "unicode-offset",
+      "source": "let πthing = 3 m\n\"😀\"; πthing + unknown_name\n42",
+      "statements": 4,
+      "contains": "= 42",
+      "diagnostics": [
+        {
+          "line": 2,
+          "column": 15,
+          "text": "unknown_name"
+        }
+      ],
+      "reference": {
+        "isError": true,
+        "output": "<span class=\"numbat-diagnostic-red\">error</span><span class=\"numbat-diagnostic-bold\">: </span><span class=\"numbat-diagnostic-bold\">while type checking</span>\n  <span class=\"numbat-diagnostic-blue\">┌─</span> <input:1>:2:15\n  <span class=\"numbat-diagnostic-blue\">│</span>\n<span class=\"numbat-diagnostic-blue\">2</span> <span class=\"numbat-diagnostic-blue\">│</span> \"😀\"; πthing + <span class=\"numbat-diagnostic-red\">u</span><span class=\"numbat-diagnostic-red\">n</span><span class=\"numbat-diagnostic-red\">k</span><span class=\"numbat-diagnostic-red\">n</span><span class=\"numbat-diagnostic-red\">o</span><span class=\"numbat-diagnostic-red\">w</span><span class=\"numbat-diagnostic-red\">n</span><span class=\"numbat-diagnostic-red\">_</span><span class=\"numbat-diagnostic-red\">n</span><span class=\"numbat-diagnostic-red\">a</span><span class=\"numbat-diagnostic-red\">m</span><span class=\"numbat-diagnostic-red\">e</span>\n  <span class=\"numbat-diagnostic-blue\">│</span>                <span class=\"numbat-diagnostic-red\">^</span><span class=\"numbat-diagnostic-red\">^</span><span class=\"numbat-diagnostic-red\">^</span><span class=\"numbat-diagnostic-red\">^</span><span class=\"numbat-diagnostic-red\">^</span><span class=\"numbat-diagnostic-red\">^</span><span class=\"numbat-diagnostic-red\">^</span><span class=\"numbat-diagnostic-red\">^</span><span class=\"numbat-diagnostic-red\">^</span><span class=\"numbat-diagnostic-red\">^</span><span class=\"numbat-diagnostic-red\">^</span><span class=\"numbat-diagnostic-red\">^</span> <span class=\"numbat-diagnostic-red\">unknown identifier</span>\n\n"
+      }
+    },
+    {
+      "id": "parse-recovery",
+      "source": "let distance = )\n42",
+      "statements": 2,
+      "contains": "= 42",
+      "diagnostics": [
+        {
+          "line": 1,
+          "column": 15,
+          "text": ")"
+        }
+      ],
+      "reference": {
+        "isError": true,
+        "output": "<span class=\"numbat-diagnostic-red\">error</span><span class=\"numbat-diagnostic-bold\">: </span><span class=\"numbat-diagnostic-bold\">while parsing</span>\n  <span class=\"numbat-diagnostic-blue\">┌─</span> <input:1>:1:16\n  <span class=\"numbat-diagnostic-blue\">│</span>\n<span class=\"numbat-diagnostic-blue\">1</span> <span class=\"numbat-diagnostic-blue\">│</span> let distance = <span class=\"numbat-diagnostic-red\">)</span>\n  <span class=\"numbat-diagnostic-blue\">│</span>                <span class=\"numbat-diagnostic-red\">^</span> <span class=\"numbat-diagnostic-red\">Expected one of: number, identifier, parenthesized expression, struct instantiation, list</span>\n\n"
+      }
+    },
+    {
+      "id": "bare-operator-newline",
+      "source": "let distance = 1 +\n2\n42",
+      "statements": 3,
+      "contains": "= 42",
+      "diagnostics": [
+        {
+          "line": 1,
+          "column": 18,
+          "text": "\n"
+        }
+      ],
+      "reference": {
+        "isError": true,
+        "output": "<span class=\"numbat-diagnostic-red\">error</span><span class=\"numbat-diagnostic-bold\">: </span><span class=\"numbat-diagnostic-bold\">while parsing</span>\n  <span class=\"numbat-diagnostic-blue\">┌─</span> <input:1>:1:19\n  <span class=\"numbat-diagnostic-blue\">│</span>  \n<span class=\"numbat-diagnostic-blue\">1</span> <span class=\"numbat-diagnostic-blue\">│</span>   let distance = 1 +\n  <span class=\"numbat-diagnostic-blue\">│</span> <span class=\"numbat-diagnostic-red\">╭</span><span class=\"numbat-diagnostic-red\">─</span><span class=\"numbat-diagnostic-red\">─</span><span class=\"numbat-diagnostic-red\">─</span><span class=\"numbat-diagnostic-red\">─</span><span class=\"numbat-diagnostic-red\">─</span><span class=\"numbat-diagnostic-red\">─</span><span class=\"numbat-diagnostic-red\">─</span><span class=\"numbat-diagnostic-red\">─</span><span class=\"numbat-diagnostic-red\">─</span><span class=\"numbat-diagnostic-red\">─</span><span class=\"numbat-diagnostic-red\">─</span><span class=\"numbat-diagnostic-red\">─</span><span class=\"numbat-diagnostic-red\">─</span><span class=\"numbat-diagnostic-red\">─</span><span class=\"numbat-diagnostic-red\">─</span><span class=\"numbat-diagnostic-red\">─</span><span class=\"numbat-diagnostic-red\">─</span><span class=\"numbat-diagnostic-red\">─</span><span class=\"numbat-diagnostic-red\">^</span>\n<span class=\"numbat-diagnostic-blue\">2</span> <span class=\"numbat-diagnostic-blue\">│</span> <span class=\"numbat-diagnostic-red\">│</span> 2\n  <span class=\"numbat-diagnostic-blue\">│</span> <span class=\"numbat-diagnostic-red\">╰</span><span class=\"numbat-diagnostic-red\">^</span><span class=\"numbat-diagnostic-red\"> </span><span class=\"numbat-diagnostic-red\">Expected one of: number, identifier, parenthesized expression, struct instantiation, list</span>\n\n"
+      }
+    },
+    {
+      "id": "unterminated-string",
+      "source": "let broken = \"never closes\n42",
+      "statements": 1,
+      "diagnostics": [
+        {
+          "line": 1,
+          "column": 13,
+          "text": "\"never closes\n42"
+        }
+      ],
+      "reference": {
+        "isError": true,
+        "output": "<span class=\"numbat-diagnostic-red\">error</span><span class=\"numbat-diagnostic-bold\">: </span><span class=\"numbat-diagnostic-bold\">while parsing</span>\n  <span class=\"numbat-diagnostic-blue\">┌─</span> <input:1>:1:14\n  <span class=\"numbat-diagnostic-blue\">│</span>  \n<span class=\"numbat-diagnostic-blue\">1</span> <span class=\"numbat-diagnostic-blue\">│</span>   let broken = <span class=\"numbat-diagnostic-red\">\"</span><span class=\"numbat-diagnostic-red\">n</span><span class=\"numbat-diagnostic-red\">e</span><span class=\"numbat-diagnostic-red\">v</span><span class=\"numbat-diagnostic-red\">e</span><span class=\"numbat-diagnostic-red\">r</span><span class=\"numbat-diagnostic-red\"> </span><span class=\"numbat-diagnostic-red\">c</span><span class=\"numbat-diagnostic-red\">l</span><span class=\"numbat-diagnostic-red\">o</span><span class=\"numbat-diagnostic-red\">s</span><span class=\"numbat-diagnostic-red\">e</span><span class=\"numbat-diagnostic-red\">s</span>\n  <span class=\"numbat-diagnostic-blue\">│</span> <span class=\"numbat-diagnostic-red\">╭</span><span class=\"numbat-diagnostic-red\">─</span><span class=\"numbat-diagnostic-red\">─</span><span class=\"numbat-diagnostic-red\">─</span><span class=\"numbat-diagnostic-red\">─</span><span class=\"numbat-diagnostic-red\">─</span><span class=\"numbat-diagnostic-red\">─</span><span class=\"numbat-diagnostic-red\">─</span><span class=\"numbat-diagnostic-red\">─</span><span class=\"numbat-diagnostic-red\">─</span><span class=\"numbat-diagnostic-red\">─</span><span class=\"numbat-diagnostic-red\">─</span><span class=\"numbat-diagnostic-red\">─</span><span class=\"numbat-diagnostic-red\">─</span><span class=\"numbat-diagnostic-red\">─</span><span class=\"numbat-diagnostic-red\">^</span>\n<span class=\"numbat-diagnostic-blue\">2</span> <span class=\"numbat-diagnostic-blue\">│</span> <span class=\"numbat-diagnostic-red\">│</span> <span class=\"numbat-diagnostic-red\">4</span><span class=\"numbat-diagnostic-red\">2</span>\n  <span class=\"numbat-diagnostic-blue\">│</span> <span class=\"numbat-diagnostic-red\">╰</span><span class=\"numbat-diagnostic-red\">─</span><span class=\"numbat-diagnostic-red\">─</span><span class=\"numbat-diagnostic-red\">^</span><span class=\"numbat-diagnostic-red\"> </span><span class=\"numbat-diagnostic-red\">Unterminated string</span>\n\n"
+      }
+    },
+    {
+      "id": "lexical-error",
+      "source": "let distance = 3 m\n`\n42",
+      "statements": 1,
+      "diagnostics": [
+        {
+          "line": 2,
+          "column": 0,
+          "text": "`"
+        }
+      ],
+      "reference": {
+        "isError": true,
+        "output": "<span class=\"numbat-diagnostic-red\">error</span><span class=\"numbat-diagnostic-bold\">: </span><span class=\"numbat-diagnostic-bold\">while parsing</span>\n  <span class=\"numbat-diagnostic-blue\">┌─</span> <input:1>:2:1\n  <span class=\"numbat-diagnostic-blue\">│</span>\n<span class=\"numbat-diagnostic-blue\">2</span> <span class=\"numbat-diagnostic-blue\">│</span> <span class=\"numbat-diagnostic-red\">`</span>\n  <span class=\"numbat-diagnostic-blue\">│</span> <span class=\"numbat-diagnostic-red\">^</span> <span class=\"numbat-diagnostic-red\">Unexpected character: '`'</span>\n\n"
+      }
+    },
+    {
+      "id": "crlf",
+      "source": "# comment\r\nlet distance =\r\n  3 m\r\ndistance\r\n",
+      "statements": 2,
+      "contains": "3 m",
+      "reference": {
+        "isError": false,
+        "output": "\n<span class=\"numbat-keyword\">let</span> <span class=\"numbat-identifier\">distance</span><span class=\"numbat-operator\">:</span> <span class=\"numbat-type-identifier\">Length</span> <span class=\"numbat-operator\">=</span> <span class=\"numbat-value\">3</span> <span class=\"numbat-unit\">metre</span>\n<span class=\"numbat-identifier\">distance</span>\n\n    <span class=\"numbat-operator\">=</span> <span class=\"numbat-value\">3</span> <span class=\"numbat-unit\">m</span><span class=\"numbat-dimmed\">    [</span><span class=\"numbat-type-identifier\">Length</span><span class=\"numbat-dimmed\">]</span>\n"
+      }
+    },
+    {
+      "id": "blank-comment-only",
+      "source": "\n # +\n # \"\n",
+      "statements": 0,
+      "reference": {
+        "isError": false,
+        "output": "\n\n"
+      }
+    },
+    {
+      "id": "trailing-error",
+      "source": "let bad = 1 : nope\n42",
+      "statements": 2,
+      "contains": "= 42",
+      "reference": {
+        "isError": true,
+        "output": "<span class=\"numbat-diagnostic-red\">error</span><span class=\"numbat-diagnostic-bold\">: </span><span class=\"numbat-diagnostic-bold\">while parsing</span>\n  <span class=\"numbat-diagnostic-blue\">┌─</span> <input:1>:1:13\n  <span class=\"numbat-diagnostic-blue\">│</span>\n<span class=\"numbat-diagnostic-blue\">1</span> <span class=\"numbat-diagnostic-blue\">│</span> let bad = 1 <span class=\"numbat-diagnostic-red\">:</span> nope\n  <span class=\"numbat-diagnostic-blue\">│</span>             <span class=\"numbat-diagnostic-red\">^</span> <span class=\"numbat-diagnostic-red\">Trailing characters: ':'</span>\n\n<span class=\"numbat-diagnostic-red\">error</span><span class=\"numbat-diagnostic-bold\">: </span><span class=\"numbat-diagnostic-bold\">while parsing</span>\n  <span class=\"numbat-diagnostic-blue\">┌─</span> <input:1>:1:19\n  <span class=\"numbat-diagnostic-blue\">│</span>  \n<span class=\"numbat-diagnostic-blue\">1</span> <span class=\"numbat-diagnostic-blue\">│</span>   let bad = 1 : nope\n  <span class=\"numbat-diagnostic-blue\">│</span> <span class=\"numbat-diagnostic-red\">╭</span><span class=\"numbat-diagnostic-red\">─</span><span class=\"numbat-diagnostic-red\">─</span><span class=\"numbat-diagnostic-red\">─</span><span class=\"numbat-diagnostic-red\">─</span><span class=\"numbat-diagnostic-red\">─</span><span class=\"numbat-diagnostic-red\">─</span><span class=\"numbat-diagnostic-red\">─</span><span class=\"numbat-diagnostic-red\">─</span><span class=\"numbat-diagnostic-red\">─</span><span class=\"numbat-diagnostic-red\">─</span><span class=\"numbat-diagnostic-red\">─</span><span class=\"numbat-diagnostic-red\">─</span><span class=\"numbat-diagnostic-red\">─</span><span class=\"numbat-diagnostic-red\">─</span><span class=\"numbat-diagnostic-red\">─</span><span class=\"numbat-diagnostic-red\">─</span><span class=\"numbat-diagnostic-red\">─</span><span class=\"numbat-diagnostic-red\">─</span><span class=\"numbat-diagnostic-red\">^</span>\n<span class=\"numbat-diagnostic-blue\">2</span> <span class=\"numbat-diagnostic-blue\">│</span> <span class=\"numbat-diagnostic-red\">│</span> 42\n  <span class=\"numbat-diagnostic-blue\">│</span> <span class=\"numbat-diagnostic-red\">╰</span><span class=\"numbat-diagnostic-red\">^</span><span class=\"numbat-diagnostic-red\"> </span><span class=\"numbat-diagnostic-red\">Expected one of: number, identifier, parenthesized expression, struct instantiation, list</span>\n\n"
+      }
+    },
+    {
+      "id": "byte-order-mark",
+      "source": "﻿42",
+      "statements": 1,
+      "diagnostics": [
+        {
+          "line": 1,
+          "column": 0,
+          "text": "﻿"
+        }
+      ],
+      "reference": {
+        "isError": true,
+        "output": "<span class=\"numbat-diagnostic-red\">error</span><span class=\"numbat-diagnostic-bold\">: </span><span class=\"numbat-diagnostic-bold\">while parsing</span>\n  <span class=\"numbat-diagnostic-blue\">┌─</span> <input:1>:1:1\n  <span class=\"numbat-diagnostic-blue\">│</span>\n<span class=\"numbat-diagnostic-blue\">1</span> <span class=\"numbat-diagnostic-blue\">│</span> <span class=\"numbat-diagnostic-red\">﻿</span>42\n  <span class=\"numbat-diagnostic-blue\">│</span>  <span class=\"numbat-diagnostic-red\">Unexpected character: '﻿' (U+FEFF)</span>\n\n"
+      }
+    },
+    {
+      "id": "lone-surrogate",
+      "source": "\ud800\n42",
+      "statements": 1,
+      "diagnostics": [
+        {
+          "line": 1,
+          "column": 0,
+          "text": "\ud800"
+        }
+      ],
+      "reference": {
+        "isError": true,
+        "output": "<span class=\"numbat-diagnostic-red\">error</span><span class=\"numbat-diagnostic-bold\">: </span><span class=\"numbat-diagnostic-bold\">while parsing</span>\n  <span class=\"numbat-diagnostic-blue\">┌─</span> <input:1>:1:1\n  <span class=\"numbat-diagnostic-blue\">│</span>\n<span class=\"numbat-diagnostic-blue\">1</span> <span class=\"numbat-diagnostic-blue\">│</span> <span class=\"numbat-diagnostic-red\">�</span>\n  <span class=\"numbat-diagnostic-blue\">│</span> <span class=\"numbat-diagnostic-red\">^</span> <span class=\"numbat-diagnostic-red\">Unexpected character: '�' (U+FFFD)</span>\n\n"
+      }
+    },
+    {
+      "id": "astral-lexical-error",
+      "source": "😀\n42",
+      "statements": 1,
+      "diagnostics": [
+        {
+          "line": 1,
+          "column": 0,
+          "text": "😀"
+        }
+      ],
+      "reference": {
+        "isError": true,
+        "output": "<span class=\"numbat-diagnostic-red\">error</span><span class=\"numbat-diagnostic-bold\">: </span><span class=\"numbat-diagnostic-bold\">while parsing</span>\n  <span class=\"numbat-diagnostic-blue\">┌─</span> <input:1>:1:1\n  <span class=\"numbat-diagnostic-blue\">│</span>\n<span class=\"numbat-diagnostic-blue\">1</span> <span class=\"numbat-diagnostic-blue\">│</span> <span class=\"numbat-diagnostic-red\">😀</span>\n  <span class=\"numbat-diagnostic-blue\">│</span> <span class=\"numbat-diagnostic-red\">^</span><span class=\"numbat-diagnostic-red\">^</span> <span class=\"numbat-diagnostic-red\">Unexpected character: '😀' (U+1F600)</span>\n\n"
+      }
+    }
+  ]
+}

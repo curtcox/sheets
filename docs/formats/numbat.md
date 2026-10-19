@@ -1,6 +1,6 @@
 # Numbat
 
-[Numbat](https://numbat.dev/) is a unit-aware language. Sheets vendors [sharkdp/numbat](https://github.com/sharkdp/numbat) v1.24.0 at commit `79046422203060e296da41c8c762c506200d2c93`, compiled with its WASM build script. The engine is dual MIT/Apache-2.0 licensed.
+[Numbat](https://numbat.dev/) is a unit-aware language. Sheets vendors [sharkdp/numbat](https://github.com/sharkdp/numbat) v1.24.0 at commit `79046422203060e296da41c8c762c506200d2c93`, compiled with its WASM build script and a small Sheets source-span bridge patch. The engine is dual MIT/Apache-2.0 licensed.
 
 Use Numbat for physical models, engineering checks, and calculations where mixing
 incompatible dimensions should be an error. Select **Numbat** or write declarations
@@ -37,11 +37,41 @@ calculations, consider Hurmet; this view is a sequence of source/result rows.
 
 ## Execution, currencies, and limits
 
-The worker creates `Numbat.new(true, true, FormatType.Html)` and evaluates statements in one context. Each row retains its source line and formatted result. Bracketed and indented continuations are grouped. Errors attach to the statement's first line, and later statements can still run.
+The worker creates `Numbat.new(true, true, FormatType.Html)` and evaluates statements in one context. Each row retains the original source and formatted result. Statement boundaries come from the pinned interpreter's parser, including semicolons, multiline strings and interpolation, decorators, lists, function parameters, and local `where` definitions. Indentation alone does not join separate statements.
+
+The editor places error annotations at the actual source line and column, including inside multiline statements and after Unicode text. Related locations retain their original document positions, including references to earlier definitions. Later statements can still run after parse, type, or runtime errors when the tokenizer can read the document. The engine's formatted error report uses line numbers local to its individual input row; editor annotations use whole-document positions.
+
+### Multiline calculations
+
+Use line breaks where Numbat's grammar allows them. For example, a definition may continue after `=`, list elements can span lines, and a function can have local definitions:
+
+```text
+let readings =
+  [2 m, 4 m, 6 m]
+fn sheet_average(values) = total / count
+  where total = sum(values)
+    and count = len(values)
+sheet_average(readings) -> m
+```
+
+This produces **4 m**. Numbat 1.24.0 rejects a newline immediately after a binary plus operator. Arbitrary newlines inside parentheses are also not interchangeable with newlines inside a list or function argument list.
+
+To see recovery and a precise multiline diagnostic, open this example:
+
+```text
+let readings = [2 m, 4 m]
+let total = sum([
+  2 m,
+  missing_reading
+])
+42
+```
+
+The editor reports `missing_reading` on line 4; the final statement still produces **42**. The document is rerun from the beginning after an edit.
 
 The upstream prelude, units, functions, declarations, and dimensional checking are available. `let`, `fn`, `unit`, `dimension`, and `->` are Auto detection signals. Some short names, such as `g`, are already units and cannot be redefined.
 
-A render has a 20-second deadline. Editing or cancelling terminates the worker, and the next render starts a fresh context. The statement grouper covers common multiline calculations, not every possible lexical corner of the full language. Terminal commands and an interactive REPL are outside this editor.
+A render has a 20-second deadline. Editing or cancelling terminates the worker, and the next render starts a fresh context. A lexical error, such as an unterminated string or an unexpected character, prevents the upstream tokenizer from finding statement boundaries. Sheets then submits the complete document as one input and reports the error; it does not execute apparent statements inside the broken text. Fix that lexical error before expecting partial results. Terminal commands and an interactive REPL are outside this editor.
 
 Currency documents request cached ECB XML and pass it to `set_exchange_rates`.
 The shared service obtains decimal data from the browser-accessible official ECB
@@ -66,8 +96,9 @@ These entries share the [central limitations ledger](../limitations.md). “Need
 
 | ID | Status | Area |
 | --- | --- | --- |
-| NUM-01 | Needs detailed audit | Sheets runs pinned Numbat 1.24.0 through its WASM interpreter |
+| NUM-01 | Resolved | Statement boundaries and source diagnostics use the pinned upstream parser |
 | NUM-02 | Needs detailed audit | Terminal commands, a persistent interactive REPL, and a Sheets plot viewer are not provided |
 | NUM-03 | Intentional | A fresh worker starts for every render, with a 20-second deadline |
 | NUM-04 | Needs detailed audit | Some short names are predefined units and cannot be redefined |
+| NUM-05 | Intentional | Lexical errors stop partial evaluation; formatted engine reports use input-local lines |
 <!-- compatibility:end -->

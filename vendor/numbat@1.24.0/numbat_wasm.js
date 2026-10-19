@@ -107,10 +107,6 @@ function isLikeNone(x) {
     return x === undefined || x === null;
 }
 
-export function setup_panic_hook() {
-    wasm.setup_panic_hook();
-}
-
 function getArrayJsValueFromWasm0(ptr, len) {
     ptr = ptr >>> 0;
     const mem = getDataViewMemory0();
@@ -121,6 +117,37 @@ function getArrayJsValueFromWasm0(ptr, len) {
     wasm.__externref_drop_slice(ptr, len);
     return result;
 }
+
+let cachedUint32ArrayMemory0 = null;
+
+function getUint32ArrayMemory0() {
+    if (cachedUint32ArrayMemory0 === null || cachedUint32ArrayMemory0.byteLength === 0) {
+        cachedUint32ArrayMemory0 = new Uint32Array(wasm.memory.buffer);
+    }
+    return cachedUint32ArrayMemory0;
+}
+
+function getArrayU32FromWasm0(ptr, len) {
+    ptr = ptr >>> 0;
+    return getUint32ArrayMemory0().subarray(ptr / 4, ptr / 4 + len);
+}
+/**
+ * @param {string} code
+ * @returns {Uint32Array}
+ */
+export function statement_ranges(code) {
+    const ptr0 = passStringToWasm0(code, wasm.__wbindgen_malloc, wasm.__wbindgen_realloc);
+    const len0 = WASM_VECTOR_LEN;
+    const ret = wasm.statement_ranges(ptr0, len0);
+    var v2 = getArrayU32FromWasm0(ret[0], ret[1]).slice();
+    wasm.__wbindgen_free(ret[0], ret[1] * 4, 4);
+    return v2;
+}
+
+export function setup_panic_hook() {
+    wasm.setup_panic_hook();
+}
+
 /**
  * @enum {0 | 1}
  */
@@ -236,6 +263,15 @@ export class InterpreterOutput {
         wasm.__wbg_interpreteroutput_free(ptr, 0);
     }
     /**
+     * @returns {SourceLabel[]}
+     */
+    get labels() {
+        const ret = wasm.interpreteroutput_labels(this.__wbg_ptr);
+        var v1 = getArrayJsValueFromWasm0(ret[0], ret[1]).slice();
+        wasm.__wbindgen_free(ret[0], ret[1] * 4, 4);
+        return v1;
+    }
+    /**
      * @returns {string}
      */
     get output() {
@@ -254,14 +290,14 @@ export class InterpreterOutput {
      * @returns {boolean}
      */
     get is_error() {
-        const ret = wasm.__wbg_get_commandresult_is_command(this.__wbg_ptr);
+        const ret = wasm.__wbg_get_interpreteroutput_is_error(this.__wbg_ptr);
         return ret !== 0;
     }
     /**
      * @param {boolean} arg0
      */
     set is_error(arg0) {
-        wasm.__wbg_set_commandresult_is_command(this.__wbg_ptr, arg0);
+        wasm.__wbg_set_interpreteroutput_is_error(this.__wbg_ptr, arg0);
     }
 }
 
@@ -376,6 +412,115 @@ export class Numbat {
     }
 }
 
+const SourceLabelFinalization = (typeof FinalizationRegistry === 'undefined')
+    ? { register: () => {}, unregister: () => {} }
+    : new FinalizationRegistry(ptr => wasm.__wbg_sourcelabel_free(ptr >>> 0, 1));
+
+export class SourceLabel {
+
+    static __wrap(ptr) {
+        ptr = ptr >>> 0;
+        const obj = Object.create(SourceLabel.prototype);
+        obj.__wbg_ptr = ptr;
+        SourceLabelFinalization.register(obj, obj.__wbg_ptr, obj);
+        return obj;
+    }
+
+    __destroy_into_raw() {
+        const ptr = this.__wbg_ptr;
+        this.__wbg_ptr = 0;
+        SourceLabelFinalization.unregister(this);
+        return ptr;
+    }
+
+    free() {
+        const ptr = this.__destroy_into_raw();
+        wasm.__wbg_sourcelabel_free(ptr, 0);
+    }
+    /**
+     * @returns {string}
+     */
+    get source() {
+        let deferred1_0;
+        let deferred1_1;
+        try {
+            const ret = wasm.sourcelabel_source(this.__wbg_ptr);
+            deferred1_0 = ret[0];
+            deferred1_1 = ret[1];
+            return getStringFromWasm0(ret[0], ret[1]);
+        } finally {
+            wasm.__wbindgen_free(deferred1_0, deferred1_1, 1);
+        }
+    }
+    /**
+     * @returns {string}
+     */
+    get message() {
+        let deferred1_0;
+        let deferred1_1;
+        try {
+            const ret = wasm.sourcelabel_message(this.__wbg_ptr);
+            deferred1_0 = ret[0];
+            deferred1_1 = ret[1];
+            return getStringFromWasm0(ret[0], ret[1]);
+        } finally {
+            wasm.__wbindgen_free(deferred1_0, deferred1_1, 1);
+        }
+    }
+    /**
+     * @returns {number}
+     */
+    get start() {
+        const ret = wasm.__wbg_get_sourcelabel_start(this.__wbg_ptr);
+        return ret >>> 0;
+    }
+    /**
+     * @param {number} arg0
+     */
+    set start(arg0) {
+        wasm.__wbg_set_sourcelabel_start(this.__wbg_ptr, arg0);
+    }
+    /**
+     * @returns {number}
+     */
+    get end() {
+        const ret = wasm.__wbg_get_sourcelabel_end(this.__wbg_ptr);
+        return ret >>> 0;
+    }
+    /**
+     * @param {number} arg0
+     */
+    set end(arg0) {
+        wasm.__wbg_set_sourcelabel_end(this.__wbg_ptr, arg0);
+    }
+    /**
+     * @returns {boolean}
+     */
+    get primary() {
+        const ret = wasm.__wbg_get_sourcelabel_primary(this.__wbg_ptr);
+        return ret !== 0;
+    }
+    /**
+     * @param {boolean} arg0
+     */
+    set primary(arg0) {
+        wasm.__wbg_set_sourcelabel_primary(this.__wbg_ptr, arg0);
+    }
+    /**
+     * @returns {number}
+     */
+    get diagnostic() {
+        const ret = wasm.__wbg_get_sourcelabel_diagnostic(this.__wbg_ptr);
+        return ret >>> 0;
+    }
+    /**
+     * @param {number} arg0
+     */
+    set diagnostic(arg0) {
+        wasm.__wbg_set_sourcelabel_diagnostic(this.__wbg_ptr, arg0);
+    }
+}
+
 async function __wbg_load(module, imports) {
     if (typeof Response === 'function' && module instanceof Response) {
         if (typeof WebAssembly.instantiateStreaming === 'function') {
@@ -456,6 +601,10 @@ function __wbg_get_imports() {
         const ret = arg0.resolvedOptions();
         return ret;
     };
+    imports.wbg.__wbg_sourcelabel_new = function(arg0) {
+        const ret = SourceLabel.__wrap(arg0);
+        return ret;
+    };
     imports.wbg.__wbg_stack_0ed75d68575b0f3c = function(arg0, arg1) {
         const ret = arg1.stack;
         const ptr1 = passStringToWasm0(ret, wasm.__wbindgen_malloc, wasm.__wbindgen_realloc);
@@ -504,6 +653,7 @@ function __wbg_finalize_init(instance, module) {
     wasm = instance.exports;
     __wbg_init.__wbindgen_wasm_module = module;
     cachedDataViewMemory0 = null;
+    cachedUint32ArrayMemory0 = null;
     cachedUint8ArrayMemory0 = null;
 
 

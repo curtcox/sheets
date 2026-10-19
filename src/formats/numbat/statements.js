@@ -1,40 +1,32 @@
-// Group bracketed expressions and indented continuation lines; retain source lines.
+import { statement_ranges } from "../../../vendor/numbat@1.24.0/numbat_wasm.js";
+
+// The pinned parser owns strings, interpolation, decorators, continuations and
+// error recovery. Offsets from Rust are UTF-8 bytes, not JavaScript indices.
 export function statements(src) {
-  const lines = src.split("\n"),
+  const bytes = new TextEncoder().encode(src),
+    decoder = new TextDecoder("utf-8", { ignoreBOM: true }),
+    ranges = statement_ranges(src),
     result = [];
-  let source = [],
-    start = 1,
-    depth = 0,
-    quote = null;
-  for (let i = 0; i < lines.length; i++) {
-    const line = lines[i];
-    if (!source.length) start = i + 1;
-    source.push(line);
-    for (let j = 0; j < line.length; j++) {
-      const c = line[j];
-      if (quote) {
-        if (c === quote && line[j - 1] !== "\\") quote = null;
-        continue;
-      }
-      if (c === "#") break;
-      if (c === '"') {
-        quote = c;
-        continue;
-      }
-      if ("([{".includes(c)) depth++;
-      if (")]}".includes(c)) depth--;
-    }
-    const continuation =
-      depth > 0 ||
-      quote ||
-      /[=,+*/^-]\s*(?:#.*)?$/.test(line) ||
-      /^\s+\S/.test(lines[i + 1] || "");
-    if (!continuation || i === lines.length - 1) {
-      result.push({ line: start, source: source.join("\n") });
-      source = [];
-      depth = 0;
-      quote = null;
-    }
+  let cursor = 0,
+    offset = 0,
+    line = 1;
+  function append(end) {
+    const length = decoder.decode(bytes.subarray(cursor, end)).length,
+      source = src.slice(offset, offset + length);
+    if (!source) return;
+    result.push({ line, offset, source });
+    offset += source.length;
+    line += source.split("\n").length - 1;
+    cursor = end;
   }
+  for (let i = 1; i < ranges.length; i += 2) {
+    let end = ranges[i];
+    // Keep separators with the preceding row. Every source character is retained.
+    if (bytes[end] === 10 || bytes[end] === 59) end++;
+    append(end);
+  }
+  // Tokenization failures intentionally use one complete interpreter input.
+  // Guessing inside a broken string could execute its contents as code.
+  append(bytes.length);
   return result;
 }

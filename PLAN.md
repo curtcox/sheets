@@ -528,8 +528,26 @@ IDNA normalization, and preserving raw HTML anchors instead of nesting email
 links. Both previously open email-recognition gaps are fixed. GFM-06 now records
 intentional differences, GFM-05 includes supplementary email bounds, and GFM-04's
 display-only behavior is explicitly retained. Temml coverage expansion remains
-FORMAT-1 (GFM-03); it is not a parser defect. The next Phase 13 implementation
-priority is **NUM-1**.
+FORMAT-1 (GFM-03); it is not a parser defect. **NUM-1** is completed below.
+
+NUM-1 replaces the heuristic grouper with the pinned Numbat parser's own
+consumption/recovery ranges. A reviewable source patch exposes those ranges and
+structured diagnostic labels through the WASM bridge, preserving evaluation
+semantics. The rebuilt artifact passes 25 whole-document output comparisons
+captured from the original unmodified WASM. Tests cover multiline strings,
+escaped quotes/backslashes, interpolation, comments, lists, functions, decorators,
+`where`, semicolons, Unicode offsets, related earlier-input/module locations,
+recovery, and context reset. Editor annotations use actual document lines and
+columns rather than the first line of a statement.
+
+The parser strategy supersedes a duplicate JavaScript tokenizer: if upstream
+lexing fails, the tested fallback is one complete interpreter input, preserving
+upstream rejection without guessing code inside an unterminated string. Parse,
+type and runtime errors retain later-statement recovery when tokenization
+succeeds. NUM-01 is resolved; NUM-05 records lexical-error behavior and the
+engine report's row-local numbering separately from editor positions. Output,
+plots, terminal/REPL and remaining units audit stay NUM-2/UI-1. The next Phase 13
+priority is **AM-1**.
 
 ### Phase 14 — P2: expand language compatibility
 

@@ -17,11 +17,8 @@ import {
 } from "../../src/formats/org/engine.js";
 import { evaluateBeancount } from "../../src/formats/beancount/engine.js";
 import { evaluate } from "../../src/math.js";
-import { statements } from "../../src/formats/numbat/statements.js";
-import init, {
-  Numbat,
-  FormatType,
-} from "../../vendor/numbat@1.24.0/numbat_wasm.js";
+import { evaluateNumbat } from "../../src/formats/numbat/engine.js";
+import init from "../../vendor/numbat@1.24.0/numbat_wasm.js";
 const examples = JSON.parse(
   await readFile(new URL("../../examples/catalog.json", import.meta.url)),
 );
@@ -33,21 +30,8 @@ await init({
   ),
 });
 async function numbat(src) {
-  const context = Numbat.new(true, true, FormatType.Html),
-    diagnostics = [],
-    outputs = [];
-  try {
-    for (const { line, source } of statements(src)) {
-      if (!source.trim() || source.trim().startsWith("#")) continue;
-      const result = context.interpret(source);
-      outputs.push(result.output);
-      if (result.is_error) diagnostics.push({ line });
-      result.free();
-    }
-  } finally {
-    context.free();
-  }
-  return { html: outputs.join("\n").replace(/<[^>]*>/g, ""), diagnostics };
+  const result = evaluateNumbat(src);
+  return { ...result, html: result.html.replace(/<[^>]*>/g, "") };
 }
 for (const { id } of catalog.filter((f) => f.id !== "text")) {
   const fixtures = JSON.parse(await read(`tests/fixtures/${id}/expected.json`));

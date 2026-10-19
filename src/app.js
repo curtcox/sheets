@@ -150,7 +150,7 @@ const scheduler = new RenderScheduler({
     editor?.session.setAnnotations(
       (result.diagnostics || []).map((d) => ({
         row: Math.max(0, d.line - 1),
-        column: 0,
+        column: d.column ?? 0,
         text: d.message,
         type: d.severity || "error",
       })),

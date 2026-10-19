@@ -262,17 +262,25 @@
     {
       "id": "NUM-01",
       "format": "numbat",
-      "title": "Sheets runs pinned Numbat 1.24.0 through its WASM interpreter",
-      "kind": "mixed",
-      "status": "audit",
+      "title": "Statement boundaries and source diagnostics use the pinned upstream parser",
+      "kind": "gap",
+      "status": "resolved",
       "priority": "P1",
       "milestone": "NUM-1",
       "dependsOn": [],
-      "expected": "Verify each behavior against Numbat 1.24.0; separate deliberate policy from unsupported upstream capabilities.",
-      "disclosure": "Sheets runs pinned Numbat 1.24.0 through its WASM interpreter. The adapter's statement grouper handles common bracketed and indented continuations, but not every lexical corner of the complete language. A multiline statement's diagnostic attaches to its first source line.",
+      "expected": "Preserve valid Numbat 1.24.0 statement boundaries and map structured diagnostic byte spans to original editor positions.",
+      "disclosure": "The adapter now uses Numbat 1.24.0 parser consumption/recovery ranges instead of indentation and trailing-character guesses. Multiline strings, escaped quotes, interpolation, comments, decorators, lists, function parameters, where definitions and semicolons are covered by 25 fixtures checked against the original unmodified WASM. Editor diagnostics map UTF-8 byte spans to actual document lines and UTF-16 columns, retaining related locations from earlier inputs. Lexical-error fallback and local engine-report numbering are disclosed separately in NUM-05.",
       "baselineDisclosure": "Sheets runs pinned Numbat 1.24.0 through its WASM interpreter. The adapter's statement grouper handles common bracketed and indented continuations, but not every lexical corner of the complete language. A multiline statement's diagnostic attaches to its first source line.",
-      "reproducer": null,
-      "evidence": []
+      "reproducer": {
+        "path": "tests/fixtures/numbat/statements.json"
+      },
+      "evidence": [
+        "tests/fixtures/numbat/statements.json",
+        "tests/unit/numbat.test.js",
+        "tests/browser/numbat.spec.js",
+        "scripts/numbat-expected.mjs",
+        "scripts/vendor/numbat.patch"
+      ]
     },
     {
       "id": "NUM-02",
@@ -281,7 +289,7 @@
       "kind": "mixed",
       "status": "audit",
       "priority": "P1",
-      "milestone": "NUM-1",
+      "milestone": "NUM-2",
       "dependsOn": [],
       "expected": "Verify each behavior against Numbat 1.24.0; separate deliberate policy from unsupported upstream capabilities.",
       "disclosure": "Terminal commands, a persistent interactive REPL, and a Sheets plot viewer are not provided. The interface displays source/result rows, not Markdown prose.",
@@ -311,13 +319,33 @@
       "kind": "mixed",
       "status": "audit",
       "priority": "P1",
-      "milestone": "NUM-1",
+      "milestone": "NUM-2",
       "dependsOn": [],
       "expected": "Verify each behavior against Numbat 1.24.0; separate deliberate policy from unsupported upstream capabilities.",
       "disclosure": "Some short names are predefined units and cannot be redefined. Currency rates depend on the ECB request/cache; missing or stale rates are disclosed rather than replaced with an invented value. Browser requests now use the official ECB data API; the shared service builds the daily XML required by Numbat, excluding discontinued older series. The original daily XML download blocks cross-origin reads.",
       "baselineDisclosure": "Some short names are predefined units and cannot be redefined. Currency rates depend on the ECB request/cache; missing or stale rates are disclosed rather than replaced with an invented value.",
       "reproducer": null,
       "evidence": []
+    },
+    {
+      "id": "NUM-05",
+      "format": "numbat",
+      "title": "Lexical errors stop partial evaluation; formatted engine reports use input-local lines",
+      "kind": "policy",
+      "status": "retained",
+      "priority": "P1",
+      "milestone": "NUM-1",
+      "dependsOn": [],
+      "expected": "Use whole-document upstream error behavior when tokenization fails and keep editor locations mapped without guessing boundaries in malformed strings.",
+      "disclosure": "If the upstream tokenizer cannot read the document (for example, an unterminated string or unexpected character), Sheets evaluates it as one complete input and reports the lexical error without partial results. Valid-looking text inside a broken string is never guessed to be code. With readable tokens, later statements can run after parse/type/runtime errors. Formatted engine reports retain row-local line numbers; editor annotations use original document positions. Imported-module labels stay in the engine report and are not assigned false editor locations.",
+      "baselineDisclosure": "The previous adapter guessed common continuation boundaries and attached multiline errors to the first line.",
+      "reproducer": {
+        "path": "tests/fixtures/numbat/statements.json"
+      },
+      "evidence": [
+        "tests/unit/numbat.test.js",
+        "tests/browser/numbat.spec.js"
+      ]
     },
     {
       "id": "CF-01",

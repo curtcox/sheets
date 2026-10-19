@@ -48,13 +48,17 @@ See the [AsciiMath guide](formats/asciimath.md). Compatibility target: asciimath
 
 See the [Numbat guide](formats/numbat.md). Compatibility target: Numbat 1.24.0.
 
-- **NUM-01 — Sheets runs pinned Numbat 1.24.0 through its WASM interpreter** (Needs detailed audit). Sheets runs pinned Numbat 1.24.0 through its WASM interpreter. The adapter's statement grouper handles common bracketed and indented continuations, but not every lexical corner of the complete language. A multiline statement's diagnostic attaches to its first source line.
-
 - **NUM-02 — Terminal commands, a persistent interactive REPL, and a Sheets plot viewer are not provided** (Needs detailed audit). Terminal commands, a persistent interactive REPL, and a Sheets plot viewer are not provided. The interface displays source/result rows, not Markdown prose.
 
 - **NUM-03 — A fresh worker starts for every render, with a 20-second deadline** (Intentional). A fresh worker starts for every render, with a **20-second deadline**. Editing or cancellation terminates it; definitions do not persist between renders.
 
 - **NUM-04 — Some short names are predefined units and cannot be redefined** (Needs detailed audit). Some short names are predefined units and cannot be redefined. Currency rates depend on the ECB request/cache; missing or stale rates are disclosed rather than replaced with an invented value. Browser requests now use the official ECB data API; the shared service builds the daily XML required by Numbat, excluding discontinued older series. The original daily XML download blocks cross-origin reads.
+
+- **NUM-05 — Lexical errors stop partial evaluation; formatted engine reports use input-local lines** (Intentional). If the upstream tokenizer cannot read the document (for example, an unterminated string or unexpected character), Sheets evaluates it as one complete input and reports the lexical error without partial results. Valid-looking text inside a broken string is never guessed to be code. With readable tokens, later statements can run after parse/type/runtime errors. Formatted engine reports retain row-local line numbers; editor annotations use original document positions. Imported-module labels stay in the engine report and are not assigned false editor locations.
+
+### Resolved compatibility gaps
+
+- **NUM-01 — Statement boundaries and source diagnostics use the pinned upstream parser** (Resolved). The adapter now uses Numbat 1.24.0 parser consumption/recovery ranges instead of indentation and trailing-character guesses. Multiline strings, escaped quotes, interpolation, comments, decorators, lists, function parameters, where definitions and semicolons are covered by 25 fixtures checked against the original unmodified WASM. Editor diagnostics map UTF-8 byte spans to actual document lines and UTF-16 columns, retaining related locations from earlier inputs. Lexical-error fallback and local engine-report numbering are disclosed separately in NUM-05.
 
 ## CalcFile
 

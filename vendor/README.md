@@ -24,6 +24,8 @@ Transitive license notices are in `licenses/` and in esbuild `.LEGAL.txt` files.
 
 Numbat and Hurmet retain dependency notices in their own `licenses/` directories. Hurmet includes a small build wrapper to expose AST diagnostics and initialize its own Temml global; its source is in `scripts/vendor/build-hurmet.mjs`.
 
+Numbat applies `scripts/vendor/numbat.patch` before building. The bridge exposes parser statement ranges and structured diagnostic labels; the interpreter rules are unchanged.
+
 Source-built engines are documented in `engines.json`; rebuild with `scripts/vendor/{numbat,calcfile,hurmet}.sh`. Pyodide 0.27.7 (MPL-2.0) is loaded on demand from https://cdn.jsdelivr.net/pyodide/v0.27.7/full/.
 
 R is loaded on demand from https://webr.r-wasm.org/v0.6.0/ (webR 0.6.0).

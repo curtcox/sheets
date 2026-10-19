@@ -116,6 +116,8 @@ or notebook cells. External image URLs still need their server. See
 | Commodity and posting | A commodity is a ledger's counted item, such as USD or shares. A posting assigns a quantity to an account; postings in a Beancount transaction must balance by their weights. |
 | Cost lot and FIFO | A lot records a quantity's acquisition cost. This Beancount subset reduces supported lots first in, first out (oldest first); it does not implement every booking method. |
 | Balance assertion | A check that a ledger account contains an expected quantity at a date. It reports a mismatch rather than converting all holdings to a common currency. |
+| Statement boundary | The end of one language statement, which can span several lines or share a line with another statement. Numbat uses its pinned upstream parser; indentation alone is not a separator or continuation rule. |
+| Source span | The exact part of the original document associated with a diagnostic. Numbat converts upstream UTF-8 byte offsets into editor lines and UTF-16 columns, including related locations in earlier statements. |
 | Diagnostic | A visible parse, calculation, execution, or compatibility message. Source highlighting alone does not validate a document, and partial output may remain after an error. |
 | Worker and deadline | A disposable background interpreter and its time limit. Editing or Cancel terminates worker calculations; deadlines include runtime/package loading. |
 | Offline support | Operation after using **Download → Offline access** while connected. It caches app assets, not document URLs, remote services, or Python/R runtimes. |

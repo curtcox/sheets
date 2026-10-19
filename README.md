@@ -177,3 +177,12 @@ MIT for project code, as proposed in PLAN.md. Vendored code retains its own
 licenses. The GFM spec fixture is separately CC-BY-SA 4.0 and is not deployed.
 HashBin and sharing code are adapted from
 [ManimOnline](https://github.com/curtcox/ManimOnline).
+
+Numbat statement/diagnostic fixtures retain whole-document output captured from
+the original unmodified 1.24.0 WASM. To independently check those records, build
+commit `79046422203060e296da41c8c762c506200d2c93` with the upstream
+`numbat-wasm/build.sh` **without** the Sheets patch, then run
+`node scripts/numbat-expected.mjs /absolute/path/to/numbat-wasm/www/pkg`.
+The normal vendoring script applies `scripts/vendor/numbat.patch` to expose parser
+ranges and diagnostic labels; `npm test` also checks that the patched interpreter
+retains all recorded original output. See `tests/fixtures/numbat/statements.json`.
