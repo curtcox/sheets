@@ -1,0 +1,16 @@
+---
+execute:
+  echo: false
+  error: true
+---
+
+```{python}
+#| error: false
+raise ValueError("PY_HALT_HERE")
+```
+
+```{python}
+from pathlib import Path
+Path("after-halt.txt").write_text("must not execute")
+print("PY_AFTER_FORBIDDEN_ERROR")
+```

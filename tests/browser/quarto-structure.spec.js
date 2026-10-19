@@ -128,7 +128,7 @@ test("Quarto documentation opens complete nested and diagnostic examples in the 
   ).toMatchObject([
     { row: 2, text: "Unsupported metadata: toc." },
     { row: 6, text: "echo must be a YAML boolean (true or false)." },
-    { row: 7, text: "Unsupported cell option: warning." },
+    { row: 7, text: "Unsupported cell option: cache." },
   ]);
   await page.goto("/docs.html?page=limitations");
   await expect(page.locator("#docs-content")).toContainText("QT-09");

@@ -86,6 +86,16 @@ export function parseQuarto(src) {
       }),
       locations: parsed.locations,
     };
+    if (cell.language === "python")
+      for (const key of ["fig-width", "fig-height"]) {
+        if (Object.hasOwn(cell.options, key)) {
+          diagnostics.push({
+            ...(parsed.locations.get(key) || { line, column: 0 }),
+            message: `${key} is document-level only for Python/Jupyter; move it to front matter.`,
+          });
+          delete cell.options[key];
+        }
+      }
     if (
       !new RegExp(`^\\s*${token.markup[0]}{${token.markup.length},}\\s*$`).test(
         (lines[token.map[1] - 1] || "").replace(/^\s*(?:>\s*)+/, ""),

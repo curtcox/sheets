@@ -595,7 +595,7 @@ independently verifiable releases in this order:
 | --- | --- | --- |
 | 1 / ORG-1A (M, implemented) | Named columns/fields, table parameters, file constants, and marked-row selection. | Compare values, case/precedence, field snapshots, named targets/ranges and protected metadata rows against Emacs. Preserve literal source blocks; provide original-line diagnostics for unsupported bindings. |
 | 2 / ORG-1B (M, implemented) | Remaining evaluation-order differences and same-document named-table references. | Native fixtures for column/field precedence, duplicate targets, dependency order, missing/ambiguous tables and bounded reference chains. Explicitly document any required compatibility migration. |
-| 3 / QT-2A (M) | Frequently used notebook include/warning/error controls and figure alt text/dimensions. | Match a pinned Quarto/knitr/Jupyter reference for each supported control; verify defaults, overrides, skipped cells, sanitization, exports and cancellation. Rich tables/inline expressions follow separately. |
+| 3 / QT-2A (M, implemented) | Frequently used notebook include/warning/error controls and figure alt text/dimensions. | Match a pinned Quarto/knitr/Jupyter reference for each supported control; verify defaults, overrides, skipped cells, sanitization, exports and cancellation. Rich tables/inline expressions follow separately. |
 | 4 / BEAN-2A (M) | Unsupported booking/lot behavior and total-cost lots. | Differential bean-check/bean-query fixtures, exact decimals, ambiguous-booking rejection and native-commodity reports. New report views follow numeric correctness. |
 | 5 / CALCA-3A (M) | Named/multiline definitions, local bindings and indexing gaps. | Public reference cases plus explicit licensed-app verification where needed; retain old profiles. Solver expansion waits for dependable grammar. |
 | 6 / NUM-2 + HUR-1 audits (S each, then re-estimate) | Function/output paths dropped by the adapters. | Probe actual pinned browser APIs/ASTs and upstream examples. Restore missing existing-engine output before implementing another language or editing UI. |
@@ -639,6 +639,22 @@ file inputs, iteration, numeric modes and layout gaps. Runnable guide examples,
 mode migration, sharing/saved envelopes, offline reloads and gallery cover the
 new mode. See `design/org-order.md`. Next: **QT-2A**, starting with native
 notebook-control reference fixtures; broader Org work stays open.
+
+**QT-2A implemented (2026-10-19).** Typed include/warning/error controls now
+reach both execution backends. Hidden setup preserves state; warning filtering
+follows Python stderr and R condition channels. Explicit error:false stops later
+cells in the affected session before they execute, while existing omitted-error
+continuation and independent language sessions remain explicit browser policies.
+Document figure sizes configure Python defaults/R devices; R supports per-cell
+sizes, Python diagnoses them, and safe alt text survives SVG/PNG sanitization and
+exports. Existing size defaults remain unchanged when options are omitted.
+Seven native reference documents cover control/default/override and halt behavior
+against Quarto 1.10.19, pinned Jupyter dependencies and knitr 1.45; CI runs the
+independent reference script. QT-11/12 resolve this bounded slice; QT-02 retains
+wider metadata/output modes, native error/default architecture and exact device
+rendering gaps. Runnable docs and the R gallery cover the controls. See
+`design/quarto-controls.md`. Next: **BEAN-2A**, beginning with native total-cost
+and booking/lot fixtures; rich notebook output/inline expressions follow later.
 
 ### Phase 14 — P2: expand language compatibility
 

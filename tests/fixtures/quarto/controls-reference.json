@@ -1,0 +1,70 @@
+{
+  "python": {
+    "visible": [
+      "PY_SETUP_VALUE 7",
+      "PY_VISIBLE_STDOUT",
+      "PY_VISIBLE_WARNING",
+      "PY_VISIBLE_STDERR",
+      "PY_VISIBLE_ERROR",
+      "PY_AFTER_ALLOWED_ERROR",
+      "PY_FIG_SIZE 4 3"
+    ],
+    "hidden": [
+      "PY_HIDDEN_SETUP",
+      "PY_HIDDEN_WARNING",
+      "PY_HIDDEN_STDERR",
+      "PY_HIDDEN_RESULT",
+      "PY_WARNING_WITHOUT_OUTPUT",
+      "PY_HIDDEN_ERROR",
+      "PY_SUPPRESSED_VALUE",
+      "Line2D"
+    ],
+    "alt": "A line rising from one to three",
+    "halt": "PY_HALT_HERE",
+    "defaults": {
+      "visible": [
+        "PY_DEFAULT_VISIBLE 9",
+        "PY_OVERRIDE_VISIBLE_WARNING"
+      ],
+      "hidden": [
+        "PY_DEFAULT_HIDDEN_SETUP",
+        "PY_DEFAULT_HIDDEN_WARNING",
+        "PY_DEFAULT_HIDDEN_STDERR"
+      ]
+    }
+  },
+  "r": {
+    "visible": [
+      "R_SETUP_VALUE 7",
+      "R_VISIBLE_STDOUT",
+      "R_VISIBLE_WARNING",
+      "R_VISIBLE_ERROR",
+      "R_AFTER_ALLOWED_ERROR",
+      "R_FIG_SIZE 4 3"
+    ],
+    "hidden": [
+      "R_HIDDEN_SETUP",
+      "R_HIDDEN_WARNING",
+      "R_HIDDEN_RESULT",
+      "R_HIDDEN_ERROR",
+      "R_WARNING_WITHOUT_OUTPUT",
+      "R_MESSAGE_WITHOUT_OUTPUT",
+      "R_HIDDEN_MESSAGE"
+    ],
+    "alt": "A line rising from one to three",
+    "halt": "R_HALT_HERE",
+    "hiddenHalt": "R_HIDDEN_ERROR",
+    "defaults": {
+      "visible": [
+        "R_DEFAULT_VISIBLE 9",
+        "R_OVERRIDE_VISIBLE_WARNING",
+        "R_OVERRIDE_VISIBLE_MESSAGE"
+      ],
+      "hidden": [
+        "R_DEFAULT_HIDDEN_SETUP",
+        "R_DEFAULT_HIDDEN_WARNING",
+        "R_DEFAULT_HIDDEN_MESSAGE"
+      ]
+    }
+  }
+}

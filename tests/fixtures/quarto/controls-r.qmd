@@ -1,0 +1,58 @@
+---
+title: R execution controls
+fig-width: 5
+fig-height: 4
+execute:
+  echo: false
+  error: true
+---
+
+```{r}
+#| include: false
+#| echo: true
+#| output: true
+setup_value <- 7
+cat("R_HIDDEN_SETUP\n")
+```
+
+```{r}
+cat("R_SETUP_VALUE", setup_value, "\n")
+```
+
+```{r}
+#| warning: false
+warning("R_HIDDEN_WARNING")
+message("R_HIDDEN_MESSAGE")
+cat("R_VISIBLE_STDOUT\n")
+```
+
+```{r}
+warning("R_VISIBLE_WARNING")
+```
+
+```{r}
+#| output: false
+warning("R_WARNING_WITHOUT_OUTPUT")
+message("R_MESSAGE_WITHOUT_OUTPUT")
+cat("R_HIDDEN_RESULT\n")
+```
+
+```{r}
+stop("R_VISIBLE_ERROR")
+```
+
+```{r}
+cat("R_AFTER_ALLOWED_ERROR\n")
+```
+
+See @fig-r-controls.
+
+```{r}
+#| label: fig-r-controls
+#| fig-cap: R controlled plot
+#| fig-alt: A line rising from one to three
+#| fig-width: 4
+#| fig-height: 3
+cat("R_FIG_SIZE", par("din"), "\n")
+plot(c(1, 3), type = "l")
+```

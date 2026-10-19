@@ -1,0 +1,26 @@
+---
+execute:
+  echo: false
+  include: false
+  warning: false
+  error: true
+---
+
+```{python}
+value = 9
+print("PY_DEFAULT_HIDDEN_SETUP")
+```
+
+```{python}
+#| include: true
+import warnings, sys
+print("PY_DEFAULT_VISIBLE", value)
+warnings.warn("PY_DEFAULT_HIDDEN_WARNING")
+sys.stderr.write("PY_DEFAULT_HIDDEN_STDERR\n")
+```
+
+```{python}
+#| include: true
+#| warning: true
+warnings.warn("PY_OVERRIDE_VISIBLE_WARNING")
+```

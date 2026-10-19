@@ -1,0 +1,15 @@
+---
+execute:
+  echo: false
+  error: true
+---
+
+```{r}
+#| include: false
+stop("R_HIDDEN_ERROR")
+```
+
+```{r}
+writeLines("must not execute", "after-halt.txt")
+cat("R_AFTER_HIDDEN_ERROR\n")
+```

@@ -212,7 +212,7 @@ test("Quarto balances divs at Markdown container boundaries and reports malforme
 
 test("Quarto validates block/flow/quoted YAML keys with exact lines and columns", async () => {
   const result = await renderQuarto(
-    '---\n"title": [wrong]\nexecute: {echo: false, eval: "false", cache: true}\nformat: pdf\ntoc: true\n---\n\n```{python}\n#| eval: false\n#| "fig-cap": [wrong]\n#| warning: false\n#| output: "false"\nprint(1)\n```',
+    '---\n"title": [wrong]\nexecute: {echo: false, eval: "false", cache: true}\nformat: pdf\ntoc: true\n---\n\n```{python}\n#| eval: false\n#| "fig-cap": [wrong]\n#| cache: true\n#| output: "false"\nprint(1)\n```',
   );
   assert.deepEqual(
     result.diagnostics.map((d) => [d.line, d.column]),

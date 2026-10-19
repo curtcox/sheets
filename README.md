@@ -75,8 +75,19 @@ bash scripts/org-expected.sh --check
 python scripts/beancount-expected.py --check
 ```
 
+Notebook control reference checks additionally require Quarto **1.10.19**,
+knitr **1.45**/rmarkdown, and the pinned Jupyter dependencies:
+
+```sh
+python -m pip install -r tests/fixtures/quarto/reference-requirements.txt
+python scripts/quarto-reference.py --check
+```
+
+Without native R, run the Python subset with `--language python`. Set
+`SHEETS_QUARTO_BIN` when the pinned Quarto executable is outside PATH.
+
 CI runs these reference checks before browser tests. Generated reference outputs
-are committed and also compared with the JavaScript engines by unit tests.
+are committed and compared with the browser adapters by unit/browser tests.
 
 ## Offline access
 

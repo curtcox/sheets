@@ -1,0 +1,26 @@
+---
+execute:
+  echo: false
+  include: false
+  warning: false
+  error: true
+---
+
+```{r}
+value <- 9
+cat("R_DEFAULT_HIDDEN_SETUP\n")
+```
+
+```{r}
+#| include: true
+cat("R_DEFAULT_VISIBLE", value, "\n")
+warning("R_DEFAULT_HIDDEN_WARNING")
+message("R_DEFAULT_HIDDEN_MESSAGE")
+```
+
+```{r}
+#| include: true
+#| warning: true
+warning("R_OVERRIDE_VISIBLE_WARNING")
+message("R_OVERRIDE_VISIBLE_MESSAGE")
+```

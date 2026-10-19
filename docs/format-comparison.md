@@ -48,7 +48,7 @@ choose Numbat for dimension-checked models.
 | [Calca](formats/calca.md) | Markdown, TeX, arrow results | Matrices; Markdown tables | Yes with Structured blocks or Scoped definitions; Legacy has the fence caveat below | No Python/R cells |
 | [Hurmet](formats/hurmet.md) | Prose and typeset math calculations | Calculation cells in tables; upstream spreadsheet tables | Upstream output; no interactive drawing UI | No Python/R cells |
 | [Beancount](formats/beancount.md) | Ledger-specific report views | Balance sheet, income statement, trial balance, journal | No | No |
-| [Quarto](formats/quarto.md) | Markdown, TeX, validated metadata, nested callouts/divs, figure references | Markdown tables; Python DataFrame HTML; R console tables | Mermaid, Python matplotlib SVG, R PNG plots | Python and R; OJS/Julia displayed only |
+| [Quarto](formats/quarto.md) | Markdown, TeX, validated controls, nested callouts/divs, figure references, plot size/alt | Markdown tables; Python DataFrame HTML; R console tables | Mermaid, Python matplotlib SVG, R PNG plots | Python and R; OJS/Julia displayed only |
 | [Plain text](formats/text.md) | Escaped, preformatted source | Literal source only | No | No |
 
 In Calca's **Legacy** mode, every fenced or indented code block is also calculation input,
@@ -117,6 +117,10 @@ or notebook cells. External image URLs still need their server. See
 | Plot | A data or function graphic produced by code. Quarto captures matplotlib SVG and R graphics as PNG; the exported result is static. |
 | Executable notebook cell | A fenced block that runs code and inserts its output. In Quarto, use `{python}` or `{r}`; an ordinary `python` fence only displays code. |
 | Cell state | Variables and definitions kept between cells during one render. Quarto shares state within Python or R, never between the two languages, and resets it on the next render. |
+| Hidden setup cell | A cell that executes and supplies state but contributes no preview source or output. Quarto include:false controls visibility; eval:false prevents execution. |
+| Warning control | Quarto can omit Python stderr or R warnings/messages from the preview. It does not disable execution or suppress error diagnostics. |
+| Error continuation | Whether later cells in the same language execute after a failure. Sheets keeps continuation by default; explicit error:false stops that session while the other language remains independent. |
+| Plot device size and alt text | Physical dimensions used to generate a plot, plus text describing it to assistive technology. These differ from merely scaling a rendered image and from pixel-identical native CLI output. |
 | Metadata and cell options | Settings outside ordinary prose: Quarto YAML can set a title or execution defaults; `#\|` lines control one cell's source/output visibility and figure labels. |
 | Fenced div and callout | A colon-fenced Markdown container that can nest around prose or cells. Quarto supports five callout types; collapse and appearance controls are unsupported and diagnosed. |
 | Figure reference | A link such as `@fig-name` to a numbered standalone image, figure div or visible cell plot. Quarto supports forward references and diagnoses duplicate, missing or unavailable targets; subfigure and nonfigure cross-references are unsupported. |

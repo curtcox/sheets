@@ -67,14 +67,20 @@ export function runR(
         for (const cell of cells) {
           if (settled) return;
           try {
+            const size = cell.execution?.figureSize;
             const capture = await shelter.captureR(cell.source, {
               withAutoprint: true,
               throwJsException: false,
-              captureGraphics: { width: 640, height: 400, bg: "white" },
+              captureGraphics: {
+                width: size ? size.width * 72 : 640,
+                height: size ? size.height * 72 : 400,
+                bg: "white",
+              },
             });
             if (settled) return;
             const stdout = [],
               stderr = [],
+              warnings = [],
               errors = [];
             for (const item of capture.output) {
               if (item.type === "stdout") stdout.push(item.data);
@@ -83,6 +89,8 @@ export function runR(
                 const message = await item.data.get("message");
                 const text = await message.toString();
                 if (item.type === "error") errors.push(text);
+                else if (item.type === "warning")
+                  warnings.push(`warning: ${text}`);
                 else stderr.push(`${item.type}: ${text}`);
               }
             }
@@ -92,11 +100,23 @@ export function runR(
               stdout: stdout.join("\n"),
               stderr: stderr.join("\n"),
               images,
+              warnings,
               ...(errors.length ? { error: errors.join("\n") } : {}),
             });
+            if (
+              errors.length &&
+              (cell.execution?.error === false ||
+                cell.execution?.include === false)
+            )
+              break;
           } catch (error) {
             if (settled) return;
             outputs.push({ error: error.message });
+            if (
+              cell.execution?.error === false ||
+              cell.execution?.include === false
+            )
+              break;
           } finally {
             if (!settled) await shelter.purge();
           }

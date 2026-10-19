@@ -2,8 +2,28 @@ import * as yaml from "../../../vendor/js-yaml.js";
 
 const mapping = (value) =>
   value !== null && typeof value === "object" && !Array.isArray(value);
-const booleans = new Set(["echo", "eval", "output", "enabled"]);
-const cellKeys = new Set(["echo", "eval", "output", "label", "fig-cap"]);
+const booleans = new Set([
+  "echo",
+  "eval",
+  "output",
+  "enabled",
+  "include",
+  "warning",
+  "error",
+]);
+const dimensions = new Set(["fig-width", "fig-height"]);
+const cellKeys = new Set([
+  "echo",
+  "eval",
+  "output",
+  "include",
+  "warning",
+  "error",
+  "label",
+  "fig-cap",
+  "fig-alt",
+  ...dimensions,
+]);
 
 // The YAML event stream provides positions for block, flow and quoted keys.
 // Use the same parser/schema for construction; do not infer YAML with regexes.
@@ -79,7 +99,14 @@ export function validateOptions(parsed, diagnostics, context, fallback) {
     const path = context === "defaults" ? `execute.${key}` : key;
     const allowed =
       context === "metadata"
-        ? new Set(["title", "author", "date", "format", "execute"])
+        ? new Set([
+            "title",
+            "author",
+            "date",
+            "format",
+            "execute",
+            ...dimensions,
+          ])
         : context === "defaults"
           ? booleans
           : cellKeys;
@@ -100,6 +127,19 @@ export function validateOptions(parsed, diagnostics, context, fallback) {
           locations.get(key) || fallback,
         );
       else report(key, "execute must be a boolean or a mapping.");
+    } else if (dimensions.has(key)) {
+      if (
+        typeof item === "number" &&
+        Number.isFinite(item) &&
+        item > 0 &&
+        item <= 20
+      )
+        result[key] = item;
+      else
+        report(
+          path,
+          `${key} must be a finite number greater than 0 and at most 20 inches.`,
+        );
     } else if (booleans.has(key)) {
       if (typeof item === "boolean") result[key] = item;
       else report(path, `${key} must be a YAML boolean (true or false).`);

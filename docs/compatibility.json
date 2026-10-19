@@ -54,7 +54,7 @@
     },
     "quarto": {
       "label": "Quarto",
-      "version": "documented Quarto subset / Pyodide 0.27.7 / webR 0.6.0",
+      "version": "Quarto 1.10.19 control fixtures / documented browser subset / Pyodide 0.27.7 / webR 0.6.0",
       "reference": "https://quarto.org/docs/computations/execution-options.html",
       "guide": "formats/quarto.md"
     },
@@ -859,21 +859,22 @@
     {
       "id": "QT-02",
       "format": "quarto",
-      "title": "Remaining metadata and cell controls are unsupported and diagnosed",
+      "title": "Broader notebook metadata, output modes and native execution policies remain incomplete",
       "kind": "mixed",
       "status": "open",
       "priority": "P1",
       "milestone": "QT-2",
       "dependsOn": [],
-      "expected": "Diagnose unsupported keys and invalid values at original source positions; implement additional controls in QT-2 against reference cases.",
-      "disclosure": "Metadata supports plain-text title/author/date (or a numeric year), format: html, and boolean execution defaults. Cell options support echo, eval, output, a plain-text label and figure caption. Structured author records, other output formats, include/warning/error controls, figure dimensions/alt text and other metadata/options remain unsupported and diagnosed at their YAML key. Invalid entries are ignored; a YAML syntax error discards that mapping. Correct evaluation-setting diagnostics before running code.",
+      "expected": "Keep supported typed control/figure keys reference-backed; continue with rich/inline output, wider metadata, raw modes and execution architecture separately.",
+      "disclosure": "Include, warning, explicit error controls, plot alt text, document figure dimensions and R cell figure sizes are supported. Typed invalid/unsupported keys retain source locations. Structured authors, independent message controls, raw output modes, broader metadata, per-plot alt/caption arrays and full image attributes remain unsupported. Sheets retains continue-after-error by default instead of the CLI stop default, stops the rest of a failed cell, and provides partial previews; error:false halts only later cells in the affected independent language session. Plot formats, DPI/retina, exact cropping/font/pixel parity and full native engine recovery remain incomplete.",
       "baselineDisclosure": "Metadata support is limited to title, author, date, and execution defaults. Cell options support source visibility, evaluation, output visibility, a label, and a figure caption; the full Quarto metadata and cell-option system is not implemented.",
       "reproducer": {
-        "path": "tests/unit/quarto.test.js"
+        "path": "design/quarto-controls.md"
       },
       "evidence": [
-        "design/quarto-structure.md",
-        "tests/unit/quarto.test.js"
+        "design/quarto-controls.md",
+        "scripts/quarto-reference.py",
+        "tests/unit/quarto-controls.test.js"
       ]
     },
     {
@@ -1006,6 +1007,56 @@
         "design/quarto-structure.md",
         "tests/unit/quarto.test.js",
         "tests/browser/quarto-structure.spec.js"
+      ]
+    },
+    {
+      "format": "quarto",
+      "kind": "gap",
+      "status": "resolved",
+      "priority": "P1",
+      "milestone": "QT-2A",
+      "dependsOn": [
+        "QT-10"
+      ],
+      "id": "QT-11",
+      "title": "Typed include, warning and explicit error controls govern actual notebook execution",
+      "expected": "Supported native control and figure contracts match Quarto 1.10.19 with pinned Jupyter dependencies and knitr 1.45; browser adapters also preserve sanitizer, cancellation, source and export contracts.",
+      "disclosure": "Include:false executes hidden setup and preserves state while suppressing its preview; failures remain diagnostics. Warning controls filter Python stderr and R warnings/messages; native knitr aliases YAML warning to its message setting at document and cell level. Hidden R failures stop their session even with error:true, following knitr; hidden Python failures follow their error setting. Explicit error:false stops later cells in that language at the backend; error:true continues to the next cell. Defaults and overrides are verified against pinned Quarto/Jupyter/knitr contracts. Existing omitted-error continuation, independent sessions, failed-cell recovery and partial-preview differences remain disclosed under QT-02.",
+      "baselineDisclosure": "Include, warning and error settings were unsupported and diagnosed; every backend continued after a cell failure.",
+      "reproducer": {
+        "path": "tests/fixtures/quarto/controls-python.qmd"
+      },
+      "evidence": [
+        "design/quarto-controls.md",
+        "scripts/quarto-reference.py",
+        "tests/fixtures/quarto/controls-reference.json",
+        "tests/unit/quarto-controls.test.js",
+        "tests/browser/quarto-controls.spec.js"
+      ]
+    },
+    {
+      "format": "quarto",
+      "kind": "gap",
+      "status": "resolved",
+      "priority": "P1",
+      "milestone": "QT-2A",
+      "dependsOn": [
+        "QT-10"
+      ],
+      "id": "QT-12",
+      "title": "Plot dimensions and alternative text survive rendering and exports",
+      "expected": "Supported native control and figure contracts match Quarto 1.10.19 with pinned Jupyter dependencies and knitr 1.45; browser adapters also preserve sanitizer, cancellation, source and export contracts.",
+      "disclosure": "Document fig-width/fig-height set Python Matplotlib defaults and R canvas sizes in inches; R additionally supports per-cell overrides. Python cell sizes are diagnosed, matching the native Jupyter restriction. Values are finite positive numbers up to 20 inches, with a 7 by 5 inch fallback when one explicit dimension is missing; omitted sizes retain existing browser defaults. Fig-alt becomes escaped SVG accessibility text or PNG alt text, with decorative empty-alt support. CLI pixel/cropping/DPI, other graphics devices and full image/subfigure attributes remain separate gaps.",
+      "baselineDisclosure": "Figure dimensions and alt text were unsupported; R plots always used a fixed canvas size.",
+      "reproducer": {
+        "path": "tests/fixtures/quarto/controls-r.qmd"
+      },
+      "evidence": [
+        "design/quarto-controls.md",
+        "scripts/quarto-reference.py",
+        "tests/fixtures/quarto/controls-reference.json",
+        "tests/unit/quarto-controls.test.js",
+        "tests/browser/quarto-controls.spec.js"
       ]
     },
     {

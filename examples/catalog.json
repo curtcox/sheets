@@ -283,7 +283,7 @@
     "format": "quarto",
     "kind": "edge",
     "title": "R statistics and plots",
-    "description": "R cells share data and draw a plot; Julia stays visible without execution.",
+    "description": "Hidden R setup, warning control, plot dimensions and accessible alt text.",
     "path": "examples/quarto/edge.qmd"
   },
   {

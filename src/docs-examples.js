@@ -228,6 +228,25 @@ option "infer_tolerance_from_cost" "TRUE"
   ],
   quarto: [
     sample(
+      `---\nexecute:\n  echo: false\n---\n\n${block("{python}", '#| include: false\nvalue = 7\nprint("Hidden setup")')}\n${block("{python}", '#| warning: false\nimport warnings\nwarnings.warn("Hidden warning")\nprint("Visible result:", value)')}`,
+      ["include: false", "#| include: false", "#| warning: false"],
+    ),
+    sample(
+      `---\nfig-width: 4\nfig-height: 3\nexecute:\n  echo: false\n---\n\n${block("{python}", "#| label: fig-sized\n#| fig-cap: A small line chart\n#| fig-alt: A line rising from one to three\nimport matplotlib.pyplot as plt\nplt.plot([1, 2], [1, 3]);")}\nSee @fig-sized.\n`,
+      ["fig-width", "fig-height", "#| fig-alt: A description"],
+    ),
+    sample(
+      block(
+        "{r}",
+        '#| fig-width: 4\n#| fig-height: 3\n#| fig-alt: Measurements increasing\nplot(c(3, 7, 11), type="b")',
+      ),
+      ["#| fig-width", "#| fig-height"],
+    ),
+    sample(
+      `---\nexecute:\n  echo: false\n---\n\n${block("{python}", '#| error: true\nraise ValueError("Continue with the next cell")')}\n${block("{python}", 'print("This cell runs")')}\n${block("{python}", '#| error: false\nraise ValueError("Stop this session")')}\n${block("{python}", 'print("This cell will not run")')}`,
+      ["#| error: true", "#| error: false"],
+    ),
+    sample(
       `---\ntitle: A small notebook\nauthor: Sheets example\ndate: 2026-10-18\nexecute:\n  echo: false\n---\n\n${block("{python}", "values = [3, 7, 11]\nprint(values)")}\n${block("{python}", "sum(values) / len(values)")}`,
       ["execute:", "echo: false", "print(...)"],
     ),

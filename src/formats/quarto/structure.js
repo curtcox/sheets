@@ -1,5 +1,6 @@
 import { escapeHTML as e } from "../../util.js";
 import { sourceMap } from "../gfm/locations.js";
+import { cellOptions } from "./cell-options.js";
 
 const identifier = /^[A-Za-z][\w-]*$/;
 const callouts = new Set(["note", "warning", "tip", "important", "caution"]);
@@ -225,7 +226,6 @@ export function resolveFigures(tokens, outputs, metadata, diagnostics, lines) {
     cursor = 0,
     rawDepth = 0;
   const views = new Map();
-  const defaults = typeof metadata.execute === "object" ? metadata.execute : {};
   for (let i = 0; i < tokens.length; i++) {
     const token = tokens[i];
     if (token.type === "tr_open") {
@@ -237,12 +237,14 @@ export function resolveFigures(tokens, outputs, metadata, diagnostics, lines) {
       declare(token.meta.id, token.meta, token.meta.location, true);
     if (token.type === "quarto_cell") {
       const part = token.meta,
-        output = outputs.get(part);
+        output = outputs.get(part),
+        options = part.execution || cellOptions(metadata, part);
       declare(
         part.options.label,
         part,
         part.locations.get("label") || { line: part.line, column: 0 },
-        (part.options.output ?? defaults.output) !== false &&
+        options.include !== false &&
+          options.output !== false &&
           !!(output?.figures?.length || output?.images?.length),
       );
     }

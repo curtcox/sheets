@@ -24,8 +24,14 @@ jobs:
       - name: Install reference engines
         run: |
           sudo apt-get update
-          sudo apt-get install -y emacs-nox
+          sudo apt-get install -y --no-install-recommends emacs-nox r-base r-cran-knitr r-cran-rmarkdown
           python -m pip install beancount==3.2.0 beanquery==0.2.0
+          python -m pip install -r tests/fixtures/quarto/reference-requirements.txt
+      - uses: quarto-dev/quarto-actions/setup@91dabb203fce7f899d10ef8e482d94b00f397cbc
+        with:
+          version: "1.10.19"
+      - name: Check notebook controls against Quarto Jupyter and knitr
+        run: python scripts/quarto-reference.py --check
       - name: Check Org fixtures against Emacs
         run: bash scripts/org-expected.sh --check
       - name: Check Beancount fixtures against bean-check and bean-query

@@ -15,8 +15,9 @@ Primary references:
   captioned images with fig identifiers, labelled computational plots, forward
   references, and figure divs whose final paragraph is the caption.
 - [Quarto execution options](https://quarto.org/docs/computations/execution-options.html):
-  document defaults and individual cell settings. This adapter supports only the
-  boolean echo/eval/output controls and plain-text cell label/fig-cap settings.
+  document defaults and individual cell settings. The subsequent QT-2A slice extends the original
+  echo/eval/output subset with typed controls and figure settings; see
+  [the notebook-control contract](quarto-controls.md).
 
 ## Structure and source ownership
 

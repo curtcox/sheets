@@ -1,0 +1,15 @@
+---
+execute:
+  echo: false
+  error: true
+---
+
+```{r}
+#| error: false
+stop("R_HALT_HERE")
+```
+
+```{r}
+writeLines("must not execute", "after-halt.txt")
+cat("R_AFTER_FORBIDDEN_ERROR\n")
+```

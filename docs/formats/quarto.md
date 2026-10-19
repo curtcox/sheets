@@ -37,7 +37,9 @@ so results always come from the current document rather than a previous session.
 Python uses **Pyodide 0.27.7** (MPL-2.0), loaded lazily from jsDelivr. All Python cells in a render share one interpreter. Each new render starts fresh. Imported packages load with `loadPackagesFromImports`; packages outside Pyodide's distribution, native extensions it does not support, and system-level access are unavailable.
 
 Use `print(...)` for console text or leave a value as the cell's final expression
-to display its representation. A pandas DataFrame returned as that final value can
+to display its representation. A final semicolon suppresses that value's display,
+including when followed by a comment; print/plot side effects still run.
+A pandas DataFrame returned as that final value can
 supply a sanitized HTML table. Matplotlib figures become static SVG output:
 
 ````text
@@ -65,7 +67,7 @@ plot(measurements, type = "b")
 ```
 ````
 
-R console output includes printed values, visible expressions, messages and warnings. Base graphics plots are captured as embedded PNG images (640 × 400 logical pixels) with the same figure labels/captions as Python. R data frames print as console text; rich knitr HTML output, inline R expressions, widgets, and R/Python variable exchange are not implemented. The R packages bundled with webR are available. Additional compatible packages can be installed explicitly with `webr::install("package")`, then loaded with `library(package)`; they are downloaded again for a fresh render. Desktop R packages and operating-system access are not available. Browser networking and CORS restrictions apply.
+R console output includes printed values, visible expressions, messages and warnings. Base graphics plots are captured as embedded PNG images with the same figure labels/captions as Python. Existing documents without size options keep the 640 × 400 logical-point device; explicit sizing is described below. R data frames print as console text; rich knitr HTML output, inline R expressions, widgets, and R/Python variable exchange are not implemented. The R packages bundled with webR are available. Additional compatible packages can be installed explicitly with `webr::install("package")`, then loaded with `library(package)`; they are downloaded again for a fresh render. Desktop R packages and operating-system access are not available. Browser networking and CORS restrictions apply.
 
 webR uses its PostMessage channel so R works on GitHub Pages without special server headers or a webR service worker. Interactive input (`readline()`, `menu()`, `browser()`) is unsupported. Cancellation and deadlines close webR’s interpreter worker directly rather than trying to interrupt R code.
 
@@ -81,18 +83,127 @@ Put document metadata in a YAML block at the very start. Put cell options on
 | `execute:` with nested `echo: false` | Hide echoed source by default; still run the cells |
 | Cell `#\| echo: false` | Hide this cell's source, keeping its output |
 | Cell `#\| eval: false` | Skip this cell; its variables will not be defined |
-| Cell `#\| output: false` | Run the code, but hide its normal output |
+| Cell `#\| output: false` | Run the code, but hide results, warnings/messages and plots; error diagnostics remain |
+| Cell `#\| include: false` | Run hidden setup code; omit its source, results, warnings, errors and plots from the preview |
+| Cell `#\| warning: false` | Hide Python stderr, or R warnings/messages; see stream rules below |
+| Cell `#\| error: true` or `#\| error: false` | Continue after this cell fails, or stop later cells in that language |
+| YAML `fig-width`, `fig-height` | Default plot device dimensions in inches |
+| R cell `#\| fig-width`, `#\| fig-height` | Override that R cell's dimensions in inches |
+| Cell `#\| fig-alt: A description` | Accessible text for captured plots |
 | Cell `#\| label: fig-demo` | Name a figure for a basic `@fig-demo` reference |
 | Cell `#\| fig-cap: A description` | Caption captured figures |
 
 Use real YAML booleans (`false`, without quotes). Cell settings override the corresponding execution
-defaults (`echo`, `eval`, `output`). Document `execute: false` always disables execution,
+defaults (`echo`, `eval`, `output`, `include`, `warning`, `error`). Document `execute: false` always disables execution,
 even if a cell requests `eval: true`. The existing `execute.enabled: false` browser
 alias also disables all execution. `output: false` still allows execution diagnostics to be shown. To stop
 code from running, use `eval: false` or disable document execution rather than
 merely hiding its source/output.
 
-Cell options on `#|` lines support `echo`, `eval`, `output`, `label`, and `fig-cap`. Front matter supports plain-text `title`, `author`, `date` (or a numeric year), `format: html`, and `execute` defaults. Structured author records and other output formats are unsupported. `execute: false` skips both Python and R execution. Stdout, stderr, the final expression's repr, a DataFrame's `_repr_html_()`, and matplotlib SVG figures appear as output. Displayed output is sanitized. An execution error is associated with its cell's first source line; later cells continue.
+Cell options on `#|` lines support the controls above, plain-text `label`, `fig-cap` and `fig-alt`, and R figure sizes. Front matter supports plain-text `title`, `author`, `date` (or a numeric year), `format: html`, top-level figure sizes, and `execute` defaults. Structured author records and other output formats are unsupported. `execute: false` skips both Python and R execution. Stdout, stderr, the final expression's repr, a DataFrame's `_repr_html_()`, and matplotlib SVG figures appear as output. Displayed output is sanitized. An execution error is associated with its cell's first source line. Later cells continue by default; explicit stopping is described below.
+
+### Hidden setup, warnings and errors
+
+`include: false` still runs the cell and preserves variables for later cells. It
+wins over `echo: true` or `output: true` for that cell. It hides the cell's entire
+preview, including plots and error text, but execution failures still produce
+editor diagnostics. A hidden plot cannot supply a visible figure reference.
+Use `eval: false` to prevent execution.
+
+````text
+---
+execute:
+  echo: false
+---
+
+```{python}
+#| include: false
+value = 7
+print("This setup output stays hidden")
+```
+
+```{python}
+#| warning: false
+import warnings
+warnings.warn("This warning stays hidden")
+print("Visible result:", value)
+```
+````
+
+The visible result is **7**. Python follows the Jupyter stream convention:
+`warning: false` hides all stderr, including explicit stderr writes. R captures
+warnings separately, but Quarto/knitr aliases a YAML warning setting to the
+message setting too: false hides both, and true re-enables both. This applies to
+document defaults and cell overrides. Independent `message` options remain
+unsupported. `output: false` hides normal output streams, warnings and plots for
+both languages, while errors still have diagnostics.
+
+Sheets retains its existing **continue-after-error default**, equivalent to
+`error: true`; Quarto CLI normally defaults to stopping. Explicit `error: false`
+stops execution of later cells **in the affected language**, even when the failed
+cell is hidden. A hidden R cell follows knitr and stops its session on error
+even with error: true; a hidden Python cell still follows its error setting.
+Later cells receive an unexecuted notice instead of stale results.
+Their echoed source can still appear if echo is enabled. Python and R remain
+independent sessions; an error in one does not cancel the other language. Within
+a cell, execution stops at the error rather than promising all of knitr's
+expression-by-expression recovery. Errors and startup/deadline failures always
+remain diagnostics. Sheets shows partial previews instead of failing an entire
+CLI build. Cancel/edit still terminate both jobs.
+
+````text
+```{python}
+#| error: false
+raise ValueError("Stop this Python session")
+```
+
+```{python}
+print("This later cell will not run")
+```
+````
+
+### Plot dimensions and alternative text
+
+Use top-level `fig-width` and `fig-height` in inches for Python/Matplotlib defaults
+and R plot devices. R also accepts these options per cell. Python cell-level
+sizes are diagnosed and ignored, matching Jupyter's document-level restriction;
+set `figsize` directly in Python when a particular plot needs a manual override.
+
+````text
+---
+fig-width: 4
+fig-height: 3
+execute:
+  echo: false
+---
+
+```{python}
+#| label: fig-sized
+#| fig-cap: A small line chart
+#| fig-alt: A line rising from one to three
+import matplotlib.pyplot as plt
+plt.plot([1, 2], [1, 3]);
+```
+
+See @fig-sized.
+````
+
+Explicit sizes must be finite numbers greater than zero and at most **20 inches**
+per dimension. When only one dimension is supplied, the other uses Quarto's
+ordinary **7 × 5 inch** defaults. Without either option, existing browser plot
+sizes are preserved. Python sets initial Matplotlib defaults and the
+QUARTO_FIG_WIDTH/QUARTO_FIG_HEIGHT environment values; manual Matplotlib overrides
+remain possible. R uses its canvas device's 72 logical points per inch with 2×
+bitmap capture, displayed at 96 CSS pixels per inch. Device-point rounding,
+font metrics, cropping, formats, DPI/retina and exact CLI pixel identity remain
+outside this subset. Standalone Markdown image sizing/alt attributes and plot
+subfigure layouts remain separate work.
+
+`fig-alt` is plain text. R images receive an alt attribute; Python SVGs receive an
+accessible image role and label. An explicitly empty alt marks a decorative
+plot. Several plots in one cell share that cell's caption/alt and figure target;
+per-plot alt/caption arrays are unsupported. Alt text survives sanitization and
+rendered HTML export.
 
 ## Prose features and compatibility
 
@@ -174,12 +285,16 @@ toc: true
 
 ```{python}
 #| echo: "false"
-#| warning: false
+#| cache: true
 print("Execution stays disabled while the unsupported settings are reported")
 ```
 ````
 
 OJS and Julia cells are displayed with a **not executed in the browser** note.
+The execution-control contract is checked against pinned **Quarto 1.10.19**,
+Jupyter (nbclient 0.10.2 / Matplotlib 3.9.4) and knitr 1.45. Native checks cover
+hidden setup/state, defaults/overrides, warning streams, error continuation/halt,
+and figure sizes/alt text. Sheets retains the browser policies described above.
 These supported forms follow the [Quarto callout](https://quarto.org/docs/authoring/callouts.html),
 [figure](https://quarto.org/docs/authoring/figures.html) and
 [execution-option](https://quarto.org/docs/computations/execution-options.html)
@@ -207,7 +322,7 @@ These entries share the [central limitations ledger](../limitations.md). “Need
 | ID | Status | Area |
 | --- | --- | --- |
 | QT-01 | Known gap | This is a browser subset, not the Quarto CLI or full Pandoc |
-| QT-02 | Known gap | Remaining metadata and cell controls are unsupported and diagnosed |
+| QT-02 | Known gap | Broader notebook metadata, output modes and native execution policies remain incomplete |
 | QT-03 | Needs detailed audit | Python and R execute; OJS and Julia are displayed without execution. Ordinary language fences only display… |
 | QT-04 | Needs detailed audit | Python uses pinned Pyodide 0.27.7 |
 | QT-05 | Needs detailed audit | R uses pinned webR 0.6.0 |
@@ -216,4 +331,6 @@ These entries share the [central limitations ledger](../limitations.md). “Need
 | QT-08 | Needs detailed audit | Each language has a 90-second deadline, including runtime/package loading |
 | QT-09 | Resolved | Nested divs and basic figure targets use structured parsing |
 | QT-10 | Resolved | Supported YAML options are validated at their source keys |
+| QT-11 | Resolved | Typed include, warning and explicit error controls govern actual notebook execution |
+| QT-12 | Resolved | Plot dimensions and alternative text survive rendering and exports |
 <!-- compatibility:end -->

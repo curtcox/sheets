@@ -1,16 +1,24 @@
 ---
 title: R statistics and plots
 format: html
+fig-width: 5
+fig-height: 3.5
 ---
 
 ```{r}
+#| include: false
 measurements <- c(3, 7, 11)
 mean(measurements)
 ```
 
 ```{r}
 #| label: fig-measurements
+#| echo: false
 #| fig-cap: Measurements calculated in R
+#| fig-alt: Three measurements increasing from three to eleven
+#| fig-width: 4
+#| fig-height: 3
+#| warning: false
 plot(measurements, type = "b", col = "steelblue", pch = 19)
 ```
 

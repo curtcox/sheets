@@ -1,0 +1,67 @@
+---
+title: Python execution controls
+fig-width: 4
+fig-height: 3
+execute:
+  echo: false
+  error: true
+---
+
+```{python}
+#| include: false
+#| echo: true
+#| output: true
+setup_value = 7
+print("PY_HIDDEN_SETUP")
+```
+
+```{python}
+print("PY_SETUP_VALUE", setup_value)
+```
+
+```{python}
+#| warning: false
+import warnings, sys
+warnings.warn("PY_HIDDEN_WARNING")
+sys.stderr.write("PY_HIDDEN_STDERR\n")
+print("PY_VISIBLE_STDOUT")
+```
+
+```{python}
+warnings.warn("PY_VISIBLE_WARNING")
+sys.stderr.write("PY_VISIBLE_STDERR\n")
+```
+
+```{python}
+#| output: false
+warnings.warn("PY_WARNING_WITHOUT_OUTPUT")
+print("PY_HIDDEN_RESULT")
+```
+
+```{python}
+raise ValueError("PY_VISIBLE_ERROR")
+```
+
+```{python}
+print("PY_AFTER_ALLOWED_ERROR")
+```
+
+```{python}
+#| include: false
+raise ValueError("PY_HIDDEN_ERROR")
+```
+
+See @fig-python-controls.
+
+```{python}
+#| label: fig-python-controls
+#| fig-cap: Python controlled plot
+#| fig-alt: A line rising from one to three
+import matplotlib.pyplot as plt
+print("PY_FIG_SIZE", *(int(n) for n in plt.rcParams["figure.figsize"]))
+plt.plot([1, 2], [1, 3]);
+```
+
+```{python}
+"PY_SUPPRESSED_VALUE"; # A final semicolon suppresses expression display.
+```
