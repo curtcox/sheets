@@ -1,4 +1,5 @@
 /** Sheets document persistence and OAuth source restoration. */
+import { validateProfile } from "./compatibility-profiles.js";
 const HashBinDocuments = {
   MAX_BYTES: 5 * 1024 * 1024,
   bytes(value) {
@@ -43,7 +44,7 @@ const HashBinDocuments = {
       return null;
     }
   },
-  serialize({ src, type, view = "split" }) {
+  serialize({ src, type, view = "split", profile }) {
     if (
       typeof src !== "string" ||
       ![
@@ -60,12 +61,14 @@ const HashBinDocuments = {
       ].includes(type)
     )
       throw new Error("Choose a format before saving.");
+    validateProfile(profile, type);
     const payload = JSON.stringify({
       format: "sheets-document",
-      version: 1,
+      version: profile ? 2 : 1,
       type,
       src,
       view,
+      ...(profile ? { profile } : {}),
     });
     if (this.bytes(payload).length > this.MAX_BYTES)
       throw new Error("Source exceeds the 5 MiB HashBin limit.");
@@ -82,7 +85,7 @@ const HashBinDocuments = {
     }
     if (doc?.format !== "sheets-document")
       return { src: text, type: null, view: "split" };
-    if (doc.version !== 1)
+    if (![1, 2].includes(doc.version))
       throw new Error("Unsupported saved document version.");
     if (typeof doc.src !== "string")
       throw new Error("Saved document has no source.");
@@ -100,12 +103,19 @@ const HashBinDocuments = {
     ].includes(doc.type)
       ? doc.type
       : null;
+    if (doc.version === 2 && (!type || typeof doc.profile !== "string"))
+      throw new Error(
+        "Saved document version 2 needs a format and compatibility profile.",
+      );
+    const profile =
+      doc.version === 2 ? validateProfile(doc.profile, type) : undefined;
     return {
       src: doc.src,
       type,
       view: ["split", "source", "preview"].includes(doc.view)
         ? doc.view
         : "split",
+      ...(profile ? { profile } : {}),
     };
   },
   link(url, cid) {

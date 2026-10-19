@@ -12,6 +12,20 @@ Accepted saved-link hosts are `hashbin.org`, `256t.us`, and `curtcox.github.io`,
 
 Format IDs match the [URL format](url-format.md). Plain text uses Auto detection. The editor limits payloads to 5 MiB and rejects unsupported envelope versions. Unit tests round-trip every supported format through this envelope.
 
+Version 1 retains the original language rules. Documents with an explicit
+compatibility profile use version 2, which also requires a known profile matching
+the format:
+
+```json
+{"format":"sheets-document","version":2,"type":"calca","src":"2 + 2 =>","view":"split","profile":"calca-blocks-v1"}
+```
+
+Shared links and sign-in snapshots preserve the profile. Query parameters can
+override it explicitly; a format override to a different format drops the stored
+profile. Choosing a different mode creates a new source link and leaves the saved
+content intact. Source downloads contain text only, so reselect the mode when
+reusing downloaded text.
+
 ## Save a document
 
 Choose **HashBin → Save to HashBin**. On first use, choose **Connect to HashBin**, sign in, and approve the requested permissions. Sign-in returns to the editor with the source, format, and view restored. Open **Save to HashBin** again to see the quote.

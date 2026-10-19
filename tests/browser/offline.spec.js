@@ -5,6 +5,7 @@ import { tmpdir } from "node:os";
 import { stage } from "../../scripts/stage.mjs";
 import { createStaticServer } from "../../scripts/serve.mjs";
 import { writeURL } from "../../src/url-state.js";
+import { CALCA_BLOCKS } from "../../src/compatibility-profiles.js";
 
 test.describe.configure({ mode: "serial" });
 let directory, server, base;
@@ -115,6 +116,19 @@ test("opt-in offline files support new source links, vendored workers, docs and 
     if (format === "gfm")
       await expect(page.locator("[data-mermaid] svg")).toBeVisible();
   }
+  await page.goto(
+    writeURL(base, {
+      src: '```python\nprint("literal => example")\n```\n\n```calca\n2+2 =>\n```',
+      format: "calca",
+      profile: CALCA_BLOCKS,
+    }),
+  );
+  await ready(page);
+  await expect(page.locator("#render-status")).toHaveText(/^Ready/);
+  await expect(page.locator("#preview")).toContainText("2+2 => 4");
+  await page.reload();
+  await ready(page);
+  await expect(page.locator("#profile")).toHaveValue(CALCA_BLOCKS);
   const requests = await page.evaluate(async () => {
     const names = (await caches.keys()).filter((name) =>
       name.startsWith(

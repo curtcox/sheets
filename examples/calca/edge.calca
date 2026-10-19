@@ -3,3 +3,14 @@
 5 km in m =>
 [1, 2; 3, 4] * [2; 1] =>
 derivative("x^3", "x") =>
+
+## Literal code stays literal
+
+```python
+print("This is an example => not a Calca calculation")
+```
+
+```mermaid
+graph LR
+  Source --> Answer
+```

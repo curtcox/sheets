@@ -42,15 +42,17 @@ choose Numbat for dimension-checked models.
 | [Numbat](formats/numbat.md) | Source/result rows; `#` comments | Language values; no spreadsheet UI | No Sheets plot viewer | No Python/R cells |
 | [CalcFile](formats/calcfile.md) | Plain prose, headers, result rows | Running totals and aggregates | No | No |
 | [Org tables](formats/org.md) | Basic Org headings, lists, emphasis, links | Calculated tables and range aggregates | No | No Babel/Lisp execution |
-| [Calca](formats/calca.md) | Markdown, TeX, arrow results | Matrices; Markdown tables | Shared Markdown renderer, with fence caveat below | No Python/R cells |
+| [Calca](formats/calca.md) | Markdown, TeX, arrow results | Matrices; Markdown tables | Yes with Structured blocks; Legacy has the fence caveat below | No Python/R cells |
 | [Hurmet](formats/hurmet.md) | Prose and typeset math calculations | Calculation cells in tables; upstream spreadsheet tables | Upstream output; no interactive drawing UI | No Python/R cells |
 | [Beancount](formats/beancount.md) | Ledger-specific report views | Balance sheet, income statement, trial balance, journal | No | No |
 | [Quarto](formats/quarto.md) | Markdown, TeX, metadata, callouts, basic figure references | Markdown tables; Python DataFrame HTML; R console tables | Mermaid, Python matplotlib SVG, R PNG plots | Python and R; OJS/Julia displayed only |
 | [Plain text](formats/text.md) | Escaped, preformatted source | Literal source only | No | No |
 
-In Calca, **every fenced or indented code block is also calculation input**,
+In Calca's **Legacy** mode, every fenced or indented code block is also calculation input,
 regardless of its language label. Although the shared Markdown renderer can display
 math and diagrams, their fenced contents may cause calculation diagnostics.
+Choose **Structured blocks** to keep literal, TeX, and Mermaid fences separate from
+calculation input. Only `calca` fences and indented code blocks calculate in that mode.
 Use GitHub Markdown or Quarto for documents with literal code or Mermaid fences.
 Typesetting an equation in any format does not by itself evaluate or solve it.
 
@@ -89,6 +91,7 @@ or notebook cells. External image URLs still need their server. See
 | Unit conversion | Carrying a measurement's unit and changing its representation, such as kilometers to meters. Currency conversion additionally needs exchange rates. |
 | Dimensional checking | Rejecting incompatible physical operations, such as adding a length to a duration. Writing a unit label in prose alone does not provide this check. |
 | Equation solving | Finding an unknown from a relation, rather than evaluating an expression whose inputs are already known. Calca's solver is limited to supported real linear/quadratic relations. |
+| Compatibility profile | An explicit version of a format's behavior, stored in shared links and profiled saved documents. Calca's Structured blocks profile changes block classification; plain source downloads need the mode selected again. |
 | Display-only table | A formatted grid whose cells are literal text. Markdown tables do not acquire spreadsheet formulas automatically. |
 | Table formulas and references | Expressions that read or update cells. Org uses references such as `$2` and `@3$2`; Hurmet has its own table model. |
 | Range and aggregate | A group of values and a summary operation such as sum, mean, or count. Org ranges address cells; CalcFile totals summarize calculation lines. |

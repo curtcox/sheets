@@ -60,8 +60,26 @@ test("documentation examples open their source with the required context and lim
   );
 
   await page.goto("/docs.html?page=formats/calca");
-  await page.locator(".docs-example-link").nth(1).click();
+  await page
+    .locator("#docs-content pre")
+    .filter({ hasText: "2*x + 3 = 11" })
+    .locator("xpath=following-sibling::p[1]")
+    .getByRole("link")
+    .click();
   await expect(page.locator("#preview")).toContainText("x => 4");
+
+  await page.goto("/docs.html?page=formats/calca");
+  await page
+    .locator("#docs-content pre")
+    .filter({ hasText: "# Calculations beside code" })
+    .locator("xpath=following-sibling::p[1]")
+    .getByRole("link")
+    .click();
+  await expect(page.locator("#render-status")).toHaveText(/^Ready/);
+  await expect(page.locator("#profile")).toHaveValue("calca-blocks-v1");
+  await expect(page.locator("#preview")).toContainText(
+    "price * (1 + tax) => 25.92",
+  );
 
   await page.goto("/docs.html?page=url-format");
   await page.getByRole("link", { name: "#<cid>", exact: true }).click();

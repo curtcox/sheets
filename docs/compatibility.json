@@ -424,7 +424,7 @@
       "kind": "mixed",
       "status": "audit",
       "priority": "P0",
-      "milestone": "CALCA-1/2",
+      "milestone": "CALCA-2",
       "dependsOn": [],
       "expected": "Verify each behavior against public Calca reference; licensed-app verification still needed; separate deliberate policy from unsupported upstream capabilities.",
       "disclosure": "Numeric definitions use assignment-time values; unresolved definitions use current values when queried. Reassignment is allowed, headings do not create scopes, and state resets on every render. These behaviors differ from Calca.",
@@ -450,17 +450,24 @@
     {
       "id": "CALCA-06",
       "format": "calca",
-      "title": "Every fenced or indented code block is calculation input, regardless of its language label",
-      "kind": "mixed",
-      "status": "audit",
+      "title": "Calculation and literal Markdown block isolation",
+      "kind": "gap",
+      "status": "resolved",
       "priority": "P0",
-      "milestone": "CALCA-1/2",
+      "milestone": "CALCA-1",
       "dependsOn": [],
-      "expected": "Verify each behavior against public Calca reference; licensed-app verification still needed; separate deliberate policy from unsupported upstream capabilities.",
-      "disclosure": "Every fenced or indented code block is calculation input, regardless of its language label. Literal code, math, or Mermaid fences can therefore produce calculation diagnostics. Arrow answers replace text in the preview; the editor source is retained. Built-in unit/constant names can conflict with unknown names.",
+      "expected": "The explicit Sheets structured-block profile isolates literal Markdown input, executes supported calculation blocks, and retains original source locations. Unprofiled documents keep legacy behavior.",
+      "disclosure": "Structured blocks (calca-blocks-v1) uses parsed Markdown boundaries: only calca-labelled fences, indented code, and standalone paragraph arrow expressions calculate. Literal language/unlabelled fences, TeX, Mermaid, inline code/math, headings, links, and HTML do not run as calculations. Legacy remains the default for unprofiled URLs and version-1 saved documents. This resolves Markdown block isolation in the explicit profile; it does not implement Calca’s complete input grammar.",
       "baselineDisclosure": "Every fenced or indented code block is calculation input, regardless of its language label. Literal code, math, or Mermaid fences can therefore produce calculation diagnostics. Arrow answers replace text in the preview; the editor source is retained. Built-in unit/constant names can conflict with unknown names.",
-      "reproducer": null,
-      "evidence": []
+      "reproducer": {
+        "path": "examples/calca/edge.calca",
+        "profile": "calca-blocks-v1"
+      },
+      "evidence": [
+        "tests/unit/calca-document.test.js",
+        "tests/unit/profiles.test.js",
+        "tests/browser/calca-profiles.spec.js"
+      ]
     },
     {
       "id": "HUR-01",
@@ -813,6 +820,23 @@
       "expected": "Support additional precision/rounding options only with pinned reference fixtures; keep explicit resource limits.",
       "disclosure": "Numeric literals are bounded at 256 digits, and arithmetic uses a 28-significant-digit context. Other advanced options, including automatic rounding-account postings, remain unsupported. These are separate from the resolved decimal/tolerance work.",
       "baselineDisclosure": "Advanced options and upstream rounding rules were not fully implemented.",
+      "reproducer": null,
+      "evidence": []
+    },
+    {
+      "id": "CALCA-07",
+      "format": "calca",
+      "title": "Reserved names and remaining input grammar",
+      "kind": "mixed",
+      "status": "audit",
+      "priority": "P1",
+      "milestone": "CALCA-3",
+      "dependsOn": [
+        "CALCA-06"
+      ],
+      "expected": "Audit remaining input grammar against Calca’s public reference and a licensed app; preserve deliberate expression guards.",
+      "disclosure": "Both profiles still evaluate one line at a time. Indentation-based multiline definitions, named arguments, multiple statements per line, and the original app’s broader prose/calculation inference remain unsupported. Built-in unit/constant names can conflict with unknown names; use distinct identifiers. Arrow answers replace preview text while the editor source remains intact.",
+      "baselineDisclosure": "Every fenced or indented code block is calculation input, regardless of its language label. Literal code, math, or Mermaid fences can therefore produce calculation diagnostics. Arrow answers replace text in the preview; the editor source is retained. Built-in unit/constant names can conflict with unknown names.",
       "reproducer": null,
       "evidence": []
     }

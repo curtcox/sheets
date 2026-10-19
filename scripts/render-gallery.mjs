@@ -11,6 +11,9 @@ const root = fileURLToPath(new URL("../", import.meta.url));
 const catalog = JSON.parse(
   await readFile(new URL("../examples/catalog.json", import.meta.url)),
 );
+const only = process.argv.find((arg) => arg.startsWith("--only="))?.slice(7);
+if (only && !catalog.some((item) => item.id === only))
+  throw new Error("Unknown gallery example.");
 const temporary = await mkdtemp(`${tmpdir()}/sheets-covers-`);
 const server = createStaticServer(root);
 let browser;
@@ -28,8 +31,11 @@ try {
     timezoneId: "UTC",
   });
   const page = await context.newPage();
-  const hashes = {};
-  for (const item of catalog) {
+  const hashes = only
+    ? JSON.parse(await readFile(`${root}examples/covers/manifest.json`, "utf8"))
+        .sources
+    : {};
+  for (const item of catalog.filter((item) => !only || item.id === only)) {
     if (!/^[a-z]+-(?:basic|typical|edge|error)$/.test(item.id))
       throw new Error(`Invalid example ID: ${item.id}`);
     await page.goto(
@@ -69,7 +75,7 @@ try {
       content: `
       :root,body {background:white}
       body.editor-page {height:400px;min-height:0}
-      .site-header,.toolbar,.storage-panel,.statusbar,.pane-header,#preview button {display:none!important}
+      .site-header,.toolbar,.profile-controls,.storage-panel,.statusbar,.pane-header,#preview button {display:none!important}
       #workspace {width:640px;height:400px;min-height:400px;flex:none;margin:0;border:0;border-radius:0;box-shadow:none}
       #preview {padding:24px;scrollbar-width:none}
       #preview::-webkit-scrollbar {display:none}
@@ -99,7 +105,7 @@ try {
   );
   await mkdir(`${root}examples/covers`, { recursive: true });
   await cp(temporary, `${root}examples/covers`, { recursive: true });
-  console.log(`Updated ${catalog.length} gallery covers.`);
+  console.log(`Updated ${only ? 1 : catalog.length} gallery covers.`);
 } finally {
   await browser?.close();
   server.closeAllConnections();

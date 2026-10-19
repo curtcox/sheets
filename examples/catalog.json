@@ -179,9 +179,10 @@
     "id": "calca-edge",
     "format": "calca",
     "kind": "edge",
-    "title": "Units, matrices, and a derivative",
-    "description": "Some of the mathjs tools behind the Calca-compatible subset.",
-    "path": "examples/calca/edge.calca"
+    "title": "Units, matrices, and literal code",
+    "description": "Structured blocks keep code and diagrams separate from Calca calculations.",
+    "path": "examples/calca/edge.calca",
+    "profile": "calca-blocks-v1"
   },
   {
     "id": "calca-error",

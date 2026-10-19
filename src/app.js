@@ -1,5 +1,10 @@
 import { catalog, detect, loadFormat } from "./formats/registry.js";
-import { readURL, writeURL } from "./url-state.js";
+import { readURL, writeURL, readOverrides } from "./url-state.js";
+import {
+  profiles,
+  validateProfile,
+  resolveDocument,
+} from "./compatibility-profiles.js";
 import { RenderScheduler } from "./render-scheduler.js";
 import { setPreview, sanitize } from "./sanitize.js";
 import { setupViews } from "./view-modes.js";
@@ -36,6 +41,7 @@ let editor,
   currentResult = null,
   currentCID = null,
   currentType = "gfm",
+  currentProfile,
   renderController;
 if (globalThis.ace) {
   ace.config.set("basePath", acePath);
@@ -70,13 +76,23 @@ const view = setupViews({
   onChange: () => persist(),
   onResize: () => editor?.resize(),
 });
-const selectedType = () =>
-  format.value === "auto" ? detect(getSource()) : format.value;
+const selectedType = (src = getSource()) =>
+  format.value === "auto"
+    ? profiles.find((item) => item.id === currentProfile)?.format || detect(src)
+    : format.value;
+function updateProfileControls() {
+  $("profile-controls").hidden = selectedType() !== "calca";
+  $("profile").value = currentProfile || "";
+  $("profile-help").textContent = currentProfile
+    ? "Calca fences, indented code, and standalone arrows calculate. Source files contain text only; reselect this mode when reusing them."
+    : "Legacy evaluates every code fence. Structured blocks keep other languages, formulas, and diagrams literal.";
+}
 const snapshot = () => ({
   src: getSource(),
   type: selectedType(),
   format: format.value,
   view: view.getView(),
+  ...(currentProfile ? { profile: currentProfile } : {}),
 });
 const fingerprint = () => JSON.stringify(snapshot());
 function updateDownloadOptions(ready = false) {
@@ -101,7 +117,10 @@ const scheduler = new RenderScheduler({
     renderController?.abort();
     renderController = new AbortController();
     const combined = AbortSignal.any([signal, renderController.signal]);
-    currentType = format.value === "auto" ? detect(src) : format.value;
+    const profile = currentProfile;
+    currentType = selectedType(src);
+    validateProfile(profile, currentType);
+    updateProfileControls();
     const meta = catalog.find((f) => f.id === currentType);
     $("detected").textContent =
       format.value === "auto" ? `→ ${meta.label}` : "";
@@ -114,7 +133,10 @@ const scheduler = new RenderScheduler({
       editor.session.setMode(mode);
     }
     return {
-      ...(await plugin.render(src, { signal: combined })),
+      ...(await plugin.render(src, {
+        signal: combined,
+        profile,
+      })),
       signal: combined,
     };
   },
@@ -170,11 +192,14 @@ const panel = new HashBinPanel({
   getSnapshot: snapshot,
   getFingerprint: fingerprint,
   onLoad(doc, cid, overrides = {}) {
+    const resolved = resolveDocument(doc, overrides);
     sourceRevision++;
     currentCID = cid;
     setSource(doc.src);
-    format.value = overrides.format || doc.type || "auto";
-    view.setView(overrides.view || doc.view || "split", false);
+    format.value = resolved.format;
+    currentProfile = resolved.profile;
+    view.setView(resolved.view, false);
+    updateProfileControls();
     persist();
     scheduler.schedule(getSource(), {}, true);
   },
@@ -209,7 +234,17 @@ function changed() {
 }
 if (editor) editor.session.on("change", changed);
 else $("source-fallback").addEventListener("input", changed);
-format.onchange = changed;
+format.onchange = () => {
+  currentProfile = undefined;
+  updateProfileControls();
+  changed();
+};
+$("profile").onchange = () => {
+  currentProfile = $("profile").value || undefined;
+  if (currentProfile) format.value = "calca";
+  updateProfileControls();
+  changed();
+};
 $("cancel-render").onclick = () => {
   updateDownloadOptions(false);
   scheduler.cancel();
@@ -333,7 +368,9 @@ async function restore() {
       const doc = callback.snapshot;
       setSource(doc.src);
       format.value = doc.format || doc.type || "auto";
+      currentProfile = validateProfile(doc.profile, format.value);
       view.setView(doc.view, false);
+      updateProfileControls();
       currentCID = null;
       if (callback.error) {
         $("hashbin-panel").hidden = false;
@@ -345,21 +382,25 @@ async function restore() {
     }
     const state = readURL(location.href);
     format.value = state.format;
+    currentProfile = state.profile;
     view.setView(state.view, false);
     if (state.kind === "hashbin") {
-      const params = new URL(location.href).searchParams;
-      await panel.load(state.cid, {
-        ...(params.has("format") ? { format: state.format } : {}),
-        ...(params.has("view") ? { view: state.view } : {}),
-      });
+      await panel.load(state.cid, readOverrides(location.href));
       return;
     }
     if (state.kind === "example") {
       const example = await loadExample(state.example);
       if (revision !== sourceRevision) return;
       setSource(example.src);
-      if (state.format === "auto") format.value = example.format;
+      if (state.format === "auto" && !state.profile)
+        format.value = example.format;
+      if (!state.profile)
+        currentProfile =
+          format.value === example.format
+            ? validateProfile(example.profile, format.value)
+            : undefined;
     } else setSource(state.src ?? starter);
+    updateProfileControls();
     currentCID = null;
     persist();
     scheduler.schedule(getSource(), {}, true);

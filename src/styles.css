@@ -158,6 +158,18 @@ nav > button {
 .format-control select {
   min-width: 175px;
 }
+.profile-controls {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px 12px;
+  padding: 8px 24px;
+  border-bottom: 1px solid var(--border);
+  font-size: 12px;
+}
+.profile-controls .subtle {
+  flex: 1 1 260px;
+}
 .view-toggle {
   padding: 3px;
   border: 1px solid var(--border);
@@ -905,6 +917,7 @@ dialog label {
   }
   .editor-page > .site-header,
   .toolbar,
+  .profile-controls,
   .storage-panel,
   .statusbar,
   dialog,

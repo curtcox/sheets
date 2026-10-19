@@ -348,6 +348,20 @@ large/tiny amounts, costs/prices, inference, assertions, padding, and lots. BEAN
 first slice implements decimal arithmetic, supported tolerance options, and exact
 report text. Other booking/rounding options and wider audits remain open.
 
+Second increment: CALCA-1 introduces a parsed Markdown document model and the
+explicit `calca-blocks-v1` profile. Structured blocks isolate literal fences,
+inline code/math, TeX, Mermaid, headings, links, and HTML from calculation input;
+supported Calca fences, indented blocks, and paragraph arrow expressions retain
+source locations and document order, including footnotes. Unprofiled URLs and
+version-1 HashBin documents keep the original renderer. Profiles now round-trip
+through URLs, version-2 envelopes, sharing, OAuth snapshots, view changes,
+and offline reloads. Source downloads keep text alone and disclose the need to
+select the profile when reusing it. The profile contract
+has executable migration cases; the broader Phase 11 atomic audit remains open.
+Calca still evaluates one line at a time. CALCA-2 definition/scoping semantics and
+CALCA-3 input grammar remain future work rather than implied capabilities of the
+new block profile.
+
 ### Goal and prioritization
 
 Close gaps that change results first, then widely used missing capabilities, then

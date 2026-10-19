@@ -1,4 +1,5 @@
 import { HashBinDocuments } from "./hashbin.js";
+import { readOverrides } from "./url-state.js";
 /** HashBin controls: snapshot saves, quote before charging, and stale-load guards. */
 class HashBinPanel {
   constructor({ store, getSnapshot, getFingerprint, onLoad, onSaved }) {
@@ -47,9 +48,12 @@ class HashBinPanel {
     const revision = ++this.revision;
     this.status.textContent = "Loading from HashBin…";
     try {
+      const linkOverrides = /^https:\/\//.test(input.trim())
+        ? readOverrides(input.trim())
+        : {};
       const snapshot = await this.store.load(cid);
       if (revision !== this.revision) return;
-      this.onLoad(snapshot, cid, overrides);
+      this.onLoad(snapshot, cid, { ...linkOverrides, ...overrides });
       this.status.textContent = "Loaded from HashBin.";
     } catch (error) {
       if (revision === this.revision) this.status.textContent = error.message;

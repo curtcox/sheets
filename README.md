@@ -2,6 +2,7 @@
 
 A buildless, single-page editor for calculation-oriented text documents. Source,
 format, and view live in the URL. Optional HashBin storage provides CID links.
+Explicit compatibility profiles also travel with shared links and saved documents.
 
 Supports GitHub Markdown, AsciiMath, Numbat, CalcFile, Org tables, a Calca-compatible
 subset, Hurmet, a Beancount core subset, and Quarto notebooks with Python and R. Includes
@@ -11,6 +12,8 @@ sanitized HTML/MathML/SVG output. Download source files, export the finished pre
 as standalone HTML, or print it to PDF. Beancount, Org, Numbat, and Hurmet have
 format-specific source highlighting. Offline access is available as an optional
 app-file download. Calca supports numeric linear and quadratic equation solving.
+Its optional **Structured blocks** mode separates calculation input from literal
+code, TeX, and Mermaid. Existing unprofiled Calca documents retain Legacy rules.
 
 ## Run locally
 

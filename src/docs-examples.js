@@ -1,4 +1,5 @@
 import { writeURL } from "./url-state.js";
+import { CALCA_BLOCKS } from "./compatibility-profiles.js";
 
 const block = (language, source) => `\`\`\`${language}\n${source}\n\`\`\`\n`;
 const sample = (source, aliases = []) => ({ source, aliases });
@@ -226,12 +227,22 @@ export function blockExample(page, source) {
   const format = page.startsWith("formats/") ? page.slice(8) : "text";
   return {
     format,
-    src: format === "calca" ? block("calca", source.trimEnd()) : source,
+    src:
+      format === "calca" && !/^ {0,3}(?:`{3,}|~{3,})/m.test(source)
+        ? block("calca", source.trimEnd())
+        : source,
+    ...(format === "calca" ? { profile: CALCA_BLOCKS } : {}),
   };
 }
 
 export function inlineExample(page, code) {
   if (page === "url-format") {
+    if (["?profile=calca-blocks-v1", "calca-blocks-v1"].includes(code))
+      return {
+        format: "calca",
+        src: syntaxExamples.calca[0].source,
+        profile: CALCA_BLOCKS,
+      };
     if (syntaxExamples[code])
       return { format: code, src: syntaxExamples[code][0].source };
     if (code === "?example=<id>")
@@ -249,7 +260,12 @@ export function inlineExample(page, code) {
     const example =
       examples.find(({ aliases }) => aliases.includes(code)) ||
       examples.find(({ source }) => source.includes(code));
-    if (example) return { format: id, src: example.source };
+    if (example)
+      return {
+        format: id,
+        src: example.source,
+        ...(id === "calca" ? { profile: CALCA_BLOCKS } : {}),
+      };
   }
   return null;
 }

@@ -102,7 +102,11 @@ See the [Calca guide](formats/calca.md). Compatibility target: public Calca refe
 
 - **CALCA-05 — Results use floating-point arithmetic with up to 12 significant displayed digits** (Needs detailed audit). Results use floating-point arithmetic with up to 12 significant displayed digits. Expressions are limited to **4,000 characters and 1,000 syntax nodes**, documents to **256 equations**, with additional bounds on definition expansion.
 
-- **CALCA-06 — Every fenced or indented code block is calculation input, regardless of its language label** (Needs detailed audit). Every fenced or indented code block is calculation input, regardless of its language label. Literal code, math, or Mermaid fences can therefore produce calculation diagnostics. Arrow answers replace text in the preview; the editor source is retained. Built-in unit/constant names can conflict with unknown names.
+- **CALCA-07 — Reserved names and remaining input grammar** (Needs detailed audit). Both profiles still evaluate one line at a time. Indentation-based multiline definitions, named arguments, multiple statements per line, and the original app’s broader prose/calculation inference remain unsupported. Built-in unit/constant names can conflict with unknown names; use distinct identifiers. Arrow answers replace preview text while the editor source remains intact.
+
+### Resolved compatibility gaps
+
+- **CALCA-06 — Calculation and literal Markdown block isolation** (Resolved). Structured blocks (calca-blocks-v1) uses parsed Markdown boundaries: only calca-labelled fences, indented code, and standalone paragraph arrow expressions calculate. Literal language/unlabelled fences, TeX, Mermaid, inline code/math, headings, links, and HTML do not run as calculations. Legacy remains the default for unprofiled URLs and version-1 saved documents. This resolves Markdown block isolation in the explicit profile; it does not implement Calca’s complete input grammar.
 
 ## Hurmet
 

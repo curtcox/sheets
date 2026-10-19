@@ -15,7 +15,10 @@ tax = 0.08 =>
 price * (1 + tax) => 25.92
 ```
 
-Prose uses the shared Markdown renderer. Lines containing `=>` and lines inside indented or fenced code blocks are evaluated in document order. Results replace existing text after each arrow. Definitions inside code blocks establish variables or user functions, such as `f(x) = x^2`, for later calculations. Only arrow lines display a result.
+Prose uses the shared Markdown renderer. Calculations run in document order and
+replace existing text after each arrow in the preview. Definitions inside
+calculation blocks establish variables or user functions, such as `f(x) = x^2`,
+for later calculations. Only arrow lines display a result.
 
 Numbers, common math functions, units, `in` conversions, matrices, `simplify()`, and `derivative()` are supported. A calculation error appears after its arrow and in editor diagnostics; later lines continue.
 
@@ -32,9 +35,56 @@ Numbers, common math functions, units, `in` conversions, matrices, `simplify()`,
 Edit the input before the arrow; any old answer after it is replaced **in the
 preview**. The editor source is preserved. A source download keeps that source;
 rendered HTML keeps the computed preview. Bare assignments in ordinary prose do
-not execute unless they have an arrow or are in a code block. Every fenced or
-indented code block is treated as calculation input, even when its language label
-suggests literal code, math, or a diagram; prefer GFM/Quarto for those fences.
+not execute unless they have an arrow or are in a calculation block.
+
+## Choose the block rules
+
+The **Calca blocks** control offers two modes. Existing links without a profile
+and version-1 saved documents use **Legacy**, which evaluates every fenced or
+indented code block. This preserves their original behavior, including calculation
+diagnostics from literal language, math, or diagram fences.
+
+Choose **Structured blocks** to calculate only indented code blocks, fences
+explicitly labelled `calca`, and standalone arrow expressions in paragraphs.
+Other fences, including unlabelled fences, display their contents without
+calculation. TeX math and Mermaid keep their usual Markdown rendering. Inline
+code/math, links, headings, and HTML are not treated as arrow expressions.
+Backtick and tilde fences, longer delimiters, lists, and blockquotes follow the
+Markdown parser, and diagnostics retain their original source line numbers.
+
+This complete example opens with Structured blocks selected:
+
+````markdown
+# Calculations beside code
+
+```python
+print("This is a literal example => no calculation")
+```
+
+```calca
+price = 24
+tax = 0.08
+price * (1 + tax) =>
+```
+
+```math
+A = \pi r^2
+```
+````
+
+The selected mode is stored in shared links and version-2 HashBin documents.
+Switching modes preserves the source and creates a new source link instead of
+changing an immutable saved document. Switching formats clears the Calca mode.
+Source downloads contain text alone; select Structured blocks again when reusing
+that text. Documentation examples use Structured blocks. The gallery's units,
+matrices, and literal-code example also demonstrates this mode.
+
+Structured blocks are a Sheets Markdown boundary rule, based on Calca's distinction
+between annotations and calculations. They do not implement its full input grammar.
+Evaluation still runs one line at a time: indentation-based multiline definitions,
+named arguments, and multiple statements on one line remain unsupported. Bare
+unindented definitions still need an arrow to execute. The equation, reassignment,
+and heading-scope differences described below apply to both modes.
 
 ## Equations
 
@@ -90,5 +140,6 @@ These entries share the [central limitations ledger](../limitations.md). “Need
 | CALCA-03 | Needs detailed audit | Explicit assignments take priority |
 | CALCA-04 | Needs detailed audit | Numeric definitions use assignment-time values; unresolved definitions use current values when queried |
 | CALCA-05 | Needs detailed audit | Results use floating-point arithmetic with up to 12 significant displayed digits |
-| CALCA-06 | Needs detailed audit | Every fenced or indented code block is calculation input, regardless of its language label |
+| CALCA-06 | Resolved | Calculation and literal Markdown block isolation |
+| CALCA-07 | Needs detailed audit | Reserved names and remaining input grammar |
 <!-- compatibility:end -->
