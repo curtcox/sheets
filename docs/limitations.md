@@ -86,11 +86,17 @@ See the [Org tables guide](formats/org.md). Compatibility target: Emacs numeric 
 
 - **ORG-01 — This is a JavaScript spreadsheet subset, not Emacs Org, Babel, or the complete Emacs Calc language** (Needs detailed audit). This is a JavaScript spreadsheet subset, not Emacs Org, Babel, or the complete Emacs Calc language. Emacs Lisp formulas are explicitly unsupported.
 
-- **ORG-02 — Named fields, remote tables, iteration modes, arbitrary Calc syntax, and exact Emacs display-width…** (Needs detailed audit). Named fields, remote tables, iteration modes, arbitrary Calc syntax, and exact Emacs display-width alignment are not implemented. Formulas execute in order, rather than iterating until results converge.
+- **ORG-02 — Remote tables, evaluation order, remaining Calc modes and native layout remain incomplete** (Known gap). Numeric named columns/fields, table parameters and file constants now work, with marked-row selection and pre-pass field snapshots. Remote tables, iteration, inherited property/external constants, expression-valued or string bindings, global format parameters, remaining Calc syntax/precision modes and exact Emacs display-width/export layout remain unsupported. Formulas retain source order; native column/field priority and duplicate-target semantics are not yet implemented.
 
 - **ORG-03 — Surrounding prose supports basic headings, lists, emphasis, and links, rather than the full Org…** (Needs detailed audit). Surrounding prose supports basic headings, lists, emphasis, and links, rather than the full Org application/export environment. Numeric table calculations use the constrained mathjs evaluator; this is not a general dimension-checked physical modeling language. Ranges skip nonnumeric cells unless numeric coercion is requested.
 
 - **ORG-04 — Recalculation updates the preview** (Needs detailed audit). Recalculation updates the preview. The editor retains the original source until you copy recalculated source and paste it. Out-of-range references report diagnostics instead of creating cells. Independent Emacs comparisons cover supported numeric fixtures and exclude the intentional Lisp-error example.
+
+### Resolved compatibility gaps
+
+- **ORG-05 — Numeric named bindings and marked-row selection match Emacs fixtures** (Resolved). The first name row supplies column aliases; field markers name adjacent fields; numeric table parameters and file constants provide reusable inputs. Precedence, duplicate behavior, pre-pass field snapshots, scientific notation, ranges and marked-row selection are checked against Emacs. Named fields can be targets; column targets stay numeric. Remaining binding and evaluation features stay under ORG-02.
+
+- **ORG-06 — Literal Org blocks no longer run formulas or install constants** (Resolved). Active tables and constants are discovered through the Org AST. Source/example/export blocks remain escaped literals and comment blocks are omitted. Their apparent formulas and constants do not affect calculations. Quoted formula strings retain their literal dollar signs. Exact source is preserved in editor shares and downloads.
 
 ## Calca
 

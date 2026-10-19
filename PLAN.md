@@ -330,11 +330,14 @@ deployment settings.
 
 ## Compatibility roadmap: prioritize and eliminate limitations
 
-Status: **in progress**, based on the limitations inventory at commit `d99cb58`.
-This roadmap extends the completed original plan; it does not mark future
-capabilities as implemented. The current baseline is 146 passing unit tests,
-123 passing browser tests, 37 passing required CalcFile cases, and 582/672 exact
-GFM matches with 90 recorded deviations.
+Status: **in progress**, refreshed 2026-10-19 after `78a0616`.
+This roadmap extends the completed original plan; future capabilities remain open.
+The verified baseline before ORG-1A is 272 unit tests, 219 browser tests, 37 required
+CalcFile cases, and 672/672 canonical GFM examples (601/672 production HTML,
+with presentation/sanitization differences classified). The shared ledger has
+59 disclosures. The function comparison page now distinguishes callable libraries,
+custom definitions, imported packages, and display-only notation. The original
+inventory at `d99cb58` is retained in the baseline disclosure fields.
 
 First increment: `docs/compatibility.json` imports the existing disclosures with
 stable IDs, priorities, classifications, audit status, and evidence fields.
@@ -581,6 +584,45 @@ Quarto/Pandoc grammar, cross-reference and option gaps. Reference contracts and
 reproducers are recorded in `design/quarto-structure.md`. This completes Phase 13;
 the next ordered implementation slice is **ORG-1** in Phase 14.
 
+### Active implementation queue — refreshed 2026-10-19
+
+Phases 12/13 delivered their bounded first slices. Broader audits remain open;
+a completed slice does not close its whole format. Prioritize a reproducible
+wrong-result defect ahead of new syntax whenever one is found. Use small,
+independently verifiable releases in this order:
+
+| Order / slice | Limitation to eliminate | Completion evidence |
+| --- | --- | --- |
+| 1 / ORG-1A (M, implemented) | Named columns/fields, table parameters, file constants, and marked-row selection. | Compare values, case/precedence, field snapshots, named targets/ranges and protected metadata rows against Emacs. Preserve literal source blocks; provide original-line diagnostics for unsupported bindings. |
+| 2 / ORG-1B (M) | Remaining evaluation-order differences and same-document named-table references. | Native fixtures for column/field precedence, duplicate targets, dependency order, missing/ambiguous tables and bounded reference chains. Explicitly document any required compatibility migration. |
+| 3 / QT-2A (M) | Frequently used notebook include/warning/error controls and figure alt text/dimensions. | Match a pinned Quarto/knitr/Jupyter reference for each supported control; verify defaults, overrides, skipped cells, sanitization, exports and cancellation. Rich tables/inline expressions follow separately. |
+| 4 / BEAN-2A (M) | Unsupported booking/lot behavior and total-cost lots. | Differential bean-check/bean-query fixtures, exact decimals, ambiguous-booking rejection and native-commodity reports. New report views follow numeric correctness. |
+| 5 / CALCA-3A (M) | Named/multiline definitions, local bindings and indexing gaps. | Public reference cases plus explicit licensed-app verification where needed; retain old profiles. Solver expansion waits for dependable grammar. |
+| 6 / NUM-2 + HUR-1 audits (S each, then re-estimate) | Function/output paths dropped by the adapters. | Probe actual pinned browser APIs/ASTs and upstream examples. Restore missing existing-engine output before implementing another language or editing UI. |
+| 7 / FORMAT-1 + remaining ORG-1 (M slices) | Concrete notation failures, numeric modes, bounded iteration and layout gaps. | Differential fixtures for each named gap; compare Org with Emacs and notation with pinned translators/Temml. Keep convergence, numeric precision and display width distinct. |
+| 8 / FILE-1, OFFLINE-1, RUN-1, OJS-1, UI-1 (L, separate designs) | Project inputs, offline scientific runtimes, sessions/reactivity and editing tools. | First publish measured feasibility, data/permission contracts and backward-compatible sharing; then implement one bounded feature at a time. |
+
+For every release: update the atomic ledger and matching guide/comparison,
+include editor-loaded examples, run the applicable independent reference,
+all required checks and browser projects, push on main, and verify the exact
+public commit. Unclassified compound disclosures are split as work reaches them.
+Retain safety/reproducibility policies and the purposes of Markdown, AsciiMath
+and Plain text. Native-only capabilities stay open until an approved architecture
+actually provides them; writing a plan or adding a link does not resolve a gap.
+
+**ORG-1A implemented (2026-10-19).** Nine new reference documents cover numeric
+named columns/fields, parameters, file constants, precedence, duplicate names,
+pre-pass field snapshots, named ranges, scientific numbers, marked rows across
+hlines and literal input. The three existing numeric reference documents retain
+their values. The native runner now extracts real Org tables through the Emacs
+structure API, rather than counting table-shaped lines in source blocks. New
+source-line diagnostics reject unsupported binding values without fallback.
+Literal-block execution and quoted-reference substitution gaps are fixed;
+ORG-05/06 are resolved, while ORG-02 now names the remaining work explicitly.
+The updated guide, function/feature comparison and gallery all link runnable
+examples. See `design/org-names.md`. Next: **ORG-1B**, starting with native
+column/field priority, duplicate targets and same-document remote references.
+
 ### Phase 14 — P2: expand language compatibility
 
 | ID | Ordered implementation slices | Dependencies / completion check |
@@ -687,7 +729,7 @@ The target is zero unclassified limitations and zero known result-changing defec
 within an advertised profile, not a misleading claim that every original desktop
 feature runs in every browser.
 
-### First implementation batch
+### Original implementation batch (historical)
 
 1. Create the atomic ledger and profile design (Phase 11).
 2. Change the Beancount reference oracle to decimal strings and add precision/

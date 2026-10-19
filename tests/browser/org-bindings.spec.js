@@ -1,0 +1,164 @@
+import { test, expect } from "@playwright/test";
+import { readFile } from "node:fs/promises";
+import { writeURL } from "../../src/url-state.js";
+const ready = (page) =>
+  expect(page.locator("#render-status")).toHaveText(/^(Ready|\d+ diagnostic)/);
+const file = (path) =>
+  readFile(new URL("../../" + path, import.meta.url), "utf8");
+const url = (src) =>
+  writeURL("http://127.0.0.1:4173/index.html", { format: "org", src });
+
+test("Org named inputs survive source sharing, reload, copy and rendered exports", async ({
+  page,
+  context,
+}) => {
+  const source = await file("examples/org/edge.org"),
+    errors = [];
+  page.on("pageerror", (e) => errors.push(e.message));
+  await page.goto(url(source));
+  await ready(page);
+  await expect(page.locator("#render-status")).toHaveText(/^Ready/);
+  await expect(
+    page.locator("#preview td").filter({ hasText: /^14\.40$/ }),
+  ).toHaveCount(1);
+  await expect(
+    page.locator("#preview td").filter({ hasText: /^16\.80$/ }),
+  ).toHaveCount(1);
+  expect(await page.evaluate(() => ace.edit("editor").getValue())).toBe(source);
+  await page.evaluate(() =>
+    Object.defineProperty(navigator, "clipboard", {
+      configurable: true,
+      value: {
+        writeText: async (text) => {
+          globalThis.orgCopied = text;
+        },
+      },
+    }),
+  );
+  await page.getByRole("button", { name: "Copy recalculated source" }).click();
+  const copied = await page.evaluate(() => globalThis.orgCopied);
+  expect(copied).toContain("14.40");
+  expect(copied).toContain("16.80");
+  expect(copied).toContain("tax=0.20");
+  expect(copied).toContain("#+TBLFM: $4=$Qty*$UnitPrice*(1+$tax);%.2f");
+  expect(await page.evaluate(() => ace.edit("editor").getValue())).toBe(source);
+  const html = await page.evaluate(async () => {
+    const { htmlDownload } = await import("./src/export-document.js");
+    return htmlDownload(document.getElementById("preview")).blob.text();
+  });
+  expect(html).toContain("14.40");
+  expect(html).toContain("16.80");
+  expect(html).not.toContain("<script");
+  await page.getByRole("button", { name: "Share", exact: true }).click();
+  const fresh = await context.newPage();
+  await fresh.goto(await page.locator("#share-url").inputValue());
+  await ready(fresh);
+  await fresh.reload();
+  await ready(fresh);
+  expect(await fresh.evaluate(() => ace.edit("editor").getValue())).toBe(
+    source,
+  );
+  await expect(fresh.locator("#preview")).toContainText("14.40");
+  await fresh.locator("#download-menu summary").click();
+  const download = fresh.waitForEvent("download");
+  await fresh.locator("#download-source").click();
+  expect(await readFile(await (await download).path(), "utf8")).toBe(source);
+  expect(errors).toEqual([]);
+});
+
+test("Org named-reference DOM matches Emacs fixtures and literal blocks stay safe", async ({
+  page,
+}) => {
+  const reference = JSON.parse(await file("tests/fixtures/org/reference.json"));
+  for (const name of [
+    "named-columns",
+    "named-fields",
+    "named-ranges",
+    "constants",
+    "name-precedence",
+    "named-duplicates",
+    "named-case",
+    "named-hlines",
+    "literal",
+  ]) {
+    const source = await file("tests/fixtures/org/" + name + ".org");
+    await page.goto(url(source));
+    await ready(page);
+    await expect(page.locator("#render-status")).toHaveText(/^Ready/);
+    expect(
+      await page
+        .locator("#preview table tr")
+        .evaluateAll((rows) =>
+          rows.map((row) =>
+            [...row.querySelectorAll("td")].map((cell) => cell.textContent),
+          ),
+        ),
+    ).toEqual(reference[name + ".org"]);
+    expect(await page.evaluate(() => ace.edit("editor").getValue())).toBe(
+      source,
+    );
+  }
+  await expect(page.locator("#preview pre")).toContainText(
+    "#+CONSTANTS: rate=999",
+  );
+  const source =
+    "#+CONSTANTS: bad=oops\n\n| # | 2 | 0 |\n#+TBLFM: $3=$missing\n\n#+BEGIN_EXPORT html\n<script>globalThis.orgBad=1</script>\n| 9 | 0 |\n#+TBLFM: $2=100\n#+END_EXPORT\n";
+  await page.goto(url(source));
+  await ready(page);
+  expect(
+    await page.evaluate(() => ace.edit("editor").session.getAnnotations()),
+  ).toMatchObject([
+    { row: 0, text: expect.stringContaining("finite decimal") },
+    {
+      row: 3,
+      text: expect.stringContaining("Undefined named reference $missing"),
+    },
+  ]);
+  await expect(page.locator("#preview table")).toHaveCount(1);
+  await expect(page.locator("#preview script")).toHaveCount(0);
+  expect(await page.evaluate(() => globalThis.orgBad)).toBeUndefined();
+  await expect(page.locator("#preview pre")).toContainText("<script>");
+});
+
+test("Org named-binding documentation and gallery examples open correctly on mobile", async ({
+  page,
+}) => {
+  await page.goto("/docs.html?page=formats/org");
+  const block = page
+    .locator("#docs-content pre")
+    .filter({ hasText: "tax=0.20" });
+  await expect(block).toHaveCount(1);
+  await block
+    .locator("xpath=following-sibling::p[1]")
+    .getByRole("link")
+    .click();
+  await ready(page);
+  await expect(page.locator("#format")).toHaveValue("org");
+  await expect(page.locator("#preview")).toContainText("14.40");
+  await page.goto("/docs.html?page=formats/org");
+  await page
+    .getByRole("link", { name: "$Qty..$UnitPrice", exact: true })
+    .click();
+  await ready(page);
+  await expect(page.locator("#render-status")).toHaveText(/^Ready/);
+  expect(await page.evaluate(() => ace.edit("editor").getValue())).toContain(
+    "vsum($Qty..$UnitPrice)",
+  );
+  await expect(
+    page.locator("#preview td").filter({ hasText: /^7$/ }),
+  ).toHaveCount(1);
+  await page.goto("/index.html?example=org-edge");
+  await ready(page);
+  await expect(page.locator("#preview")).toContainText("16.80");
+  await page.goto("/docs.html?page=limitations");
+  await expect(page.locator("#docs-content")).toContainText("ORG-05");
+  await expect(page.locator("#docs-content")).toContainText("ORG-06");
+  await page.setViewportSize({ width: 390, height: 844 });
+  await page.goto("/docs.html?page=formats/org");
+  await expect(page.locator("#docs-content h1")).toBeVisible();
+  expect(
+    await page.evaluate(
+      () => document.documentElement.scrollWidth <= innerWidth,
+    ),
+  ).toBe(true);
+});

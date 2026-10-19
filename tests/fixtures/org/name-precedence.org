@@ -1,0 +1,10 @@
+#+CONSTANTS: shared=100 other=200
+| ! | shared | result |
+| $ | shared=20 | other=30 |
+| # |      4 |      0 |
+#+TBLFM: $3=$shared+$other
+
+| # | 3 | 0 |
+| ^ | initial | saved |
+| $ | initial=99 | |
+#+TBLFM: @1$2=10::$saved=$initial

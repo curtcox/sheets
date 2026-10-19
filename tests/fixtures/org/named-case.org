@@ -1,0 +1,8 @@
+#+CONSTANTS: Foo=2 foo=3 bump=-2.5e1
+| 1 | 0 | 0 |
+#+TBLFM: $2=$Foo+$foo::$3=$bump;%.1f
+
+| ! | start | middle | finish | result |
+| # | 1 | 2 | 3 | 0 |
+| # | 4 | 5 | 6 | 0 |
+#+TBLFM: @2$5=vsum(@2$start..@3$finish)

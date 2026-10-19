@@ -151,8 +151,8 @@
     "id": "org-edge",
     "format": "org",
     "kind": "edge",
-    "title": "Relative and boundary references",
-    "description": "Carry values forward, then sum between horizontal lines.",
+    "title": "Named inputs and marked rows",
+    "description": "Use column names, file constants, and per-table parameters.",
     "path": "examples/org/edge.org"
   },
   {

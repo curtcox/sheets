@@ -47,6 +47,13 @@ function nodeHTML(node) {
       return node.key?.toUpperCase() === "TITLE"
         ? `<h1>${escapeHTML(node.value)}</h1>`
         : "";
+    case "block": {
+      const name = node.name?.toUpperCase();
+      if (name === "COMMENT") return "";
+      if (["SRC", "EXAMPLE", "EXPORT"].includes(name))
+        return `<pre><code>${escapeHTML(node.value || "")}</code></pre>`;
+      return children();
+    }
     case "table":
     case "link.path":
     case "opening":

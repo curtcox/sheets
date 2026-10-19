@@ -1,21 +1,9 @@
 import { readFile, readdir, writeFile } from "node:fs/promises";
 const [directory, mode] = process.argv.slice(2);
-const rows = (source) =>
-  source
-    .split("\n")
-    .filter((line) => /^\s*\|/.test(line) && !/^\s*\|[-+:]+\|?\s*$/.test(line))
-    .map((line) =>
-      line
-        .trim()
-        .replace(/^\|/, "")
-        .replace(/\|$/, "")
-        .split("|")
-        .map((s) => s.trim()),
-    );
 const result = {};
 for (const file of (await readdir(directory)).sort())
   if (file.endsWith(".expected"))
-    result[file.replace(/\.expected$/, "")] = rows(
+    result[file.replace(/\.expected$/, "")] = JSON.parse(
       await readFile(`${directory}/${file}`, "utf8"),
     );
 const expected = "tests/fixtures/org/reference.json";
@@ -32,5 +20,5 @@ if (mode === "--check") {
   }
 } else await writeFile(expected, JSON.stringify(result, null, 2) + "\n");
 console.log(
-  `Org reference: ${Object.keys(result).length} numeric tables checked with Emacs.`,
+  `Org reference: ${Object.keys(result).length} documents checked with Emacs.`,
 );

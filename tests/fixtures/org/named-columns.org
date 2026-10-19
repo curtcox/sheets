@@ -1,0 +1,6 @@
+#+TITLE: Named columns and marked rows
+| ! | Qty | Price | Total |
+| # |   3 |     4 |     0 |
+| * |   2 |     7 |     0 |
+|   |  99 |    99 |    77 |
+#+TBLFM: $4=$Qty*$Price

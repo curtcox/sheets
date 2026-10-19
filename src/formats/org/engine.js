@@ -1,4 +1,5 @@
 import { evaluate, formatValue, math } from "../../math.js";
+import { orgDocument, tableBindings, outsideStrings } from "./bindings.js";
 const isHline = (line) => /^\s*\|[-+:]+\|?\s*$/.test(line);
 export function parseTable(lines) {
   const rows = [],
@@ -60,8 +61,9 @@ function address(ref, row, col, table) {
     index(match[2], col, table.columns, [], false),
   ];
 }
-export function recalculateTable(table, formula, { line = 1 } = {}) {
+export function recalculateTable(table, formula, { line = 1, bindings } = {}) {
   const diagnostics = [];
+  bindings ||= tableBindings(table, { diagnostics });
   function cell(r, c, numeric) {
     if (
       !Number.isInteger(r) ||
@@ -84,31 +86,38 @@ export function recalculateTable(table, formula, { line = 1 } = {}) {
       scope.set(name, value);
       return name;
     };
-    expression = expression.replace(
-      /(@(?:[+-]?\d+|[<>]|[IVX]+)(?:\$(?:[+-]?\d+|[<>]))?|\$(?:[+-]?\d+|[<>]))\.\.(@(?:[+-]?\d+|[<>]|[IVX]+)(?:\$(?:[+-]?\d+|[<>]))?|\$(?:[+-]?\d+|[<>]))/g,
-      (_, a, b) => {
-        const [r1, c1] = address(a, row, col, table),
-          [r2, c2] = address(b, row, col, table),
-          values = [];
-        for (
-          let r = Math.ceil(Math.min(r1, r2));
-          r <= Math.floor(Math.max(r1, r2));
-          r++
-        )
-          for (let c = Math.min(c1, c2); c <= Math.max(c1, c2); c++) {
-            const value = cell(r, c, numeric);
-            if (typeof value === "number" || numeric) values.push(value);
-          }
-        return bind(values);
-      },
-    );
-    expression = expression.replace(
-      /@(?:[+-]?\d+|[<>]|[IVX]+)(?:\$(?:[+-]?\d+|[<>]))?|\$(?:[+-]?\d+|[<>])/g,
-      (ref) => {
-        const [r, c] = address(ref, row, col, table);
-        return bind(cell(r, c, numeric));
-      },
-    );
+    expression = outsideStrings(expression, (segment) => {
+      segment = segment.replace(/\$([A-Za-z][A-Za-z0-9_]*)/g, (_, name) => {
+        const column = bindings.column(name);
+        return column ? `$${column}` : bind(bindings.value(name));
+      });
+      segment = segment.replace(
+        /(@(?:[+-]?\d+|[<>]|[IVX]+)(?:\$(?:[+-]?\d+|[<>]))?|\$(?:[+-]?\d+|[<>]))\.\.(@(?:[+-]?\d+|[<>]|[IVX]+)(?:\$(?:[+-]?\d+|[<>]))?|\$(?:[+-]?\d+|[<>]))/g,
+        (_, a, b) => {
+          const [r1, c1] = address(a, row, col, table),
+            [r2, c2] = address(b, row, col, table),
+            values = [];
+          for (
+            let r = Math.ceil(Math.min(r1, r2));
+            r <= Math.floor(Math.max(r1, r2));
+            r++
+          )
+            for (let c = Math.min(c1, c2); c <= Math.max(c1, c2); c++) {
+              const value = cell(r, c, numeric);
+              if (typeof value === "number" || numeric) values.push(value);
+            }
+          return bind(values);
+        },
+      );
+      segment = segment.replace(
+        /@(?:[+-]?\d+|[<>]|[IVX]+)(?:\$(?:[+-]?\d+|[<>]))?|\$(?:[+-]?\d+|[<>])/g,
+        (ref) => {
+          const [r, c] = address(ref, row, col, table);
+          return bind(cell(r, c, numeric));
+        },
+      );
+      return segment;
+    });
     for (const [name, fn] of Object.entries({
       vsum: (a) => math.sum(a),
       vmean: (a) => math.mean(a),
@@ -137,14 +146,32 @@ export function recalculateTable(table, formula, { line = 1 } = {}) {
     const numeric = options.some((s) => s.includes("N")),
       precision = /%.(\d+)f/.exec(options.join(";"));
     const target = match[1].trim(),
-      field = target.startsWith("@");
+      named = /^\$([A-Za-z][A-Za-z0-9_]*)$/.exec(target),
+      namedField = named && bindings.fields.get(named[1]),
+      field = target.startsWith("@") || !!namedField;
     const targets = [];
     try {
-      if (field) targets.push(address(target, 1, 1, table));
+      if (named && !namedField)
+        throw new Error(
+          `Unknown named field target ${target}; use a numeric column target for a named column.`,
+        );
+      if (namedField) targets.push([namedField.row, namedField.col]);
+      else if (field) targets.push(address(target, 1, 1, table));
       else {
-        const first = table.hlines.length ? table.hlines[0] + 1 : 1;
-        for (let row = first; row <= table.rows.length; row++)
+        const first = bindings.marked
+          ? 1
+          : table.hlines.length
+            ? table.hlines[0] + 1
+            : 1;
+        for (let row = first; row <= table.rows.length; row++) {
+          const marker = table.rows[row - 1][0];
+          if (
+            /^[!$^_\/]$/.test(marker) ||
+            (bindings.marked && !/^[#*]$/.test(marker))
+          )
+            continue;
           targets.push(address(target, row, 1, table));
+        }
       }
       for (const [row, col] of targets) {
         try {
@@ -189,13 +216,18 @@ export function recalculateOrg(src) {
   const lines = src.split("\n"),
     tables = [],
     diagnostics = [];
-  for (let i = 0; i < lines.length; i++) {
-    if (!/^\s*\|/.test(lines[i])) continue;
-    const start = i,
-      tableLines = [];
+  const document = orgDocument(src, diagnostics);
+  for (const start of document.starts) {
+    let i = start;
+    const tableLines = [];
     while (i < lines.length && /^\s*\|/.test(lines[i]))
       tableLines.push(lines[i++]);
     const table = parseTable(tableLines);
+    const bindings = tableBindings(table, {
+      line: start + 1,
+      constants: document.constants,
+      diagnostics,
+    });
     let formulaIndex = i;
     while (
       formulaIndex < lines.length &&
@@ -205,13 +237,12 @@ export function recalculateOrg(src) {
         ...recalculateTable(
           table,
           lines[formulaIndex].replace(/^\s*#\+TBLFM:\s*/i, ""),
-          { line: formulaIndex + 1 },
+          { line: formulaIndex + 1, bindings },
         ),
       );
       formulaIndex++;
     }
     tables.push({ start, end: i, table });
-    i = formulaIndex - 1;
   }
   const output = lines.slice();
   for (const { start, end, table } of tables.slice().reverse())

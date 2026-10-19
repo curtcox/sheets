@@ -91,6 +91,18 @@ ${block("mermaid", "graph LR\n  Measure --> Review")}
   ],
   org: [
     sample(
+      "#+CONSTANTS: tax=0.10\n| ! | Qty | UnitPrice | Total |\n| # | 3 | 4 | 0 |\n| * | 2 | 7 | 0 |\n| $ | tax=0.20 | | |\n#+TBLFM: $4=$Qty*$UnitPrice*(1+$tax);%.2f\n",
+      ["!", "$", "#", "*", "#+CONSTANTS: tax=0.10"],
+    ),
+    sample(
+      "| _ | base | result |\n| | 3 | 0 |\n| ^ | input | answer |\n#+TBLFM: $answer=$base*2\n",
+      ["^", "_", "$answer", "$base"],
+    ),
+    sample(
+      "| ! | Qty | UnitPrice | Total |\n| # | 3 | 4 | 0 |\n#+TBLFM: $4=vsum($Qty..$UnitPrice)\n",
+      ["$Qty..$UnitPrice"],
+    ),
+    sample(
       `* Column, field, and relative references
 | Quantity | Price | Total |
 |----------+-------+-------|

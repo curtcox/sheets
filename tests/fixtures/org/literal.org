@@ -1,0 +1,9 @@
+#+CONSTANTS: rate=2
+#+BEGIN_SRC org
+#+CONSTANTS: rate=999
+| 2 | 0 |
+#+TBLFM: $2=$1*100
+#+END_SRC
+
+| 3 | 0 |
+#+TBLFM: $2=$1*$rate

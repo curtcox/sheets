@@ -1,8 +1,8 @@
-| Day | Value |
-|-----+-------|
-| 1   | 2     |
-| 2   | 0     |
-| 3   | 0     |
-|-----+-------|
-| Sum | 0     |
-#+TBLFM: @3$2=@-1$2*2::@4$2=@-1$2*2::@>$>=vsum(@I$2..@II$2);N
+#+TITLE: Named inputs and marked rows
+#+CONSTANTS: tax=0.10
+
+| ! | Qty | UnitPrice | Total |
+| # | 3 | 4 | 0 |
+| * | 2 | 7 | 0 |
+| $ | tax=0.20 | | |
+#+TBLFM: $4=$Qty*$UnitPrice*(1+$tax);%.2f

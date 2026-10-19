@@ -23,7 +23,7 @@ code; they do not promise automatic conversion or a complete language runtime.
 | [AsciiMath](formats/asciimath.md) | No; notation only | No | No | No |
 | [Numbat](formats/numbat.md) | Yes | Variables and functions | Yes; dimensional checking | No automatic solver |
 | [CalcFile](formats/calcfile.md) | Yes | Friendly variable names, `ans` | Selected units; EUR ↔ USD/GBP/JPY using ECB rates | No |
-| [Org tables](formats/org.md) | Table formulas | Cell and range references | Limited mathjs unit expressions | No |
+| [Org tables](formats/org.md) | Table formulas | Cell/range references, named columns/fields, numeric constants | Limited mathjs unit expressions | No |
 | [Calca](formats/calca.md) | Arrow calculations | Variables and functions; optional heading scopes | Yes, through mathjs | Real scalar linear/quadratic subset |
 | [Hurmet](formats/hurmet.md) | Calculation cells | Values shared across cells | Yes; unit-aware calculations | No Sheets-specific solver; use explicit formulas |
 | [Beancount](formats/beancount.md) | Ledger balancing and reports | Accounts and commodities | Cost/price weights; no report revaluation | One missing posting amount inferred |
@@ -106,6 +106,7 @@ or notebook cells. External image URLs still need their server. See
 | Compatibility profile | An explicit version of a format's behavior, stored in shared links and profiled saved documents. AsciiMath offers explicit Formula list and Mixed prose modes while Auto keeps its original heuristic. Calca's Structured blocks profile changes block classification; Scoped definitions adds immutable bindings, heading scopes, and connected numeric constraint checks; plain source downloads need the mode selected again. |
 | Literal autolink | A bare web or email address made clickable by the shared Markdown renderer. GFM URL path endings preserve internal parentheses and trim trailing punctuation; email domains may contain underscores and valid email prefixes before a plus sign are linked. Retained native differences and candidate bounds are documented in the GFM guide. Use explicit links to choose labels or bypass automatic recognition. |
 | Display-only table | A formatted grid whose cells are literal text. Markdown tables support left/center/right column alignment in preview and export; their cells do not acquire spreadsheet formulas automatically. |
+| Named table binding | An Org column alias, named-field snapshot, table parameter or file constant used in a formula. These name numeric inputs, rather than defining custom functions. |
 | Table formulas and references | Expressions that read or update cells. Org uses references such as `$2` and `@3$2`; Hurmet has its own table model. |
 | Range and aggregate | A group of values and a summary operation such as sum, mean, or count. Org ranges address cells; CalcFile totals summarize calculation lines. |
 | Matrix | A rectangular mathematical value used in an expression. A matrix is different from a document table with editable cell formulas. |

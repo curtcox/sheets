@@ -1,0 +1,10 @@
+| ! | qty | qty | result |
+| $ | fee=1 | fee=2 | |
+| # | 3 | 100 | 0 |
+#+TBLFM: $4=$qty+$fee
+
+| # | 3 | 0 |
+| ^ | initial | output |
+| # | 8 | 0 |
+| ^ | initial | saved |
+#+TBLFM: $output=$initial::$saved=$initial

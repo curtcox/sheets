@@ -469,17 +469,22 @@
     {
       "id": "ORG-02",
       "format": "org",
-      "title": "Named fields, remote tables, iteration modes, arbitrary Calc syntax, and exact Emacs display-width…",
+      "title": "Remote tables, evaluation order, remaining Calc modes and native layout remain incomplete",
       "kind": "mixed",
-      "status": "audit",
+      "status": "open",
       "priority": "P2",
-      "milestone": "ORG-1",
+      "milestone": "ORG-1B",
       "dependsOn": [],
-      "expected": "Verify each behavior against Emacs numeric fixture oracle; documented Calc subset; separate deliberate policy from unsupported upstream capabilities.",
-      "disclosure": "Named fields, remote tables, iteration modes, arbitrary Calc syntax, and exact Emacs display-width alignment are not implemented. Formulas execute in order, rather than iterating until results converge.",
+      "expected": "Continue with native evaluation-order fixtures and same-document named-table references, then separately verify numeric modes, iteration and layout.",
+      "disclosure": "Numeric named columns/fields, table parameters and file constants now work, with marked-row selection and pre-pass field snapshots. Remote tables, iteration, inherited property/external constants, expression-valued or string bindings, global format parameters, remaining Calc syntax/precision modes and exact Emacs display-width/export layout remain unsupported. Formulas retain source order; native column/field priority and duplicate-target semantics are not yet implemented.",
       "baselineDisclosure": "Named fields, remote tables, iteration modes, arbitrary Calc syntax, and exact Emacs display-width alignment are not implemented. Formulas execute in order, rather than iterating until results converge.",
-      "reproducer": null,
-      "evidence": []
+      "reproducer": {
+        "path": "design/org-names.md"
+      },
+      "evidence": [
+        "design/org-names.md",
+        "tests/unit/org-bindings.test.js"
+      ]
     },
     {
       "id": "ORG-03",
@@ -510,6 +515,50 @@
       "baselineDisclosure": "Recalculation updates the preview. The editor retains the original source until you copy recalculated source and paste it. Out-of-range references report diagnostics instead of creating cells. Independent Emacs comparisons cover supported numeric fixtures and exclude the intentional Lisp-error example.",
       "reproducer": null,
       "evidence": []
+    },
+    {
+      "id": "ORG-05",
+      "format": "org",
+      "title": "Numeric named bindings and marked-row selection match Emacs fixtures",
+      "kind": "gap",
+      "status": "resolved",
+      "priority": "P1",
+      "milestone": "ORG-1A",
+      "dependsOn": [],
+      "expected": "Supported numeric binding and source-ownership cases match committed independent Emacs results and editor round-trip checks.",
+      "disclosure": "The first name row supplies column aliases; field markers name adjacent fields; numeric table parameters and file constants provide reusable inputs. Precedence, duplicate behavior, pre-pass field snapshots, scientific notation, ranges and marked-row selection are checked against Emacs. Named fields can be targets; column targets stay numeric. Remaining binding and evaluation features stay under ORG-02.",
+      "baselineDisclosure": "Named fields and columns, table parameters and file constants were not implemented; metadata rows could be recalculated as data.",
+      "reproducer": {
+        "path": "tests/fixtures/org/name-precedence.org"
+      },
+      "evidence": [
+        "design/org-names.md",
+        "tests/fixtures/org/reference.json",
+        "tests/unit/org-bindings.test.js",
+        "tests/browser/org-bindings.spec.js"
+      ]
+    },
+    {
+      "id": "ORG-06",
+      "format": "org",
+      "title": "Literal Org blocks no longer run formulas or install constants",
+      "kind": "gap",
+      "status": "resolved",
+      "priority": "P1",
+      "milestone": "ORG-1A",
+      "dependsOn": [],
+      "expected": "Supported numeric binding and source-ownership cases match committed independent Emacs results and editor round-trip checks.",
+      "disclosure": "Active tables and constants are discovered through the Org AST. Source/example/export blocks remain escaped literals and comment blocks are omitted. Their apparent formulas and constants do not affect calculations. Quoted formula strings retain their literal dollar signs. Exact source is preserved in editor shares and downloads.",
+      "baselineDisclosure": "The line scanner could treat a table in a source block as executable spreadsheet input.",
+      "reproducer": {
+        "path": "tests/fixtures/org/literal.org"
+      },
+      "evidence": [
+        "design/org-names.md",
+        "tests/fixtures/org/reference.json",
+        "tests/unit/org-bindings.test.js",
+        "tests/browser/org-bindings.spec.js"
+      ]
     },
     {
       "id": "CALCA-01",

@@ -1,0 +1,5 @@
+| _ | base | result |
+|   |    3 |      0 |
+| ^ | prev | answer |
+| # |    4 |      0 |
+#+TBLFM: $3=$prev+1::$answer=$base*2
