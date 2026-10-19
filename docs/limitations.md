@@ -36,13 +36,17 @@ The independent native autolink audit has 53 matches and four intentional differ
 
 See the [AsciiMath guide](formats/asciimath.md). Compatibility target: asciimath2tex 1.5.0 / Temml 0.14.0.
 
-- **AM-01 — Formula support follows the pinned asciimath2tex translator, then Temml** (Needs detailed audit). Formula support follows the pinned asciimath2tex translator, then Temml. This renders notation; it does not calculate, solve, or check the truth of an equality.
+- **AM-01 — Pinned translator and Temml retain audited notation gaps** (Known gap). AsciiMath is notation rendering, not evaluation, solving, or a truth check. In 436 pinned upstream cases, 430 translator TeX strings match; four existing differences retain explicit thin spaces omitted by expectations. Two nested-matrix cases have malformed JavaScript expectation strings and different grouping. Temml does not support the arrow command produced by >->> and twoheadrightarrowtail (16 duplicated corpus cases); Sheets now reports these typesetting failures at the formula location. Broader translator/MathML coverage remains FORMAT-1.
 
-- **AM-02 — Incomplete expressions may still render without a diagnostic because the translator is permissive** (Needs detailed audit). Incomplete expressions may still render without a diagnostic because the translator is permissive. A rendered formula is not proof of valid input.
+- **AM-04 — Mixed prose inherits the Markdown rendering and sanitization limits above.** (Intentional). Mixed prose inherits the Markdown rendering and sanitization limits above.
 
-- **AM-03 — A document switches from one-formula-per-line mode to mixed Markdown mode when it contains Markdown…** (Needs detailed audit). A document switches from one-formula-per-line mode to mixed Markdown mode when it contains Markdown structure or math delimiters. Unmarked lines then become prose. Dollar-delimited formulas use AsciiMath rather than TeX in this format.
+- **AM-05 — Incomplete-input warnings are advisory and preserve permissive notation** (Intentional). The adapter inspects the pinned translator tree instead of imposing balanced/matching-delimiter grammar. Standalone operator names, one-sided delimiters, mixed interval brackets, text labels and one-sided limit signs retain upstream interpretation without new warnings. Detectable missing operands receive warnings while still rendering. Other incomplete forms may remain unflagged; no warning means neither a proof of syntax completeness nor a true mathematical statement. Unsupported Temml commands remain typesetting errors (AM-01).
 
-- **AM-04 — Mixed prose inherits the Markdown rendering and sanitization limits above.** (Needs detailed audit). Mixed prose inherits the Markdown rendering and sanitization limits above.
+### Resolved compatibility gaps
+
+- **AM-02 — Detectable incomplete formulas now have source-line diagnostics** (Resolved). Sheets warns about synthesized empty denominators, subscripts, exponents and required arguments, bare opening delimiters in required arguments, and unfinished text arguments. Translation and Temml failures are reported separately. Locations cover formula lists, inline/display math and fences, including lists, quotes, tables, Unicode and footnotes. Warnings retain the translated output and Show TeX; later formulas still render. This is not a complete validity or truth checker (AM-05).
+
+- **AM-03 — Formula list and Mixed prose modes are explicit and shareable** (Resolved). AsciiMath mode offers Formula list (asciimath-formulas-v1) and Mixed prose (asciimath-prose-v1). Explicit modes survive edits, sharing, version-2 saves, sign-in returns and offline reloads, and select AsciiMath under Format Auto. Omitted profiles retain the original heuristic; adding Markdown/dollar delimiters can still switch an Auto document. Formula list treats every nonempty line as notation. Mixed prose typesets only delimited/fenced math. Source files contain only text, so reselect the mode when reusing them.
 
 ## Numbat
 

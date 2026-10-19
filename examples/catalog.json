@@ -37,7 +37,8 @@
     "kind": "basic",
     "title": "Equations without backslashes",
     "description": "Write one AsciiMath display formula per line.",
-    "path": "examples/asciimath/basic.am"
+    "path": "examples/asciimath/basic.am",
+    "profile": "asciimath-formulas-v1"
   },
   {
     "id": "asciimath-typical",
@@ -45,7 +46,8 @@
     "kind": "typical",
     "title": "Sums and sequences",
     "description": "Mix Markdown prose with inline and display AsciiMath.",
-    "path": "examples/asciimath/typical.am"
+    "path": "examples/asciimath/typical.am",
+    "profile": "asciimath-prose-v1"
   },
   {
     "id": "asciimath-edge",
@@ -53,15 +55,17 @@
     "kind": "edge",
     "title": "Matrices and limits",
     "description": "A small matrix and a limit in plain notation.",
-    "path": "examples/asciimath/edge.am"
+    "path": "examples/asciimath/edge.am",
+    "profile": "asciimath-formulas-v1"
   },
   {
     "id": "asciimath-error",
     "format": "asciimath",
     "kind": "error",
     "title": "An incomplete expression",
-    "description": "See the TeX translation of an unfinished formula.",
-    "path": "examples/asciimath/error.am"
+    "description": "An unfinished formula keeps its TeX translation and reports a source-line warning.",
+    "path": "examples/asciimath/error.am",
+    "profile": "asciimath-prose-v1"
   },
   {
     "id": "numbat-basic",

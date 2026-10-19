@@ -186,3 +186,13 @@ commit `79046422203060e296da41c8c762c506200d2c93` with the upstream
 The normal vendoring script applies `scripts/vendor/numbat.patch` to expose parser
 ranges and diagnostic labels; `npm test` also checks that the patched interpreter
 retains all recorded original output. See `tests/fixtures/numbat/statements.json`.
+
+AsciiMath's upstream corpus is pinned to npm 1.5.0's source commit
+`4f4be2ca744afe0a82c2a24d559aee86688c570e`. After checking out that commit from
+`christianp/asciimath2tex`, run
+`node scripts/asciimath-reference.mjs /absolute/path/to/test.js` to verify the
+436 imported records. With no path, the script downloads that pinned test file;
+CI runs this check. It checks the reviewed file's SHA-256 first.
+`npm test` preserves current translations and rejects unclassified discrepancies;
+the fixture records six existing reference differences and retains upstream's
+Apache-2.0 license. Diagnostic warnings leave permissive translated output intact.

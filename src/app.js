@@ -3,6 +3,8 @@ import { readURL, writeURL, readOverrides } from "./url-state.js";
 import {
   profiles,
   CALCA_SCOPES,
+  ASCIIMATH_FORMULAS,
+  ASCIIMATH_PROSE,
   validateProfile,
   resolveDocument,
 } from "./compatibility-profiles.js";
@@ -82,10 +84,30 @@ const selectedType = (src = getSource()) =>
     ? profiles.find((item) => item.id === currentProfile)?.format || detect(src)
     : format.value;
 function updateProfileControls() {
-  $("profile-controls").hidden = selectedType() !== "calca";
+  const type = selectedType(),
+    ascii = type === "asciimath";
+  $("profile-controls").hidden = !["calca", "asciimath"].includes(type);
+  $("profile-label").textContent = ascii ? "AsciiMath mode" : "Calca blocks";
+  const choices = [
+    { id: "", label: ascii ? "Auto" : "Legacy" },
+    ...profiles.filter((item) => item.format === type),
+  ];
+  $("profile").replaceChildren(
+    ...choices.map(({ id, label }) => {
+      const option = document.createElement("option");
+      option.value = id;
+      option.textContent = label;
+      return option;
+    }),
+  );
   $("profile").value = currentProfile || "";
-  $("profile-help").textContent =
-    currentProfile === CALCA_SCOPES
+  $("profile-help").textContent = ascii
+    ? currentProfile === ASCIIMATH_FORMULAS
+      ? "Each nonempty line is a formula, even when it resembles Markdown. Links and saved documents preserve this mode; source files contain text only."
+      : currentProfile === ASCIIMATH_PROSE
+        ? "Prose stays prose. Mark formulas with dollar delimiters or asciimath fences. Links and saved documents preserve this mode; source files contain text only."
+        : "Auto chooses formula lines or mixed prose from the document's structure. Select an explicit mode to keep that choice while editing."
+    : currentProfile === CALCA_SCOPES
       ? "Definitions belong to headings and descendants; repeated definitions become constraints. Source files contain text only; reselect this mode when reusing them."
       : currentProfile
         ? "Calca fences, indented code, and standalone arrows calculate. Source files contain text only; reselect this mode when reusing them."
@@ -245,7 +267,8 @@ format.onchange = () => {
 };
 $("profile").onchange = () => {
   currentProfile = $("profile").value || undefined;
-  if (currentProfile) format.value = "calca";
+  if (currentProfile)
+    format.value = profiles.find((item) => item.id === currentProfile).format;
   updateProfileControls();
   changed();
 };

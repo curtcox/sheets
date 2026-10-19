@@ -546,8 +546,26 @@ upstream rejection without guessing code inside an unterminated string. Parse,
 type and runtime errors retain later-statement recovery when tokenization
 succeeds. NUM-01 is resolved; NUM-05 records lexical-error behavior and the
 engine report's row-local numbering separately from editor positions. Output,
-plots, terminal/REPL and remaining units audit stay NUM-2/UI-1. The next Phase 13
-priority is **AM-1**.
+plots, terminal/REPL and remaining units audit stay NUM-2/UI-1. **AM-1** is completed below.
+
+AM-1 adds explicit Formula list and Mixed prose profiles to the existing
+versioned URL/HashBin/OAuth contract. The mode picker follows the active format;
+legacy AsciiMath documents keep Auto's heuristic. Gallery and documentation
+examples pin their intended modes, and source downloads document the need to
+reselect a mode. Source-aware warnings inspect the pinned translator's tree for
+synthesized empty operands and unfinished text; actual translation/Temml errors
+are exposed too. Warnings preserve permissive output and Show TeX.
+
+Source maps follow Markdown tokens through paragraphs, inline math, lists,
+quotes, tables (including escaped pipes/repeated cells), display math, fences,
+Unicode, and footnotes. Formula-list lines retain original line numbers. The
+436-case upstream audit preserves pinned translations and records six existing
+reference discrepancies; the unsupported twoheadrightarrowtail command accounts
+for 16 repeated typesetting failures. Standalone operators, mixed/one-sided
+brackets, text and one-sided limit signs do not gain spurious warnings. AM-02/03
+are resolved; AM-05 retains advisory validation, AM-04 inherits shared Markdown
+policy, and the concrete notation gaps remain FORMAT-1 (AM-01). The next Phase 13
+priority is **QT-1**.
 
 ### Phase 14 — P2: expand language compatibility
 

@@ -38,7 +38,7 @@ choose Numbat for dimension-checked models.
 | Format | Prose and math typesetting | Tables and structured data | Diagrams and plots | Executable notebook cells |
 | --- | --- | --- | --- | --- |
 | [GitHub Markdown](formats/gfm.md) | Markdown and TeX/MathML | Display-only Markdown tables with alignment | Mermaid diagrams | No; code fences display source |
-| [AsciiMath](formats/asciimath.md) | AsciiMath/MathML; Markdown in mixed documents | Display-only Markdown tables | Mermaid in mixed documents | No |
+| [AsciiMath](formats/asciimath.md) | AsciiMath/MathML; explicit Formula list or Mixed prose; Auto heuristic | Display-only Markdown tables | Mermaid in mixed documents | No |
 | [Numbat](formats/numbat.md) | Source/result rows; `#` comments | Language values; no spreadsheet UI | No Sheets plot viewer | No Python/R cells |
 | [CalcFile](formats/calcfile.md) | Plain prose, headers, result rows | Running totals and aggregates | No | No |
 | [Org tables](formats/org.md) | Basic Org headings, lists, emphasis, links | Calculated tables and range aggregates | No | No Babel/Lisp execution |
@@ -100,7 +100,7 @@ or notebook cells. External image URLs still need their server. See
 | Reference exchange rate | A dated price of one currency in another. CalcFile supplies ECB EUR-base rates to its pinned engine, which supports EUR ↔ USD/GBP/JPY. Fresh rates need a connection; a disclosed older cache may work offline. Source links do not freeze rates. |
 | Dimensional checking | Rejecting incompatible physical operations, such as adding a length to a duration. Writing a unit label in prose alone does not provide this check. |
 | Equation solving | Finding an unknown from a relation, rather than evaluating an expression whose inputs are already known. Calca's solver is limited to supported real linear/quadratic relations. |
-| Compatibility profile | An explicit version of a format's behavior, stored in shared links and profiled saved documents. Calca's Structured blocks profile changes block classification; Scoped definitions adds immutable bindings, heading scopes, and connected numeric constraint checks; plain source downloads need the mode selected again. |
+| Compatibility profile | An explicit version of a format's behavior, stored in shared links and profiled saved documents. AsciiMath offers explicit Formula list and Mixed prose modes while Auto keeps its original heuristic. Calca's Structured blocks profile changes block classification; Scoped definitions adds immutable bindings, heading scopes, and connected numeric constraint checks; plain source downloads need the mode selected again. |
 | Literal autolink | A bare web or email address made clickable by the shared Markdown renderer. GFM URL path endings preserve internal parentheses and trim trailing punctuation; email domains may contain underscores and valid email prefixes before a plus sign are linked. Retained native differences and candidate bounds are documented in the GFM guide. Use explicit links to choose labels or bypass automatic recognition. |
 | Display-only table | A formatted grid whose cells are literal text. Markdown tables support left/center/right column alignment in preview and export; their cells do not acquire spreadsheet formulas automatically. |
 | Table formulas and references | Expressions that read or update cells. Org uses references such as `$2` and `@3$2`; Hurmet has its own table model. |
@@ -116,9 +116,11 @@ or notebook cells. External image URLs still need their server. See
 | Commodity and posting | A commodity is a ledger's counted item, such as USD or shares. A posting assigns a quantity to an account; postings in a Beancount transaction must balance by their weights. |
 | Cost lot and FIFO | A lot records a quantity's acquisition cost. This Beancount subset reduces supported lots first in, first out (oldest first); it does not implement every booking method. |
 | Balance assertion | A check that a ledger account contains an expected quantity at a date. It reports a mismatch rather than converting all holdings to a common currency. |
+| Formula list | AsciiMath mode that typesets every nonempty source line, including lines that resemble Markdown. |
+| Mixed prose | AsciiMath mode that keeps unmarked text as Markdown prose and typesets only dollar-delimited or fenced formulas. |
 | Statement boundary | The end of one language statement, which can span several lines or share a line with another statement. Numbat uses its pinned upstream parser; indentation alone is not a separator or continuation rule. |
 | Source span | The exact part of the original document associated with a diagnostic. Numbat converts upstream UTF-8 byte offsets into editor lines and UTF-16 columns, including related locations in earlier statements. |
-| Diagnostic | A visible parse, calculation, execution, or compatibility message. Source highlighting alone does not validate a document, and partial output may remain after an error. |
+| Diagnostic | A visible parse, calculation, execution, or compatibility message. AsciiMath uses source-line warnings for detectable empty operands while preserving permissive translation; typesetting failures are errors. Source highlighting alone does not validate a document, and partial output may remain after an error. |
 | Worker and deadline | A disposable background interpreter and its time limit. Editing or Cancel terminates worker calculations; deadlines include runtime/package loading. |
 | Offline support | Operation after using **Download → Offline access** while connected. It caches app assets, not document URLs, remote services, or Python/R runtimes. |
 | Compatibility subset | The parts of a language implemented by this adapter. A familiar extension does not guarantee full behavior of the original application. |

@@ -1,7 +1,11 @@
 /** Behavior versions are explicit; omitted profiles retain the original rules. */
 export const CALCA_BLOCKS = "calca-blocks-v1";
 export const CALCA_SCOPES = "calca-scopes-v1";
+export const ASCIIMATH_FORMULAS = "asciimath-formulas-v1";
+export const ASCIIMATH_PROSE = "asciimath-prose-v1";
 export const profiles = [
+  { id: ASCIIMATH_FORMULAS, format: "asciimath", label: "Formula list" },
+  { id: ASCIIMATH_PROSE, format: "asciimath", label: "Mixed prose" },
   { id: CALCA_BLOCKS, format: "calca", label: "Structured blocks" },
   { id: CALCA_SCOPES, format: "calca", label: "Scoped definitions" },
 ];

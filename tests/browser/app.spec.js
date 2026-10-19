@@ -44,7 +44,7 @@ for (const format of [...new Set(examples.map((s) => s.format))])
       expect(new URL(page.url()).searchParams.has("example")).toBe(false);
       expect(new URL(page.url()).searchParams.has("compressed")).toBe(true);
       await expect(page.locator("#preview")).not.toBeEmpty();
-      if (sample.kind === "error" && !["gfm", "asciimath"].includes(format))
+      if (sample.kind === "error" && format !== "gfm")
         await expect(page.locator("#render-status")).toContainText(
           "diagnostic",
         );

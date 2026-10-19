@@ -4,4 +4,4 @@
 sqrt(
 ```
 
-Use Show TeX to inspect the translation. Unfinished AsciiMath may render permissively.
+Use Show TeX to inspect the translation. A source-line warning identifies the missing expression; the permissive translation remains visible.

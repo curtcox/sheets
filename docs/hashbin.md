@@ -24,6 +24,10 @@ Calca supports Structured blocks (`calca-blocks-v1`) and Scoped definitions
 (`calca-scopes-v1`); the latter adds immutable definitions, heading scopes, and
 connected numeric constraint checks.
 
+AsciiMath supports Formula list (`asciimath-formulas-v1`) and Mixed prose
+(`asciimath-prose-v1`). These profiles use the same version-2 envelope; version-1
+AsciiMath documents retain Auto's original document-structure heuristic.
+
 Shared links and sign-in snapshots preserve the profile. Query parameters can
 override it explicitly; a format override to a different format drops the stored
 profile. Choosing a different mode creates a new source link and leaves the saved

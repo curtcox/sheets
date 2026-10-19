@@ -5,7 +5,11 @@ import { tmpdir } from "node:os";
 import { stage } from "../../scripts/stage.mjs";
 import { createStaticServer } from "../../scripts/serve.mjs";
 import { writeURL } from "../../src/url-state.js";
-import { CALCA_SCOPES } from "../../src/compatibility-profiles.js";
+import {
+  CALCA_SCOPES,
+  ASCIIMATH_FORMULAS,
+  ASCIIMATH_PROSE,
+} from "../../src/compatibility-profiles.js";
 
 test.describe.configure({ mode: "serial" });
 let directory, server, base;
@@ -31,15 +35,25 @@ async function settings(page) {
   await page.locator("#download-menu summary").click();
   await page.locator("#offline-open").click();
 }
+// Installation and restoring evicted files both activate a controller and reload.
+// Await that navigation, not the old page's briefly updated Ready/installed UI.
+async function downloadFiles(page) {
+  const reloaded = page.waitForEvent("framenavigated", {
+    predicate: (frame) => frame === page.mainFrame(),
+    timeout: 60000,
+  });
+  await page.locator("#offline-enable").click();
+  await reloaded;
+  await ready(page);
+  await expect(page.locator("#offline-open")).toHaveText("Offline access ✓", {
+    timeout: 60000,
+  });
+}
 async function install(page) {
   await page.goto(base);
   await ready(page);
   await settings(page);
-  await page.locator("#offline-enable").click();
-  await expect(page.locator("#offline-open")).toHaveText("Offline access ✓", {
-    timeout: 60000,
-  });
-  await ready(page);
+  await downloadFiles(page);
 }
 
 test("opt-in offline files support new source links, vendored workers, docs and gallery", async ({
@@ -63,11 +77,7 @@ test("opt-in offline files support new source links, vendored workers, docs and 
   );
   await ready(page);
   await settings(page);
-  await page.locator("#offline-enable").click();
-  await expect(page.locator("#offline-open")).toHaveText("Offline access ✓", {
-    timeout: 60000,
-  });
-  await ready(page);
+  await downloadFiles(page);
   expect(await page.evaluate(() => ace.edit("editor").getValue())).toBe(source);
   // Simulate eviction while the registration remains active, then restore the files.
   await page.evaluate(async () =>
@@ -81,11 +91,7 @@ test("opt-in offline files support new source links, vendored workers, docs and 
   await expect(page.locator("#offline-enable")).toHaveText(
     "Download offline files",
   );
-  await page.locator("#offline-enable").click();
-  await expect(page.locator("#offline-open")).toHaveText("Offline access ✓", {
-    timeout: 60000,
-  });
-  await ready(page);
+  await downloadFiles(page);
   expect(await page.evaluate(() => ace.edit("editor").getValue())).toBe(source);
   const ratesXML = await readFile(
     new URL("../fixtures/exchange-rates/ecb-2026-10-16.xml", import.meta.url),
@@ -136,6 +142,18 @@ test("opt-in offline files support new source links, vendored workers, docs and 
     await expect(page.locator("#render-status")).toContainText("Ready");
     if (format === "gfm")
       await expect(page.locator("[data-mermaid] svg")).toBeVisible();
+  }
+  for (const profile of [ASCIIMATH_FORMULAS, ASCIIMATH_PROSE]) {
+    await page.goto(
+      writeURL(base, { src: "sqrt(9)", format: "asciimath", profile }),
+    );
+    await ready(page);
+    await page.reload();
+    await ready(page);
+    await expect(page.locator("#profile")).toHaveValue(profile);
+    await expect(page.locator("#preview math")).toHaveCount(
+      profile === ASCIIMATH_FORMULAS ? 1 : 0,
+    );
   }
   await page.goto(
     writeURL(base, {

@@ -6,6 +6,8 @@ The URL is the document. Typing replaces the current history entry after a 300 m
 | --- | --- |
 | `?format=gfm` | Manual format. Omit it for Auto. |
 | `?view=split` | Split, source, or preview. Split is the default and is normally omitted. |
+| `?profile=asciimath-formulas-v1` | AsciiMath Formula list: one formula per nonempty line. |
+| `?profile=asciimath-prose-v1` | AsciiMath Mixed prose: only delimited or fenced formulas are typeset. |
 | `?profile=calca-blocks-v1` | Calca's Structured blocks mode. Omit for Legacy. |
 | `?profile=calca-scopes-v1` | Calca's Scoped definitions mode: immutable definitions and heading scopes. |
 | `?compressed=…` | Source compressed with lz-string's URI-safe encoding. |
@@ -20,11 +22,13 @@ Compatibility profiles are format-specific behavior versions. The supported
 `calca-blocks-v1` profile separates calculation blocks from literal code, TeX,
 and Mermaid. The `calca-scopes-v1` profile additionally makes definitions
 immutable, scopes definitions/relations to headings, and checks connected numeric
-constraints. Either profile selects Calca when the format is Auto. Omitted profiles retain the
+constraints. Either Calca profile selects Calca when the format is Auto. AsciiMath supports
+`asciimath-formulas-v1` (Formula list) and `asciimath-prose-v1` (Mixed prose); these
+select AsciiMath when the format is Auto and preserve the document model while editing. Omitted profiles retain the
 original language rules; unknown or mismatched explicit profiles report an error.
 An explicit profile query overrides a saved profile. A format override to another
 format drops the stored profile; an incompatible explicit profile is rejected.
-Switching the Calca mode creates a compressed source link with the same source,
+Switching a mode creates a compressed source link with the same source,
 and removes a previously loaded CID. View changes, sharing, OAuth returns, and
 offline reloads preserve the selected profile.
 

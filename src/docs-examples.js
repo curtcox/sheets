@@ -1,8 +1,17 @@
 import { writeURL } from "./url-state.js";
-import { CALCA_BLOCKS, CALCA_SCOPES } from "./compatibility-profiles.js";
+import {
+  CALCA_BLOCKS,
+  CALCA_SCOPES,
+  ASCIIMATH_FORMULAS,
+  ASCIIMATH_PROSE,
+} from "./compatibility-profiles.js";
 
 const block = (language, source) => `\`\`\`${language}\n${source}\n\`\`\`\n`;
-const sample = (source, aliases = []) => ({ source, aliases });
+const sample = (source, aliases = [], profile) => ({
+  source,
+  aliases,
+  ...(profile ? { profile } : {}),
+});
 // Short examples need complete contexts. Code blocks link their own exact source.
 export const syntaxExamples = {
   gfm: [
@@ -49,12 +58,16 @@ ${block("mermaid", "graph LR\n  Measure --> Review")}
   asciimath: [
     sample(
       "x^2\na_1\nsqrt(x)\nroot(3)(x)\n(a+b)/c\nsum_(i=1)^n i\nalpha\ntheta\noo\n[(1,2),(3,4)]\nsqrt(9) = 3\n",
+      [],
+      ASCIIMATH_FORMULAS,
     ),
     sample(
       "# Mixed prose\n\nInline $sqrt(9) = 3$.\n\n$$sum_(i=1)^n i$$\n\n" +
         block("asciimath", "sum_(i=1)^n i"),
       ["$…$", "$$…$$"],
+      ASCIIMATH_PROSE,
     ),
+    sample(">->>\ntwoheadrightarrowtail\n", [], ASCIIMATH_FORMULAS),
   ],
   numbat: [
     sample(
@@ -246,12 +259,34 @@ export function blockExample(page, source, language = "") {
         : source,
     ...(format === "calca"
       ? { profile: language === "calca-scopes" ? CALCA_SCOPES : CALCA_BLOCKS }
-      : {}),
+      : format === "asciimath" &&
+          ["asciimath-formulas", "asciimath-prose"].includes(language)
+        ? {
+            profile:
+              language === "asciimath-formulas"
+                ? ASCIIMATH_FORMULAS
+                : ASCIIMATH_PROSE,
+          }
+        : {}),
   };
 }
 
 export function inlineExample(page, code) {
   if (page === "url-format") {
+    if (
+      ["?profile=asciimath-formulas-v1", "asciimath-formulas-v1"].includes(code)
+    )
+      return {
+        format: "asciimath",
+        src: syntaxExamples.asciimath[0].source,
+        profile: ASCIIMATH_FORMULAS,
+      };
+    if (["?profile=asciimath-prose-v1", "asciimath-prose-v1"].includes(code))
+      return {
+        format: "asciimath",
+        src: syntaxExamples.asciimath[1].source,
+        profile: ASCIIMATH_PROSE,
+      };
     if (["?profile=calca-scopes-v1", "calca-scopes-v1"].includes(code))
       return {
         format: "calca",
@@ -285,7 +320,11 @@ export function inlineExample(page, code) {
       return {
         format: id,
         src: example.source,
-        ...(id === "calca" ? { profile: CALCA_BLOCKS } : {}),
+        ...(id === "calca"
+          ? { profile: CALCA_BLOCKS }
+          : example.profile
+            ? { profile: example.profile }
+            : {}),
       };
   }
   return null;

@@ -1,0 +1,2231 @@
+{
+  "repository": "https://github.com/christianp/asciimath2tex",
+  "commit": "4f4be2ca744afe0a82c2a24d559aee86688c570e",
+  "source": "test.js unittests; Apache-2.0",
+  "cases": [
+    {
+      "id": 1,
+      "source": "!=",
+      "expected": "\\ne"
+    },
+    {
+      "id": 2,
+      "source": "!in",
+      "expected": "\\notin"
+    },
+    {
+      "id": 3,
+      "source": "'",
+      "expected": "'"
+    },
+    {
+      "id": 4,
+      "source": "(",
+      "expected": "("
+    },
+    {
+      "id": 5,
+      "source": "(:",
+      "expected": "\\langle"
+    },
+    {
+      "id": 6,
+      "source": ")",
+      "expected": ")"
+    },
+    {
+      "id": 7,
+      "source": "*",
+      "expected": "\\cdot"
+    },
+    {
+      "id": 8,
+      "source": "**",
+      "expected": "\\ast"
+    },
+    {
+      "id": 9,
+      "source": "***",
+      "expected": "\\star"
+    },
+    {
+      "id": 10,
+      "source": "+-",
+      "expected": "\\pm"
+    },
+    {
+      "id": 11,
+      "source": "-",
+      "expected": "-"
+    },
+    {
+      "id": 12,
+      "source": "-:",
+      "expected": "\\div"
+    },
+    {
+      "id": 13,
+      "source": "-<",
+      "expected": "\\prec"
+    },
+    {
+      "id": 14,
+      "source": "-<=",
+      "expected": "\\preceq"
+    },
+    {
+      "id": 15,
+      "source": "-=",
+      "expected": "\\equiv"
+    },
+    {
+      "id": 16,
+      "source": "->",
+      "expected": "\\to"
+    },
+    {
+      "id": 17,
+      "source": "->>",
+      "expected": "\\twoheadrightarrow"
+    },
+    {
+      "id": 18,
+      "source": "-lt",
+      "expected": "\\prec"
+    },
+    {
+      "id": 19,
+      "source": "...",
+      "expected": "\\ldots"
+    },
+    {
+      "id": 20,
+      "source": "/",
+      "expected": "/"
+    },
+    {
+      "id": 21,
+      "source": "//",
+      "expected": "/"
+    },
+    {
+      "id": 22,
+      "source": "/_",
+      "expected": "\\angle"
+    },
+    {
+      "id": 23,
+      "source": "/_\\",
+      "expected": "\\triangle"
+    },
+    {
+      "id": 24,
+      "source": ":)",
+      "expected": "\\rangle"
+    },
+    {
+      "id": 25,
+      "source": ":.",
+      "expected": "\\therefore"
+    },
+    {
+      "id": 26,
+      "source": ":=",
+      "expected": ":="
+    },
+    {
+      "id": 27,
+      "source": ":}",
+      "expected": ":\\}"
+    },
+    {
+      "id": 28,
+      "source": "<<",
+      "expected": "\\langle"
+    },
+    {
+      "id": 29,
+      "source": "<=",
+      "expected": "\\le"
+    },
+    {
+      "id": 30,
+      "source": "<=>",
+      "expected": "\\Leftrightarrow"
+    },
+    {
+      "id": 31,
+      "source": "=>",
+      "expected": "\\Rightarrow"
+    },
+    {
+      "id": 32,
+      "source": ">-",
+      "expected": "\\succ"
+    },
+    {
+      "id": 33,
+      "source": ">-=",
+      "expected": "\\succeq"
+    },
+    {
+      "id": 34,
+      "source": ">->",
+      "expected": "\\rightarrowtail"
+    },
+    {
+      "id": 35,
+      "source": ">->>",
+      "expected": "\\twoheadrightarrowtail"
+    },
+    {
+      "id": 36,
+      "source": ">->>",
+      "expected": "\\twoheadrightarrowtail"
+    },
+    {
+      "id": 37,
+      "source": ">->>",
+      "expected": "\\twoheadrightarrowtail"
+    },
+    {
+      "id": 38,
+      "source": ">->>",
+      "expected": "\\twoheadrightarrowtail"
+    },
+    {
+      "id": 39,
+      "source": ">->>",
+      "expected": "\\twoheadrightarrowtail"
+    },
+    {
+      "id": 40,
+      "source": ">->>",
+      "expected": "\\twoheadrightarrowtail"
+    },
+    {
+      "id": 41,
+      "source": ">->>",
+      "expected": "\\twoheadrightarrowtail"
+    },
+    {
+      "id": 42,
+      "source": ">->>",
+      "expected": "\\twoheadrightarrowtail"
+    },
+    {
+      "id": 43,
+      "source": "><|",
+      "expected": "\\rtimes"
+    },
+    {
+      "id": 44,
+      "source": ">=",
+      "expected": "\\ge"
+    },
+    {
+      "id": 45,
+      "source": ">>",
+      "expected": "\\rangle"
+    },
+    {
+      "id": 46,
+      "source": "@",
+      "expected": "\\circ"
+    },
+    {
+      "id": 47,
+      "source": "AA",
+      "expected": "\\forall"
+    },
+    {
+      "id": 48,
+      "source": "CC",
+      "expected": "\\mathbb{C}"
+    },
+    {
+      "id": 49,
+      "source": "Delta",
+      "expected": "\\Delta"
+    },
+    {
+      "id": 50,
+      "source": "EE",
+      "expected": "\\exists"
+    },
+    {
+      "id": 51,
+      "source": "Gamma",
+      "expected": "\\Gamma"
+    },
+    {
+      "id": 52,
+      "source": "Lambda",
+      "expected": "\\Lambda"
+    },
+    {
+      "id": 53,
+      "source": "Lamda",
+      "expected": "\\Lambda"
+    },
+    {
+      "id": 54,
+      "source": "Leftarrow",
+      "expected": "\\Leftarrow"
+    },
+    {
+      "id": 55,
+      "source": "Leftrightarrow",
+      "expected": "\\Leftrightarrow"
+    },
+    {
+      "id": 56,
+      "source": "Lim",
+      "expected": "\\operatorname{Lim}"
+    },
+    {
+      "id": 57,
+      "source": "NN",
+      "expected": "\\mathbb{N}"
+    },
+    {
+      "id": 58,
+      "source": "O/",
+      "expected": "\\emptyset"
+    },
+    {
+      "id": 59,
+      "source": "Omega",
+      "expected": "\\Omega"
+    },
+    {
+      "id": 60,
+      "source": "Phi",
+      "expected": "\\Phi"
+    },
+    {
+      "id": 61,
+      "source": "Pi",
+      "expected": "\\Pi"
+    },
+    {
+      "id": 62,
+      "source": "Psi",
+      "expected": "\\Psi"
+    },
+    {
+      "id": 63,
+      "source": "QQ",
+      "expected": "\\mathbb{Q}"
+    },
+    {
+      "id": 64,
+      "source": "RR",
+      "expected": "\\mathbb{R}"
+    },
+    {
+      "id": 65,
+      "source": "Rightarrow",
+      "expected": "\\Rightarrow"
+    },
+    {
+      "id": 66,
+      "source": "Sigma",
+      "expected": "\\Sigma"
+    },
+    {
+      "id": 67,
+      "source": "TT",
+      "expected": "\\top"
+    },
+    {
+      "id": 68,
+      "source": "Theta",
+      "expected": "\\Theta"
+    },
+    {
+      "id": 69,
+      "source": "Xi",
+      "expected": "\\Xi"
+    },
+    {
+      "id": 70,
+      "source": "ZZ",
+      "expected": "\\mathbb{Z}"
+    },
+    {
+      "id": 71,
+      "source": "[",
+      "expected": "["
+    },
+    {
+      "id": 72,
+      "source": "\\ ",
+      "expected": ""
+    },
+    {
+      "id": 73,
+      "source": "\\ ",
+      "expected": ""
+    },
+    {
+      "id": 74,
+      "source": "\\\\",
+      "expected": "\\backslash"
+    },
+    {
+      "id": 75,
+      "source": "]",
+      "expected": "]"
+    },
+    {
+      "id": 76,
+      "source": "^",
+      "expected": "\\hat{}"
+    },
+    {
+      "id": 77,
+      "source": "^^",
+      "expected": "\\wedge"
+    },
+    {
+      "id": 78,
+      "source": "^^^",
+      "expected": "\\bigwedge"
+    },
+    {
+      "id": 79,
+      "source": "x ^^^ y",
+      "expected": "x \\bigwedge y"
+    },
+    {
+      "id": 80,
+      "source": "_",
+      "expected": "\\_"
+    },
+    {
+      "id": 81,
+      "source": "__|",
+      "expected": "\\rfloor"
+    },
+    {
+      "id": 82,
+      "source": "_|_",
+      "expected": "\\bot"
+    },
+    {
+      "id": 83,
+      "source": "abs",
+      "expected": "\\left | \\right | "
+    },
+    {
+      "id": 84,
+      "source": "aleph",
+      "expected": "\\aleph"
+    },
+    {
+      "id": 85,
+      "source": "alpha",
+      "expected": "\\alpha"
+    },
+    {
+      "id": 86,
+      "source": "and",
+      "expected": "\\quad\\text{and}\\quad"
+    },
+    {
+      "id": 87,
+      "source": "angle",
+      "expected": "\\angle"
+    },
+    {
+      "id": 88,
+      "source": "approx",
+      "expected": "\\approx"
+    },
+    {
+      "id": 89,
+      "source": "arccos",
+      "expected": "\\arccos{}"
+    },
+    {
+      "id": 90,
+      "source": "arcsin",
+      "expected": "\\arcsin{}"
+    },
+    {
+      "id": 91,
+      "source": "arctan",
+      "expected": "\\arctan{}"
+    },
+    {
+      "id": 92,
+      "source": "ast",
+      "expected": "\\ast"
+    },
+    {
+      "id": 93,
+      "source": "backslash",
+      "expected": "\\backslash"
+    },
+    {
+      "id": 94,
+      "source": "bar",
+      "expected": "\\overline{}"
+    },
+    {
+      "id": 95,
+      "source": "bb",
+      "expected": "\\mathbf{}"
+    },
+    {
+      "id": 96,
+      "source": "bbb",
+      "expected": "\\mathbb{}"
+    },
+    {
+      "id": 97,
+      "source": "beta",
+      "expected": "\\beta"
+    },
+    {
+      "id": 98,
+      "source": "bigcap",
+      "expected": "\\bigcap"
+    },
+    {
+      "id": 99,
+      "source": "bigcup",
+      "expected": "\\bigcup"
+    },
+    {
+      "id": 100,
+      "source": "bigvee",
+      "expected": "\\bigvee"
+    },
+    {
+      "id": 101,
+      "source": "bigwedge",
+      "expected": "\\bigwedge"
+    },
+    {
+      "id": 102,
+      "source": "bot",
+      "expected": "\\bot"
+    },
+    {
+      "id": 103,
+      "source": "bowtie",
+      "expected": "\\bowtie"
+    },
+    {
+      "id": 104,
+      "source": "cap",
+      "expected": "\\cap"
+    },
+    {
+      "id": 105,
+      "source": "cdot",
+      "expected": "\\cdot"
+    },
+    {
+      "id": 106,
+      "source": "cdots",
+      "expected": "\\cdots"
+    },
+    {
+      "id": 107,
+      "source": "ceil",
+      "expected": "\\left \\lceil \\right \\rceil "
+    },
+    {
+      "id": 108,
+      "source": "chi",
+      "expected": "\\chi"
+    },
+    {
+      "id": 109,
+      "source": "circ",
+      "expected": "\\circ"
+    },
+    {
+      "id": 110,
+      "source": "cong",
+      "expected": "\\cong"
+    },
+    {
+      "id": 111,
+      "source": "cos",
+      "expected": "\\cos{}"
+    },
+    {
+      "id": 112,
+      "source": "cosh",
+      "expected": "\\cosh{}"
+    },
+    {
+      "id": 113,
+      "source": "cot",
+      "expected": "\\cot{}"
+    },
+    {
+      "id": 114,
+      "source": "coth",
+      "expected": "\\coth{}"
+    },
+    {
+      "id": 115,
+      "source": "csc",
+      "expected": "\\csc{}"
+    },
+    {
+      "id": 116,
+      "source": "csch",
+      "expected": "\\operatorname{csch}{}"
+    },
+    {
+      "id": 117,
+      "source": "cup",
+      "expected": "\\cup"
+    },
+    {
+      "id": 118,
+      "source": "darr",
+      "expected": "\\downarrow"
+    },
+    {
+      "id": 119,
+      "source": "ddot",
+      "expected": "\\ddot{}"
+    },
+    {
+      "id": 120,
+      "source": "ddots",
+      "expected": "\\ddots"
+    },
+    {
+      "id": 121,
+      "source": "del",
+      "expected": "\\partial"
+    },
+    {
+      "id": 122,
+      "source": "delta",
+      "expected": "\\delta"
+    },
+    {
+      "id": 123,
+      "source": "det",
+      "expected": "\\det{}"
+    },
+    {
+      "id": 124,
+      "source": "diamond",
+      "expected": "\\diamond"
+    },
+    {
+      "id": 125,
+      "source": "dim",
+      "expected": "\\dim"
+    },
+    {
+      "id": 126,
+      "source": "div",
+      "expected": "\\div"
+    },
+    {
+      "id": 127,
+      "source": "divide",
+      "expected": "\\div"
+    },
+    {
+      "id": 128,
+      "source": "dot",
+      "expected": "\\dot{}"
+    },
+    {
+      "id": 129,
+      "source": "downarrow",
+      "expected": "\\downarrow"
+    },
+    {
+      "id": 130,
+      "source": "dt",
+      "expected": "dt"
+    },
+    {
+      "id": 131,
+      "source": "dx",
+      "expected": "dx"
+    },
+    {
+      "id": 132,
+      "source": "dy",
+      "expected": "dy"
+    },
+    {
+      "id": 133,
+      "source": "dz",
+      "expected": "dz"
+    },
+    {
+      "id": 134,
+      "source": "emptyset",
+      "expected": "\\emptyset"
+    },
+    {
+      "id": 135,
+      "source": "epsi",
+      "expected": "\\epsilon"
+    },
+    {
+      "id": 136,
+      "source": "epsilon",
+      "expected": "\\epsilon"
+    },
+    {
+      "id": 137,
+      "source": "equiv",
+      "expected": "\\equiv"
+    },
+    {
+      "id": 138,
+      "source": "eta",
+      "expected": "\\eta"
+    },
+    {
+      "id": 139,
+      "source": "exists",
+      "expected": "\\exists"
+    },
+    {
+      "id": 140,
+      "source": "exp",
+      "expected": "\\exp{}"
+    },
+    {
+      "id": 141,
+      "source": "f",
+      "expected": "f"
+    },
+    {
+      "id": 142,
+      "source": "floor",
+      "expected": "\\left \\lfloor \\right \\rfloor "
+    },
+    {
+      "id": 143,
+      "source": "forall",
+      "expected": "\\forall"
+    },
+    {
+      "id": 144,
+      "source": "frown",
+      "expected": "\\frown"
+    },
+    {
+      "id": 145,
+      "source": "g",
+      "expected": "g"
+    },
+    {
+      "id": 146,
+      "source": "gamma",
+      "expected": "\\gamma"
+    },
+    {
+      "id": 147,
+      "source": "gcd",
+      "expected": "\\gcd{}"
+    },
+    {
+      "id": 148,
+      "source": "ge",
+      "expected": "\\ge"
+    },
+    {
+      "id": 149,
+      "source": "geq",
+      "expected": "\\geq"
+    },
+    {
+      "id": 150,
+      "source": "glb",
+      "expected": "\\operatorname{glb}"
+    },
+    {
+      "id": 151,
+      "source": "grad",
+      "expected": "\\nabla"
+    },
+    {
+      "id": 152,
+      "source": "gt",
+      "expected": "\\gt"
+    },
+    {
+      "id": 153,
+      "source": "gt=",
+      "expected": "\\geq"
+    },
+    {
+      "id": 154,
+      "source": "hArr",
+      "expected": "\\Leftrightarrow"
+    },
+    {
+      "id": 155,
+      "source": "harr",
+      "expected": "\\leftrightarrow"
+    },
+    {
+      "id": 156,
+      "source": "hat",
+      "expected": "\\hat{}"
+    },
+    {
+      "id": 157,
+      "source": "if",
+      "expected": "\\quad\\text{if}\\quad"
+    },
+    {
+      "id": 158,
+      "source": "iff",
+      "expected": "\\iff"
+    },
+    {
+      "id": 159,
+      "source": "implies",
+      "expected": "\\implies"
+    },
+    {
+      "id": 160,
+      "source": "in",
+      "expected": "\\in"
+    },
+    {
+      "id": 161,
+      "source": "infty",
+      "expected": "\\infty"
+    },
+    {
+      "id": 162,
+      "source": "int",
+      "expected": "\\int"
+    },
+    {
+      "id": 163,
+      "source": "iota",
+      "expected": "\\iota"
+    },
+    {
+      "id": 164,
+      "source": "kappa",
+      "expected": "\\kappa"
+    },
+    {
+      "id": 165,
+      "source": "lArr",
+      "expected": "\\Leftarrow"
+    },
+    {
+      "id": 166,
+      "source": "lambda",
+      "expected": "\\lambda"
+    },
+    {
+      "id": 167,
+      "source": "lamda",
+      "expected": "\\lambda"
+    },
+    {
+      "id": 168,
+      "source": "langle",
+      "expected": "\\langle"
+    },
+    {
+      "id": 169,
+      "source": "larr",
+      "expected": "\\leftarrow"
+    },
+    {
+      "id": 170,
+      "source": "lceiling",
+      "expected": "\\lceil"
+    },
+    {
+      "id": 171,
+      "source": "lcm",
+      "expected": "\\operatorname{lcm}{}"
+    },
+    {
+      "id": 172,
+      "source": "ldots",
+      "expected": "\\ldots"
+    },
+    {
+      "id": 173,
+      "source": "le",
+      "expected": "\\le"
+    },
+    {
+      "id": 174,
+      "source": "leftarrow",
+      "expected": "\\leftarrow"
+    },
+    {
+      "id": 175,
+      "source": "leftrightarrow",
+      "expected": "\\leftrightarrow"
+    },
+    {
+      "id": 176,
+      "source": "leq",
+      "expected": "\\leq"
+    },
+    {
+      "id": 177,
+      "source": "lfloor",
+      "expected": "\\lfloor"
+    },
+    {
+      "id": 178,
+      "source": "lim",
+      "expected": "\\lim"
+    },
+    {
+      "id": 179,
+      "source": "ln",
+      "expected": "\\ln{}"
+    },
+    {
+      "id": 180,
+      "source": "log",
+      "expected": "\\log{}"
+    },
+    {
+      "id": 181,
+      "source": "lt",
+      "expected": "\\lt"
+    },
+    {
+      "id": 182,
+      "source": "lt=",
+      "expected": "\\leq"
+    },
+    {
+      "id": 183,
+      "source": "ltimes",
+      "expected": "\\ltimes"
+    },
+    {
+      "id": 184,
+      "source": "lub",
+      "expected": "\\operatorname{lub}"
+    },
+    {
+      "id": 185,
+      "source": "mapsto",
+      "expected": "\\mapsto"
+    },
+    {
+      "id": 186,
+      "source": "max",
+      "expected": "\\max"
+    },
+    {
+      "id": 187,
+      "source": "min",
+      "expected": "\\min"
+    },
+    {
+      "id": 188,
+      "source": "mod",
+      "expected": "\\operatorname{mod}"
+    },
+    {
+      "id": 189,
+      "source": "models",
+      "expected": "\\models"
+    },
+    {
+      "id": 190,
+      "source": "mu",
+      "expected": "\\mu"
+    },
+    {
+      "id": 191,
+      "source": "nabla",
+      "expected": "\\nabla"
+    },
+    {
+      "id": 192,
+      "source": "ne",
+      "expected": "\\ne"
+    },
+    {
+      "id": 193,
+      "source": "neg",
+      "expected": "\\neg"
+    },
+    {
+      "id": 194,
+      "source": "nn",
+      "expected": "\\cap"
+    },
+    {
+      "id": 195,
+      "source": "nnn",
+      "expected": "\\bigcap"
+    },
+    {
+      "id": 196,
+      "source": "norm",
+      "expected": "\\left \\| \\right \\| "
+    },
+    {
+      "id": 197,
+      "source": "not",
+      "expected": "\\neg"
+    },
+    {
+      "id": 198,
+      "source": "notin",
+      "expected": "\\notin"
+    },
+    {
+      "id": 199,
+      "source": "nu",
+      "expected": "\\nu"
+    },
+    {
+      "id": 200,
+      "source": "o+",
+      "expected": "\\oplus"
+    },
+    {
+      "id": 201,
+      "source": "o.",
+      "expected": "\\odot"
+    },
+    {
+      "id": 202,
+      "source": "obrace",
+      "expected": "\\overbrace{}"
+    },
+    {
+      "id": 203,
+      "source": "odot",
+      "expected": "\\odot"
+    },
+    {
+      "id": 204,
+      "source": "oint",
+      "expected": "\\oint"
+    },
+    {
+      "id": 205,
+      "source": "omega",
+      "expected": "\\omega"
+    },
+    {
+      "id": 206,
+      "source": "oo",
+      "expected": "\\infty"
+    },
+    {
+      "id": 207,
+      "source": "oplus",
+      "expected": "\\oplus"
+    },
+    {
+      "id": 208,
+      "source": "or",
+      "expected": "\\quad\\text{or}\\quad"
+    },
+    {
+      "id": 209,
+      "source": "otimes",
+      "expected": "\\otimes"
+    },
+    {
+      "id": 210,
+      "source": "overbrace",
+      "expected": "\\overbrace{}"
+    },
+    {
+      "id": 211,
+      "source": "overline",
+      "expected": "\\overline{}"
+    },
+    {
+      "id": 212,
+      "source": "ox",
+      "expected": "\\otimes"
+    },
+    {
+      "id": 213,
+      "source": "partial",
+      "expected": "\\partial"
+    },
+    {
+      "id": 214,
+      "source": "phi",
+      "expected": "\\phi"
+    },
+    {
+      "id": 215,
+      "source": "pi",
+      "expected": "\\pi"
+    },
+    {
+      "id": 216,
+      "source": "pm",
+      "expected": "\\pm"
+    },
+    {
+      "id": 217,
+      "source": "prec",
+      "expected": "\\prec"
+    },
+    {
+      "id": 218,
+      "source": "preceq",
+      "expected": "\\preceq"
+    },
+    {
+      "id": 219,
+      "source": "prime",
+      "expected": "'"
+    },
+    {
+      "id": 220,
+      "source": "prod",
+      "expected": "\\prod"
+    },
+    {
+      "id": 221,
+      "source": "prop",
+      "expected": "\\propto"
+    },
+    {
+      "id": 222,
+      "source": "propto",
+      "expected": "\\propto"
+    },
+    {
+      "id": 223,
+      "source": "psi",
+      "expected": "\\psi"
+    },
+    {
+      "id": 224,
+      "source": "qquad",
+      "expected": "\\qquad"
+    },
+    {
+      "id": 225,
+      "source": "quad",
+      "expected": "\\quad"
+    },
+    {
+      "id": 226,
+      "source": "rArr",
+      "expected": "\\Rightarrow"
+    },
+    {
+      "id": 227,
+      "source": "rangle",
+      "expected": "\\rangle"
+    },
+    {
+      "id": 228,
+      "source": "rarr",
+      "expected": "\\rightarrow"
+    },
+    {
+      "id": 229,
+      "source": "rceiling",
+      "expected": "\\rceil"
+    },
+    {
+      "id": 230,
+      "source": "rfloor",
+      "expected": "\\rfloor"
+    },
+    {
+      "id": 231,
+      "source": "rho",
+      "expected": "\\rho"
+    },
+    {
+      "id": 232,
+      "source": "rightarrow",
+      "expected": "\\rightarrow"
+    },
+    {
+      "id": 233,
+      "source": "rightarrowtail",
+      "expected": "\\rightarrowtail"
+    },
+    {
+      "id": 234,
+      "source": "root",
+      "expected": "\\sqrt[]{}"
+    },
+    {
+      "id": 235,
+      "source": "rtimes",
+      "expected": "\\rtimes"
+    },
+    {
+      "id": 236,
+      "source": "sec",
+      "expected": "\\sec{}"
+    },
+    {
+      "id": 237,
+      "source": "sech",
+      "expected": "\\operatorname{sech}{}"
+    },
+    {
+      "id": 238,
+      "source": "setminus",
+      "expected": "\\setminus"
+    },
+    {
+      "id": 239,
+      "source": "sigma",
+      "expected": "\\sigma"
+    },
+    {
+      "id": 240,
+      "source": "sin",
+      "expected": "\\sin{}"
+    },
+    {
+      "id": 241,
+      "source": "sinh",
+      "expected": "\\sinh{}"
+    },
+    {
+      "id": 242,
+      "source": "sqrt",
+      "expected": "\\sqrt{}"
+    },
+    {
+      "id": 243,
+      "source": "square",
+      "expected": "\\square"
+    },
+    {
+      "id": 244,
+      "source": "stackrel",
+      "expected": "\\stackrel{}{}"
+    },
+    {
+      "id": 245,
+      "source": "star",
+      "expected": "\\star"
+    },
+    {
+      "id": 246,
+      "source": "sub",
+      "expected": "\\subset"
+    },
+    {
+      "id": 247,
+      "source": "sube",
+      "expected": "\\subseteq"
+    },
+    {
+      "id": 248,
+      "source": "subset",
+      "expected": "\\subset"
+    },
+    {
+      "id": 249,
+      "source": "subseteq",
+      "expected": "\\subseteq"
+    },
+    {
+      "id": 250,
+      "source": "succ",
+      "expected": "\\succ"
+    },
+    {
+      "id": 251,
+      "source": "succeq",
+      "expected": "\\succeq"
+    },
+    {
+      "id": 252,
+      "source": "sum",
+      "expected": "\\sum"
+    },
+    {
+      "id": 253,
+      "source": "sup",
+      "expected": "\\supset"
+    },
+    {
+      "id": 254,
+      "source": "supe",
+      "expected": "\\supseteq"
+    },
+    {
+      "id": 255,
+      "source": "supset",
+      "expected": "\\supset"
+    },
+    {
+      "id": 256,
+      "source": "supseteq",
+      "expected": "\\supseteq"
+    },
+    {
+      "id": 257,
+      "source": "tan",
+      "expected": "\\tan{}"
+    },
+    {
+      "id": 258,
+      "source": "tanh",
+      "expected": "\\tanh{}"
+    },
+    {
+      "id": 259,
+      "source": "tau",
+      "expected": "\\tau"
+    },
+    {
+      "id": 260,
+      "source": "therefore",
+      "expected": "\\therefore"
+    },
+    {
+      "id": 261,
+      "source": "theta",
+      "expected": "\\theta"
+    },
+    {
+      "id": 262,
+      "source": "tilde",
+      "expected": "\\tilde{}"
+    },
+    {
+      "id": 263,
+      "source": "times",
+      "expected": "\\times"
+    },
+    {
+      "id": 264,
+      "source": "to",
+      "expected": "\\to"
+    },
+    {
+      "id": 265,
+      "source": "top",
+      "expected": "\\top"
+    },
+    {
+      "id": 266,
+      "source": "triangle",
+      "expected": "\\triangle"
+    },
+    {
+      "id": 267,
+      "source": "twoheadrightarrow",
+      "expected": "\\twoheadrightarrow"
+    },
+    {
+      "id": 268,
+      "source": "twoheadrightarrowtail",
+      "expected": "\\twoheadrightarrowtail"
+    },
+    {
+      "id": 269,
+      "source": "twoheadrightarrowtail",
+      "expected": "\\twoheadrightarrowtail"
+    },
+    {
+      "id": 270,
+      "source": "twoheadrightarrowtail",
+      "expected": "\\twoheadrightarrowtail"
+    },
+    {
+      "id": 271,
+      "source": "twoheadrightarrowtail",
+      "expected": "\\twoheadrightarrowtail"
+    },
+    {
+      "id": 272,
+      "source": "twoheadrightarrowtail",
+      "expected": "\\twoheadrightarrowtail"
+    },
+    {
+      "id": 273,
+      "source": "twoheadrightarrowtail",
+      "expected": "\\twoheadrightarrowtail"
+    },
+    {
+      "id": 274,
+      "source": "twoheadrightarrowtail",
+      "expected": "\\twoheadrightarrowtail"
+    },
+    {
+      "id": 275,
+      "source": "twoheadrightarrowtail",
+      "expected": "\\twoheadrightarrowtail"
+    },
+    {
+      "id": 276,
+      "source": "uarr",
+      "expected": "\\uparrow"
+    },
+    {
+      "id": 277,
+      "source": "ubrace",
+      "expected": "\\underbrace{}"
+    },
+    {
+      "id": 278,
+      "source": "ul",
+      "expected": "\\underline{}"
+    },
+    {
+      "id": 279,
+      "source": "underbrace",
+      "expected": "\\underbrace{}"
+    },
+    {
+      "id": 280,
+      "source": "underline",
+      "expected": "\\underline{}"
+    },
+    {
+      "id": 281,
+      "source": "underset",
+      "expected": "\\underset{}{}"
+    },
+    {
+      "id": 282,
+      "source": "uparrow",
+      "expected": "\\uparrow"
+    },
+    {
+      "id": 283,
+      "source": "upsilon",
+      "expected": "\\upsilon"
+    },
+    {
+      "id": 284,
+      "source": "uu",
+      "expected": "\\cup"
+    },
+    {
+      "id": 285,
+      "source": "uuu",
+      "expected": "\\bigcup"
+    },
+    {
+      "id": 286,
+      "source": "varepsilon",
+      "expected": "\\varepsilon"
+    },
+    {
+      "id": 287,
+      "source": "varphi",
+      "expected": "\\varphi"
+    },
+    {
+      "id": 288,
+      "source": "vartheta",
+      "expected": "\\vartheta"
+    },
+    {
+      "id": 289,
+      "source": "vdash",
+      "expected": "\\vdash"
+    },
+    {
+      "id": 290,
+      "source": "vdots",
+      "expected": "\\vdots"
+    },
+    {
+      "id": 291,
+      "source": "vec",
+      "expected": "\\vec{}"
+    },
+    {
+      "id": 292,
+      "source": "vee",
+      "expected": "\\vee"
+    },
+    {
+      "id": 293,
+      "source": "vv",
+      "expected": "\\vee"
+    },
+    {
+      "id": 294,
+      "source": "vvv",
+      "expected": "\\bigvee"
+    },
+    {
+      "id": 295,
+      "source": "wedge",
+      "expected": "\\wedge"
+    },
+    {
+      "id": 296,
+      "source": "xi",
+      "expected": "\\xi"
+    },
+    {
+      "id": 297,
+      "source": "xx",
+      "expected": "\\times"
+    },
+    {
+      "id": 298,
+      "source": "zeta",
+      "expected": "\\zeta"
+    },
+    {
+      "id": 299,
+      "source": "{",
+      "expected": "\\lbrace"
+    },
+    {
+      "id": 300,
+      "source": "|",
+      "expected": "|"
+    },
+    {
+      "id": 301,
+      "source": "|--",
+      "expected": "\\vdash"
+    },
+    {
+      "id": 302,
+      "source": "|->",
+      "expected": "\\mapsto"
+    },
+    {
+      "id": 303,
+      "source": "|==",
+      "expected": "\\models"
+    },
+    {
+      "id": 304,
+      "source": "|><",
+      "expected": "\\ltimes"
+    },
+    {
+      "id": 305,
+      "source": "|><|",
+      "expected": "\\bowtie"
+    },
+    {
+      "id": 306,
+      "source": "|__",
+      "expected": "\\lfloor"
+    },
+    {
+      "id": 307,
+      "source": "|~",
+      "expected": "\\lceil"
+    },
+    {
+      "id": 308,
+      "source": "}",
+      "expected": "\\rbrace"
+    },
+    {
+      "id": 309,
+      "source": "~=",
+      "expected": "\\cong"
+    },
+    {
+      "id": 310,
+      "source": "~|",
+      "expected": "\\rceil"
+    },
+    {
+      "id": 311,
+      "source": "~~",
+      "expected": "\\approx"
+    },
+    {
+      "id": 312,
+      "source": "f(x)/g(x)",
+      "expected": "\\frac{f{\\left ( x \\right )}}{g{\\left ( x \\right )}}"
+    },
+    {
+      "id": 313,
+      "source": "sin(x)/2",
+      "expected": "\\frac{\\sin{\\left ( x \\right )}}{2}"
+    },
+    {
+      "id": 314,
+      "source": "cosx/2",
+      "expected": "\\frac{\\cos{x}}{2}"
+    },
+    {
+      "id": 315,
+      "source": "absx",
+      "expected": "\\left | x \\right | "
+    },
+    {
+      "id": 316,
+      "source": "norm x",
+      "expected": "\\left \\| x \\right \\| "
+    },
+    {
+      "id": 317,
+      "source": "floor x/2",
+      "expected": "\\frac{\\left \\lfloor x \\right \\rfloor }{2}"
+    },
+    {
+      "id": 318,
+      "source": "ceil 5.2",
+      "expected": "\\left \\lceil 5.2 \\right \\rceil "
+    },
+    {
+      "id": 319,
+      "source": "min_x 3",
+      "expected": "\\min_{x} 3"
+    },
+    {
+      "id": 320,
+      "source": "sqrt4",
+      "expected": "\\sqrt{4}"
+    },
+    {
+      "id": 321,
+      "source": "sqrt(x+1)",
+      "expected": "\\sqrt{x + 1}"
+    },
+    {
+      "id": 322,
+      "source": "root(3)(x)",
+      "expected": "\\sqrt[3]{x}"
+    },
+    {
+      "id": 323,
+      "source": "root3x",
+      "expected": "\\sqrt[3]{x}"
+    },
+    {
+      "id": 324,
+      "source": "stackrel3=",
+      "expected": "\\stackrel{3}{=}"
+    },
+    {
+      "id": 325,
+      "source": "stackrel(3)(=)",
+      "expected": "\\stackrel{3}{=}"
+    },
+    {
+      "id": 326,
+      "source": "overset(k)(=)",
+      "expected": "\\overset{k}{=}"
+    },
+    {
+      "id": 327,
+      "source": "underset(k)(=)",
+      "expected": "\\underset{k}{=}"
+    },
+    {
+      "id": 328,
+      "source": "tilde x",
+      "expected": "\\tilde{x}"
+    },
+    {
+      "id": 329,
+      "source": "hat x",
+      "expected": "\\hat{x}"
+    },
+    {
+      "id": 330,
+      "source": "bar x",
+      "expected": "\\overline{x}"
+    },
+    {
+      "id": 331,
+      "source": "vec x",
+      "expected": "\\vec{x}"
+    },
+    {
+      "id": 332,
+      "source": "vec(xy)",
+      "expected": "\\vec{x y}"
+    },
+    {
+      "id": 333,
+      "source": "dot x",
+      "expected": "\\dot{x}"
+    },
+    {
+      "id": 334,
+      "source": "ddot x",
+      "expected": "\\ddot{x}"
+    },
+    {
+      "id": 335,
+      "source": "ul x",
+      "expected": "\\underline{x}"
+    },
+    {
+      "id": 336,
+      "source": "ubrace(x+1)",
+      "expected": "\\underbrace{x + 1}"
+    },
+    {
+      "id": 337,
+      "source": "obrace(x+1)",
+      "expected": "\\overbrace{x + 1}"
+    },
+    {
+      "id": 338,
+      "source": "mbox(hi)",
+      "expected": "\\text{hi}"
+    },
+    {
+      "id": 339,
+      "source": "text(hi)",
+      "expected": "\\text{hi}"
+    },
+    {
+      "id": 340,
+      "source": "\"hi\"",
+      "expected": "\\text{hi}"
+    },
+    {
+      "id": 341,
+      "source": "cancel(x)",
+      "expected": "\\cancel{x}"
+    },
+    {
+      "id": 342,
+      "source": "color(red)(x)",
+      "expected": "\\color{red}{x}"
+    },
+    {
+      "id": 343,
+      "source": "color(red)(x)",
+      "expected": "\\color{red}{x}"
+    },
+    {
+      "id": 344,
+      "source": "bb(x)",
+      "expected": "\\mathbf{x}"
+    },
+    {
+      "id": 345,
+      "source": "sf(x)",
+      "expected": "\\mathsf{x}"
+    },
+    {
+      "id": 346,
+      "source": "bbb(x)",
+      "expected": "\\mathbb{x}"
+    },
+    {
+      "id": 347,
+      "source": "cc(x)",
+      "expected": "\\mathcal{x}"
+    },
+    {
+      "id": 348,
+      "source": "tt(x)",
+      "expected": "\\mathtt{x}"
+    },
+    {
+      "id": 349,
+      "source": "fr(x)",
+      "expected": "\\mathfrak{x}"
+    },
+    {
+      "id": 350,
+      "source": "x",
+      "expected": "x"
+    },
+    {
+      "id": 351,
+      "source": "2",
+      "expected": "2"
+    },
+    {
+      "id": 352,
+      "source": "x^2",
+      "expected": "x^{2}"
+    },
+    {
+      "id": 353,
+      "source": "x_2",
+      "expected": "x_{2}"
+    },
+    {
+      "id": 354,
+      "source": "x_2^3",
+      "expected": "x_{2}^{3}"
+    },
+    {
+      "id": 355,
+      "source": "2/3",
+      "expected": "\\frac{2}{3}"
+    },
+    {
+      "id": 356,
+      "source": "-2/3",
+      "expected": "- \\frac{2}{3}"
+    },
+    {
+      "id": 357,
+      "source": "2-3",
+      "expected": "2 - 3"
+    },
+    {
+      "id": 358,
+      "source": "(2+3)",
+      "expected": "\\left ( 2 + 3 \\right )"
+    },
+    {
+      "id": 359,
+      "source": "2+(3/4+1)",
+      "expected": "2 + \\left ( \\frac{3}{4} + 1 \\right )"
+    },
+    {
+      "id": 360,
+      "source": "2+[3/4+1]",
+      "expected": "2 + \\left [ \\frac{3}{4} + 1 \\right ]"
+    },
+    {
+      "id": 361,
+      "source": "2+|3/4+1|",
+      "expected": "2 + \\left \\lvert \\frac{3}{4} + 1 \\right \\rvert"
+    },
+    {
+      "id": 362,
+      "source": "[2/3,4)",
+      "expected": "\\left [ \\frac{2}{3} , 4 \\right )"
+    },
+    {
+      "id": 363,
+      "source": "{:2,3:}",
+      "expected": "\\left . 2 , 3 \\right ."
+    },
+    {
+      "id": 364,
+      "source": "<<2,3>>",
+      "expected": "\\left \\langle 2 , 3 \\right \\rangle"
+    },
+    {
+      "id": 365,
+      "source": "(:2,3:)",
+      "expected": "\\left \\langle 2 , 3 \\right \\rangle"
+    },
+    {
+      "id": 366,
+      "source": "[(2,3),(4,5)]",
+      "expected": "\\left [ \\begin{matrix} 2 & 3 \\\\ 4 & 5 \\end{matrix} \\right ]"
+    },
+    {
+      "id": 367,
+      "source": "[(2,3,4,5)]",
+      "expected": "\\left [ \\begin{matrix} 2 & 3 & 4 & 5 \\end{matrix} \\right ]"
+    },
+    {
+      "id": 368,
+      "source": "((1),(2))",
+      "expected": "\\left ( \\begin{matrix} 1 \\\\ 2 \\end{matrix} \\right )"
+    },
+    {
+      "id": 369,
+      "source": "{(1,if,x ge 3),(2,if,x gt 3):}",
+      "expected": "\\left \\lbrace \\begin{matrix} 1 & \\quad\\text{if}\\quad & x \\ge 3 \\\\ 2 & \\quad\\text{if}\\quad & x \\gt 3 \\end{matrix} \\right ."
+    },
+    {
+      "id": 370,
+      "source": "((a,|b),(c,|d))",
+      "expected": "\\left ( \\begin{array}{r|r} a & b \\\\ c & d \\end{array} \\right )"
+    },
+    {
+      "id": 371,
+      "source": "((|x|,|2),(3,|4))",
+      "expected": "\\left ( \\begin{array}{r|r} \\left \\lvert x \\right | & 2 \\\\ 3 & 4 \\end{array} \\right )"
+    },
+    {
+      "id": 372,
+      "source": "[(x,1,2,|,3),(3,2,1,|,4)]",
+      "expected": "\\left [ \\begin{array}{rrr|r} x & 1 & 2 & 3 \\\\ 3 & 2 & 1 & 4 \\end{array} \\right ]"
+    },
+    {
+      "id": 373,
+      "source": "int_2^3 3dx",
+      "expected": "\\int_{2}^{3} 3 dx"
+    },
+    {
+      "id": 374,
+      "source": "sum_(n=1)^3 n",
+      "expected": "\\sum_{n = 1}^{3} n"
+    },
+    {
+      "id": 375,
+      "source": "lim_(h->0)(f(x+h)-f(x))/h",
+      "expected": "\\lim_{h \\to 0} \\frac{f{\\left ( x + h \\right )} - f{\\left ( x \\right )}}{h}"
+    },
+    {
+      "id": 376,
+      "source": "sin^-1(x)",
+      "expected": "\\sin^{- 1}{\\left ( x \\right )}"
+    },
+    {
+      "id": 377,
+      "source": "f(x)=sum_(n=0)^oo(f^((n))(a))/(n!)(x-a)^n",
+      "expected": "f{\\left ( x \\right )} = \\sum_{n = 0}^{\\infty} \\frac{f^{\\left ( n \\right )}{\\left ( a \\right )}}{n !} \\left ( x - a \\right )^{n}"
+    },
+    {
+      "id": 378,
+      "source": "f(x)=\\sum_{n=0}^\\infty\\frac{f^{(n)}(a)}{n!}(x-a)^n",
+      "expected": "f{\\left ( x \\right )} = \\sum_{n = 0}^{\\infty} \\frac{f^{\\left ( n \\right )}{\\left ( a \\right )}}{n !} \\left ( x - a \\right )^{n}"
+    },
+    {
+      "id": 379,
+      "source": "(a,b]={x in RR | a < x <= b}",
+      "expected": "\\left ( a , b \\right ] = \\left \\lbrace x \\in \\mathbb{R} \\mid a < x \\le b \\right \\rbrace"
+    },
+    {
+      "id": 380,
+      "source": "abc-123.45^-1.1",
+      "expected": "a b c - 123.45^{- 1.1}"
+    },
+    {
+      "id": 381,
+      "source": "stackrel\"def\"= or \\stackrel{\\Delta}{=}",
+      "expected": "\\stackrel{\\text{def}}{=} \\quad\\text{or}\\quad \\stackrel{\\Delta}{=}"
+    },
+    {
+      "id": 382,
+      "source": "{::}_(\\ 92)^238U",
+      "expected": "\\left . \\right ._{92}^{238} U"
+    },
+    {
+      "id": 383,
+      "source": "{::}_(\\ 92)^238U",
+      "expected": "\\left . \\right ._{92}^{238} U"
+    },
+    {
+      "id": 384,
+      "source": "(cancel((x+1))(x-2))/(cancel((x+1))(x+3))",
+      "expected": "\\frac{\\cancel{\\left ( x + 1 \\right )} \\left ( x - 2 \\right )}{\\cancel{\\left ( x + 1 \\right )} \\left ( x + 3 \\right )}"
+    },
+    {
+      "id": 385,
+      "source": "a//b",
+      "expected": "a / b"
+    },
+    {
+      "id": 386,
+      "source": "int_1^3 2x dx = x^2|_1^3",
+      "expected": "\\int_{1}^{3} 2 x dx = x^{2} |_{1}^{3}"
+    },
+    {
+      "id": 387,
+      "source": "log_2(x)/5",
+      "expected": "\\frac{\\log_{2}{\\left ( x \\right )}}{5}"
+    },
+    {
+      "id": 388,
+      "source": "log_2(x)+5",
+      "expected": "\\log_{2}{\\left ( x \\right )} + 5"
+    },
+    {
+      "id": 389,
+      "source": "log_sqrt(5)3/5",
+      "expected": "\\frac{\\log_{\\sqrt{5}}{3}}{5}"
+    },
+    {
+      "id": 390,
+      "source": "log_2^5(x)+5",
+      "expected": "\\log_{2}^{5}{\\left ( x \\right )} + 5"
+    },
+    {
+      "id": 391,
+      "source": "2^f_2-3",
+      "expected": "2^{f_{2}{- 3}}"
+    },
+    {
+      "id": 392,
+      "source": "f_3(x)/5",
+      "expected": "\\frac{f_{3}{\\left ( x \\right )}}{5}"
+    },
+    {
+      "id": 393,
+      "source": "2^(f_3(x)/5)",
+      "expected": "2^{\\frac{f_{3}{\\left ( x \\right )}}{5}}"
+    },
+    {
+      "id": 394,
+      "source": "log_3x^2/5",
+      "expected": "\\frac{\\log_{3}{x}^{2}}{5}"
+    },
+    {
+      "id": 395,
+      "source": "log_3x_0/5",
+      "expected": "\\frac{\\log_{3}{x}_{0}}{5}"
+    },
+    {
+      "id": 396,
+      "source": "sin^2(x)/5",
+      "expected": "\\frac{\\sin^{2}{\\left ( x \\right )}}{5}"
+    },
+    {
+      "id": 397,
+      "source": "3+ -4",
+      "expected": "3 + - 4"
+    },
+    {
+      "id": 398,
+      "source": "3+-4",
+      "expected": "3 \\pm 4"
+    },
+    {
+      "id": 399,
+      "source": "3^5.234",
+      "expected": "3^{5.234}"
+    },
+    {
+      "id": 400,
+      "source": "3^5,233",
+      "expected": "3^{5} , 233"
+    },
+    {
+      "id": 401,
+      "source": "(x+1)/4",
+      "expected": "\\frac{x + 1}{4}"
+    },
+    {
+      "id": 402,
+      "source": "sqrtx/4",
+      "expected": "\\frac{\\sqrt{x}}{4}"
+    },
+    {
+      "id": 403,
+      "source": "root(3)(5)/4",
+      "expected": "\\frac{\\sqrt[3]{5}}{4}"
+    },
+    {
+      "id": 404,
+      "source": "3^2/4^2",
+      "expected": "\\frac{3^{2}}{4^{2}}"
+    },
+    {
+      "id": 405,
+      "source": "3_2/4_2",
+      "expected": "\\frac{3_{2}}{4_{2}}"
+    },
+    {
+      "id": 406,
+      "source": "3^2/4^2",
+      "expected": "\\frac{3^{2}}{4^{2}}"
+    },
+    {
+      "id": 407,
+      "source": "3_2/4_2",
+      "expected": "\\frac{3_{2}}{4_{2}}"
+    },
+    {
+      "id": 408,
+      "source": "3_2^3/4_2",
+      "expected": "\\frac{3_{2}^{3}}{4_{2}}"
+    },
+    {
+      "id": 409,
+      "source": "vecx/hat3+vecx^2+(vec x)^2 + vec(x^2)",
+      "expected": "\\frac{\\vec{x}}{\\hat{3}} + \\vec{x}^{2} + \\left ( \\vec{x} \\right )^{2} + \\vec{x^{2}}"
+    },
+    {
+      "id": 410,
+      "source": "-3-4",
+      "expected": "- 3 - 4"
+    },
+    {
+      "id": 411,
+      "source": "(-3,-4)",
+      "expected": "\\left ( - 3 , - 4 \\right )"
+    },
+    {
+      "id": 412,
+      "source": "-(-2-4)-5",
+      "expected": "- \\left ( - 2 - 4 \\right ) - 5"
+    },
+    {
+      "id": 413,
+      "source": "2_-4^-5",
+      "expected": "2_{- 4}^{- 5}"
+    },
+    {
+      "id": 414,
+      "source": "int_-sqrt(3)^4",
+      "expected": "\\int_{- \\sqrt{3}}^{4}"
+    },
+    {
+      "id": 415,
+      "source": "-2/-3",
+      "expected": "- \\frac{2}{- 3}"
+    },
+    {
+      "id": 416,
+      "source": "(-2)/-3",
+      "expected": "\\frac{- 2}{- 3}"
+    },
+    {
+      "id": 417,
+      "source": "-2/3-3/4",
+      "expected": "- \\frac{2}{3} - \\frac{3}{4}"
+    },
+    {
+      "id": 418,
+      "source": "-2^2",
+      "expected": "- 2^{2}"
+    },
+    {
+      "id": 419,
+      "source": "-(x+1)/-(x+3)",
+      "expected": "- \\frac{x + 1}{- \\left ( x + 3 \\right )}"
+    },
+    {
+      "id": 420,
+      "source": "{:{:x:}:}",
+      "expected": "\\left . \\left . x \\right . \\right ."
+    },
+    {
+      "id": 421,
+      "source": "{:1+{:x:}+3:}",
+      "expected": "\\left . 1 + \\left . x \\right . + 3 \\right ."
+    },
+    {
+      "id": 422,
+      "source": "(:2,3]",
+      "expected": "\\left \\langle 2 , 3 \\right ]"
+    },
+    {
+      "id": 423,
+      "source": "[2,3rangle",
+      "expected": "\\left [ 2 , 3 \\right \\rangle"
+    },
+    {
+      "id": 424,
+      "source": "2,3)",
+      "expected": "2 , 3 )"
+    },
+    {
+      "id": 425,
+      "source": "(2,3",
+      "expected": "\\left ( 2 , 3 \\right."
+    },
+    {
+      "id": 426,
+      "source": "3/",
+      "expected": "\\frac{3}{}"
+    },
+    {
+      "id": 427,
+      "source": "2^",
+      "expected": "2^{}"
+    },
+    {
+      "id": 428,
+      "source": "2^+3",
+      "expected": "2^{+} 3"
+    },
+    {
+      "id": 429,
+      "source": "/4",
+      "expected": "/ 4"
+    },
+    {
+      "id": 430,
+      "source": "2^- +3",
+      "expected": "2^{- +} 3"
+    },
+    {
+      "id": 431,
+      "source": "lim_(x rarr 2^-) f(x)",
+      "expected": "\\lim_{x \\rightarrow 2^{-}} f{\\left ( x \\right )}"
+    },
+    {
+      "id": 432,
+      "source": "|(x,1),(2,3)|",
+      "expected": "\\left \\lvert \\begin{matrix} x & 1 \\\\ 2 & 3 \\end{matrix} \\right \\rvert"
+    },
+    {
+      "id": 433,
+      "source": "P(B|A) = (P(A|B) * P(B))/(P(A))",
+      "expected": "P \\left ( B \\mid A \\right ) = \\frac{P \\left ( A \\mid B \\right ) \\cdot P \\left ( B \\right )}{P \\left ( A \\right )}"
+    },
+    {
+      "id": 434,
+      "source": "x\\ y",
+      "expected": "x \\, y"
+    },
+    {
+      "id": 435,
+      "source": "([[x],[y]])",
+      "expected": "left ( left [ \begin{matrix} x \\ y end{matrix} \right ] \right )"
+    },
+    {
+      "id": 436,
+      "source": "([[a,b],[c,d]])",
+      "expected": "left ( left [ \begin{matrix} a & b \\ c & d end{matrix} \right ] \right )"
+    }
+  ],
+  "deviations": [
+    {
+      "id": 72,
+      "input": "\\ ",
+      "expected": "",
+      "actual": "\\,",
+      "reason": "The pinned translator retains an explicit thin space that this upstream expected string omits."
+    },
+    {
+      "id": 73,
+      "input": "\\ ",
+      "expected": "",
+      "actual": "\\,",
+      "reason": "The pinned translator retains an explicit thin space that this upstream expected string omits."
+    },
+    {
+      "id": 382,
+      "input": "{::}_(\\ 92)^238U",
+      "expected": "\\left . \\right ._{92}^{238} U",
+      "actual": "\\left . \\right ._{\\, 92}^{238} U",
+      "reason": "The pinned translator retains an explicit thin space that this upstream expected string omits."
+    },
+    {
+      "id": 383,
+      "input": "{::}_(\\ 92)^238U",
+      "expected": "\\left . \\right ._{92}^{238} U",
+      "actual": "\\left . \\right ._{\\, 92}^{238} U",
+      "reason": "The pinned translator retains an explicit thin space that this upstream expected string omits."
+    },
+    {
+      "id": 435,
+      "input": "([[x],[y]])",
+      "expected": "left ( left [ \begin{matrix} x \\ y end{matrix} \right ] \right )",
+      "actual": "\\left ( \\begin{matrix} \\left [ x \\right ] & \\left [ y \\right ] \\end{matrix} \\right )",
+      "reason": "The upstream expected JavaScript string has unescaped backslashes/control characters; the pinned translator also interprets this nested layout as an outer matrix with bracketed cells."
+    },
+    {
+      "id": 436,
+      "input": "([[a,b],[c,d]])",
+      "expected": "left ( left [ \begin{matrix} a & b \\ c & d end{matrix} \right ] \right )",
+      "actual": "\\left ( \\begin{matrix} \\left [ a , b \\right ] & \\left [ c , d \\right ] \\end{matrix} \\right )",
+      "reason": "The upstream expected JavaScript string has unescaped backslashes/control characters; the pinned translator also interprets this nested layout as an outer matrix with bracketed cells."
+    }
+  ]
+}

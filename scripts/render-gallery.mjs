@@ -77,8 +77,7 @@ try {
       throw new Error(
         `${item.id}: execution failed before the example could render.\n${output}`,
       );
-    const expectsDiagnostic =
-      item.kind === "error" && !["gfm", "asciimath"].includes(item.format);
+    const expectsDiagnostic = item.kind === "error" && item.format !== "gfm";
     if (!(expectsDiagnostic ? /^\d+ diagnostic/ : /^Ready/).test(status))
       throw new Error(
         `${item.id}: ${status}\n${await page.locator("#preview").textContent()}`,

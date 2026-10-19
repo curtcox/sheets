@@ -137,11 +137,13 @@ export function createMarkdown({
     if (!silent) {
       const t = state.push("sheets_math", "math", 0);
       t.content = state.src.slice(state.pos + 1, end);
+      t.meta = { sourceStart: state.pos + 1 };
     }
     state.pos = end + 1;
     return true;
   });
-  md.renderer.rules.sheets_math = (tokens, i) => math(tokens[i].content, false);
+  md.renderer.rules.sheets_math = (tokens, i) =>
+    math(tokens[i].content, false, tokens[i].meta?.location);
   md.block.ruler.before(
     "fence",
     "sheets_math_block",
@@ -171,18 +173,19 @@ export function createMarkdown({
       const token = state.push("sheets_math_block", "math", 0);
       token.content = parts.join("\n");
       token.map = [start, line + 1];
+      token.meta = { sourceLine: start + (first.slice(2).trim() ? 0 : 1) };
       state.line = Math.min(line + 1, end);
       return true;
     },
   );
   md.renderer.rules.sheets_math_block = (tokens, i) =>
-    `<div class="display-math">${math(tokens[i].content, true)}</div>\n`;
+    `<div class="display-math">${math(tokens[i].content, true, tokens[i].meta?.location)}</div>\n`;
   const fence = md.renderer.rules.fence;
   md.renderer.rules.fence = (tokens, i, options, env, self) => {
     const token = tokens[i],
       language = token.info.trim().split(/\s/)[0];
     if (["math", "asciimath"].includes(language) && math)
-      return `<div class="display-math">${math(token.content.trim(), true)}</div>\n`;
+      return `<div class="display-math">${math(token.content.trim(), true, token.meta?.location)}</div>\n`;
     if (language === "mermaid") {
       const id = mermaid.length;
       mermaid.push(token.content);

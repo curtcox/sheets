@@ -32,6 +32,8 @@ jobs:
         run: python scripts/beancount-expected.py --check
       - name: Check GFM autolinks against native cmark-gfm
         run: bash scripts/gfm-reference.sh --check
+      - name: Check AsciiMath corpus against pinned upstream data
+        run: node scripts/asciimath-reference.mjs
       - run: npx playwright install --with-deps chromium firefox webkit
       - run: npm run test:browser
       - name: Retain failing browser traces
