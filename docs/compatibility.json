@@ -75,17 +75,27 @@
     {
       "id": "GFM-01",
       "format": "gfm",
-      "title": "The pinned GFM corpus matches 582 of 672 exact HTML examples (86.6%); 90 deviations are documented",
+      "title": "GFM has three remaining autolink boundary gaps; all corpus differences are classified",
       "kind": "mixed",
-      "status": "audit",
+      "status": "open",
       "priority": "P1",
       "milestone": "GFM-1",
       "dependsOn": [],
-      "expected": "Verify each behavior against cmark-gfm 0.29.0.gfm.13 / markdown-it 15.0.3; separate deliberate policy from unsupported upstream capabilities.",
-      "disclosure": "The pinned GFM corpus matches **582 of 672 exact HTML examples (86.6%)**; **90 deviations** are documented. These include serialization differences in void tags, task-list classes, and highlighted code, as well as differences in reference resolution, tables, nested emphasis, raw HTML, escapes, and extended autolinks. The guide lists the affected specification sections and counts.",
+      "expected": "Match all 672 pinned examples with their upstream extension flags; measure production extensions and final sanitization separately.",
+      "disclosure": "The raw parser matches **662/672** exact HTML examples with upstream extension flags; **10 deviations** remain: three autolink boundaries (internal excess parentheses, entity-like URL suffixes, and plus signs in email domains), five newline differences, and two task-list class differences. Production HTML matches **593/672**; the sanitized browser DOM matches **619/672**, including **32 intentional sanitization differences**. Every difference is classified in the checked-in audit. Table alignment, redundant nested bold markup, common `www.` links, and GFM tag filtering are fixed.",
       "baselineDisclosure": "The pinned GFM corpus matches **582 of 672 exact HTML examples (86.6%)**; **90 deviations** are documented. These include serialization differences in void tags, task-list classes, and highlighted code, as well as differences in reference resolution, tables, nested emphasis, raw HTML, escapes, and extended autolinks. The guide lists the affected specification sections and counts.",
-      "reproducer": null,
-      "evidence": []
+      "reproducer": {
+        "path": "tests/fixtures/gfm-spec.txt"
+      },
+      "evidence": [
+        "tests/fixtures/gfm-audit.json",
+        "tests/fixtures/gfm-conformance.json",
+        "tests/fixtures/gfm-render-conformance.json",
+        "scripts/conformance.mjs",
+        "scripts/gfm-render-conformance.mjs",
+        "tests/unit/gfm.test.js",
+        "tests/browser/gfm.spec.js"
+      ]
     },
     {
       "id": "GFM-02",
@@ -97,7 +107,7 @@
       "milestone": "GFM-1",
       "dependsOn": [],
       "expected": "Verify each behavior against cmark-gfm 0.29.0.gfm.13 / markdown-it 15.0.3; separate deliberate policy from unsupported upstream capabilities.",
-      "disclosure": "HTML is sanitized after parsing. Scripts, event handlers, forms, embedded documents, arbitrary styles, SVG foreign objects, and animation are removed, even where the original parser would preserve them. Static SVG and MathML use a restricted presentation allowlist.",
+      "disclosure": "GFM raw-text tags (including script, style, title, and iframe) are escaped as readable text before browser parsing. All output is then sanitized. Active scripts, event handlers, forms, embedded documents, arbitrary styles, SVG foreign objects, and animation cannot survive as active elements, even where the original parser would preserve them. Static SVG and MathML use a restricted presentation allowlist.",
       "baselineDisclosure": "HTML is sanitized after parsing. Scripts, event handlers, forms, embedded documents, arbitrary styles, SVG foreign objects, and animation are removed, even where the original parser would preserve them. Static SVG and MathML use a restricted presentation allowlist.",
       "reproducer": null,
       "evidence": []

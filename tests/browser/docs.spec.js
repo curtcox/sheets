@@ -171,7 +171,7 @@ test("documentation examples open their source with the required context and lim
     await expect(
       page.locator("#docs-content").getByRole("heading", { name, exact: true }),
     ).toBeVisible();
-  await expect(page.locator("#docs-content")).toContainText("90 deviations");
+  await expect(page.locator("#docs-content")).toContainText("662/672");
   await expect(page.locator("#docs-content")).toContainText(
     "1e-8 transaction tolerance",
   );

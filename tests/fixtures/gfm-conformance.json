@@ -1,368 +1,461 @@
 {
   "upstream": "github/cmark-gfm@0.29.0.gfm.13/test/spec.txt",
   "total": 672,
-  "passed": 582,
-  "failed": 90,
-  "failures": [
-    {
-      "id": 11,
-      "section": "Tabs"
-    },
-    {
-      "id": 13,
-      "section": "Thematic breaks"
-    },
-    {
-      "id": 17,
-      "section": "Thematic breaks"
-    },
-    {
-      "id": 20,
-      "section": "Thematic breaks"
-    },
-    {
-      "id": 21,
-      "section": "Thematic breaks"
-    },
-    {
-      "id": 22,
-      "section": "Thematic breaks"
-    },
-    {
-      "id": 23,
-      "section": "Thematic breaks"
-    },
-    {
-      "id": 24,
-      "section": "Thematic breaks"
-    },
-    {
-      "id": 27,
-      "section": "Thematic breaks"
-    },
-    {
-      "id": 28,
-      "section": "Thematic breaks"
-    },
-    {
-      "id": 30,
-      "section": "Thematic breaks"
-    },
-    {
-      "id": 31,
-      "section": "Thematic breaks"
-    },
-    {
-      "id": 47,
-      "section": "ATX headings"
-    },
-    {
-      "id": 55,
-      "section": "Setext headings"
-    },
-    {
-      "id": 58,
-      "section": "Setext headings"
-    },
-    {
-      "id": 62,
-      "section": "Setext headings"
-    },
-    {
-      "id": 64,
-      "section": "Setext headings"
-    },
-    {
-      "id": 66,
-      "section": "Setext headings"
-    },
-    {
-      "id": 68,
-      "section": "Setext headings"
-    },
-    {
-      "id": 69,
-      "section": "Setext headings"
-    },
-    {
-      "id": 70,
-      "section": "Setext headings"
-    },
-    {
-      "id": 71,
-      "section": "Setext headings"
-    },
-    {
-      "id": 74,
-      "section": "Setext headings"
-    },
-    {
-      "id": 75,
-      "section": "Setext headings"
-    },
-    {
-      "id": 85,
-      "section": "Indented code blocks"
-    },
-    {
-      "id": 112,
-      "section": "Fenced code blocks"
-    },
-    {
-      "id": 113,
-      "section": "Fenced code blocks"
-    },
-    {
-      "id": 176,
-      "section": "Link reference definitions"
-    },
-    {
-      "id": 187,
-      "section": "Link reference definitions"
-    },
-    {
-      "id": 188,
-      "section": "Link reference definitions"
-    },
-    {
-      "id": 196,
-      "section": "Paragraphs"
-    },
-    {
-      "id": 199,
-      "section": "Tables (extension)"
-    },
-    {
-      "id": 212,
-      "section": "Block quotes"
-    },
-    {
-      "id": 217,
-      "section": "Block quotes"
-    },
-    {
-      "id": 218,
-      "section": "Block quotes"
-    },
-    {
-      "id": 224,
-      "section": "Block quotes"
-    },
-    {
-      "id": 279,
-      "section": "Task list items (extension)"
-    },
-    {
-      "id": 280,
-      "section": "Task list items (extension)"
-    },
-    {
-      "id": 312,
-      "section": "Backslash escapes"
-    },
-    {
-      "id": 398,
-      "section": "Emphasis and strong emphasis"
-    },
-    {
-      "id": 426,
-      "section": "Emphasis and strong emphasis"
-    },
-    {
-      "id": 434,
-      "section": "Emphasis and strong emphasis"
-    },
-    {
-      "id": 435,
-      "section": "Emphasis and strong emphasis"
-    },
-    {
-      "id": 436,
-      "section": "Emphasis and strong emphasis"
-    },
-    {
-      "id": 473,
-      "section": "Emphasis and strong emphasis"
-    },
-    {
-      "id": 474,
-      "section": "Emphasis and strong emphasis"
-    },
-    {
-      "id": 475,
-      "section": "Emphasis and strong emphasis"
-    },
-    {
-      "id": 477,
-      "section": "Emphasis and strong emphasis"
-    },
-    {
-      "id": 525,
-      "section": "Links"
-    },
-    {
-      "id": 528,
-      "section": "Links"
-    },
-    {
-      "id": 539,
-      "section": "Links"
-    },
-    {
-      "id": 580,
-      "section": "Images"
-    },
-    {
-      "id": 581,
-      "section": "Images"
-    },
-    {
-      "id": 582,
-      "section": "Images"
-    },
-    {
-      "id": 583,
-      "section": "Images"
-    },
-    {
-      "id": 584,
-      "section": "Images"
-    },
-    {
-      "id": 585,
-      "section": "Images"
-    },
-    {
-      "id": 586,
-      "section": "Images"
-    },
-    {
-      "id": 587,
-      "section": "Images"
-    },
-    {
-      "id": 588,
-      "section": "Images"
-    },
-    {
-      "id": 589,
-      "section": "Images"
-    },
-    {
-      "id": 590,
-      "section": "Images"
-    },
-    {
-      "id": 591,
-      "section": "Images"
-    },
-    {
-      "id": 592,
-      "section": "Images"
-    },
-    {
-      "id": 593,
-      "section": "Images"
-    },
-    {
-      "id": 594,
-      "section": "Images"
-    },
-    {
-      "id": 595,
-      "section": "Images"
-    },
-    {
-      "id": 596,
-      "section": "Images"
-    },
-    {
-      "id": 597,
-      "section": "Images"
-    },
-    {
-      "id": 599,
-      "section": "Images"
-    },
-    {
-      "id": 610,
-      "section": "Autolinks"
-    },
-    {
-      "id": 616,
-      "section": "Autolinks"
-    },
-    {
-      "id": 619,
-      "section": "Autolinks"
-    },
-    {
-      "id": 620,
-      "section": "Autolinks"
-    },
-    {
-      "id": 621,
-      "section": "Autolinks (extension)"
-    },
-    {
-      "id": 622,
-      "section": "Autolinks (extension)"
-    },
-    {
-      "id": 623,
-      "section": "Autolinks (extension)"
-    },
-    {
-      "id": 624,
-      "section": "Autolinks (extension)"
-    },
-    {
-      "id": 625,
-      "section": "Autolinks (extension)"
-    },
-    {
-      "id": 626,
-      "section": "Autolinks (extension)"
-    },
-    {
-      "id": 627,
-      "section": "Autolinks (extension)"
-    },
-    {
-      "id": 630,
-      "section": "Autolinks (extension)"
-    },
-    {
-      "id": 652,
-      "section": "Disallowed Raw HTML (extension)"
-    },
-    {
-      "id": 653,
-      "section": "Hard line breaks"
-    },
-    {
-      "id": 654,
-      "section": "Hard line breaks"
-    },
-    {
-      "id": 655,
-      "section": "Hard line breaks"
-    },
-    {
-      "id": 656,
-      "section": "Hard line breaks"
-    },
-    {
-      "id": 657,
-      "section": "Hard line breaks"
-    },
-    {
-      "id": 658,
-      "section": "Hard line breaks"
-    },
-    {
-      "id": 659,
-      "section": "Hard line breaks"
-    }
-  ]
+  "raw": {
+    "passed": 662,
+    "failed": 10,
+    "failures": [
+      {
+        "id": 176,
+        "section": "Link reference definitions",
+        "classification": "empty-block-whitespace"
+      },
+      {
+        "id": 187,
+        "section": "Link reference definitions",
+        "classification": "empty-block-whitespace"
+      },
+      {
+        "id": 188,
+        "section": "Link reference definitions",
+        "classification": "empty-block-whitespace"
+      },
+      {
+        "id": 217,
+        "section": "Block quotes",
+        "classification": "empty-block-whitespace"
+      },
+      {
+        "id": 218,
+        "section": "Block quotes",
+        "classification": "empty-block-whitespace"
+      },
+      {
+        "id": 279,
+        "section": "Task list items (extension)",
+        "classification": "task-classes"
+      },
+      {
+        "id": 280,
+        "section": "Task list items (extension)",
+        "classification": "task-classes"
+      },
+      {
+        "id": 625,
+        "section": "Autolinks (extension)",
+        "classification": "extended-url-boundaries"
+      },
+      {
+        "id": 626,
+        "section": "Autolinks (extension)",
+        "classification": "extended-url-boundaries"
+      },
+      {
+        "id": 630,
+        "section": "Autolinks (extension)",
+        "classification": "email-domain"
+      }
+    ]
+  },
+  "production": {
+    "passed": 593,
+    "failed": 79,
+    "failures": [
+      {
+        "id": 11,
+        "section": "Tabs",
+        "classification": "void-tags"
+      },
+      {
+        "id": 13,
+        "section": "Thematic breaks",
+        "classification": "void-tags"
+      },
+      {
+        "id": 17,
+        "section": "Thematic breaks",
+        "classification": "void-tags"
+      },
+      {
+        "id": 20,
+        "section": "Thematic breaks",
+        "classification": "void-tags"
+      },
+      {
+        "id": 21,
+        "section": "Thematic breaks",
+        "classification": "void-tags"
+      },
+      {
+        "id": 22,
+        "section": "Thematic breaks",
+        "classification": "void-tags"
+      },
+      {
+        "id": 23,
+        "section": "Thematic breaks",
+        "classification": "void-tags"
+      },
+      {
+        "id": 24,
+        "section": "Thematic breaks",
+        "classification": "void-tags"
+      },
+      {
+        "id": 27,
+        "section": "Thematic breaks",
+        "classification": "void-tags"
+      },
+      {
+        "id": 28,
+        "section": "Thematic breaks",
+        "classification": "void-tags"
+      },
+      {
+        "id": 30,
+        "section": "Thematic breaks",
+        "classification": "void-tags"
+      },
+      {
+        "id": 31,
+        "section": "Thematic breaks",
+        "classification": "void-tags"
+      },
+      {
+        "id": 47,
+        "section": "ATX headings",
+        "classification": "void-tags"
+      },
+      {
+        "id": 55,
+        "section": "Setext headings",
+        "classification": "void-tags"
+      },
+      {
+        "id": 58,
+        "section": "Setext headings",
+        "classification": "void-tags"
+      },
+      {
+        "id": 62,
+        "section": "Setext headings",
+        "classification": "void-tags"
+      },
+      {
+        "id": 64,
+        "section": "Setext headings",
+        "classification": "void-tags"
+      },
+      {
+        "id": 66,
+        "section": "Setext headings",
+        "classification": "void-tags"
+      },
+      {
+        "id": 68,
+        "section": "Setext headings",
+        "classification": "void-tags"
+      },
+      {
+        "id": 69,
+        "section": "Setext headings",
+        "classification": "void-tags"
+      },
+      {
+        "id": 70,
+        "section": "Setext headings",
+        "classification": "void-tags"
+      },
+      {
+        "id": 71,
+        "section": "Setext headings",
+        "classification": "void-tags"
+      },
+      {
+        "id": 74,
+        "section": "Setext headings",
+        "classification": "void-tags"
+      },
+      {
+        "id": 75,
+        "section": "Setext headings",
+        "classification": "void-tags"
+      },
+      {
+        "id": 85,
+        "section": "Indented code blocks",
+        "classification": "void-tags"
+      },
+      {
+        "id": 112,
+        "section": "Fenced code blocks",
+        "classification": "highlighting"
+      },
+      {
+        "id": 113,
+        "section": "Fenced code blocks",
+        "classification": "highlighting"
+      },
+      {
+        "id": 140,
+        "section": "HTML blocks",
+        "classification": "extension-mode"
+      },
+      {
+        "id": 141,
+        "section": "HTML blocks",
+        "classification": "extension-mode"
+      },
+      {
+        "id": 142,
+        "section": "HTML blocks",
+        "classification": "extension-mode"
+      },
+      {
+        "id": 145,
+        "section": "HTML blocks",
+        "classification": "extension-mode"
+      },
+      {
+        "id": 147,
+        "section": "HTML blocks",
+        "classification": "extension-mode"
+      },
+      {
+        "id": 176,
+        "section": "Link reference definitions",
+        "classification": "empty-block-whitespace"
+      },
+      {
+        "id": 187,
+        "section": "Link reference definitions",
+        "classification": "empty-block-whitespace"
+      },
+      {
+        "id": 188,
+        "section": "Link reference definitions",
+        "classification": "empty-block-whitespace"
+      },
+      {
+        "id": 196,
+        "section": "Paragraphs",
+        "classification": "void-tags"
+      },
+      {
+        "id": 212,
+        "section": "Block quotes",
+        "classification": "void-tags"
+      },
+      {
+        "id": 217,
+        "section": "Block quotes",
+        "classification": "empty-block-whitespace"
+      },
+      {
+        "id": 218,
+        "section": "Block quotes",
+        "classification": "empty-block-whitespace"
+      },
+      {
+        "id": 224,
+        "section": "Block quotes",
+        "classification": "void-tags"
+      },
+      {
+        "id": 279,
+        "section": "Task list items (extension)",
+        "classification": "task-classes"
+      },
+      {
+        "id": 280,
+        "section": "Task list items (extension)",
+        "classification": "task-classes"
+      },
+      {
+        "id": 312,
+        "section": "Backslash escapes",
+        "classification": "void-tags"
+      },
+      {
+        "id": 525,
+        "section": "Links",
+        "classification": "void-tags"
+      },
+      {
+        "id": 528,
+        "section": "Links",
+        "classification": "void-tags"
+      },
+      {
+        "id": 539,
+        "section": "Links",
+        "classification": "void-tags"
+      },
+      {
+        "id": 580,
+        "section": "Images",
+        "classification": "void-tags"
+      },
+      {
+        "id": 581,
+        "section": "Images",
+        "classification": "void-tags"
+      },
+      {
+        "id": 582,
+        "section": "Images",
+        "classification": "void-tags"
+      },
+      {
+        "id": 583,
+        "section": "Images",
+        "classification": "void-tags"
+      },
+      {
+        "id": 584,
+        "section": "Images",
+        "classification": "void-tags"
+      },
+      {
+        "id": 585,
+        "section": "Images",
+        "classification": "void-tags"
+      },
+      {
+        "id": 586,
+        "section": "Images",
+        "classification": "void-tags"
+      },
+      {
+        "id": 587,
+        "section": "Images",
+        "classification": "void-tags"
+      },
+      {
+        "id": 588,
+        "section": "Images",
+        "classification": "void-tags"
+      },
+      {
+        "id": 589,
+        "section": "Images",
+        "classification": "void-tags"
+      },
+      {
+        "id": 590,
+        "section": "Images",
+        "classification": "void-tags"
+      },
+      {
+        "id": 591,
+        "section": "Images",
+        "classification": "void-tags"
+      },
+      {
+        "id": 592,
+        "section": "Images",
+        "classification": "void-tags"
+      },
+      {
+        "id": 593,
+        "section": "Images",
+        "classification": "void-tags"
+      },
+      {
+        "id": 594,
+        "section": "Images",
+        "classification": "void-tags"
+      },
+      {
+        "id": 595,
+        "section": "Images",
+        "classification": "void-tags"
+      },
+      {
+        "id": 596,
+        "section": "Images",
+        "classification": "void-tags"
+      },
+      {
+        "id": 597,
+        "section": "Images",
+        "classification": "void-tags"
+      },
+      {
+        "id": 599,
+        "section": "Images",
+        "classification": "void-tags"
+      },
+      {
+        "id": 610,
+        "section": "Autolinks",
+        "classification": "extension-mode"
+      },
+      {
+        "id": 616,
+        "section": "Autolinks",
+        "classification": "extension-mode"
+      },
+      {
+        "id": 619,
+        "section": "Autolinks",
+        "classification": "extension-mode"
+      },
+      {
+        "id": 620,
+        "section": "Autolinks",
+        "classification": "extension-mode"
+      },
+      {
+        "id": 625,
+        "section": "Autolinks (extension)",
+        "classification": "extended-url-boundaries"
+      },
+      {
+        "id": 626,
+        "section": "Autolinks (extension)",
+        "classification": "extended-url-boundaries"
+      },
+      {
+        "id": 630,
+        "section": "Autolinks (extension)",
+        "classification": "email-domain"
+      },
+      {
+        "id": 653,
+        "section": "Hard line breaks",
+        "classification": "void-tags"
+      },
+      {
+        "id": 654,
+        "section": "Hard line breaks",
+        "classification": "void-tags"
+      },
+      {
+        "id": 655,
+        "section": "Hard line breaks",
+        "classification": "void-tags"
+      },
+      {
+        "id": 656,
+        "section": "Hard line breaks",
+        "classification": "void-tags"
+      },
+      {
+        "id": 657,
+        "section": "Hard line breaks",
+        "classification": "void-tags"
+      },
+      {
+        "id": 658,
+        "section": "Hard line breaks",
+        "classification": "void-tags"
+      },
+      {
+        "id": 659,
+        "section": "Hard line breaks",
+        "classification": "void-tags"
+      }
+    ]
+  }
 }

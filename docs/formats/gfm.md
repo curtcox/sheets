@@ -36,7 +36,7 @@ calculations or Quarto for Python/R output.
 | --- | --- |
 | `# Heading`, `## Subheading` | Document sections |
 | `**strong**`, `*emphasis*`, `~~removed~~` | Text emphasis and strikethrough |
-| `[label](https://example.com)` | A link; bare web addresses are also linkified |
+| `[label](https://example.com)`, `www.commonmark.org/help` | Explicit links and bare HTTP(S), `www.` addresses, and email links |
 | `![Sheets icon](src/icon.svg)` | An image; a remote image needs its server |
 | `- [ ] Task`, `- [x] Done` | A displayed task checklist; edit its state in source |
 | `[^detail]` and a later `[^detail]: Explanation` | A footnote |
@@ -49,37 +49,58 @@ Sheets uses markdown-it 15.0.3 for tables, strikethrough, autolinks, and Markdow
 
 Inline `$…$`, display `$$…$$`, and fenced `math` blocks render TeX through [Temml](https://temml.org/) as native MathML. Currency-like pairs with spaces or numeric suffixes are not treated as math. A fenced `mermaid` block loads Mermaid lazily and renders with strict security settings. Its static SVG passes through the same sanitizer as all other output.
 
-Raw HTML is accepted by the Markdown parser and then sanitized with DOMPurify before entering the page. Scripts, event attributes, forms, embedded documents, arbitrary styles, SVG foreign objects, and animation are removed. A narrow allowlist preserves static SVG and MathML presentation properties. This applies to every format, including dataframe HTML and matplotlib SVG.
+Raw HTML is accepted by the Markdown parser. GFM raw-text tags (`title`, `textarea`, `style`, `xmp`, `iframe`, `noembed`, `noframes`, `script`, `plaintext`) are escaped as readable text before browser parsing. All output is then sanitized with DOMPurify before entering the page. Active scripts, event attributes, forms, embedded documents, arbitrary styles, SVG foreign objects, and animation are removed. A narrow allowlist preserves static SVG and MathML presentation properties. This applies to every format, including dataframe HTML and matplotlib SVG.
 
 ## GFM conformance
 
-The committed **github/cmark-gfm 0.29.0.gfm.13** specification has **672 examples**. The actual Sheets Markdown pipeline matches **582/672 (86.6%)** as exact HTML strings. There are **90 documented deviations**. Run `npm run test:conformance` to verify the baseline, or inspect `tests/fixtures/gfm-conformance.json` in the repository for every failed example ID.
+The committed **github/cmark-gfm 0.29.0.gfm.13** specification has **672 examples**. All 90 original deviations have been reviewed and classified. These measurements describe different layers; they should not be combined into a single compatibility percentage.
 
-An exact-string mismatch can be serialization rather than visual behavior: void tags (`<hr>`, `<br>`, `<img>`) differ from cmark's XHTML spelling, task-list HTML has plugin classes, and code highlighting adds markup. Other differences involve reference resolution, table parsing, nested emphasis, raw HTML filtering, backslash handling, and GitHub's extended autolink behavior. This is a close Markdown implementation with useful extensions, not a claim of exact GitHub parity.
+| Measurement | Exact matches | What it measures |
+| --- | ---: | --- |
+| Raw parser HTML | 662/672 (98.5%) | Upstream per-example extension flags and XHTML spelling, without highlighting, math, footnotes, alerts, or Mermaid |
+| Production HTML | 593/672 (88.2%) | The actual shared Markdown renderer, before sanitization; all GFM extensions and Sheets presentation features enabled |
+| Final browser DOM | 619/672 (92.1%) | Actual sanitized output compared with the reference parsed in an inert browser template; HTML5 spelling and attribute ordering follow browser serialization |
 
-| Spec section with deviations | Count |
-| --- | ---: |
-| Tabs | 1 |
-| Thematic breaks | 11 |
-| ATX headings | 1 |
-| Setext headings | 11 |
-| Indented code blocks | 1 |
-| Fenced code blocks | 2 |
-| Link reference definitions | 3 |
-| Paragraphs | 1 |
-| Tables | 1 |
-| Block quotes | 4 |
-| Task list items | 2 |
-| Backslash escapes | 1 |
-| Emphasis and strong emphasis | 9 |
-| Links | 3 |
-| Images | 19 |
-| Autolinks | 4 |
-| Extended autolinks | 8 |
-| Disallowed raw HTML | 1 |
-| Hard line breaks | 7 |
+The final DOM still preserves text, whitespace, attributes, and element structure: it does not flatten nested markup or remove task classes to inflate the count. Of its 53 differences, 32 are **solely intentional sanitization**: applying the same sanitizer to the reference produces the same DOM. The corpus has no Mermaid post-pass cases; separate browser/export tests cover diagrams and math.
 
-The corpus is attributed under CC-BY-SA 4.0 and excluded from deployment. Raw conformance is measured before sanitization and before Mermaid's browser post-pass. Sanitized output intentionally removes unsafe HTML even where the GFM parser preserves it.
+The **10 remaining raw-parser differences** are:
+
+| Classification | Example IDs | Behavior |
+| --- | --- | --- |
+| Semantic gap | 625, 626, 630 | Internal excess closing parentheses in URLs, entity-like URL suffixes, and plus signs in email domains differ from GFM |
+| Serialization | 176, 187, 188, 217, 218 | Empty documents/blockquotes emit different newlines; link reference resolution matches |
+| Serialization | 279, 280 | Task state and disabled checkboxes match, but the plugin adds CSS classes; both examples are marked disabled upstream and still measured here |
+
+Production has 79 exact-string differences: the three semantic gaps, five newline differences, two task-class differences, 58 HTML5 void-tag spellings, two highlighted fences, and nine extension-mode differences. The last nine are CommonMark examples without autolink/tagfilter flags; production consistently enables those GFM extensions. This is documented behavior, not an unexplained parser regression.
+
+The shared renderer now preserves left/center/right table alignment in previews and HTML exports, collapses redundant nested bold delimiters, recognizes common `www.` links, and escapes GFM-disallowed raw-text tags. Try these behaviors together:
+
+```text
+# Aligned notes
+
+| Left | Center | Right |
+| :--- | :---: | ---: |
+| one | two | three |
+
+Visit www.commonmark.org/help.
+
+****Bold**** and $x^2$.
+
+- [x] Reviewed
+
+<title>Visible tag text</title>
+```
+
+For URL punctuation that hits the three remaining gaps, use explicit links:
+
+```text
+[Full URL](<https://www.google.com/search?q=(business))+ok>)
+[Address](mailto:hello+xyz@mail.example)
+```
+
+Run `npm run test:conformance` for raw/production exact HTML and `node scripts/gfm-render-conformance.mjs` for the actual Chromium sanitization measurement. The browser suite checks the same DOM snapshot in Chromium, Firefox, and WebKit. The reviewed classifications and example IDs are in `tests/fixtures/gfm-audit.json`; the two metric reports are `gfm-conformance.json` and `gfm-render-conformance.json` in that directory. No semantic normalization is applied to either HTML string metric.
+
+The corpus is attributed under CC-BY-SA 4.0 and excluded from deployment. These are reproducible compatibility measurements, not a claim of full GitHub parity.
 
 Markdown is the fallback format with low Auto confidence. Upstream references: [markdown-it](https://github.com/markdown-it/markdown-it), [GFM spec](https://github.github.com/gfm/), [Mermaid](https://mermaid.js.org/).
 
@@ -97,7 +118,7 @@ These entries share the [central limitations ledger](../limitations.md). “Need
 
 | ID | Status | Area |
 | --- | --- | --- |
-| GFM-01 | Needs detailed audit | The pinned GFM corpus matches 582 of 672 exact HTML examples (86.6%); 90 deviations are documented |
+| GFM-01 | Known gap | GFM has three remaining autolink boundary gaps; all corpus differences are classified |
 | GFM-02 | Intentional | HTML is sanitized after parsing |
 | GFM-03 | Needs detailed audit | Math uses Temml's supported TeX notation, not a complete TeX document engine |
 | GFM-04 | Needs detailed audit | Code fences display code; Markdown formulas and table cells do not calculate |

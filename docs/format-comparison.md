@@ -37,7 +37,7 @@ choose Numbat for dimension-checked models.
 
 | Format | Prose and math typesetting | Tables and structured data | Diagrams and plots | Executable notebook cells |
 | --- | --- | --- | --- | --- |
-| [GitHub Markdown](formats/gfm.md) | Markdown and TeX/MathML | Display-only Markdown tables | Mermaid diagrams | No; code fences display source |
+| [GitHub Markdown](formats/gfm.md) | Markdown and TeX/MathML | Display-only Markdown tables with alignment | Mermaid diagrams | No; code fences display source |
 | [AsciiMath](formats/asciimath.md) | AsciiMath/MathML; Markdown in mixed documents | Display-only Markdown tables | Mermaid in mixed documents | No |
 | [Numbat](formats/numbat.md) | Source/result rows; `#` comments | Language values; no spreadsheet UI | No Sheets plot viewer | No Python/R cells |
 | [CalcFile](formats/calcfile.md) | Plain prose, headers, result rows | Running totals and aggregates | No | No |
@@ -101,7 +101,7 @@ or notebook cells. External image URLs still need their server. See
 | Dimensional checking | Rejecting incompatible physical operations, such as adding a length to a duration. Writing a unit label in prose alone does not provide this check. |
 | Equation solving | Finding an unknown from a relation, rather than evaluating an expression whose inputs are already known. Calca's solver is limited to supported real linear/quadratic relations. |
 | Compatibility profile | An explicit version of a format's behavior, stored in shared links and profiled saved documents. Calca's Structured blocks profile changes block classification; Scoped definitions adds immutable bindings, heading scopes, and connected numeric constraint checks; plain source downloads need the mode selected again. |
-| Display-only table | A formatted grid whose cells are literal text. Markdown tables do not acquire spreadsheet formulas automatically. |
+| Display-only table | A formatted grid whose cells are literal text. Markdown tables support left/center/right column alignment in preview and export; their cells do not acquire spreadsheet formulas automatically. |
 | Table formulas and references | Expressions that read or update cells. Org uses references such as `$2` and `@3$2`; Hurmet has its own table model. |
 | Range and aggregate | A group of values and a summary operation such as sum, mean, or count. Org ranges address cells; CalcFile totals summarize calculation lines. |
 | Matrix | A rectangular mathematical value used in an expression. A matrix is different from a document table with editable cell formulas. |

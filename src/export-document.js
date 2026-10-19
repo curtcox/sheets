@@ -7,6 +7,7 @@ const exportStyles = `
 body{max-width:900px;margin:40px auto;padding:0 24px;line-height:1.75;overflow-wrap:anywhere}
 h1,h2,h3{line-height:1.3}h1{font-size:2em}a{color:#176f61}img,svg{max-width:100%;height:auto}
 table{border-collapse:collapse;width:100%;margin:20px 0;font-size:.9em}td,th{border:1px solid #dfe5e0;padding:8px 12px;text-align:left}th{background:#f2f6ef}
+[align="center"]{text-align:center}[align="right"]{text-align:right}
 pre{background:#f5f7f3;padding:16px;white-space:pre-wrap;overflow:auto;border-radius:6px}code{font-family:ui-monospace,monospace;font-size:.9em}
 blockquote,.markdown-alert,.callout{border-left:3px solid #7cb99c;padding:4px 18px;margin:20px 0;background:#f1f7ef}
 .display-math{overflow:auto;padding:15px 0}math{font-size:1.1em}.asciimath-formula details{font-size:.8em;color:#6c7c77}

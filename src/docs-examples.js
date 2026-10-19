@@ -11,6 +11,7 @@ export const syntaxExamples = {
 ## Subheading
 **strong**, *emphasis*, ~~removed~~
 [label](https://example.com)
+www.commonmark.org/help
 ![Sheets icon](src/icon.svg)
 - [ ] Task
 - [x] Done

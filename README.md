@@ -48,10 +48,15 @@ for disclosure drift. Imported compound entries remain marked for detailed audit
 they are not claims of completed upstream conformance.
 
 Unit tests run real Numbat WASM and Hurmet, all 37 required CalcFile conformance
-cases, URL/detection/HashBin/sharing tests, and the recorded GFM corpus (582/672
-exact HTML matches; deviations listed in the format guide). Browser tests render
+cases, URL/detection/HashBin/sharing tests, and the recorded GFM corpus (662/672
+raw exact HTML matches, 593/672 production HTML; every deviation classified in
+the format guide). Browser tests render
 all 36 examples in Chromium, Firefox, and WebKit, including real Python and R, and check
 sharing, cancellation, XSS boundaries, mobile layouts, docs, gallery and reports.
+
+The GFM browser suite separately checks 619/672 final DOM matches, including
+32 intentional sanitization differences. Reproduce that metric with
+`node scripts/gfm-render-conformance.mjs`.
 
 Independent fixture checks require Emacs and Python reference tools. Beancount
 reference balances use decimal strings, never floats:

@@ -21,23 +21,81 @@ export function createMarkdown({
   math = renderMath,
   diagnostics = [],
   mermaid = [],
+  presentation = true,
+  extensions = ["table", "strikethrough", "autolink", "tagfilter", "tasklist"],
 } = {}) {
   const md = new MarkdownIt({
     html: true,
-    linkify: true,
+    linkify: extensions.includes("autolink"),
     breaks: false,
+    // The corpus uses XHTML spelling. Production keeps HTML5 serialization.
+    xhtmlOut: !presentation,
     highlight(code, lang) {
-      return lang && highlight.getLanguage(lang)
+      return presentation && lang && highlight.getLanguage(lang)
         ? highlight.highlight(code, { language: lang, ignoreIllegals: true })
             .value
         : escapeHTML(code);
     },
-  })
-    .use(taskLists)
-    .use(footnotes)
-    .use(alerts);
+  });
+  for (const name of ["table", "strikethrough"])
+    if (!extensions.includes(name)) md.disable(name);
+  if (extensions.includes("tasklist")) md.use(taskLists);
+  if (presentation) md.use(footnotes).use(alerts);
+  // linkify-it 6 disables fuzzy URLs by default. Add just the GFM www prefix,
+  // delegating URL validation and punctuation to its bounded HTTP matcher.
+  // Do not turn on fuzzyLink: that also links bare domains outside GFM syntax.
+  md.linkify.add("www.", {
+    validate(text, pos, self) {
+      const match = self.matchAtStart("http://" + text.slice(pos - 4));
+      return match && match.lastIndex > 11 ? match.lastIndex - 11 : 0;
+    },
+    normalize(match) {
+      match.url = "http://" + match.url;
+    },
+  });
+  // Markdown-it emits alignment as style, which the final sanitizer correctly
+  // removes from HTML. Use GFM's constrained align attribute instead.
+  for (const type of ["th_open", "td_open"])
+    md.renderer.rules[type] = (tokens, i, options, env, self) => {
+      const token = tokens[i];
+      const alignment = /^text-align:(left|center|right)$/.exec(
+        token.attrGet("style") || "",
+      );
+      if (alignment) {
+        token.attrs = token.attrs.filter(([name]) => name !== "style");
+        token.attrSet("align", alignment[1]);
+      }
+      return self.renderToken(tokens, i, options);
+    };
+  // GFM tagfilter escapes the opening '<', preserving readable tag text before
+  // the browser interprets raw-text elements. This is separate from DOMPurify.
+  if (extensions.includes("tagfilter"))
+    for (const type of ["html_inline", "html_block"])
+      md.renderer.rules[type] = (tokens, i) =>
+        tokens[i].content.replace(
+          /<(?=\/?(?:title|textarea|style|xmp|iframe|noembed|noframes|script|plaintext)(?=[\t\n\f />]))/gi,
+          "&lt;",
+        );
+  // The pinned cmark renderer collapses strong-inside-strong. Preserve the
+  // parser's tokens/maps for Calca, hiding only redundant rendering delimiters.
+  md.core.ruler.push("gfm_strong", (state) => {
+    for (const block of state.tokens) {
+      const parents = [];
+      for (const token of block.children || []) {
+        if (token.type === "strong_open")
+          token.hidden = parents.at(-1)?.type === "strong_open";
+        if (token.nesting === 1) parents.push(token);
+        if (token.nesting === -1) {
+          const open = parents.pop();
+          if (token.type === "strong_close")
+            token.hidden = open?.hidden || false;
+        }
+      }
+    }
+  });
   md.renderer.rules.s_open = () => "<del>";
   md.renderer.rules.s_close = () => "</del>";
+  if (!presentation) return md;
   md.inline.ruler.before("escape", "sheets_math", (state, silent) => {
     if (
       !math ||

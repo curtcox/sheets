@@ -474,6 +474,26 @@ expectations. Do not normalize away semantic errors or weaken the sanitizer to
 increase a percentage. If adapter fixes require recreating the grammar, evaluate
 a pinned upstream parser build instead, retaining the buildless deployment model.
 
+GFM-1 first increment implemented: all original 90 failures are classified in
+`tests/fixtures/gfm-audit.json`. The runner now preserves upstream extension flags
+(including the two disabled task-list examples, which remain measured), separating
+raw exact HTML (**662/672**) from production exact HTML (**593/672**) and the actual
+sanitized browser DOM (**619/672**, with 32 policy-only differences). Browser DOM
+serialization is a distinct metric, never a replacement for exact parser strings.
+
+Shared renderer fixes preserve table alignment through the sanitizer and HTML
+export, recognize common `www.` links through the existing bounded HTTP matcher,
+escape GFM raw-text tags before browser parsing, and collapse redundant adjacent
+strong delimiters while preserving Calca token maps. Existing math, Mermaid,
+footnotes, alerts, tasks, exports and all shared consumers remain covered.
+
+GFM-1 remains open: the next semantic cases are **625, 626, 630** (internal excess
+URL parentheses, entity-like URL suffixes, and an invalid plus in an email domain).
+Five newline and two task-class serialization differences remain in the raw
+metric. Production also differs for HTML5 void tags, highlighted fences, and nine
+CommonMark cases without GFM extension flags. The sanitizer stays unchanged;
+post-parse policy differences are explicitly measured and retained.
+
 ### Phase 14 — P2: expand language compatibility
 
 | ID | Ordered implementation slices | Dependencies / completion check |
