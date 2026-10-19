@@ -1,11 +1,14 @@
 # Native GFM autolink fixtures
 
 `gfm-autolinks.json` contains native cmark-gfm 0.29.0.gfm.13 HTML, recorded with
-`--unsafe -e autolink`. All 35 expected outputs come from the native executable;
-the Sheets renderer is never used to generate them. 31 cases pass; four broader
-host/email differences are individually explained in `knownDeviations` and the
-GFM-06 disclosure. Unit tests compare both the passing cases and audited mismatch
-IDs, while CI independently verifies the recorded native outputs.
+`--unsafe -e autolink`. All 57 expected outputs come from the native executable;
+the Sheets renderer is never used to generate them. 53 of 57 cases pass; four
+intentional native differences are individually explained in `knownDeviations`
+and GFM-06: uppercase WWW, numeric email-domain endings, Unicode email hosts,
+and keeping raw HTML anchors intact rather than nesting an email link. The two
+formerly missing email-domain/prefix cases now pass. Unit tests check every
+passing case and the exact retained-policy IDs; CI independently verifies all
+recorded native outputs.
 
 Run `bash scripts/gfm-reference.sh --check` to download, checksum, build and check
 the pinned native engine (CMake, C compiler and curl required). To deliberately

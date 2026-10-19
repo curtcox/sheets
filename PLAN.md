@@ -513,6 +513,24 @@ to the existing library. A broader
 host/email replacement requires fresh reference evidence and bounded complexity.
 CI builds the checksum-pinned native oracle and rejects fixture drift.
 
+GFM-1 third increment completes the audited parser/conformance work: domain
+underscores in bare emails and valid prefixes before a plus sign now match native
+cmark-gfm. A linear, DOM-free supplementary scanner and ordered merge preserve
+existing URI/email normalization, Unicode hosts, code/link/HTML contexts and
+source offsets. Long invalid runs have isolated-worker regression coverage;
+new candidates are capped at 10,000 characters. Existing library matches retain
+precedence. The reviewed corpus metrics stay **672/672 raw**, **601/672 production
+HTML**, and **627/672 final DOM**.
+
+The expanded native audit has **57 fixtures, 53 matches and four retained
+policies**: uppercase WWW, numeric email-domain endings, Unicode email hosts with
+IDNA normalization, and preserving raw HTML anchors instead of nesting email
+links. Both previously open email-recognition gaps are fixed. GFM-06 now records
+intentional differences, GFM-05 includes supplementary email bounds, and GFM-04's
+display-only behavior is explicitly retained. Temml coverage expansion remains
+FORMAT-1 (GFM-03); it is not a parser defect. The next Phase 13 implementation
+priority is **NUM-1**.
+
 ### Phase 14 — P2: expand language compatibility
 
 | ID | Ordered implementation slices | Dependencies / completion check |

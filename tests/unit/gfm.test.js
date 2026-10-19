@@ -186,3 +186,49 @@ test("automatic link recognition keeps a bounded candidate and explicit links st
     renderMarkdown(`[Full link](<${url}>)`).html.includes(`href="${url}"`),
   );
 });
+
+test("supplemental emails preserve source offsets and existing Unicode/URI matches", async () => {
+  const { emailAutolinks, supplementEmails } = await import(
+    "../../src/formats/gfm/email-autolinks.js"
+  );
+  const text = "First 😀 a@b.c_d, next a@b.c+tail. Last x@y.z_d.";
+  const links = emailAutolinks(text);
+  assert.deepEqual(
+    links.map((link) => link.raw),
+    ["a@b.c_d", "a@b.c", "x@y.z_d"],
+  );
+  for (const link of links)
+    assert.equal(text.slice(link.index, link.lastIndex), link.raw);
+  const existing = [
+    { index: 0, lastIndex: 100, url: "https://example.com/a@b.c_d" },
+  ];
+  assert.deepEqual(supplementEmails(existing, links), existing);
+  const { default: MarkdownIt } = await import("../../vendor/markdown-it.js");
+  const source = "user@παράδειγμα.δοκιμή";
+  const baseline = new MarkdownIt({ linkify: true }).render(source);
+  assert.ok(baseline.includes("mailto:"));
+  assert.equal(renderMarkdown(source).html, baseline);
+});
+
+test("email supplementation is bounded and long invalid runs finish without backtracking", async (t) => {
+  const { Worker } = await import("node:worker_threads");
+  const { once } = await import("node:events");
+  const url = new URL(
+    "../../src/formats/gfm/email-autolinks.js",
+    import.meta.url,
+  ).href;
+  const worker = new Worker(
+    `const {parentPort}=require('node:worker_threads');import(${JSON.stringify(url)}).then(({emailAutolinks})=>{parentPort.postMessage([
+    emailAutolinks('a'.repeat(500000)+'@host').length,
+    emailAutolinks('a@'.repeat(250000)).length,
+    emailAutolinks('x@y.z_d '.repeat(30000)).length,
+    emailAutolinks('a'.repeat(10001)+'@b.c_d').length
+  ]);});`,
+    { eval: true },
+  );
+  t.after(() => worker.terminate());
+  const [counts] = await once(worker, "message", {
+    signal: AbortSignal.timeout(10000),
+  });
+  assert.deepEqual(counts, [0, 0, 30000, 0]);
+});

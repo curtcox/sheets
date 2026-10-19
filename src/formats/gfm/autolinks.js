@@ -1,4 +1,5 @@
 import MarkdownIt from "../../../vendor/markdown-it.js";
+import { emailAutolinks, supplementEmails } from "./email-autolinks.js";
 
 // Keep linkify-it's host validation, length bound, and link normalization. GFM
 // adds its host-underscore and path-ending rules: trim unmatched trailing ')',
@@ -74,14 +75,19 @@ export function gfmAutolinks(md) {
     });
   }
   const match = md.linkify.match.bind(md.linkify);
+  const test = md.linkify.test.bind(md.linkify);
+  md.linkify.test = (text) => test(text) || text.includes("@");
   md.linkify.match = (text) =>
-    (match(text) || []).filter((link) => {
-      // Explicit mailto: URIs and <...> autolinks use their own grammar. Only
-      // fuzzy email domains reject '+', while local parts continue to allow it.
-      return (
-        link.schema !== "mailto:" ||
-        /^mailto:/i.test(link.raw) ||
-        !link.raw.slice(link.raw.lastIndexOf("@") + 1).includes("+")
-      );
-    });
+    supplementEmails(
+      (match(text) || []).filter((link) => {
+        // Explicit mailto: URIs and <...> autolinks use their own grammar. Only
+        // fuzzy email domains reject '+', while local parts continue to allow it.
+        return (
+          link.schema !== "mailto:" ||
+          /^mailto:/i.test(link.raw) ||
+          !link.raw.slice(link.raw.lastIndexOf("@") + 1).includes("+")
+        );
+      }),
+      emailAutolinks(text, limit),
+    );
 }

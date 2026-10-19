@@ -12,11 +12,11 @@ See the [GitHub Markdown guide](formats/gfm.md). Compatibility target: cmark-gfm
 
 - **GFM-03 — Math uses Temml's supported TeX notation, not a complete TeX document engine** (Needs detailed audit). Math uses Temml's supported TeX notation, not a complete TeX document engine. Currency-like dollar pairs are deliberately excluded from math parsing.
 
-- **GFM-04 — Code fences display code; Markdown formulas and table cells do not calculate** (Needs detailed audit). Code fences display code; Markdown formulas and table cells do not calculate. Task state is edited in source, rather than through an interactive checklist. Mermaid output is sanitized static SVG with strict security settings.
+- **GFM-04 — Code fences display code; Markdown formulas and table cells do not calculate** (Intentional). Code fences display code; Markdown formulas and table cells do not calculate. Task state is edited in source, rather than through an interactive checklist. Mermaid output is sanitized static SVG with strict security settings.
 
-- **GFM-05 — Automatic URL recognition has a bounded candidate length** (Intentional). Automatic URL recognition scans at most 10,000 characters after a recognized prefix, preserving the existing linkify-it resource bound. The remaining text stays visible. Use an explicit Markdown link for a longer address.
+- **GFM-05 — Automatic link recognition has bounded candidates** (Intentional). Automatic URL recognition scans at most 10,000 characters after a recognized prefix, preserving the existing linkify-it bound. The supplementary GFM email scanner emits only complete candidates of at most 10,000 characters. Remaining text stays visible and existing library matches keep their behavior. Use an explicit Markdown link for a longer address.
 
-- **GFM-06 — Host and email recognition still differs from the pinned native GFM implementation outside the corpus** (Known gap). A separate native audit has **31 matching fixtures and four classified differences** beyond the published corpus. URL-host underscores now follow the last-two-segments rule. Two remaining differences involve email-domain underscores or a valid email prefix before a plus sign. Sheets also retains uppercase WWW links and numeric final email-domain characters where this pinned native version leaves text unlinked. Host validation otherwise comes from linkify-it; the GFM path-ending fixes do not establish complete native autolink parity. Use explicit Markdown links where automatic recognition differs.
+- **GFM-06 — Email gaps are fixed; native autolink differences are intentional** (Intentional). Email-domain underscores and valid email prefixes before a plus sign now match the native reference. The separate audit has **53 matching fixtures and four intentional differences**: Sheets retains uppercase WWW links, numeric final email-domain characters, Unicode email hosts with IDNA normalization, and an existing raw HTML anchor instead of producing a nested email link. Canonical corpus conformance remains **672/672**; these native differences are retained policies, not unresolved email-recognition gaps.
 
 ### Resolved compatibility gaps
 
@@ -30,7 +30,7 @@ Current corpus measurements (see the guide for definitions):
 | Production HTML | 601/672 | 58 HTML5 void-tag spellings, two highlighted fences, two task CSS hooks, nine extension-mode differences |
 | Sanitized browser DOM | 627/672 | 32 sanitization-only differences plus 13 presentation/extension-mode differences |
 
-The independent native autolink audit has 31 matches and four classified differences outside this corpus (GFM-06).
+The independent native autolink audit has 53 matches and four intentional differences outside this corpus (GFM-06).
 
 ## AsciiMath
 

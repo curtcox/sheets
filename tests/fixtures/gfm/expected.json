@@ -23,7 +23,9 @@
       "<math",
       "<del>",
       "href=\"http://www.google.com/search?q=(business))+ok\"",
-      "href=\"mailto:hello+xyz@mail.example\""
+      "href=\"mailto:hello+xyz@mail.example\"",
+      "href=\"mailto:a@b.c_d\"",
+      "href=\"mailto:a@b.c\""
     ],
     "diagnostics": 0
   },

@@ -8,7 +8,7 @@
       "version": "cmark-gfm 0.29.0.gfm.13 / markdown-it 15.0.3",
       "reference": "https://github.github.com/gfm/",
       "guide": "formats/gfm.md",
-      "appendix": "Current corpus measurements (see the guide for definitions):\n\n| Layer | Exact matches | Remaining differences |\n| --- | ---: | --- |\n| Canonical raw HTML | 672/672 | None in the published corpus |\n| Production HTML | 601/672 | 58 HTML5 void-tag spellings, two highlighted fences, two task CSS hooks, nine extension-mode differences |\n| Sanitized browser DOM | 627/672 | 32 sanitization-only differences plus 13 presentation/extension-mode differences |\n\nThe independent native autolink audit has 31 matches and four classified differences outside this corpus (GFM-06)."
+      "appendix": "Current corpus measurements (see the guide for definitions):\n\n| Layer | Exact matches | Remaining differences |\n| --- | ---: | --- |\n| Canonical raw HTML | 672/672 | None in the published corpus |\n| Production HTML | 601/672 | 58 HTML5 void-tag spellings, two highlighted fences, two task CSS hooks, nine extension-mode differences |\n| Sanitized browser DOM | 627/672 | 32 sanitization-only differences plus 13 presentation/extension-mode differences |\n\nThe independent native autolink audit has 53 matches and four intentional differences outside this corpus (GFM-06)."
     },
     "asciimath": {
       "label": "AsciiMath",
@@ -123,7 +123,7 @@
       "kind": "mixed",
       "status": "audit",
       "priority": "P1",
-      "milestone": "GFM-1",
+      "milestone": "FORMAT-1",
       "dependsOn": [],
       "expected": "Verify each behavior against cmark-gfm 0.29.0.gfm.13 / markdown-it 15.0.3; separate deliberate policy from unsupported upstream capabilities.",
       "disclosure": "Math uses Temml's supported TeX notation, not a complete TeX document engine. Currency-like dollar pairs are deliberately excluded from math parsing.",
@@ -135,48 +135,56 @@
       "id": "GFM-04",
       "format": "gfm",
       "title": "Code fences display code; Markdown formulas and table cells do not calculate",
-      "kind": "mixed",
-      "status": "audit",
+      "kind": "policy",
+      "status": "retained",
       "priority": "P1",
       "milestone": "GFM-1",
       "dependsOn": [],
-      "expected": "Verify each behavior against cmark-gfm 0.29.0.gfm.13 / markdown-it 15.0.3; separate deliberate policy from unsupported upstream capabilities.",
+      "expected": "Code and formulas stay display-only in GFM; tasks retain source-edited state and strict Mermaid output remains sanitized.",
       "disclosure": "Code fences display code; Markdown formulas and table cells do not calculate. Task state is edited in source, rather than through an interactive checklist. Mermaid output is sanitized static SVG with strict security settings.",
       "baselineDisclosure": "Code fences display code; Markdown formulas and table cells do not calculate. Task state is edited in source, rather than through an interactive checklist. Mermaid output is sanitized static SVG with strict security settings.",
-      "reproducer": null,
-      "evidence": []
+      "reproducer": {
+        "path": "examples/gfm/typical.md"
+      },
+      "evidence": [
+        "tests/fixtures/gfm-autolinks.json",
+        "tests/unit/formats.test.js",
+        "tests/browser/exports.spec.js",
+        "tests/browser/gfm.spec.js"
+      ]
     },
     {
       "id": "GFM-05",
       "format": "gfm",
-      "title": "Automatic URL recognition has a bounded candidate length",
+      "title": "Automatic link recognition has bounded candidates",
       "kind": "policy",
       "status": "retained",
       "priority": "P2",
       "milestone": "GFM-1",
       "dependsOn": [],
       "expected": "Bound automatic candidate scanning while keeping explicit Markdown links available for complete long addresses.",
-      "disclosure": "Automatic URL recognition scans at most 10,000 characters after a recognized prefix, preserving the existing linkify-it resource bound. The remaining text stays visible. Use an explicit Markdown link for a longer address.",
+      "disclosure": "Automatic URL recognition scans at most 10,000 characters after a recognized prefix, preserving the existing linkify-it bound. The supplementary GFM email scanner emits only complete candidates of at most 10,000 characters. Remaining text stays visible and existing library matches keep their behavior. Use an explicit Markdown link for a longer address.",
       "reproducer": {
         "path": "tests/unit/gfm.test.js"
       },
       "evidence": [
         "src/formats/gfm/autolinks.js",
-        "tests/unit/gfm.test.js"
+        "tests/unit/gfm.test.js",
+        "src/formats/gfm/email-autolinks.js"
       ],
       "baselineDisclosure": "Automatic URL recognition scans at most 10,000 characters after a recognized prefix, preserving the existing linkify-it resource bound. The remaining text stays visible. Use an explicit Markdown link for a longer address."
     },
     {
       "id": "GFM-06",
       "format": "gfm",
-      "title": "Host and email recognition still differs from the pinned native GFM implementation outside the corpus",
-      "kind": "mixed",
-      "status": "open",
+      "title": "Email gaps are fixed; native autolink differences are intentional",
+      "kind": "policy",
+      "status": "retained",
       "priority": "P1",
       "milestone": "GFM-1",
       "dependsOn": [],
-      "expected": "Audit host, prefix and email recognition against native cmark-gfm 0.29.0.gfm.13, explicitly distinguishing its quirks from the published specification.",
-      "disclosure": "A separate native audit has **31 matching fixtures and four classified differences** beyond the published corpus. URL-host underscores now follow the last-two-segments rule. Two remaining differences involve email-domain underscores or a valid email prefix before a plus sign. Sheets also retains uppercase WWW links and numeric final email-domain characters where this pinned native version leaves text unlinked. Host validation otherwise comes from linkify-it; the GFM path-ending fixes do not establish complete native autolink parity. Use explicit Markdown links where automatic recognition differs.",
+      "expected": "Match native email-domain underscores and valid prefixes before plus signs while preserving existing links, Unicode normalization and documented useful recognition.",
+      "disclosure": "Email-domain underscores and valid email prefixes before a plus sign now match the native reference. The separate audit has **53 matching fixtures and four intentional differences**: Sheets retains uppercase WWW links, numeric final email-domain characters, Unicode email hosts with IDNA normalization, and an existing raw HTML anchor instead of producing a nested email link. Canonical corpus conformance remains **672/672**; these native differences are retained policies, not unresolved email-recognition gaps.",
       "reproducer": {
         "path": "tests/fixtures/gfm-autolinks.json"
       },
@@ -185,7 +193,9 @@
         "tests/unit/gfm.test.js",
         "scripts/gfm-autolink-expected.mjs",
         "scripts/gfm-reference.sh",
-        "design/gfm-autolinks.md"
+        "design/gfm-autolinks.md",
+        "src/formats/gfm/email-autolinks.js",
+        "tests/browser/gfm.spec.js"
       ],
       "baselineDisclosure": "A separate native audit has **31 matching fixtures and four classified differences** beyond the published corpus. URL-host underscores now follow the last-two-segments rule. Two remaining differences involve email-domain underscores or a valid email prefix before a plus sign. Sheets also retains uppercase WWW links and numeric final email-domain characters where this pinned native version leaves text unlinked. Host validation otherwise comes from linkify-it; the GFM path-ending fixes do not establish complete native autolink parity. Use explicit Markdown links where automatic recognition differs."
     },

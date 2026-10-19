@@ -64,7 +64,7 @@
     {
       "id": "known-entity",
       "source": "www.example.com/a&copy;\n",
-      "expected": "<p><a href=\"http://www.example.com/a\">www.example.com/a</a>\u00a9</p>\n"
+      "expected": "<p><a href=\"http://www.example.com/a\">www.example.com/a</a>©</p>\n"
     },
     {
       "id": "query-parameter",
@@ -175,6 +175,116 @@
       "id": "email-prefix-before-plus",
       "source": "a@b.c+z\n",
       "expected": "<p><a href=\"mailto:a@b.c\">a@b.c</a>+z</p>\n"
+    },
+    {
+      "id": "email-underscore-leading-domain",
+      "source": "user@_team.example\n",
+      "expected": "<p><a href=\"mailto:user@_team.example\">user@_team.example</a></p>\n"
+    },
+    {
+      "id": "email-underscore-multiple-labels",
+      "source": "first_last@dept.example_team.org\n",
+      "expected": "<p><a href=\"mailto:first_last@dept.example_team.org\">first_last@dept.example_team.org</a></p>\n"
+    },
+    {
+      "id": "email-underscore-plus-local",
+      "source": "first.last+tag@team.example_test\n",
+      "expected": "<p><a href=\"mailto:first.last+tag@team.example_test\">first.last+tag@team.example_test</a></p>\n"
+    },
+    {
+      "id": "email-trailing-underscore",
+      "source": "first@example.org_\n",
+      "expected": "<p>first@example.org_</p>\n"
+    },
+    {
+      "id": "email-trailing-hyphen",
+      "source": "first@example.org-\n",
+      "expected": "<p>first@example.org-</p>\n"
+    },
+    {
+      "id": "email-no-domain-period",
+      "source": "user@host\n",
+      "expected": "<p>user@host</p>\n"
+    },
+    {
+      "id": "email-trailing-period",
+      "source": "first@example_team.org.\n",
+      "expected": "<p><a href=\"mailto:first@example_team.org\">first@example_team.org</a>.</p>\n"
+    },
+    {
+      "id": "email-prefix-multiple",
+      "source": "first@dept.example+tail second@dept.example+next\n",
+      "expected": "<p><a href=\"mailto:first@dept.example\">first@dept.example</a>+tail <a href=\"mailto:second@dept.example\">second@dept.example</a>+next</p>\n"
+    },
+    {
+      "id": "email-prefix-with-underscore",
+      "source": "first@example_team.org+tail\n",
+      "expected": "<p><a href=\"mailto:first@example_team.org\">first@example_team.org</a>+tail</p>\n"
+    },
+    {
+      "id": "email-multiple-at",
+      "source": "one@two@three.example\n",
+      "expected": "<p>one@<a href=\"mailto:two@three.example\">two@three.example</a></p>\n"
+    },
+    {
+      "id": "email-after-slash",
+      "source": "/a@b.c_d\n",
+      "expected": "<p>/<a href=\"mailto:a@b.c_d\">a@b.c_d</a></p>\n"
+    },
+    {
+      "id": "email-in-emphasis",
+      "source": "**a@b.c_d** and *a@b.c+z*\n",
+      "expected": "<p><strong><a href=\"mailto:a@b.c_d\">a@b.c_d</a></strong> and <em><a href=\"mailto:a@b.c\">a@b.c</a>+z</em></p>\n"
+    },
+    {
+      "id": "email-code-context",
+      "source": "`a@b.c_d` and `a@b.c+z`\n\n```text\na@b.c_d\n```\n",
+      "expected": "<p><code>a@b.c_d</code> and <code>a@b.c+z</code></p>\n<pre><code class=\"language-text\">a@b.c_d\n</code></pre>\n"
+    },
+    {
+      "id": "email-link-label",
+      "source": "[a@b.c_d](https://example.com)\n",
+      "expected": "<p><a href=\"https://example.com\">a@b.c_d</a></p>\n"
+    },
+    {
+      "id": "email-explicit-mailto",
+      "source": "[Contact](mailto:a@b.c_d)\n",
+      "expected": "<p><a href=\"mailto:a@b.c_d\">Contact</a></p>\n"
+    },
+    {
+      "id": "email-angle-context",
+      "source": "<a@b.c_d>\n",
+      "expected": "<p>&lt;<a href=\"mailto:a@b.c_d\">a@b.c_d</a>&gt;</p>\n"
+    },
+    {
+      "id": "email-html-anchor",
+      "source": "<a href=\"https://example.com\">a@b.c_d</a>\n",
+      "expected": "<p><a href=\"https://example.com\"><a href=\"mailto:a@b.c_d\">a@b.c_d</a></a></p>\n"
+    },
+    {
+      "id": "email-image-alt",
+      "source": "![a@b.c_d](src/icon.svg)\n",
+      "expected": "<p><img src=\"src/icon.svg\" alt=\"a@b.c_d\" /></p>\n"
+    },
+    {
+      "id": "email-url-path",
+      "source": "https://example.com/a@b.c_d\n",
+      "expected": "<p><a href=\"https://example.com/a@b.c_d\">https://example.com/a@b.c_d</a></p>\n"
+    },
+    {
+      "id": "email-url-query",
+      "source": "www.example.com/?address=a@b.c_d\n",
+      "expected": "<p><a href=\"http://www.example.com/?address=a@b.c_d\">www.example.com/?address=a@b.c_d</a></p>\n"
+    },
+    {
+      "id": "email-mixed-order",
+      "source": "a@b.c_d www.example.com second@team.example+suffix http://other.example\n",
+      "expected": "<p><a href=\"mailto:a@b.c_d\">a@b.c_d</a> <a href=\"http://www.example.com\">www.example.com</a> <a href=\"mailto:second@team.example\">second@team.example</a>+suffix <a href=\"http://other.example\">http://other.example</a></p>\n"
+    },
+    {
+      "id": "unicode-email-host",
+      "source": "user@παράδειγμα.δοκιμή\n",
+      "expected": "<p>user@παράδειγμα.δοκιμή</p>\n"
     }
   ],
   "knownDeviations": [
@@ -187,12 +297,12 @@
       "reason": "Sheets retains a numeric final email-domain character; this pinned native implementation leaves it unlinked."
     },
     {
-      "id": "email-domain-underscore",
-      "reason": "The native reference accepts this email-domain underscore; linkify-it does not."
+      "id": "email-html-anchor",
+      "reason": "Sheets preserves an existing raw HTML anchor instead of emitting the nested email link produced by this native version."
     },
     {
-      "id": "email-prefix-before-plus",
-      "reason": "The native reference links the valid prefix a@b.c; Sheets leaves the entire invalid-domain address unlinked."
+      "id": "unicode-email-host",
+      "reason": "Sheets retains Unicode email-host recognition and IDNA normalization; this pinned native implementation leaves the address unlinked."
     }
   ]
 }

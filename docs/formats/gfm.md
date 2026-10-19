@@ -102,23 +102,31 @@ For descriptive labels or addresses outside automatic recognition, use explicit 
 
 ## Autolink limits beyond the corpus
 
-Corpus conformance does not imply complete native-engine parity. A separate audit against **native cmark-gfm 0.29.0.gfm.13** contains **35 fixtures: 31 match and four remain classified differences**. URL-host underscores now follow the reference rule: underscores may appear before the last two segments. Email-domain underscores and a valid email prefix before a plus sign still differ. Sheets retains uppercase WWW links and numeric final email-domain characters where that native version leaves text unlinked. These are tracked as **GFM-06** in the central ledger; the fixture records each input, native expected output, and reason.
-
-This example shows the host-underscore rule alongside the four remaining native differences. Use explicit Markdown links when the automatic result differs from what you intend:
+Corpus conformance does not imply complete native-engine parity. The separate audit against **native cmark-gfm 0.29.0.gfm.13** now has **57 fixtures: 53 match and four differences are intentional**. Email-domain underscores and valid prefixes before a plus sign are supported. URL-host underscores may appear before the last two segments, as in the reference.
 
 ```text
-www._foo.bar.baz
-www.foo._bar.baz
-www.foo.bar._baz
-WWW.EXAMPLE.COM
-a@b.c1
-a@b.c_d
-a@b.c+z
+# Email links
+
+Contact a@b.c_d.
+The valid prefix in a@b.c+notes is linked; +notes stays visible.
+`a@b.c_d` stays literal in code.
+[Contact](mailto:a@b.c_d)
 ```
 
-Automatic URL recognition scans at most **10,000 characters after its prefix**, retaining the existing linkify-it bound. Remaining source stays visible. Explicit Markdown links can hold longer addresses within the document size limit. Code spans, code fences, existing links, and HTML anchors keep their literal/context behavior.
+The four retained native differences are uppercase WWW recognition, numeric final email-domain characters, Unicode email hosts normalized through IDNA, and preservation of existing HTML anchors. Native cmark can emit a nested email link inside a raw HTML anchor; Sheets keeps that outer link intact. These policies are tracked as **GFM-06** in the central ledger.
 
-Run `npm run test:conformance` for raw/production exact HTML and `node scripts/gfm-render-conformance.mjs` for the actual Chromium sanitization measurement. The browser suite checks the same DOM snapshot in Chromium, Firefox, and WebKit. Run `bash scripts/gfm-reference.sh --check` to build the checksum-pinned native oracle and verify all 35 independent fixtures. The reviewed classifications and example IDs are in `tests/fixtures/gfm-audit.json`; the two metric reports are `gfm-conformance.json` and `gfm-render-conformance.json` in that directory. No semantic normalization is applied to either HTML string metric.
+```text
+WWW.EXAMPLE.COM
+a@b.c1
+user@παράδειγμα.δοκιμή
+<a href="https://example.com">a@b.c_d</a>
+```
+
+Code spans, fences, existing Markdown links, HTML anchors, image alt text, and URL paths retain their surrounding contexts. The supplementary email pass only adds links to eligible plain text; existing URL and email matches take precedence. Source text is preserved.
+
+Automatic URL recognition scans at most **10,000 characters after its prefix**. Supplemental GFM email recognition emits only complete candidates of at most **10,000 characters**. Existing library matches keep their behavior, and remaining text stays visible. Use explicit Markdown links for longer addresses within the document size limit.
+
+Run `npm run test:conformance` for raw/production exact HTML and `node scripts/gfm-render-conformance.mjs` for the actual Chromium sanitization measurement. The browser suite checks the same DOM snapshot in Chromium, Firefox, and WebKit. Run `bash scripts/gfm-reference.sh --check` to build the checksum-pinned native oracle and verify all 57 independent fixtures. The reviewed classifications and example IDs are in `tests/fixtures/gfm-audit.json`; the two metric reports are `gfm-conformance.json` and `gfm-render-conformance.json` in that directory. No semantic normalization is applied to either HTML string metric.
 
 The corpus is attributed under CC-BY-SA 4.0 and excluded from deployment. These are reproducible compatibility measurements, not a claim of full GitHub parity.
 
@@ -141,7 +149,7 @@ These entries share the [central limitations ledger](../limitations.md). “Need
 | GFM-01 | Resolved | All 672 published GFM corpus examples match canonical raw HTML |
 | GFM-02 | Intentional | HTML is sanitized after parsing |
 | GFM-03 | Needs detailed audit | Math uses Temml's supported TeX notation, not a complete TeX document engine |
-| GFM-04 | Needs detailed audit | Code fences display code; Markdown formulas and table cells do not calculate |
-| GFM-05 | Intentional | Automatic URL recognition has a bounded candidate length |
-| GFM-06 | Known gap | Host and email recognition still differs from the pinned native GFM implementation outside the corpus |
+| GFM-04 | Intentional | Code fences display code; Markdown formulas and table cells do not calculate |
+| GFM-05 | Intentional | Automatic link recognition has bounded candidates |
+| GFM-06 | Intentional | Email gaps are fixed; native autolink differences are intentional |
 <!-- compatibility:end -->

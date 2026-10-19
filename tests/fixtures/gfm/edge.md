@@ -16,3 +16,6 @@ A link with punctuation stays whole:
 www.google.com/search?q=(business))+ok
 
 Contact hello+xyz@mail.example.
+
+Domain underscores: a@b.c_d.
+Valid prefix: a@b.c+notes.

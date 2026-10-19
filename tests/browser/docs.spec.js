@@ -63,6 +63,27 @@ test("documentation examples open their source with the required context and lim
       ).toBeVisible();
   }
 
+  await page.goto("/docs.html?page=formats/gfm");
+  await page
+    .locator("#docs-content pre")
+    .filter({ hasText: "# Email links" })
+    .locator("xpath=following-sibling::p[1]")
+    .getByRole("link")
+    .click();
+  await expect(page.locator("#render-status")).toHaveText(/^Ready/);
+  await expect(page.locator("#format")).toHaveValue("gfm");
+  await expect(
+    page
+      .locator('#preview a[href="mailto:a@b.c_d"]')
+      .filter({ hasText: "a@b.c_d" }),
+  ).toHaveText("a@b.c_d");
+  await expect(page.locator('#preview a[href="mailto:a@b.c"]')).toHaveText(
+    "a@b.c",
+  );
+  await expect(
+    page.locator("#preview code").filter({ hasText: "a@b.c_d" }).locator("a"),
+  ).toHaveCount(0);
+
   await page.goto("/docs.html?page=formats/calca");
   await page.getByRole("link", { name: "f(5) =>", exact: true }).click();
   await expect(page.locator("#format")).toHaveValue("calca");

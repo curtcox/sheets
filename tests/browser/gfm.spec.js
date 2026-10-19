@@ -47,6 +47,12 @@ www.foo._bar.baz
 
 hello@mail+xyz.example and hello+xyz@mail.example.
 
+a@b.c_d and a@b.c+suffix.
+
+\`a@b.c_d\` stays literal.
+
+<a href="https://example.com/existing">a@b.c_d</a>
+
 ****Bold**** and $x^2$.
 
 - [x] Reviewed
@@ -102,6 +108,19 @@ for (const format of ["gfm", "asciimath", "calca", "quarto"])
     await expect(
       page.locator('#preview a[href="http://www.foo._bar.baz"]'),
     ).toHaveCount(0);
+    await expect(page.locator('#preview a[href="mailto:a@b.c_d"]')).toHaveCount(
+      1,
+    );
+    await expect(page.locator('#preview a[href="mailto:a@b.c"]')).toHaveText(
+      "a@b.c",
+    );
+    await expect(
+      page.locator("#preview code").filter({ hasText: "a@b.c_d" }).locator("a"),
+    ).toHaveCount(0);
+    await expect(
+      page.locator('#preview a[href="https://example.com/existing"]'),
+    ).toHaveText("a@b.c_d");
+    await expect(page.locator("#preview a a")).toHaveCount(0);
     await expect(page.locator("#preview math")).toBeVisible();
     await expect(
       page.locator("#preview strong strong,#preview title,#preview [onerror]"),
@@ -142,6 +161,12 @@ test("GFM alignment and filtered text survive rendered HTML export", async ({
   await expect(
     saved.locator('a[href="mailto:hello@mail+xyz.example"]'),
   ).toHaveCount(0);
+  await expect(saved.locator('a[href="mailto:a@b.c_d"]')).toHaveCount(1);
+  await expect(saved.locator('a[href="mailto:a@b.c"]')).toHaveText("a@b.c");
+  await expect(
+    saved.locator('a[href="https://example.com/existing"]'),
+  ).toHaveText("a@b.c_d");
+  await expect(saved.locator("a a")).toHaveCount(0);
   await expect(saved.locator("body")).toContainText(
     "<title>Visible tag text</title>",
   );

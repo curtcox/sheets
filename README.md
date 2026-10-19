@@ -58,8 +58,8 @@ The GFM browser suite separately checks 627/672 final DOM matches, including
 32 intentional sanitization differences. Reproduce that metric with
 `node scripts/gfm-render-conformance.mjs`.
 
-An additional native GFM audit has 31 matching fixtures and four classified
-host/email differences beyond that corpus; see the format guide. Run
+An additional native GFM audit has 53 matching fixtures and four intentional
+autolink differences beyond that corpus; see the format guide. Run
 `bash scripts/gfm-reference.sh --check` to build its checksum-pinned cmark-gfm
 oracle (requires CMake, a C compiler, curl, and network access).
 
