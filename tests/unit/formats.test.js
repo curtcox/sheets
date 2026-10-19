@@ -49,7 +49,12 @@ for (const { id } of catalog.filter((f) => f.id !== "text")) {
                     outputs: cells.map(() => ({ text: "mocked result" })),
                   }),
                   executeR: async (cells) => ({
-                    outputs: cells.map(() => ({ text: "mocked R result" })),
+                    outputs: cells.map((cell) => ({
+                      text: "mocked R result",
+                      ...(cell.options.label?.startsWith("fig-")
+                        ? { images: ["data:image/png;base64,AAAA"] }
+                        : {}),
+                    })),
                   }),
                 })
               : await (await loadFormat(id)).render(src, {});

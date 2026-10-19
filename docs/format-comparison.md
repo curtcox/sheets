@@ -45,7 +45,7 @@ choose Numbat for dimension-checked models.
 | [Calca](formats/calca.md) | Markdown, TeX, arrow results | Matrices; Markdown tables | Yes with Structured blocks or Scoped definitions; Legacy has the fence caveat below | No Python/R cells |
 | [Hurmet](formats/hurmet.md) | Prose and typeset math calculations | Calculation cells in tables; upstream spreadsheet tables | Upstream output; no interactive drawing UI | No Python/R cells |
 | [Beancount](formats/beancount.md) | Ledger-specific report views | Balance sheet, income statement, trial balance, journal | No | No |
-| [Quarto](formats/quarto.md) | Markdown, TeX, metadata, callouts, basic figure references | Markdown tables; Python DataFrame HTML; R console tables | Mermaid, Python matplotlib SVG, R PNG plots | Python and R; OJS/Julia displayed only |
+| [Quarto](formats/quarto.md) | Markdown, TeX, validated metadata, nested callouts/divs, figure references | Markdown tables; Python DataFrame HTML; R console tables | Mermaid, Python matplotlib SVG, R PNG plots | Python and R; OJS/Julia displayed only |
 | [Plain text](formats/text.md) | Escaped, preformatted source | Literal source only | No | No |
 
 In Calca's **Legacy** mode, every fenced or indented code block is also calculation input,
@@ -112,6 +112,8 @@ or notebook cells. External image URLs still need their server. See
 | Executable notebook cell | A fenced block that runs code and inserts its output. In Quarto, use `{python}` or `{r}`; an ordinary `python` fence only displays code. |
 | Cell state | Variables and definitions kept between cells during one render. Quarto shares state within Python or R, never between the two languages, and resets it on the next render. |
 | Metadata and cell options | Settings outside ordinary prose: Quarto YAML can set a title or execution defaults; `#\|` lines control one cell's source/output visibility and figure labels. |
+| Fenced div and callout | A colon-fenced Markdown container that can nest around prose or cells. Quarto supports five callout types; collapse and appearance controls are unsupported and diagnosed. |
+| Figure reference | A link such as `@fig-name` to a numbered standalone image, figure div or visible cell plot. Quarto supports forward references and diagnoses duplicate, missing or unavailable targets; subfigure and nonfigure cross-references are unsupported. |
 | YAML front matter | An initial block between `---` lines containing document settings as indented key/value pairs. In Quarto, indentation determines which settings belong under `execute`. |
 | Commodity and posting | A commodity is a ledger's counted item, such as USD or shares. A posting assigns a quantity to an account; postings in a Beancount transaction must balance by their weights. |
 | Cost lot and FIFO | A lot records a quantity's acquisition cost. This Beancount subset reduces supported lots first in, first out (oldest first); it does not implement every booking method. |

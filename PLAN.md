@@ -567,6 +567,20 @@ are resolved; AM-05 retains advisory validation, AM-04 inherits shared Markdown
 policy, and the concrete notation gaps remain FORMAT-1 (AM-01). The next Phase 13
 priority is **QT-1**.
 
+**QT-1 implemented (2026-10-19).** One Markdown token stream now owns nested
+callouts/divs, executable cells and figure references. Forward image/div/visible
+cell-plot targets receive flat document-order numbering; duplicates, missing and
+unavailable targets report original locations without creating duplicate IDs or
+broken links. Code, escapes, links, math and raw HTML remain literal. YAML event
+positions support typed metadata/cell validation for block/flow/quoted keys and
+syntax errors; valid cell booleans override defaults while document disable gates
+remain absolute. Tests cover nested cells, differing fences, container recovery,
+precise diagnostics, exports/shares, real worker execution and runnable docs.
+QT-09/10 resolve this structural subset; QT-01/02 explicitly retain the remaining
+Quarto/Pandoc grammar, cross-reference and option gaps. Reference contracts and
+reproducers are recorded in `design/quarto-structure.md`. This completes Phase 13;
+the next ordered implementation slice is **ORG-1** in Phase 14.
+
 ### Phase 14 — P2: expand language compatibility
 
 | ID | Ordered implementation slices | Dependencies / completion check |

@@ -225,6 +225,13 @@ option "infer_tolerance_from_cost" "TRUE"
       ),
     ),
     sample("::: {.callout-note}\nA note about a figure.\n:::\n"),
+    sample(
+      "---\nexecute: false\n---\n\n:::: {.callout-note}\n::: {.callout-tip}\nA nested note.\n:::\n::::\n\n![Sheets icon](src/icon.svg){#fig-icon}\n\nSee @fig-icon.\n",
+      ["fig-name", "@fig-name", "fig-", "format: html"],
+    ),
+    sample(
+      "::: {#fig-panel}\nA figure.\n\nA caption.\n:::\n\nSee @fig-panel.\n",
+    ),
     sample(block("{julia}", "1 + 1") + "\n" + block("{ojs}", "1 + 1")),
     sample(block("python", "print('Displayed source only')"), ["python"]),
     sample(

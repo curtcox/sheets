@@ -150,9 +150,9 @@ See the [Beancount guide](formats/beancount.md). Compatibility target: Beancount
 
 See the [Quarto guide](formats/quarto.md). Compatibility target: documented Quarto subset / Pyodide 0.27.7 / webR 0.6.0.
 
-- **QT-01 — This is a browser subset, not the Quarto CLI or full Pandoc** (Needs detailed audit). This is a browser subset, not the Quarto CLI or full Pandoc. YAML metadata, callouts, and figure references implement the documented basic forms. Nested-div parsing and complete cross-reference semantics are not implemented.
+- **QT-01 — This is a browser subset, not the Quarto CLI or full Pandoc** (Known gap). This remains a browser subset of Quarto and Pandoc. Nested callouts/divs and forward figure references now use a structured Markdown pass with source diagnostics. Cross-references use flat figure numbering only; subfigures, grouped/prefix-suppressed references, nonfigure targets, citations, localisation, automatic callout headers/icons, and appearance/collapse/title controls remain unsupported. Unsupported attributes are diagnosed; raw HTML IDs do not register figures. Image/cell captions are plain text.
 
-- **QT-02 — Metadata support is limited to title, author, date, and execution defaults** (Needs detailed audit). Metadata support is limited to title, author, date, and execution defaults. Cell options support source visibility, evaluation, output visibility, a label, and a figure caption; the full Quarto metadata and cell-option system is not implemented.
+- **QT-02 — Remaining metadata and cell controls are unsupported and diagnosed** (Known gap). Metadata supports plain-text title/author/date (or a numeric year), format: html, and boolean execution defaults. Cell options support echo, eval, output, a plain-text label and figure caption. Structured author records, other output formats, include/warning/error controls, figure dimensions/alt text and other metadata/options remain unsupported and diagnosed at their YAML key. Invalid entries are ignored; a YAML syntax error discards that mapping. Correct evaluation-setting diagnostics before running code.
 
 - **QT-03 — Python and R execute; OJS and Julia are displayed without execution. Ordinary language fences only display…** (Needs detailed audit). **Python and R execute; OJS and Julia are displayed without execution.** Ordinary language fences only display source; executable fences require braces.
 
@@ -165,6 +165,12 @@ See the [Quarto guide](formats/quarto.md). Compatibility target: documented Quar
 - **QT-07 — State is shared only within each language during one render** (Needs detailed audit). State is shared only within each language during one render. **Python and R do not exchange variables.** Their jobs may run concurrently, so interleaving cells does not order cross-language file or network side effects. Every render starts fresh sessions; interpreter state and packages are not exported.
 
 - **QT-08 — Each language has a 90-second deadline, including runtime/package loading** (Needs detailed audit). Each language has a **90-second deadline**, including runtime/package loading. Cancel or edit terminates the interpreter. Python/R execution requires a connection and is not in the offline download. Disable execution to read prose offline. Fetches and packages remain subject to browser networking/CORS limits.
+
+### Resolved compatibility gaps
+
+- **QT-09 — Nested divs and basic figure targets use structured parsing** (Resolved). Nested callouts/divs can contain executable cells. Standalone images, figure divs and visible cell plots support forward figure references. Duplicate, absent, unavailable and malformed targets report original source locations; code, escaped syntax, links, math and raw HTML stay literal. Multiple plots from one cell share one target. This resolves the QT-1 structural subset; remaining grammar and cross-reference features stay in QT-01.
+
+- **QT-10 — Supported YAML options are validated at their source keys** (Resolved). Supported metadata and cell option types are validated using parsed YAML event positions, including quoted/flow keys, aliases and duplicate-key errors. Cell booleans override defaults; document execution-disable gates remain absolute. Unsupported/invalid entries produce diagnostics while valid siblings still work. Remaining controls stay in QT-02.
 
 ## Plain text
 

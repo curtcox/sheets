@@ -746,30 +746,40 @@
       "format": "quarto",
       "title": "This is a browser subset, not the Quarto CLI or full Pandoc",
       "kind": "mixed",
-      "status": "audit",
+      "status": "open",
       "priority": "P1",
       "milestone": "QT-2",
       "dependsOn": [],
-      "expected": "Verify each behavior against documented Quarto subset / Pyodide 0.27.7 / webR 0.6.0; separate deliberate policy from unsupported upstream capabilities.",
-      "disclosure": "This is a browser subset, not the Quarto CLI or full Pandoc. YAML metadata, callouts, and figure references implement the documented basic forms. Nested-div parsing and complete cross-reference semantics are not implemented.",
+      "expected": "Supported fenced-div, image/div/cell figure and literal-source cases follow the documented subset; remaining Quarto/Pandoc grammar needs separate reference-backed slices.",
+      "disclosure": "This remains a browser subset of Quarto and Pandoc. Nested callouts/divs and forward figure references now use a structured Markdown pass with source diagnostics. Cross-references use flat figure numbering only; subfigures, grouped/prefix-suppressed references, nonfigure targets, citations, localisation, automatic callout headers/icons, and appearance/collapse/title controls remain unsupported. Unsupported attributes are diagnosed; raw HTML IDs do not register figures. Image/cell captions are plain text.",
       "baselineDisclosure": "This is a browser subset, not the Quarto CLI or full Pandoc. YAML metadata, callouts, and figure references implement the documented basic forms. Nested-div parsing and complete cross-reference semantics are not implemented.",
-      "reproducer": null,
-      "evidence": []
+      "reproducer": {
+        "path": "tests/fixtures/quarto/structure.qmd"
+      },
+      "evidence": [
+        "design/quarto-structure.md",
+        "tests/unit/quarto.test.js"
+      ]
     },
     {
       "id": "QT-02",
       "format": "quarto",
-      "title": "Metadata support is limited to title, author, date, and execution defaults",
+      "title": "Remaining metadata and cell controls are unsupported and diagnosed",
       "kind": "mixed",
-      "status": "audit",
+      "status": "open",
       "priority": "P1",
       "milestone": "QT-2",
       "dependsOn": [],
-      "expected": "Verify each behavior against documented Quarto subset / Pyodide 0.27.7 / webR 0.6.0; separate deliberate policy from unsupported upstream capabilities.",
-      "disclosure": "Metadata support is limited to title, author, date, and execution defaults. Cell options support source visibility, evaluation, output visibility, a label, and a figure caption; the full Quarto metadata and cell-option system is not implemented.",
+      "expected": "Diagnose unsupported keys and invalid values at original source positions; implement additional controls in QT-2 against reference cases.",
+      "disclosure": "Metadata supports plain-text title/author/date (or a numeric year), format: html, and boolean execution defaults. Cell options support echo, eval, output, a plain-text label and figure caption. Structured author records, other output formats, include/warning/error controls, figure dimensions/alt text and other metadata/options remain unsupported and diagnosed at their YAML key. Invalid entries are ignored; a YAML syntax error discards that mapping. Correct evaluation-setting diagnostics before running code.",
       "baselineDisclosure": "Metadata support is limited to title, author, date, and execution defaults. Cell options support source visibility, evaluation, output visibility, a label, and a figure caption; the full Quarto metadata and cell-option system is not implemented.",
-      "reproducer": null,
-      "evidence": []
+      "reproducer": {
+        "path": "tests/unit/quarto.test.js"
+      },
+      "evidence": [
+        "design/quarto-structure.md",
+        "tests/unit/quarto.test.js"
+      ]
     },
     {
       "id": "QT-03",
@@ -860,6 +870,48 @@
       "baselineDisclosure": "Each language has a **90-second deadline**, including runtime/package loading. Cancel or edit terminates the interpreter. Python/R execution requires a connection and is not in the offline download. Disable execution to read prose offline. Fetches and packages remain subject to browser networking/CORS limits.",
       "reproducer": null,
       "evidence": []
+    },
+    {
+      "id": "QT-09",
+      "format": "quarto",
+      "title": "Nested divs and basic figure targets use structured parsing",
+      "kind": "gap",
+      "status": "resolved",
+      "priority": "P1",
+      "milestone": "QT-1",
+      "dependsOn": [],
+      "expected": "The explicitly documented QT-1 subset passes structural, source-location, precedence and browser round-trip fixtures; this does not assert full Quarto CLI parity.",
+      "disclosure": "Nested callouts/divs can contain executable cells. Standalone images, figure divs and visible cell plots support forward figure references. Duplicate, absent, unavailable and malformed targets report original source locations; code, escaped syntax, links, math and raw HTML stay literal. Multiple plots from one cell share one target. This resolves the QT-1 structural subset; remaining grammar and cross-reference features stay in QT-01.",
+      "baselineDisclosure": "Nested-div parsing and complete cross-reference semantics are not implemented.",
+      "reproducer": {
+        "path": "tests/fixtures/quarto/structure.qmd"
+      },
+      "evidence": [
+        "design/quarto-structure.md",
+        "tests/unit/quarto.test.js",
+        "tests/browser/quarto-structure.spec.js"
+      ]
+    },
+    {
+      "id": "QT-10",
+      "format": "quarto",
+      "title": "Supported YAML options are validated at their source keys",
+      "kind": "gap",
+      "status": "resolved",
+      "priority": "P1",
+      "milestone": "QT-1",
+      "dependsOn": [],
+      "expected": "The explicitly documented QT-1 subset passes structural, source-location, precedence and browser round-trip fixtures; this does not assert full Quarto CLI parity.",
+      "disclosure": "Supported metadata and cell option types are validated using parsed YAML event positions, including quoted/flow keys, aliases and duplicate-key errors. Cell booleans override defaults; document execution-disable gates remain absolute. Unsupported/invalid entries produce diagnostics while valid siblings still work. Remaining controls stay in QT-02.",
+      "baselineDisclosure": "Metadata and cell options outside the basic documented forms were silently ignored, and invalid types could imply unsupported behavior.",
+      "reproducer": {
+        "path": "tests/unit/quarto.test.js"
+      },
+      "evidence": [
+        "design/quarto-structure.md",
+        "tests/unit/quarto.test.js",
+        "tests/browser/quarto-structure.spec.js"
+      ]
     },
     {
       "id": "TEXT-01",

@@ -1,0 +1,39 @@
+---
+title: Structured notebook
+execute: false
+---
+
+See @fig-icon and @fig-panel before their definitions.
+
+:::: {.callout-note}
+## A nested notebook
+
+::: {.callout-tip}
+The code remains inside both callouts.
+
+```{python}
+#| echo: true
+print("Read without running")
+```
+
+:::
+:::::
+
+![Sheets icon](src/icon.svg){#fig-icon}
+
+::: {#fig-panel}
+A figure can contain **Markdown**.
+
+A panel caption.
+:::
+
+`@fig-literal` and \@fig-escaped stay literal.
+
+````text
+::: {.callout-warning}
+```{python}
+print("An example, not an executable cell")
+```
+@fig-code {#fig-code}
+:::
+````
