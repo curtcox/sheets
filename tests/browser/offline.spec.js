@@ -38,10 +38,7 @@ async function settings(page) {
 // Installation and restoring evicted files both activate a controller and reload.
 // Await that navigation, not the old page's briefly updated Ready/installed UI.
 async function downloadFiles(page) {
-  const reloaded = page.waitForEvent("framenavigated", {
-    predicate: (frame) => frame === page.mainFrame(),
-    timeout: 60000,
-  });
+  const reloaded = page.waitForEvent("domcontentloaded", { timeout: 60000 });
   await page.locator("#offline-enable").click();
   await reloaded;
   await ready(page);
