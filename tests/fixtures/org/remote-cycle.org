@@ -1,0 +1,7 @@
+#+NAME: a
+| 1 |
+#+TBLFM: $1=remote(b,@1$1)+1
+
+#+NAME: b
+| 2 |
+#+TBLFM: $1=remote(a,@1$1)+1

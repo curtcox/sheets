@@ -4,6 +4,7 @@ import {
   CALCA_SCOPES,
   ASCIIMATH_FORMULAS,
   ASCIIMATH_PROSE,
+  ORG_EMACS,
 } from "./compatibility-profiles.js";
 
 const block = (language, source) => `\`\`\`${language}\n${source}\n\`\`\`\n`;
@@ -90,6 +91,21 @@ ${block("mermaid", "graph LR\n  Measure --> Review")}
     sample("100 EUR in CHF\n"),
   ],
   org: [
+    sample(
+      "#+NAME: prices\n| Item | Price |\n|------+-------|\n| A | 4 |\n| B | 7 |\n\n| 0 | 0 |\n#+TBLFM: $1=remote(prices,@2$2)::$2=vsum(remote(prices,@I$2..@>$2))\n",
+      [
+        "remote(prices,@2$2)",
+        "remote(prices,@I$2..@>$2)",
+        "remote()",
+        "#+NAME:",
+      ],
+      ORG_EMACS,
+    ),
+    sample(
+      "| 1 | 0 | 0 |\n#+TBLFM: $3=$2+1::$2=$1+10\n",
+      ["org-emacs-v1", "?profile=org-emacs-v1"],
+      ORG_EMACS,
+    ),
     sample(
       "#+CONSTANTS: tax=0.10\n| ! | Qty | UnitPrice | Total |\n| # | 3 | 4 | 0 |\n| * | 2 | 7 | 0 |\n| $ | tax=0.20 | | |\n#+TBLFM: $4=$Qty*$UnitPrice*(1+$tax);%.2f\n",
       ["!", "$", "#", "*", "#+CONSTANTS: tax=0.10"],
@@ -270,11 +286,13 @@ export function blockExample(page, source, language = "") {
   const format = page.startsWith("formats/")
     ? page.slice(8)
     : page === "function-comparison"
-      ? language === "asciimath-formulas"
-        ? "asciimath"
-        : Object.hasOwn(syntaxExamples, language)
-          ? language
-          : "text"
+      ? language === "org-emacs"
+        ? "org"
+        : language === "asciimath-formulas"
+          ? "asciimath"
+          : Object.hasOwn(syntaxExamples, language)
+            ? language
+            : "text"
       : "text";
   return {
     format,
@@ -284,17 +302,19 @@ export function blockExample(page, source, language = "") {
       !/^ {0,3}(?:`{3,}|~{3,})/m.test(source)
         ? block("calca", source.trimEnd())
         : source,
-    ...(format === "calca"
-      ? { profile: language === "calca-scopes" ? CALCA_SCOPES : CALCA_BLOCKS }
-      : format === "asciimath" &&
-          ["asciimath-formulas", "asciimath-prose"].includes(language)
-        ? {
-            profile:
-              language === "asciimath-formulas"
-                ? ASCIIMATH_FORMULAS
-                : ASCIIMATH_PROSE,
-          }
-        : {}),
+    ...(format === "org" && language === "org-emacs"
+      ? { profile: ORG_EMACS }
+      : format === "calca"
+        ? { profile: language === "calca-scopes" ? CALCA_SCOPES : CALCA_BLOCKS }
+        : format === "asciimath" &&
+            ["asciimath-formulas", "asciimath-prose"].includes(language)
+          ? {
+              profile:
+                language === "asciimath-formulas"
+                  ? ASCIIMATH_FORMULAS
+                  : ASCIIMATH_PROSE,
+            }
+          : {}),
   };
 }
 
@@ -303,6 +323,12 @@ export function inlineExample(page, code) {
   // examples on this comparison page choose their own explicit engine.
   if (page === "function-comparison") return null;
   if (page === "url-format") {
+    if (["?profile=org-emacs-v1", "org-emacs-v1"].includes(code))
+      return {
+        format: "org",
+        src: syntaxExamples.org[1].source,
+        profile: ORG_EMACS,
+      };
     if (
       ["?profile=asciimath-formulas-v1", "asciimath-formulas-v1"].includes(code)
     )

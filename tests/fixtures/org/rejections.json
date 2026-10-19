@@ -1,0 +1,42 @@
+{
+  "duplicate-boundary.org": {
+    "type": "user-error",
+    "rows": [
+      [
+        "1",
+        "0"
+      ]
+    ]
+  },
+  "duplicate-cell.org": {
+    "type": "user-error",
+    "rows": [
+      [
+        "1",
+        "0"
+      ]
+    ]
+  },
+  "duplicate-column.org": {
+    "type": "user-error",
+    "rows": [
+      [
+        "1",
+        "0"
+      ]
+    ]
+  },
+  "duplicate-field.org": {
+    "type": "user-error",
+    "rows": [
+      [
+        "_",
+        "result"
+      ],
+      [
+        "",
+        "0"
+      ]
+    ]
+  }
+}

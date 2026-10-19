@@ -54,10 +54,10 @@ checks actual rendering, copies, exports, exact-source sharing, gallery and docs
 
 ## Remaining differences
 
-Stored formulas still execute in their documented source order. Native column/
-field priority, duplicate target handling and full dependency order are the next
-ORG-1B audit; this slice does not claim whole-document native parity. Same-document
-remote tables, iteration, more numeric Calc modes/functions, property/external
-constants, nonnumeric bindings, global %-format parameters and exact display-width
-alignment remain separate work. Preview tables retain metadata cells; this is not
+Legacy retains documented source order. The subsequent ORG-1B slice adds explicit
+Emacs-order scheduling, duplicate-target checks and same-document remote tables;
+see [the order/reference contract](org-order.md). Neither slice claims full
+dependency solving or whole-document native parity. Iteration, further target
+syntax, more numeric Calc modes/functions, property/external constants, nonnumeric
+bindings, global %-format parameters and exact display-width alignment remain separate work. Preview tables retain metadata cells; this is not
 the complete Org HTML export layout. Native Babel/Lisp is not implemented.

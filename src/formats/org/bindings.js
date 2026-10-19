@@ -17,6 +17,8 @@ export function orgDocument(src, diagnostics) {
   const starts = [],
     constants = new Map(),
     keywords = [],
+    names = [],
+    headings = [],
     stack = [orga.parse(src)];
   while (stack.length) {
     const node = stack.pop();
@@ -26,11 +28,21 @@ export function orgDocument(src, diagnostics) {
     )
       continue;
     if (node.type === "table") {
-      starts.push(node.position.start.line - 1);
+      // orga can merge table rows across blank lines. Org treats each
+      // contiguous run as its own table; keep AST ownership of literal blocks.
+      let previous = -2;
+      for (const row of node.children || []) {
+        const line = row.position.start.line - 1;
+        if (line > previous + 1) starts.push(line);
+        previous = line;
+      }
       continue;
     }
     if (node.type === "keyword" && node.key?.toUpperCase() === "CONSTANTS")
       keywords.push(node);
+    if (node.type === "keyword" && /^(?:NAME|TBLNAME)$/i.test(node.key))
+      names.push(node);
+    if (node.type === "headline") headings.push(node.position.start.line - 1);
     stack.push(...(node.children || []));
   }
   for (const node of keywords.sort(
@@ -57,7 +69,23 @@ export function orgDocument(src, diagnostics) {
       }
     }
   }
-  return { starts: starts.sort((a, b) => a - b), constants };
+  starts.sort((a, b) => a - b);
+  headings.sort((a, b) => a - b);
+  const namedTables = new Map();
+  let tableIndex = 0,
+    headingIndex = 0;
+  for (const node of names.sort(
+    (a, b) => a.position.start.line - b.position.start.line,
+  )) {
+    const line = node.position.start.line - 1,
+      name = node.value.trim().toLowerCase();
+    while (starts[tableIndex] <= line) tableIndex++;
+    while (headings[headingIndex] <= line) headingIndex++;
+    const start = starts[tableIndex];
+    if (!namedTables.has(name))
+      namedTables.set(name, headings[headingIndex] < start ? undefined : start);
+  }
+  return { starts, constants, namedTables };
 }
 export function tableBindings(
   table,

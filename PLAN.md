@@ -594,7 +594,7 @@ independently verifiable releases in this order:
 | Order / slice | Limitation to eliminate | Completion evidence |
 | --- | --- | --- |
 | 1 / ORG-1A (M, implemented) | Named columns/fields, table parameters, file constants, and marked-row selection. | Compare values, case/precedence, field snapshots, named targets/ranges and protected metadata rows against Emacs. Preserve literal source blocks; provide original-line diagnostics for unsupported bindings. |
-| 2 / ORG-1B (M) | Remaining evaluation-order differences and same-document named-table references. | Native fixtures for column/field precedence, duplicate targets, dependency order, missing/ambiguous tables and bounded reference chains. Explicitly document any required compatibility migration. |
+| 2 / ORG-1B (M, implemented) | Remaining evaluation-order differences and same-document named-table references. | Native fixtures for column/field precedence, duplicate targets, dependency order, missing/ambiguous tables and bounded reference chains. Explicitly document any required compatibility migration. |
 | 3 / QT-2A (M) | Frequently used notebook include/warning/error controls and figure alt text/dimensions. | Match a pinned Quarto/knitr/Jupyter reference for each supported control; verify defaults, overrides, skipped cells, sanitization, exports and cancellation. Rich tables/inline expressions follow separately. |
 | 4 / BEAN-2A (M) | Unsupported booking/lot behavior and total-cost lots. | Differential bean-check/bean-query fixtures, exact decimals, ambiguous-booking rejection and native-commodity reports. New report views follow numeric correctness. |
 | 5 / CALCA-3A (M) | Named/multiline definitions, local bindings and indexing gaps. | Public reference cases plus explicit licensed-app verification where needed; retain old profiles. Solver expansion waits for dependable grammar. |
@@ -622,6 +622,23 @@ ORG-05/06 are resolved, while ORG-02 now names the remaining work explicitly.
 The updated guide, function/feature comparison and gallery all link runnable
 examples. See `design/org-names.md`. Next: **ORG-1B**, starting with native
 column/field priority, duplicate targets and same-document remote references.
+
+**ORG-1B implemented (2026-10-19).** An explicit `org-emacs-v1` profile
+preserves the old source-order contract while adding native lexical target order,
+row-major column execution, field protection and duplicate-target rejection.
+The first stored formula line is active in this mode, including after blank
+lines. Same-document remote scalar/range references work in both modes, reading
+the current document-order pass state without recursive dependency evaluation.
+First-match duplicate table names, remote column aliases/field names, forward
+references and cycles have independent native fixtures. AST-owned table discovery
+now separates blank-separated tables. The Emacs oracle checks 20 successful
+documents and four native rejection documents; its extraction handles affiliated
+NAME/CAPTION keywords. Original reference values and Legacy links are retained.
+ORG-07/08 are resolved; ORG-02 lists remaining target syntax, remote indirection/
+file inputs, iteration, numeric modes and layout gaps. Runnable guide examples,
+mode migration, sharing/saved envelopes, offline reloads and gallery cover the
+new mode. See `design/org-order.md`. Next: **QT-2A**, starting with native
+notebook-control reference fixtures; broader Org work stays open.
 
 ### Phase 14 — P2: expand language compatibility
 

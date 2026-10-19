@@ -67,8 +67,8 @@ function nodeHTML(node) {
       return node.children ? children() : escapeHTML(node.value || "");
   }
 }
-export function renderOrg(src) {
-  const result = recalculateOrg(src),
+export function renderOrg(src, options = {}) {
+  const result = recalculateOrg(src, options),
     parts = [];
   let pos = 0;
   for (const { start, end, table } of result.tables) {
@@ -88,4 +88,4 @@ export function renderOrg(src) {
     recalculatedSource: result.source,
   };
 }
-export default plugin("org", async (src) => renderOrg(src));
+export default plugin("org", async (src, options) => renderOrg(src, options));

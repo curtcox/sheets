@@ -9,6 +9,7 @@ import {
   CALCA_SCOPES,
   ASCIIMATH_FORMULAS,
   ASCIIMATH_PROSE,
+  ORG_EMACS,
 } from "../../src/compatibility-profiles.js";
 
 test.describe.configure({ mode: "serial" });
@@ -167,6 +168,19 @@ test("opt-in offline files support new source links, vendored workers, docs and 
   await expect(page.locator("#profile")).toHaveValue(CALCA_SCOPES);
   await expect(page.locator("#preview")).toContainText("value => 3");
   await expect(page.locator("#preview")).toContainText("value => value");
+  await page.goto(
+    writeURL(base, {
+      src: "#+NAME: data\n| 1 | 0 | 0 |\n#+TBLFM: $3=$2+1::$2=$1+10\n\n| 0 |\n#+TBLFM: $1=remote(data,@1$3)\n",
+      format: "org",
+      profile: ORG_EMACS,
+    }),
+  );
+  await ready(page);
+  await page.reload();
+  await ready(page);
+  await expect(page.locator("#profile")).toHaveValue(ORG_EMACS);
+  await expect(page.locator("#render-status")).toHaveText(/^Ready/);
+  await expect(page.locator("#preview table").last()).toHaveText("12");
   const requests = await page.evaluate(async () => {
     const names = (await caches.keys()).filter((name) =>
       name.startsWith(

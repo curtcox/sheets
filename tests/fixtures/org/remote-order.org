@@ -1,0 +1,11 @@
+#+NAME: first
+| 0 | 0 |
+#+TBLFM: $1=remote(later,@1$1)+1::$2=remote(first,@1$1)+1
+
+#+NAME: later
+| 5 |
+#+TBLFM: $1=$1+10
+
+#+NAME: last
+| 0 |
+#+TBLFM: $1=remote(later,@1$1)+remote(first,@1$2)

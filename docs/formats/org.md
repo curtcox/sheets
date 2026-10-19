@@ -18,7 +18,9 @@ Auto detection. Source downloads use `.org`.
 ```
 
 The preview replaces the two Total cells with **12** and **14**. Keep the formula
-directly after the table. Source remains what you typed until you choose **Copy
+directly after the table. The **Org calculation** selector starts in **Legacy**,
+which preserves existing source-order links; choose **Emacs order** explicitly
+for native target scheduling. Source remains what you typed until you choose **Copy
 recalculated source** and paste the updated text. A normal source download saves
 the current editor text, while a rendered HTML export contains the calculated table.
 
@@ -32,7 +34,7 @@ the current editor text, while a rendered HTML export contains the calculated ta
 | `@<$1`, `@>$1` | First or last row in column 1 |
 | `@2$1..@>$1` | A range from row 2 to the last row |
 | `vsum(...)`, `vmean(...)`, `vcount(...)` | Aggregate a range |
-| `::` | Separate assignments, evaluated left to right |
+| `::` | Separate assignments; scheduling follows the selected mode |
 | `;%.2f` | Format the result with two decimal places |
 | `;N` | Treat nonnumeric referenced values as zero |
 
@@ -102,15 +104,89 @@ constants do not execute. Comment blocks are omitted. Formula references inside
 quoted string arguments are not substituted. Preview/copy retain metadata rows;
 this is not the complete native Org export layout.
 
+## Emacs calculation order
+
+Choose **Emacs order** in the editor, or open a link carrying
+`?profile=org-emacs-v1`. Existing links and version-1 saved documents without a
+profile retain **Legacy** rules. Selecting a mode keeps the exact source and
+creates a new source link; sharing, version-2 saves, OAuth returns, view changes
+and offline reloads retain it. Source downloads contain text alone, so select the
+mode again when reusing a source file.
+
+```org-emacs
+| 1 | 0 | 0 |
+#+TBLFM: $3=$2+1::$2=$1+10
+```
+
+This example opens in Emacs order and becomes **1, 11, 12**. Legacy produces
+**1, 11, 1** because its first assignment reads the original second cell.
+In Emacs order:
+
+- Stored targets sort lexically, rather than by the order written. Columns run
+  in that order **within each row**, then the next row runs. This is not a
+  dependency solver: column 10 sorts before column 2.
+- Cells targeted by field formulas are protected from column formulas. Sorted
+  field formulas run after all column calculations; a column can therefore read
+  the original value of a protected field. Named-field inputs still use their
+  pre-pass snapshots.
+- Duplicate targets, including a named field and its numeric address, reject the
+  table's formula line before any writes. Boundary/numeric column collisions are
+  also rejected. Targets must be single absolute columns or fields; target ranges
+  and relative targets are unsupported.
+- Only the **first** stored TBLFM line after a table is active; blank lines before
+  it are allowed. Later formula lines remain source alternatives. Legacy retains
+  its previous behavior of applying every immediately adjacent formula line.
+
+## References between tables
+
+Name an active table with a `#+NAME:` keyword (the older TBLNAME keyword also
+works). `remote(prices,@2$2)` reads one field; a range such as
+`remote(prices,@I$2..@>$2)` can feed an aggregate:
+
+```org-emacs
+#+NAME: prices
+| Item | Price |
+|------+-------|
+| A    | 4     |
+| B    | 7     |
+
+| 0 | 0 |
+#+TBLFM: $1=remote(prices,@2$2)::$2=vsum(remote(prices,@I$2..@>$2))
+```
+
+The last table becomes **4, 11**. Remote references work in both calculation
+modes and resolve boundaries, hlines and column aliases in the **referenced**
+table. A named numeric field can also supply a scalar. Table names are matched
+case-insensitively; the first matching name wins when names repeat. Field and
+column aliases remain case-sensitive. A name selects the first following active
+table before the next heading. Literal blocks cannot supply table names or data;
+blank-separated tables remain distinct.
+
+Tables recalculate once in document order. References to earlier tables see their
+updated values; references to later tables see their original values. Self
+references see the current table's partially calculated state. Chains and cycles
+never trigger recursive recalculation or automatic convergence. Put dependencies
+before their consumers when one pass is sufficient.
+
+Supported remote names are bare letters/digits/underscores/dots/hyphens, beginning
+with a letter, digit or underscore. Addresses must be absolute @row$column cells
+or ranges, with supported boundaries/hlines/column aliases, or a named numeric
+field. Dynamic table-name indirection, relative remote addresses, A1 notation,
+ID/file lookup and full Calc string/vector modes remain unsupported. Missing
+names, invalid references and out-of-bounds ranges produce original-formula-line
+diagnostics and retain the affected cell; unlike native error text, they do not
+replace it with an error marker. Ranges are checked before traversal and limited
+to 100,000 cells.
+
 ## Supported subset and limits
 
-For ordinary unmarked tables, column formulas apply to rows after the first horizontal separator, or all rows when no separator exists. Marked tables use the row-selection rules above. Field formulas target one cell. Formula assignments separated by `::` run in order and can use earlier results.
+For ordinary unmarked tables, column formulas apply to rows after the first horizontal separator, or all rows when no separator exists. Marked tables use the row-selection rules above. Field formulas target one cell. Legacy assignments separated by `::` run in source order and can use earlier results. Emacs order follows the scheduling rules above.
 
 Supported references include `$3`, `@2$3`, relative `@-1`, boundaries `@<`, `@>`, `$<`, `$>`, and hlines `@I`, `@II`. Ranges such as `@2$1..@>$1` become arrays. `vsum`, `vmean`, `vmin`, `vmax`, `vcount`, `vprod`, ordinary arithmetic, and common math functions are available. `;%.2f` formats a numeric result and `;N` coerces nonnumeric values to zero. Otherwise ranges skip nonnumeric cells.
 
 **Copy recalculated source** copies updated, aligned tables and the original surrounding source. Auto detects `#+TBLFM:`, Org keywords, and table hlines. Headings, simple lists, emphasis, and links are rendered through the Org AST.
 
-Emacs Lisp formulas produce an explicit unsupported diagnostic. This is a core subset: remote tables, iteration modes, inherited property/external constants, expression-valued or string bindings, global format parameters, arbitrary Calc syntax, and exact Emacs display-width alignment are not implemented. Formula assignments retain their documented source order; native column/field priority and duplicate-target behavior remain a separate compatibility gap. Reference checks compare supported numeric tables against `emacs --batch`; the Lisp error example is excluded from that comparison.
+Emacs Lisp formulas produce an explicit unsupported diagnostic. This is a core subset: cross-file/ID remote tables, dynamic remote indirection, target ranges, iteration modes, inherited property/external constants, expression-valued or string bindings, global format parameters, arbitrary Calc syntax, and exact Emacs display-width alignment are not implemented. Emacs order supplies supported column/field priority and duplicate-target checks; Legacy keeps its original source-order contract. Neither mode supplies a full dependency solver or repeated convergence. Reference checks compare supported numeric tables against `emacs --batch`; the Lisp error example is excluded from that comparison.
 
 The source editor highlights headings, table separators and numbers, keywords, and formula references. Source blocks remain distinct from surrounding Org prose. Highlighting is a lexical aid; rendering diagnostics report evaluation errors.
 
@@ -132,9 +208,11 @@ These entries share the [central limitations ledger](../limitations.md). “Need
 | ID | Status | Area |
 | --- | --- | --- |
 | ORG-01 | Needs detailed audit | This is a JavaScript spreadsheet subset, not Emacs Org, Babel, or the complete Emacs Calc language |
-| ORG-02 | Known gap | Remote tables, evaluation order, remaining Calc modes and native layout remain incomplete |
+| ORG-02 | Known gap | Remaining Org target syntax, numeric modes, iteration and native layout are incomplete |
 | ORG-03 | Needs detailed audit | Surrounding prose supports basic headings, lists, emphasis, and links, rather than the full Org… |
 | ORG-04 | Needs detailed audit | Recalculation updates the preview |
 | ORG-05 | Resolved | Numeric named bindings and marked-row selection match Emacs fixtures |
 | ORG-06 | Resolved | Literal Org blocks no longer run formulas or install constants |
+| ORG-07 | Resolved | Explicit Emacs order matches supported native scheduling and duplicate-target rejection |
+| ORG-08 | Resolved | Same-document remote references read current pass state without recursive evaluation |
 <!-- compatibility:end -->

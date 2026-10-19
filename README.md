@@ -17,6 +17,9 @@ code, TeX, and Mermaid. **Scoped definitions** adds immutable definitions, headi
 scopes, deferred numeric dependencies, and connected relation checks. Existing
 unprofiled Calca documents retain Legacy rules. CalcFile converts EUR to/from
 USD, GBP and JPY through the shared, dated ECB cache, preserving decimal rate text.
+Org supports named numeric inputs and same-document remote table references.
+Its optional **Emacs order** mode supplies native column/field scheduling and
+duplicate-target checks; existing unprofiled links retain Legacy source order.
 
 ## Run locally
 

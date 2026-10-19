@@ -152,8 +152,9 @@
     "format": "org",
     "kind": "edge",
     "title": "Named inputs and marked rows",
-    "description": "Use column names, file constants, and per-table parameters.",
-    "path": "examples/org/edge.org"
+    "description": "Use named inputs and marked rows, then summarize a named table.",
+    "path": "examples/org/edge.org",
+    "profile": "org-emacs-v1"
   },
   {
     "id": "org-error",

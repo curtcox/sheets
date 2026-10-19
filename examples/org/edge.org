@@ -1,8 +1,14 @@
 #+TITLE: Named inputs and marked rows
 #+CONSTANTS: tax=0.10
 
+#+NAME: order
 | ! | Qty | UnitPrice | Total |
 | # | 3 | 4 | 0 |
 | * | 2 | 7 | 0 |
 | $ | tax=0.20 | | |
 #+TBLFM: $4=$Qty*$UnitPrice*(1+$tax);%.2f
+
+* Summary
+
+| Grand total | 0 |
+#+TBLFM: @1$2=vsum(remote(order,@2$Total..@3$Total));%.2f

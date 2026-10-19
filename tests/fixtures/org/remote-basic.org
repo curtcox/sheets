@@ -1,0 +1,10 @@
+#+NAME: prices
+#+CAPTION: Price list
+| Item | Price |
+|------+-------|
+| A    | 4     |
+| B    | 7     |
+
+#+NAME: totals
+| 0 | 0 | 0 |
+#+TBLFM: $1=remote(prices,@2$2)::$2=vsum(remote(prices,@I$2..@>$2))::$3=remote(prices,@>$>)*2

@@ -385,7 +385,7 @@
     {
       "id": "CF-01",
       "format": "calcfile",
-      "title": "This is a pinned v0.1 draft reference engine, not a compatibility promise for every application using the…",
+      "title": "This is a pinned v0.1 draft reference engine, not a compatibility promise for every application using the\u2026",
       "kind": "mixed",
       "status": "audit",
       "priority": "P1",
@@ -469,27 +469,27 @@
     {
       "id": "ORG-02",
       "format": "org",
-      "title": "Remote tables, evaluation order, remaining Calc modes and native layout remain incomplete",
+      "title": "Remaining Org target syntax, numeric modes, iteration and native layout are incomplete",
       "kind": "mixed",
       "status": "open",
       "priority": "P2",
-      "milestone": "ORG-1B",
+      "milestone": "ORG-1",
       "dependsOn": [],
-      "expected": "Continue with native evaluation-order fixtures and same-document named-table references, then separately verify numeric modes, iteration and layout.",
-      "disclosure": "Numeric named columns/fields, table parameters and file constants now work, with marked-row selection and pre-pass field snapshots. Remote tables, iteration, inherited property/external constants, expression-valued or string bindings, global format parameters, remaining Calc syntax/precision modes and exact Emacs display-width/export layout remain unsupported. Formulas retain source order; native column/field priority and duplicate-target semantics are not yet implemented.",
+      "expected": "Verify remaining target syntax, Calc modes, iteration, remote indirection/file inputs and native layout in separate reference-backed slices.",
+      "disclosure": "Numeric named bindings and same-document remote cells/ranges work. The explicit Emacs-order profile supplies row-major sorted columns, protected fields, sorted field formulas and duplicate-target rejection; Legacy retains source-order links. Target ranges, relative targets in Emacs order, dynamic remote indirection, A1 remote notation, cross-file/ID references, iteration, property/external or nonnumeric bindings, global format parameters, broader Calc modes/precision and exact Emacs display-width/export layout remain unsupported. Remote failure diagnostics retain the affected cell instead of native error markers.",
       "baselineDisclosure": "Named fields, remote tables, iteration modes, arbitrary Calc syntax, and exact Emacs display-width alignment are not implemented. Formulas execute in order, rather than iterating until results converge.",
       "reproducer": {
-        "path": "design/org-names.md"
+        "path": "design/org-order.md"
       },
       "evidence": [
-        "design/org-names.md",
-        "tests/unit/org-bindings.test.js"
+        "design/org-order.md",
+        "tests/unit/org-order.test.js"
       ]
     },
     {
       "id": "ORG-03",
       "format": "org",
-      "title": "Surrounding prose supports basic headings, lists, emphasis, and links, rather than the full Org…",
+      "title": "Surrounding prose supports basic headings, lists, emphasis, and links, rather than the full Org\u2026",
       "kind": "mixed",
       "status": "audit",
       "priority": "P2",
@@ -561,9 +561,55 @@
       ]
     },
     {
+      "id": "ORG-07",
+      "format": "org",
+      "title": "Explicit Emacs order matches supported native scheduling and duplicate-target rejection",
+      "kind": "gap",
+      "status": "resolved",
+      "priority": "P1",
+      "milestone": "ORG-1B",
+      "dependsOn": [],
+      "expected": "Match the supported successful and rejected native reference documents while preserving Legacy links and the explicit profile migration contract.",
+      "disclosure": "The org-emacs-v1 profile sorts stored targets lexically, applies columns row by row with field protection, then applies sorted field formulas. Duplicate numeric/named/boundary targets reject the formula line before writes. Only the first stored TBLFM line is active, allowing preceding blank lines. Existing unprofiled links and version-1 saves retain Legacy source order. Target ranges, relative targets and full dependency solving remain outside this supported slice.",
+      "baselineDisclosure": "Formulas always ran in source order, column by column; explicit field targets were not protected and duplicate targets overwrote earlier results.",
+      "reproducer": {
+        "path": "tests/fixtures/org/order-fields.org"
+      },
+      "evidence": [
+        "design/org-order.md",
+        "tests/fixtures/org/reference.json",
+        "tests/fixtures/org/rejections.json",
+        "tests/unit/org-order.test.js",
+        "tests/browser/org-order.spec.js"
+      ]
+    },
+    {
+      "id": "ORG-08",
+      "format": "org",
+      "title": "Same-document remote references read current pass state without recursive evaluation",
+      "kind": "gap",
+      "status": "resolved",
+      "priority": "P1",
+      "milestone": "ORG-1B",
+      "dependsOn": [],
+      "expected": "Match the supported successful and rejected native reference documents while preserving Legacy links and the explicit profile migration contract.",
+      "disclosure": "remote() reads numeric cells/ranges or named numeric fields from active named tables in the same source document. Table names are case-insensitive and first-match wins; field/column aliases remain case-sensitive. References use current document-order pass state and never recursively recalculate dependencies. Blank-separated tables remain distinct and literal blocks cannot supply data. Missing/unsupported/out-of-range references report source-line diagnostics and retain the cell. Dynamic names, A1 notation, relative remote addresses and file/ID lookup remain unsupported.",
+      "baselineDisclosure": "Remote table references were unsupported; adjacent blank-separated tables could be merged by the structural parser and a later table could be missed.",
+      "reproducer": {
+        "path": "tests/fixtures/org/remote-order.org"
+      },
+      "evidence": [
+        "design/org-order.md",
+        "tests/fixtures/org/reference.json",
+        "tests/fixtures/org/rejections.json",
+        "tests/unit/org-order.test.js",
+        "tests/browser/org-order.spec.js"
+      ]
+    },
+    {
       "id": "CALCA-01",
       "format": "calca",
-      "title": "This is a compatible subset implemented with constrained mathjs, not the original commercial Calca…",
+      "title": "This is a compatible subset implemented with constrained mathjs, not the original commercial Calca\u2026",
       "kind": "mixed",
       "status": "audit",
       "priority": "P2",
@@ -651,7 +697,7 @@
       "milestone": "CALCA-1",
       "dependsOn": [],
       "expected": "The explicit Sheets structured-block profile isolates literal Markdown input, executes supported calculation blocks, and retains original source locations. Unprofiled documents keep legacy behavior.",
-      "disclosure": "Structured blocks (calca-blocks-v1), also included in Scoped definitions (calca-scopes-v1), uses parsed Markdown boundaries: only calca-labelled fences, indented code, and standalone paragraph arrow expressions calculate. Literal language/unlabelled fences, TeX, Mermaid, inline code/math, headings, links, and HTML do not run as calculations. Legacy remains the default for unprofiled URLs and version-1 saved documents. This resolves Markdown block isolation in the explicit profile; it does not implement Calca’s complete input grammar.",
+      "disclosure": "Structured blocks (calca-blocks-v1), also included in Scoped definitions (calca-scopes-v1), uses parsed Markdown boundaries: only calca-labelled fences, indented code, and standalone paragraph arrow expressions calculate. Literal language/unlabelled fences, TeX, Mermaid, inline code/math, headings, links, and HTML do not run as calculations. Legacy remains the default for unprofiled URLs and version-1 saved documents. This resolves Markdown block isolation in the explicit profile; it does not implement Calca\u2019s complete input grammar.",
       "baselineDisclosure": "Every fenced or indented code block is calculation input, regardless of its language label. Literal code, math, or Mermaid fences can therefore produce calculation diagnostics. Arrow answers replace text in the preview; the editor source is retained. Built-in unit/constant names can conflict with unknown names.",
       "reproducer": {
         "path": "examples/calca/edge.calca",
@@ -833,7 +879,7 @@
     {
       "id": "QT-03",
       "format": "quarto",
-      "title": "Python and R execute; OJS and Julia are displayed without execution. Ordinary language fences only display…",
+      "title": "Python and R execute; OJS and Julia are displayed without execution. Ordinary language fences only display\u2026",
       "kind": "mixed",
       "status": "audit",
       "priority": "P1",
@@ -885,8 +931,8 @@
       "milestone": "QT-2",
       "dependsOn": [],
       "expected": "Verify each behavior against documented Quarto subset / Pyodide 0.27.7 / webR 0.6.0; separate deliberate policy from unsupported upstream capabilities.",
-      "disclosure": "R data frames print as console text rather than rich HTML. R plots are static embedded PNG images at 640 × 400 logical pixels; Python matplotlib output is static SVG. This is not a live widget environment.",
-      "baselineDisclosure": "R data frames print as console text rather than rich HTML. R plots are static embedded PNG images at 640 × 400 logical pixels; Python matplotlib output is static SVG. This is not a live widget environment.",
+      "disclosure": "R data frames print as console text rather than rich HTML. R plots are static embedded PNG images at 640 \u00d7 400 logical pixels; Python matplotlib output is static SVG. This is not a live widget environment.",
+      "baselineDisclosure": "R data frames print as console text rather than rich HTML. R plots are static embedded PNG images at 640 \u00d7 400 logical pixels; Python matplotlib output is static SVG. This is not a live widget environment.",
       "reproducer": null,
       "evidence": []
     },
@@ -1025,7 +1071,7 @@
     {
       "id": "SHARED-03",
       "format": "shared",
-      "title": "Offline files cache static app assets, not document URLs, HashBin payloads, external images, fresh…",
+      "title": "Offline files cache static app assets, not document URLs, HashBin payloads, external images, fresh\u2026",
       "kind": "mixed",
       "status": "audit",
       "priority": "P2",
@@ -1080,8 +1126,8 @@
       "dependsOn": [
         "CALCA-06"
       ],
-      "expected": "Audit remaining input grammar against Calca’s public reference and a licensed app; preserve deliberate expression guards.",
-      "disclosure": "All Calca modes still evaluate one line at a time. Indentation-based multiline definitions, named arguments, multiple statements per line, and the original app’s broader prose/calculation inference remain unsupported. Built-in unit/constant names can conflict with unknown names; use distinct identifiers. Arrow answers replace preview text while the editor source remains intact. Forward calls to undeclared functions are unsupported. Unlisted built-in functions are rejected both as direct calls and as function values, so user-function arguments cannot bypass the allowlist. Scoped definitions rejects nested assignments in expressions and function bodies to preserve immutable bindings.",
+      "expected": "Audit remaining input grammar against Calca\u2019s public reference and a licensed app; preserve deliberate expression guards.",
+      "disclosure": "All Calca modes still evaluate one line at a time. Indentation-based multiline definitions, named arguments, multiple statements per line, and the original app\u2019s broader prose/calculation inference remain unsupported. Built-in unit/constant names can conflict with unknown names; use distinct identifiers. Arrow answers replace preview text while the editor source remains intact. Forward calls to undeclared functions are unsupported. Unlisted built-in functions are rejected both as direct calls and as function values, so user-function arguments cannot bypass the allowlist. Scoped definitions rejects nested assignments in expressions and function bodies to preserve immutable bindings.",
       "baselineDisclosure": "Every fenced or indented code block is calculation input, regardless of its language label. Literal code, math, or Mermaid fences can therefore produce calculation diagnostics. Arrow answers replace text in the preview; the editor source is retained. Built-in unit/constant names can conflict with unknown names.",
       "reproducer": null,
       "evidence": []
@@ -1146,10 +1192,10 @@
       "dependsOn": [],
       "expected": "Supply exact decimal strings to the pinned Hurmet rational parser; a real worker conversion with the shared ECB snapshot must produce the reference result.",
       "disclosure": "The Hurmet worker now supplies ECB decimal strings, including EUR = 1, instead of JavaScript numbers. This fixes the currency rational-parser runtime error. Validated shared rates use the 24-hour cache and a disclosed older fallback when refreshing fails. Missing rates retain diagnostics, and source links do not freeze rate snapshots. The shared service uses the CORS-readable official ECB data API rather than the blocked daily XML download.",
-      "baselineDisclosure": "The worker supplied JavaScript numbers to Hurmet’s decimal-string rational parser, causing a runtime error for ECB currency calculations.",
+      "baselineDisclosure": "The worker supplied JavaScript numbers to Hurmet\u2019s decimal-string rational parser, causing a runtime error for ECB currency calculations.",
       "reproducer": {
         "path": "tests/fixtures/exchange-rates/ecb-2026-10-16.xml",
-        "source": "¢`100 'EUR' = ?? USD`"
+        "source": "\u00a2`100 'EUR' = ?? USD`"
       },
       "evidence": [
         "tests/browser/calcfile-rates.spec.js"

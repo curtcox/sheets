@@ -23,7 +23,7 @@ code; they do not promise automatic conversion or a complete language runtime.
 | [AsciiMath](formats/asciimath.md) | No; notation only | No | No | No |
 | [Numbat](formats/numbat.md) | Yes | Variables and functions | Yes; dimensional checking | No automatic solver |
 | [CalcFile](formats/calcfile.md) | Yes | Friendly variable names, `ans` | Selected units; EUR ↔ USD/GBP/JPY using ECB rates | No |
-| [Org tables](formats/org.md) | Table formulas | Cell/range references, named columns/fields, numeric constants | Limited mathjs unit expressions | No |
+| [Org tables](formats/org.md) | Table formulas | Cell/range and same-document remote references, named inputs | Limited mathjs unit expressions | No |
 | [Calca](formats/calca.md) | Arrow calculations | Variables and functions; optional heading scopes | Yes, through mathjs | Real scalar linear/quadratic subset |
 | [Hurmet](formats/hurmet.md) | Calculation cells | Values shared across cells | Yes; unit-aware calculations | No Sheets-specific solver; use explicit formulas |
 | [Beancount](formats/beancount.md) | Ledger balancing and reports | Accounts and commodities | Cost/price weights; no report revaluation | One missing posting amount inferred |
@@ -72,7 +72,7 @@ Typesetting an equation in any format does not by itself evaluate or solve it.
 | AsciiMath | Local translator and renderer | Yes | External images/links in prose |
 | Numbat | Fresh worker; 20-second deadline | Yes, ordinary calculations | Fresh ECB currency rates; cached rates may be available |
 | CalcFile | Local evaluator with optional rate request | Yes; currency conversions need cached rates | Fresh ECB rates; dated cache fallback on failure |
-| Org tables | Local formula evaluator | Yes | External links |
+| Org tables | Local formula evaluator; Legacy or explicit Emacs order | Yes | External links |
 | Calca | Local constrained evaluator | Yes | External images/links in prose |
 | Hurmet | Fresh worker; 20-second deadline | Yes, ordinary calculations | Fresh ECB rates and upstream remote-data fetches |
 | Beancount | Local ledger evaluator | Yes | External links; includes/plugins are unsupported |
@@ -103,11 +103,13 @@ or notebook cells. External image URLs still need their server. See
 | Reference exchange rate | A dated price of one currency in another. CalcFile supplies ECB EUR-base rates to its pinned engine, which supports EUR ↔ USD/GBP/JPY. Fresh rates need a connection; a disclosed older cache may work offline. Source links do not freeze rates. |
 | Dimensional checking | Rejecting incompatible physical operations, such as adding a length to a duration. Writing a unit label in prose alone does not provide this check. |
 | Equation solving | Finding an unknown from a relation, rather than evaluating an expression whose inputs are already known. Calca's solver is limited to supported real linear/quadratic relations. |
-| Compatibility profile | An explicit version of a format's behavior, stored in shared links and profiled saved documents. AsciiMath offers explicit Formula list and Mixed prose modes while Auto keeps its original heuristic. Calca's Structured blocks profile changes block classification; Scoped definitions adds immutable bindings, heading scopes, and connected numeric constraint checks; plain source downloads need the mode selected again. |
+| Compatibility profile | An explicit version of a format's behavior, stored in shared links and profiled saved documents. AsciiMath offers explicit Formula list and Mixed prose modes while Auto keeps its original heuristic. Calca's Structured blocks profile changes block classification; Scoped definitions adds immutable bindings, heading scopes, and connected numeric constraint checks; Org’s Emacs order changes target scheduling while Legacy preserves source order; plain source downloads need the mode selected again. |
 | Literal autolink | A bare web or email address made clickable by the shared Markdown renderer. GFM URL path endings preserve internal parentheses and trim trailing punctuation; email domains may contain underscores and valid email prefixes before a plus sign are linked. Retained native differences and candidate bounds are documented in the GFM guide. Use explicit links to choose labels or bypass automatic recognition. |
 | Display-only table | A formatted grid whose cells are literal text. Markdown tables support left/center/right column alignment in preview and export; their cells do not acquire spreadsheet formulas automatically. |
 | Named table binding | An Org column alias, named-field snapshot, table parameter or file constant used in a formula. These name numeric inputs, rather than defining custom functions. |
 | Table formulas and references | Expressions that read or update cells. Org uses references such as `$2` and `@3$2`; Hurmet has its own table model. |
+| Emacs order | Org mode that sorts targets lexically, calculates columns row by row while protecting field targets, then calculates fields. It is one pass, not dependency solving or convergence. |
+| Remote table reference | Org reads a named table in the same source document with remote(). Earlier tables expose updated values; later tables expose original values during the current pass. It does not fetch files or recursively recalculate tables. |
 | Range and aggregate | A group of values and a summary operation such as sum, mean, or count. Org ranges address cells; CalcFile totals summarize calculation lines. |
 | Matrix | A rectangular mathematical value used in an expression. A matrix is different from a document table with editable cell formulas. |
 | Diagram | A structured drawing specified as text, such as a Mermaid flowchart. This is different from a plot generated from numerical data. |

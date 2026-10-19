@@ -1,0 +1,8 @@
+#+NAME: Cost-data
+| 3 |
+
+#+NAME: cost-DATA
+| 8 |
+
+| 0 |
+#+TBLFM: $1=remote(COST-data,@1$1)

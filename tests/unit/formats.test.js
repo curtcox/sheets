@@ -194,9 +194,9 @@ test("Org tables match committed independent reference outputs", async () => {
   );
   for (const [file, expected] of Object.entries(references))
     assert.deepEqual(
-      recalculateOrg(await read(`tests/fixtures/org/${file}`)).tables.flatMap(
-        (t) => t.table.rows,
-      ),
+      recalculateOrg(await read(`tests/fixtures/org/${file}`), {
+        profile: "org-emacs-v1",
+      }).tables.flatMap((t) => t.table.rows),
       expected,
       file,
     );

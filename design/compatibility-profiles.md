@@ -70,3 +70,15 @@ these semantics require another profile rather than reinterpreting saved data.
 The shared expression guard now rejects dangerous or unlisted built-ins used as
 function values as well as direct calls. This security correction applies to all
 profiles; retaining an evaluation bypass is not a compatibility contract.
+
+## Org calculation order
+
+`org-emacs-v1` adds an explicit **Emacs order** option. Unprofiled Org links and
+version-1 saved documents retain **Legacy** source-order assignments and adjacent
+multiple-formula-line execution. This is an intentional migration because those
+rules were documented behavior. New guide examples and the Org edge gallery
+choose the new profile explicitly; existing source text is never changed by the
+mode switch. The URL, envelope, OAuth, view, source-export and offline contract
+applies. `design/org-order.md` defines the bounded native scheduling contract;
+this mode does not claim the full Emacs/Calc application. Remote references are
+new syntax in both modes and do not change previously supported calculations.

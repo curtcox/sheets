@@ -1,5 +1,13 @@
 import { evaluate, formatValue, math } from "../../math.js";
 import { orgDocument, tableBindings, outsideStrings } from "./bindings.js";
+import {
+  address,
+  cell,
+  range,
+  checkAddress,
+  remoteValue,
+} from "./references.js";
+import { ORG_EMACS, validateProfile } from "../../compatibility-profiles.js";
 const isHline = (line) => /^\s*\|[-+:]+\|?\s*$/.test(line);
 export function parseTable(lines) {
   const rows = [],
@@ -27,57 +35,14 @@ export function parseTable(lines) {
   });
   return { rows, hlines, layout, columns };
 }
-function index(token, current, last, hlines, isRow) {
-  if (!token) return current;
-  if (token === "<") return 1;
-  if (token === ">") return last;
-  if (/^[+-]/.test(token)) return current + Number(token);
-  if (/^[IVX]+$/.test(token) && isRow) {
-    const roman = {
-      I: 1,
-      II: 2,
-      III: 3,
-      IV: 4,
-      V: 5,
-      VI: 6,
-      VII: 7,
-      VIII: 8,
-      IX: 9,
-      X: 10,
-    }[token];
-    if (!roman || hlines[roman - 1] === undefined)
-      throw new Error(`No hline @${token}.`);
-    return hlines[roman - 1] + 0.5;
-  }
-  return Number(token);
-}
-const reference = /^(?:@([+-]?\d+|[<>]|[IVX]+))?(?:\$([+-]?\d+|[<>]))?$/;
-function address(ref, row, col, table) {
-  const match = reference.exec(ref);
-  if (!match || (!match[1] && !match[2]))
-    throw new Error(`Invalid reference ${ref}`);
-  return [
-    index(match[1], row, table.rows.length, table.hlines, true),
-    index(match[2], col, table.columns, [], false),
-  ];
-}
-export function recalculateTable(table, formula, { line = 1, bindings } = {}) {
+export function recalculateTable(
+  table,
+  formula,
+  { line = 1, bindings, profile, remote } = {},
+) {
+  validateProfile(profile, "org");
   const diagnostics = [];
   bindings ||= tableBindings(table, { diagnostics });
-  function cell(r, c, numeric) {
-    if (
-      !Number.isInteger(r) ||
-      r < 1 ||
-      r > table.rows.length ||
-      c < 1 ||
-      c > table.columns
-    )
-      throw new Error(`Reference @${r}$${c} is outside the table.`);
-    const text = table.rows[r - 1][c - 1],
-      value = Number(text);
-    if (text !== "" && Number.isFinite(value)) return value;
-    return numeric ? 0 : text;
-  }
   function calculate(expression, row, col, numeric) {
     const scope = new Map();
     let slot = 0;
@@ -87,6 +52,16 @@ export function recalculateTable(table, formula, { line = 1, bindings } = {}) {
       return name;
     };
     expression = outsideStrings(expression, (segment) => {
+      segment = segment.replace(
+        /\bremote\s*\(([^(),]*),([^()]*)\)/g,
+        (_, name, ref) => {
+          if (!remote)
+            throw new Error(
+              "Remote references need a same-document named table.",
+            );
+          return bind(remote(name, ref, numeric));
+        },
+      );
       segment = segment.replace(/\$([A-Za-z][A-Za-z0-9_]*)/g, (_, name) => {
         const column = bindings.column(name);
         return column ? `$${column}` : bind(bindings.value(name));
@@ -94,26 +69,14 @@ export function recalculateTable(table, formula, { line = 1, bindings } = {}) {
       segment = segment.replace(
         /(@(?:[+-]?\d+|[<>]|[IVX]+)(?:\$(?:[+-]?\d+|[<>]))?|\$(?:[+-]?\d+|[<>]))\.\.(@(?:[+-]?\d+|[<>]|[IVX]+)(?:\$(?:[+-]?\d+|[<>]))?|\$(?:[+-]?\d+|[<>]))/g,
         (_, a, b) => {
-          const [r1, c1] = address(a, row, col, table),
-            [r2, c2] = address(b, row, col, table),
-            values = [];
-          for (
-            let r = Math.ceil(Math.min(r1, r2));
-            r <= Math.floor(Math.max(r1, r2));
-            r++
-          )
-            for (let c = Math.min(c1, c2); c <= Math.max(c1, c2); c++) {
-              const value = cell(r, c, numeric);
-              if (typeof value === "number" || numeric) values.push(value);
-            }
-          return bind(values);
+          return bind(range(table, a, b, row, col, numeric));
         },
       );
       segment = segment.replace(
         /@(?:[+-]?\d+|[<>]|[IVX]+)(?:\$(?:[+-]?\d+|[<>]))?|\$(?:[+-]?\d+|[<>])/g,
         (ref) => {
           const [r, c] = address(ref, row, col, table);
-          return bind(cell(r, c, numeric));
+          return bind(cell(table, r, c, numeric));
         },
       );
       return segment;
@@ -129,6 +92,7 @@ export function recalculateTable(table, formula, { line = 1, bindings } = {}) {
       scope.set(name, fn);
     return evaluate(expression, scope);
   }
+  const assignments = [];
   for (const part of formula.split("::")) {
     const match = /^\s*([^=]+)=(.*)$/.exec(part);
     if (!match) {
@@ -136,28 +100,35 @@ export function recalculateTable(table, formula, { line = 1, bindings } = {}) {
       continue;
     }
     const [expression, ...options] = match[2].split(";");
-    if (/^\s*'/.test(expression)) {
-      diagnostics.push({
-        line,
-        message: "Emacs Lisp formulas are unsupported.",
-      });
-      continue;
-    }
     const numeric = options.some((s) => s.includes("N")),
       precision = /%.(\d+)f/.exec(options.join(";"));
     const target = match[1].trim(),
       named = /^\$([A-Za-z][A-Za-z0-9_]*)$/.exec(target),
       namedField = named && bindings.fields.get(named[1]),
-      field = target.startsWith("@") || !!namedField;
-    const targets = [];
+      field = target.startsWith("@") || !!namedField,
+      targets = [];
     try {
+      if (/^\s*'/.test(expression))
+        throw new Error("Emacs Lisp formulas are unsupported.");
       if (named && !namedField)
         throw new Error(
           `Unknown named field target ${target}; use a numeric column target for a named column.`,
         );
       if (namedField) targets.push([namedField.row, namedField.col]);
-      else if (field) targets.push(address(target, 1, 1, table));
-      else {
+      else if (field) {
+        if (
+          profile === ORG_EMACS &&
+          !/^@(?:\d+|[<>])\$(?:\d+|[<>])$/.test(target)
+        )
+          throw new Error(
+            "Emacs-order field targets require absolute @row$column addresses; target ranges are unsupported.",
+          );
+        targets.push(address(target, 1, 1, table));
+      } else {
+        if (profile === ORG_EMACS && !/^\$(?:\d+|[<>])$/.test(target))
+          throw new Error(
+            "Emacs-order column targets must be absolute numeric columns or boundaries; target ranges are unsupported.",
+          );
         const first = bindings.marked
           ? 1
           : table.hlines.length
@@ -173,32 +144,74 @@ export function recalculateTable(table, formula, { line = 1, bindings } = {}) {
           targets.push(address(target, row, 1, table));
         }
       }
-      for (const [row, col] of targets) {
-        try {
-          if (
-            !Number.isInteger(row) ||
-            !Number.isInteger(col) ||
-            row < 1 ||
-            row > table.rows.length ||
-            col < 1 ||
-            col > table.columns
-          )
-            throw new Error("Formula target is outside the table.");
-          const value = calculate(expression.trim(), row, col, numeric);
-          table.rows[row - 1][col - 1] =
-            precision && typeof value === "number"
-              ? value.toFixed(Math.min(20, Number(precision[1])))
-              : formatValue(value);
-        } catch (error) {
-          diagnostics.push({
-            line,
-            message: `${target}, row ${row}: ${error.message}`,
-          });
-        }
-      }
+      for (const [row, col] of targets) checkAddress(row, col, table);
+      assignments.push({
+        target,
+        key: named ? named[1] : target,
+        field,
+        targets,
+        expression: expression.trim(),
+        numeric,
+        precision,
+      });
     } catch (error) {
       diagnostics.push({ line, message: error.message });
     }
+  }
+  const apply = (assignment, row, col) => {
+    const { target, expression, numeric, precision } = assignment;
+    try {
+      const value = calculate(expression, row, col, numeric);
+      table.rows[row - 1][col - 1] =
+        precision && typeof value === "number"
+          ? value.toFixed(Math.min(20, Number(precision[1])))
+          : formatValue(value);
+    } catch (error) {
+      diagnostics.push({
+        line,
+        message: `${target}, row ${row}: ${error.message}`,
+      });
+    }
+  };
+  if (profile === ORG_EMACS) {
+    // Org sorts stored targets lexically, applies columns within each row,
+    // protects every field target, then evaluates the sorted field formulas.
+    const fields = new Set(),
+      columns = new Set(),
+      raw = new Set();
+    for (const assignment of assignments) {
+      const { key, target, field, targets } = assignment;
+      const identity = field
+        ? targets.map(([r, c]) => `${r},${c}`)
+        : [String(address(target, 1, 1, table)[1])];
+      const seen = field ? fields : columns;
+      if (raw.has(key) || identity.some((id) => seen.has(id)))
+        diagnostics.push({
+          line,
+          message: `Duplicate formula target ${target}; several formulas cannot set the same field or column in Emacs order.`,
+        });
+      raw.add(key);
+      identity.forEach((id) => seen.add(id));
+    }
+    if (diagnostics.length) return diagnostics;
+    assignments.sort((a, b) => (a.key < b.key ? -1 : a.key > b.key ? 1 : 0));
+    const columnAssignments = assignments.filter((a) => !a.field);
+    for (const assignment of columnAssignments)
+      assignment.byRow = new Map(
+        assignment.targets.map((target) => [target[0], target]),
+      );
+    for (let row = 1; row <= table.rows.length; row++) {
+      for (const assignment of columnAssignments) {
+        const target = assignment.byRow.get(row);
+        if (target && !fields.has(`${target[0]},${target[1]}`))
+          apply(assignment, ...target);
+      }
+    }
+    for (const assignment of assignments.filter((a) => a.field))
+      for (const target of assignment.targets) apply(assignment, ...target);
+  } else {
+    for (const assignment of assignments)
+      for (const target of assignment.targets) apply(assignment, ...target);
   }
   return diagnostics;
 }
@@ -212,23 +225,35 @@ export function tableSource(table) {
       : `| ${table.rows[index].map((cell, c) => (/^[-+]?\d+(?:\.\d+)?$/.test(cell) ? cell.padStart(widths[c]) : cell.padEnd(widths[c]))).join(" | ")} |`,
   );
 }
-export function recalculateOrg(src) {
+export function recalculateOrg(src, { profile } = {}) {
+  validateProfile(profile, "org");
   const lines = src.split("\n"),
-    tables = [],
-    diagnostics = [];
-  const document = orgDocument(src, diagnostics);
-  for (const start of document.starts) {
-    let i = start;
+    diagnostics = [],
+    document = orgDocument(src, diagnostics);
+  const tables = document.starts.map((start) => {
+    let end = start;
     const tableLines = [];
-    while (i < lines.length && /^\s*\|/.test(lines[i]))
-      tableLines.push(lines[i++]);
-    const table = parseTable(tableLines);
+    while (end < lines.length && /^\s*\|/.test(lines[end]))
+      tableLines.push(lines[end++]);
+    return { start, end, table: parseTable(tableLines) };
+  });
+  const byStart = new Map(tables.map(({ start, table }) => [start, table]));
+  // References read the current pass state. They never recursively recalculate
+  // another table, so forward links, self references and cycles stay bounded.
+  const remote = (name, ref, numeric) =>
+    remoteValue(name, ref, byStart, document, numeric, (table) =>
+      tableBindings(table, { constants: document.constants }),
+    );
+  for (const { start, end, table } of tables) {
     const bindings = tableBindings(table, {
       line: start + 1,
       constants: document.constants,
       diagnostics,
     });
-    let formulaIndex = i;
+    let formulaIndex = end;
+    if (profile === ORG_EMACS)
+      while (formulaIndex < lines.length && !lines[formulaIndex].trim())
+        formulaIndex++;
     while (
       formulaIndex < lines.length &&
       /^\s*#\+TBLFM:/i.test(lines[formulaIndex])
@@ -237,12 +262,12 @@ export function recalculateOrg(src) {
         ...recalculateTable(
           table,
           lines[formulaIndex].replace(/^\s*#\+TBLFM:\s*/i, ""),
-          { line: formulaIndex + 1, bindings },
+          { line: formulaIndex + 1, bindings, profile, remote },
         ),
       );
       formulaIndex++;
+      if (profile === ORG_EMACS) break; // Only the first stored formula line is active.
     }
-    tables.push({ start, end: i, table });
   }
   const output = lines.slice();
   for (const { start, end, table } of tables.slice().reverse())

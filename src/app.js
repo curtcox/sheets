@@ -85,9 +85,14 @@ const selectedType = (src = getSource()) =>
     : format.value;
 function updateProfileControls() {
   const type = selectedType(),
-    ascii = type === "asciimath";
-  $("profile-controls").hidden = !["calca", "asciimath"].includes(type);
-  $("profile-label").textContent = ascii ? "AsciiMath mode" : "Calca blocks";
+    ascii = type === "asciimath",
+    org = type === "org";
+  $("profile-controls").hidden = !profiles.some((item) => item.format === type);
+  $("profile-label").textContent = org
+    ? "Org calculation"
+    : ascii
+      ? "AsciiMath mode"
+      : "Calca blocks";
   const choices = [
     { id: "", label: ascii ? "Auto" : "Legacy" },
     ...profiles.filter((item) => item.format === type),
@@ -101,17 +106,21 @@ function updateProfileControls() {
     }),
   );
   $("profile").value = currentProfile || "";
-  $("profile-help").textContent = ascii
-    ? currentProfile === ASCIIMATH_FORMULAS
-      ? "Each nonempty line is a formula, even when it resembles Markdown. Links and saved documents preserve this mode; source files contain text only."
-      : currentProfile === ASCIIMATH_PROSE
-        ? "Prose stays prose. Mark formulas with dollar delimiters or asciimath fences. Links and saved documents preserve this mode; source files contain text only."
-        : "Auto chooses formula lines or mixed prose from the document's structure. Select an explicit mode to keep that choice while editing."
-    : currentProfile === CALCA_SCOPES
-      ? "Definitions belong to headings and descendants; repeated definitions become constraints. Source files contain text only; reselect this mode when reusing them."
-      : currentProfile
-        ? "Calca fences, indented code, and standalone arrows calculate. Source files contain text only; reselect this mode when reusing them."
-        : "Legacy evaluates every code fence. Structured blocks keep other languages, formulas, and diagrams literal.";
+  $("profile-help").textContent = org
+    ? currentProfile
+      ? "Columns calculate row by row before protected field formulas, using Emacs target order. Links and saved documents preserve this mode; source files contain text only."
+      : "Legacy applies assignments in source order. Choose Emacs order explicitly to migrate; the source stays unchanged."
+    : ascii
+      ? currentProfile === ASCIIMATH_FORMULAS
+        ? "Each nonempty line is a formula, even when it resembles Markdown. Links and saved documents preserve this mode; source files contain text only."
+        : currentProfile === ASCIIMATH_PROSE
+          ? "Prose stays prose. Mark formulas with dollar delimiters or asciimath fences. Links and saved documents preserve this mode; source files contain text only."
+          : "Auto chooses formula lines or mixed prose from the document's structure. Select an explicit mode to keep that choice while editing."
+      : currentProfile === CALCA_SCOPES
+        ? "Definitions belong to headings and descendants; repeated definitions become constraints. Source files contain text only; reselect this mode when reusing them."
+        : currentProfile
+          ? "Calca fences, indented code, and standalone arrows calculate. Source files contain text only; reselect this mode when reusing them."
+          : "Legacy evaluates every code fence. Structured blocks keep other languages, formulas, and diagrams literal.";
 }
 const snapshot = () => ({
   src: getSource(),

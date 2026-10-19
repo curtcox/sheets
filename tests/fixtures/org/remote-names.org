@@ -1,0 +1,13 @@
+#+NAME: prices
+| ! | Qty | Price |
+| # | 2   | 4     |
+| * | 3   | 7     |
+#+TBLFM: $3=$Price*2
+
+#+NAME: fields
+| _ | answer |
+|   | 5      |
+#+TBLFM: $answer=9
+
+| 0 | 0 | 0 |
+#+TBLFM: $1=remote(prices,@2$Price)::$2=vsum(remote(prices,@2$Qty..@>$Qty))::$3=remote(fields,$answer)
