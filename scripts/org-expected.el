@@ -14,10 +14,13 @@
         ;; Extract real tables through Org's own structure, excluding literal
         ;; source/example blocks independently of the JavaScript adapter.
         (let (rows)
-          (org-table-map-tables
-           (lambda ()
-             (setq rows (append rows (seq-filter #'listp (org-table-to-lisp)))))
-           t 'org)
+          ;; org-table-map-tables gained its TYPE argument after Org 9.6.
+          ;; Use the stable element API on both the CI and local versions.
+          (org-element-map (org-element-parse-buffer) 'table
+            (lambda (table)
+              (when (eq (org-element-property :type table) 'org)
+                (goto-char (org-element-property :begin table))
+                (setq rows (append rows (seq-filter #'listp (org-table-to-lisp)))))))
           (with-temp-file
               (expand-file-name
                (concat (file-name-nondirectory file) ".expected")
