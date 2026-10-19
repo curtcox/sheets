@@ -7,6 +7,7 @@ The URL is the document. Typing replaces the current history entry after a 300 m
 | `?format=gfm` | Manual format. Omit it for Auto. |
 | `?view=split` | Split, source, or preview. Split is the default and is normally omitted. |
 | `?profile=calca-blocks-v1` | Calca's Structured blocks mode. Omit for Legacy. |
+| `?profile=calca-scopes-v1` | Calca's Scoped definitions mode: immutable definitions and heading scopes. |
 | `?compressed=…` | Source compressed with lz-string's URI-safe encoding. |
 | `#<cid>` | A HashBin content identifier. |
 | `?example=<id>` | Load an example once, then replace this parameter with its compressed source. |
@@ -17,7 +18,9 @@ Editing a loaded CID clears the CID and embeds the new source. Changing the view
 
 Compatibility profiles are format-specific behavior versions. The supported
 `calca-blocks-v1` profile separates calculation blocks from literal code, TeX,
-and Mermaid. It selects Calca when the format is Auto. Omitted profiles retain the
+and Mermaid. The `calca-scopes-v1` profile additionally makes definitions
+immutable, scopes definitions/relations to headings, and checks connected numeric
+constraints. Either profile selects Calca when the format is Auto. Omitted profiles retain the
 original language rules; unknown or mismatched explicit profiles report an error.
 An explicit profile query overrides a saved profile. A format override to another
 format drops the stored profile; an incompatible explicit profile is rejected.

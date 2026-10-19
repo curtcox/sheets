@@ -1,7 +1,7 @@
 import { parseExpression } from "../../math.js";
 
 // Equations use a single top-level '='; comparisons and strings remain expressions.
-function equality(source) {
+export function equality(source) {
   let depth = 0,
     quote = "",
     at = -1;
@@ -220,7 +220,9 @@ export function createCalca() {
         if (declaration.type !== "FunctionAssignmentNode") throw unsupported();
         return declaration.evaluate(scope);
       }
-      const left = parseExpression(source.slice(0, at), scope),
+      const left = parseExpression(source.slice(0, at), scope, {
+          target: true,
+        }),
         right = parseExpression(source.slice(at + 1), scope);
       if (equations.length >= 256)
         throw new Error("At most 256 equations are supported per document.");

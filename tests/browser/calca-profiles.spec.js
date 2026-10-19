@@ -2,7 +2,11 @@ import { test, expect } from "@playwright/test";
 import { readFile } from "node:fs/promises";
 import { writeURL } from "../../src/url-state.js";
 import { HashBinDocuments } from "../../src/hashbin.js";
-import { CALCA_BLOCKS as profile } from "../../src/compatibility-profiles.js";
+import {
+  CALCA_BLOCKS,
+  CALCA_BLOCKS as profile,
+  CALCA_SCOPES,
+} from "../../src/compatibility-profiles.js";
 
 const base = "http://127.0.0.1:4173/index.html";
 const source =
@@ -25,6 +29,81 @@ const sdk = `export class HashBinClient {
     return new Response(JSON.stringify(data), {headers:{"Content-Type":"application/json"}});
   }
 }`;
+
+test("scoped gallery definitions, shared links and migration retain their deliberate semantics", async ({
+  page,
+  context,
+}) => {
+  await page.goto(base + "?example=calca-typical");
+  await ready(page);
+  await expect(page.locator("#profile")).toHaveValue(CALCA_SCOPES);
+  await expect(page.locator("#render-status")).toHaveText(/^Ready/);
+  await expect(page.locator("#preview")).toContainText("tempC => 100");
+  await expect(page.locator("#preview")).toContainText("width => [2, 3]");
+  await expect(page.locator("#preview")).toContainText("width => 2");
+  await expect(page.locator("#preview")).toContainText("price => price");
+  const source = await page.evaluate(() => ace.edit("editor").getValue());
+  await page.getByRole("button", { name: "Share", exact: true }).click();
+  const fresh = await context.newPage();
+  await fresh.goto(await page.locator("#share-url").inputValue());
+  await ready(fresh);
+  await expect(fresh.locator("#profile")).toHaveValue(CALCA_SCOPES);
+  await expect(fresh.locator("#preview")).toContainText("price => price");
+  expect(await fresh.evaluate(() => ace.edit("editor").getValue())).toBe(
+    source,
+  );
+  await fresh.locator("#download-menu summary").click();
+  const download = fresh.waitForEvent("download");
+  await fresh.locator("#download-source").click();
+  expect(await readFile(await (await download).path(), "utf8")).toBe(source);
+  await fresh.locator("#profile").selectOption(CALCA_BLOCKS);
+  await ready(fresh);
+  await expect(fresh.locator("#preview")).toContainText("price => 24");
+  expect(await fresh.evaluate(() => ace.edit("editor").getValue())).toBe(
+    source,
+  );
+  const conflict =
+    "# Parent\n\n```calca\nvalue=2\nvalue=3\nvalue =>\n2+2 =>\n```\n\n# Sibling\n\nvalue =>";
+  await fresh.goto(
+    writeURL(base, { src: conflict, format: "calca", profile: CALCA_SCOPES }),
+  );
+  await ready(fresh);
+  await expect(fresh.locator("#render-status")).toContainText("2 diagnostic");
+  await expect(fresh.locator("#preview")).toContainText(
+    "Conflicting relations",
+  );
+  await expect(fresh.locator("#preview")).toContainText("2+2 => 4");
+  await expect(fresh.locator("#preview")).toContainText("value => value");
+  expect(
+    await fresh.evaluate(() =>
+      ace
+        .edit("editor")
+        .getSession()
+        .getAnnotations()
+        .map((a) => a.row),
+    ),
+  ).toEqual([4, 5]);
+  await fresh.close();
+});
+
+test("indirect built-in calls are rejected across Calca profiles", async ({
+  page,
+}) => {
+  for (const profile of [undefined, CALCA_BLOCKS, CALCA_SCOPES]) {
+    await page.goto(
+      writeURL(base, {
+        src: '```calca\ng(x)=x\nf(g)=g("2+2")\nf(evaluate) =>\n2+2 =>\n```',
+        format: "calca",
+        profile,
+      }),
+    );
+    await ready(page);
+    await expect(page.locator("#preview")).toContainText(
+      "Reserved variable or function name",
+    );
+    await expect(page.locator("#preview")).toContainText("2+2 => 4");
+  }
+});
 
 test("Calca profile migration preserves source, sharing, exports, view and format changes", async ({
   page,
@@ -79,80 +158,87 @@ test("Calca profile migration preserves source, sharing, exports, view and forma
   await expect(fresh.locator("#profile")).toHaveValue("");
 });
 
-test("HashBin saves profiles and honors legacy documents, CID precedence and explicit overrides", async ({
-  page,
-}) => {
-  await page.route("https://hashbin.org/sdk/hashbin.js", (route) =>
-    route.fulfill({ body: sdk, contentType: "text/javascript" }),
-  );
-  await page.route("https://hashbin.org/api/payments/calculate", (route) =>
-    route.fulfill({ json: { cost_cents: 1 } }),
-  );
-  let payload = HashBinDocuments.serialize({
-    src: "```python\nlegacyValue=9\n```\nlegacyValue =>",
-    type: "calca",
-  });
-  await page.route("https://256t.us/" + cid, (route) =>
-    route.fulfill({ body: payload }),
-  );
-  await page.goto(base + "?compressed=invalid!#" + cid);
-  await ready(page);
-  await expect(page.locator("#preview")).toContainText("legacyValue => 9");
-  await expect(page.locator("#profile")).toHaveValue("");
-  await page.goto(writeURL(base, { src: source, format: "calca", profile }));
-  await ready(page);
-  await page.getByRole("button", { name: "HashBin", exact: true }).click();
-  await page.locator("#hashbin-save").click();
-  await expect(page.locator("#hashbin-message")).toContainText("Cost: $0.01");
-  await page.locator("#hashbin-confirm").click();
-  await expect(page.locator("#hashbin-status")).toHaveText("Saved to HashBin.");
-  payload = await page.evaluate(() => globalThis.savedProfilePayload);
-  expect(JSON.parse(payload)).toMatchObject({
-    version: 2,
-    profile,
-    type: "calca",
-    src: source,
-  });
-  await page.goto(base + "#" + cid);
-  await ready(page);
-  await expect(page.locator("#render-status")).toHaveText(/^Ready/);
-  await expect(page.locator("#profile")).toHaveValue(profile);
-  expect(new URL(page.url()).hash).toBe("#" + cid);
-  await page.goto(base + "?format=gfm&view=source#" + cid);
-  await ready(page);
-  await expect(page.locator("#format")).toHaveValue("gfm");
-  await expect(page.locator("#preview-pane")).toBeHidden();
-  expect(new URL(page.url()).searchParams.has("profile")).toBe(false);
-  await page.goto(base);
-  await ready(page);
-  await page.getByRole("button", { name: "HashBin", exact: true }).click();
-  await page
-    .locator("#hashbin-cid")
-    .fill(
-      "  https://curtcox.github.io/sheets/index.html?format=calca&view=source&profile=" +
-        profile +
-        "#" +
-        cid +
-        "  ",
+for (const profile of [CALCA_BLOCKS, CALCA_SCOPES]) {
+  test(`HashBin saves ${profile} and honors legacy documents, CID precedence and explicit overrides`, async ({
+    page,
+  }) => {
+    await page.route("https://hashbin.org/sdk/hashbin.js", (route) =>
+      route.fulfill({ body: sdk, contentType: "text/javascript" }),
     );
-  await page.locator("#hashbin-load").click();
-  await expect(page.locator("#hashbin-status")).toHaveText(
-    "Loaded from HashBin.",
-  );
-  await ready(page);
-  await expect(page.locator("#profile")).toHaveValue(profile);
-  await expect(page.locator("#preview-pane")).toBeHidden();
-  await page.locator("#profile").selectOption("");
-  await ready(page);
-  expect(new URL(page.url()).hash).toBe("");
-  expect(new URL(page.url()).searchParams.has("profile")).toBe(false);
-  expect(await page.evaluate(() => ace.edit("editor").getValue())).toBe(source);
-  expect(JSON.parse(payload).profile).toBe(profile);
-});
+    await page.route("https://hashbin.org/api/payments/calculate", (route) =>
+      route.fulfill({ json: { cost_cents: 1 } }),
+    );
+    let payload = HashBinDocuments.serialize({
+      src: "```python\nlegacyValue=9\n```\nlegacyValue =>",
+      type: "calca",
+    });
+    await page.route("https://256t.us/" + cid, (route) =>
+      route.fulfill({ body: payload }),
+    );
+    await page.goto(base + "?compressed=invalid!#" + cid);
+    await ready(page);
+    await expect(page.locator("#preview")).toContainText("legacyValue => 9");
+    await expect(page.locator("#profile")).toHaveValue("");
+    await page.goto(writeURL(base, { src: source, format: "calca", profile }));
+    await ready(page);
+    await page.getByRole("button", { name: "HashBin", exact: true }).click();
+    await page.locator("#hashbin-save").click();
+    await expect(page.locator("#hashbin-message")).toContainText("Cost: $0.01");
+    await page.locator("#hashbin-confirm").click();
+    await expect(page.locator("#hashbin-status")).toHaveText(
+      "Saved to HashBin.",
+    );
+    payload = await page.evaluate(() => globalThis.savedProfilePayload);
+    expect(JSON.parse(payload)).toMatchObject({
+      version: 2,
+      profile,
+      type: "calca",
+      src: source,
+    });
+    await page.goto(base + "#" + cid);
+    await ready(page);
+    await expect(page.locator("#render-status")).toHaveText(/^Ready/);
+    await expect(page.locator("#profile")).toHaveValue(profile);
+    expect(new URL(page.url()).hash).toBe("#" + cid);
+    await page.goto(base + "?format=gfm&view=source#" + cid);
+    await ready(page);
+    await expect(page.locator("#format")).toHaveValue("gfm");
+    await expect(page.locator("#preview-pane")).toBeHidden();
+    expect(new URL(page.url()).searchParams.has("profile")).toBe(false);
+    await page.goto(base);
+    await ready(page);
+    await page.getByRole("button", { name: "HashBin", exact: true }).click();
+    await page
+      .locator("#hashbin-cid")
+      .fill(
+        "  https://curtcox.github.io/sheets/index.html?format=calca&view=source&profile=" +
+          profile +
+          "#" +
+          cid +
+          "  ",
+      );
+    await page.locator("#hashbin-load").click();
+    await expect(page.locator("#hashbin-status")).toHaveText(
+      "Loaded from HashBin.",
+    );
+    await ready(page);
+    await expect(page.locator("#profile")).toHaveValue(profile);
+    await expect(page.locator("#preview-pane")).toBeHidden();
+    await page.locator("#profile").selectOption("");
+    await ready(page);
+    expect(new URL(page.url()).hash).toBe("");
+    expect(new URL(page.url()).searchParams.has("profile")).toBe(false);
+    expect(await page.evaluate(() => ace.edit("editor").getValue())).toBe(
+      source,
+    );
+    expect(JSON.parse(payload).profile).toBe(profile);
+  });
+}
 
 test("OAuth restoration keeps the Calca profile and exact source on success or denial", async ({
   page,
 }) => {
+  const profile = CALCA_SCOPES;
   await page.route("https://hashbin.org/sdk/hashbin.js", (route) =>
     route.fulfill({ body: sdk, contentType: "text/javascript" }),
   );

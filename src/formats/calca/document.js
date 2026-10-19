@@ -60,11 +60,17 @@ export function parseCalcaDocument(source) {
   md.core.ruler.disable("footnote_tail");
   const tokens = md.parse(source, env);
   const blocks = [],
+    headings = [],
     calculations = [],
     diagnostics = [];
   for (let i = 0; i < tokens.length; i++) {
     const token = tokens[i];
     if (!token.map) continue;
+    if (token.type === "heading_open")
+      headings.push({
+        line: token.map[0] + 1,
+        level: Number(token.tag.slice(1)),
+      });
     const fence = token.type === "fence",
       code = token.type === "code_block";
     const paragraph =
@@ -129,6 +135,7 @@ export function parseCalcaDocument(source) {
   }
   return {
     blocks: blocks.sort((a, b) => a.startLine - b.startLine),
+    headings: headings.sort((a, b) => a.line - b.line),
     calculations: calculations.sort((a, b) => a.line - b.line),
     diagnostics,
   };

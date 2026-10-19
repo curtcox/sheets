@@ -1,5 +1,5 @@
 import { writeURL } from "./url-state.js";
-import { CALCA_BLOCKS } from "./compatibility-profiles.js";
+import { CALCA_BLOCKS, CALCA_SCOPES } from "./compatibility-profiles.js";
 
 const block = (language, source) => `\`\`\`${language}\n${source}\n\`\`\`\n`;
 const sample = (source, aliases = []) => ({ source, aliases });
@@ -223,20 +223,30 @@ option "infer_tolerance_from_cost" "TRUE"
   ],
 };
 
-export function blockExample(page, source) {
+export function blockExample(page, source, language = "") {
   const format = page.startsWith("formats/") ? page.slice(8) : "text";
   return {
     format,
     src:
-      format === "calca" && !/^ {0,3}(?:`{3,}|~{3,})/m.test(source)
+      format === "calca" &&
+      language !== "calca-scopes" &&
+      !/^ {0,3}(?:`{3,}|~{3,})/m.test(source)
         ? block("calca", source.trimEnd())
         : source,
-    ...(format === "calca" ? { profile: CALCA_BLOCKS } : {}),
+    ...(format === "calca"
+      ? { profile: language === "calca-scopes" ? CALCA_SCOPES : CALCA_BLOCKS }
+      : {}),
   };
 }
 
 export function inlineExample(page, code) {
   if (page === "url-format") {
+    if (["?profile=calca-scopes-v1", "calca-scopes-v1"].includes(code))
+      return {
+        format: "calca",
+        src: "# Parent\n\n    value=2\n\n## Child\n\n    value =>\n\n# Sibling\n\n    value =>\n",
+        profile: CALCA_SCOPES,
+      };
     if (["?profile=calca-blocks-v1", "calca-blocks-v1"].includes(code))
       return {
         format: "calca",
@@ -284,7 +294,14 @@ export function linkExamples(content, page, base) {
   for (const code of content.querySelectorAll("pre > code")) {
     const link = document.createElement("a");
     link.className = "docs-example-link";
-    link.href = exampleURL(base, blockExample(page, code.textContent));
+    link.href = exampleURL(
+      base,
+      blockExample(
+        page,
+        code.textContent,
+        [...code.classList].find((c) => c.startsWith("language-"))?.slice(9),
+      ),
+    );
     link.textContent = "Open example in editor ↗";
     const paragraph = document.createElement("p");
     paragraph.append(link);

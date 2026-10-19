@@ -39,16 +39,20 @@ const allowed = new Set([
   "number",
   "unit",
 ]);
+const reserved =
+  /^(?:import|evaluate|parse|compile|createUnit|config|constructor|__proto__)$/;
 /** Constrain the mathjs language to calculation syntax. No imports or object access. */
 export function parseExpression(
   expression,
   scope = new Map(),
-  { assign = false } = {},
+  { assign = false, target = false } = {},
 ) {
   if (expression.length > 4000) throw new Error("Expression is too long.");
   const node = math.parse(expression);
+  const parameters =
+    node.type === "FunctionAssignmentNode" ? new Set(node.params) : new Set();
   let count = 0;
-  node.traverse((n) => {
+  node.traverse((n, path, parent) => {
     if (++count > 1000) throw new Error("Expression is too complex.");
     if (
       ["AccessorNode", "ObjectNode", "BlockNode", "RangeNode"].includes(n.type)
@@ -69,6 +73,25 @@ export function parseExpression(
       typeof scope.get(n.fn.name) !== "function"
     )
       throw new Error(`Unsupported function: ${n.fn.name}`);
+    // A function value can be called through a user-function parameter. Apply the
+    // same allowlist to bare built-ins, not just direct FunctionNode calls.
+    if (n.type === "SymbolNode" && reserved.test(n.name))
+      throw new Error("Reserved variable or function name.");
+    if (
+      n.type === "SymbolNode" &&
+      !(target && n === node) &&
+      !(parent?.type === "AssignmentNode" && parent.object === n) &&
+      !parameters.has(n.name) &&
+      !scope.has(n.name) &&
+      typeof math[n.name] === "function" &&
+      !allowed.has(n.name)
+    )
+      throw new Error(`Unsupported function: ${n.name}`);
+    if (
+      n.type === "FunctionAssignmentNode" &&
+      (reserved.test(n.name) || n.params.some((name) => reserved.test(name)))
+    )
+      throw new Error("Reserved function or parameter name.");
     if (
       n.type === "ConstantNode" &&
       typeof n.value === "number" &&
@@ -78,9 +101,7 @@ export function parseExpression(
     if (
       n.type === "AssignmentNode" &&
       n.object?.name &&
-      /^(?:import|evaluate|parse|compile|createUnit|config|constructor|__proto__)$/.test(
-        n.object.name,
-      )
+      reserved.test(n.object.name)
     )
       throw new Error("Reserved variable name.");
   });

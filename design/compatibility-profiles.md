@@ -1,8 +1,8 @@
 # Compatibility profile contract
 
-Status: the first profile, `calca-blocks-v1`, is implemented. It changes Markdown
-block classification only; Calca heading scopes and definition semantics remain
-future work and must use a separate profile. The first Beancount numeric fixes do
+Status: `calca-blocks-v1` changes Markdown block classification only.
+`calca-scopes-v1` adds heading scopes and immutable definitions with a bounded
+numeric constraint policy. The first Beancount numeric fixes do
 not require a profile: correcting arithmetic does not retain a known wrong result
 as a dialect.
 
@@ -28,12 +28,13 @@ as a dialect.
   document. New starter documents may choose a new default while old unprofiled
   links continue to resolve to the legacy language rules.
 
-The Calca blocks selector switches explicitly between Legacy (no profile) and
-Structured blocks (`calca-blocks-v1`). A switch preserves source and clears a
-loaded CID; a format change clears the Calca profile. Existing starter documents
+The Calca blocks selector switches explicitly between Legacy (no profile),
+Structured blocks (`calca-blocks-v1`), and Scoped definitions (`calca-scopes-v1`).
+A switch preserves source and clears a loaded CID; a format change clears the Calca profile. Existing starter documents
 remain legacy. The Calca edge gallery example and new documentation links choose
-Structured blocks explicitly. HashBin load controls also honor query overrides in
-pasted saved links. Unknown/mismatched profiles block loading with a visible error
+Structured blocks explicitly; the equations/functions/scopes example and scoped
+documentation examples choose Scoped definitions. HashBin load controls also honor
+query overrides in pasted saved links. Unknown/mismatched profiles block loading with a visible error
 and leave the original URL intact.
 
 Executable coverage is in `tests/unit/profiles.test.js` and
@@ -42,3 +43,30 @@ and version-2 envelopes, mixed overrides, CID precedence, sharing, source export
 OAuth success/denial, view preservation, and profile migration. The offline browser
 suite checks profiled-source reloads from installed assets. Existing URL/HashBin
 and Calca tests continue to define the legacy contract.
+
+## Scoped definitions policy
+
+The public Calca reference motivates immutable definitions, document-order
+availability, and parent/child/sibling heading scopes. An attributed fixture is
+stored in `tests/fixtures/calca/scopes.json`; it is not an independent native-app
+oracle. First definitions retain expressions rather than eager values. Repeated
+visible definitions become relations, including in children. Definitions do not
+shadow inherited names. Deferred bodies and function free variables use the
+query's visible bindings. ATX and Setext headings create scopes. A bare unbound
+name displays itself; compound symbolic answers are unsupported.
+
+Only real scalar linear/quadratic candidates are solved. Connected relations
+must accept a candidate within 64 machine epsilons of relative error (no absolute
+floor). For solved unknowns, arithmetic magnitudes account for cancellation when
+checking rounded polynomial roots; this is not an exact proof. Other connected
+relations either evaluate at the candidate or report an unsupported diagnostic.
+No generic system or function inversion is implied.
+Multiple/no roots, cycles, over-deep dependencies and excess work are explicit.
+Unrelated calculations can continue after a conflict. Child redefinition,
+deferred binding, Setext handling and conflict presentation are Sheets policies
+pending native-app verification and stay under CALCA-04 audit. Further changes to
+these semantics require another profile rather than reinterpreting saved data.
+
+The shared expression guard now rejects dangerous or unlisted built-ins used as
+function values as well as direct calls. This security correction applies to all
+profiles; retaining an evaluation bypass is not a compatibility contract.

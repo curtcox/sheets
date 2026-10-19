@@ -2,6 +2,7 @@ import { catalog, detect, loadFormat } from "./formats/registry.js";
 import { readURL, writeURL, readOverrides } from "./url-state.js";
 import {
   profiles,
+  CALCA_SCOPES,
   validateProfile,
   resolveDocument,
 } from "./compatibility-profiles.js";
@@ -83,9 +84,12 @@ const selectedType = (src = getSource()) =>
 function updateProfileControls() {
   $("profile-controls").hidden = selectedType() !== "calca";
   $("profile").value = currentProfile || "";
-  $("profile-help").textContent = currentProfile
-    ? "Calca fences, indented code, and standalone arrows calculate. Source files contain text only; reselect this mode when reusing them."
-    : "Legacy evaluates every code fence. Structured blocks keep other languages, formulas, and diagrams literal.";
+  $("profile-help").textContent =
+    currentProfile === CALCA_SCOPES
+      ? "Definitions belong to headings and descendants; repeated definitions become constraints. Source files contain text only; reselect this mode when reusing them."
+      : currentProfile
+        ? "Calca fences, indented code, and standalone arrows calculate. Source files contain text only; reselect this mode when reusing them."
+        : "Legacy evaluates every code fence. Structured blocks keep other languages, formulas, and diagrams literal.";
 }
 const snapshot = () => ({
   src: getSource(),

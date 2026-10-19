@@ -1,0 +1,6 @@
+{
+  "reference": "https://calca.io/reference/#headings-control-definition-availability",
+  "basis": "Public reference: Input / Headings Control Definition Availability. Numeric names and Markdown headings adapted to executable indented input. This is a reference-derived case, not an independent licensed-app run. Conflict handling and deferred dependency cases in the unit suite are explicit Sheets policies.",
+  "source": "##### Parent\n\n    a = 10\n\n###### Child\n\n    a =>\n\n##### Sibling\n\n    a =>\n",
+  "expected": "##### Parent\n\n    a = 10\n\n###### Child\n\n    a => 10\n\n##### Sibling\n\n    a => a\n"
+}

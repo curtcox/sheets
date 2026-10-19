@@ -82,6 +82,26 @@ test("documentation examples open their source with the required context and lim
   );
 
   await page.goto("/docs.html?page=url-format");
+  await page
+    .getByRole("link", { name: "?profile=calca-scopes-v1", exact: true })
+    .click();
+  await expect(page.locator("#profile")).toHaveValue("calca-scopes-v1");
+  await expect(page.locator("#preview")).toContainText("value => 2");
+  await expect(page.locator("#preview")).toContainText("value => value");
+
+  await page.goto("/docs.html?page=formats/calca");
+  await page
+    .locator("#docs-content pre")
+    .filter({ hasText: "# Parent" })
+    .locator("xpath=following-sibling::p[1]")
+    .getByRole("link")
+    .click();
+  await expect(page.locator("#profile")).toHaveValue("calca-scopes-v1");
+  await expect(page.locator("#render-status")).toHaveText(/^Ready/);
+  await expect(page.locator("#preview")).toContainText("total => 12");
+  await expect(page.locator("#preview")).toContainText("total => total");
+
+  await page.goto("/docs.html?page=url-format");
   await page.getByRole("link", { name: "#<cid>", exact: true }).click();
   await expect(page.locator("#preview")).toContainText("2 + 2 => 4");
 

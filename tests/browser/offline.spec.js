@@ -5,7 +5,7 @@ import { tmpdir } from "node:os";
 import { stage } from "../../scripts/stage.mjs";
 import { createStaticServer } from "../../scripts/serve.mjs";
 import { writeURL } from "../../src/url-state.js";
-import { CALCA_BLOCKS } from "../../src/compatibility-profiles.js";
+import { CALCA_SCOPES } from "../../src/compatibility-profiles.js";
 
 test.describe.configure({ mode: "serial" });
 let directory, server, base;
@@ -118,9 +118,9 @@ test("opt-in offline files support new source links, vendored workers, docs and 
   }
   await page.goto(
     writeURL(base, {
-      src: '```python\nprint("literal => example")\n```\n\n```calca\n2+2 =>\n```',
+      src: "# Parent\n\n```calca\nvalue=3\n```\n\n## Child\n\nvalue =>\n\n# Sibling\n\nvalue =>\n2+2 =>",
       format: "calca",
-      profile: CALCA_BLOCKS,
+      profile: CALCA_SCOPES,
     }),
   );
   await ready(page);
@@ -128,7 +128,9 @@ test("opt-in offline files support new source links, vendored workers, docs and 
   await expect(page.locator("#preview")).toContainText("2+2 => 4");
   await page.reload();
   await ready(page);
-  await expect(page.locator("#profile")).toHaveValue(CALCA_BLOCKS);
+  await expect(page.locator("#profile")).toHaveValue(CALCA_SCOPES);
+  await expect(page.locator("#preview")).toContainText("value => 3");
+  await expect(page.locator("#preview")).toContainText("value => value");
   const requests = await page.evaluate(async () => {
     const names = (await caches.keys()).filter((name) =>
       name.startsWith(

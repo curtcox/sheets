@@ -358,9 +358,20 @@ through URLs, version-2 envelopes, sharing, OAuth snapshots, view changes,
 and offline reloads. Source downloads keep text alone and disclose the need to
 select the profile when reusing it. The profile contract
 has executable migration cases; the broader Phase 11 atomic audit remains open.
-Calca still evaluates one line at a time. CALCA-2 definition/scoping semantics and
-CALCA-3 input grammar remain future work rather than implied capabilities of the
-new block profile.
+Third increment: CALCA-2 adds `calca-scopes-v1` (Scoped definitions) while keeping
+Legacy and Structured blocks semantics unchanged. First visible definitions are
+immutable, repeated definitions become constraints, and definitions/relations are
+available within their heading and descendants. Deferred numeric dependencies and
+function free variables use query-visible bindings. Candidate real scalar roots
+are checked against connected relations; contradictions and unsupported systems
+report diagnostics. Cycles, depth, statement count and evaluation work are bounded.
+The published parent/child/sibling example has an attributed reference fixture;
+child redefinition, deferred binding, conflict presentation and Setext support are
+explicit project policies pending licensed-app comparison (CALCA-04). The gallery,
+docs editor links, URL/HashBin envelopes, OAuth and offline tests cover the profile.
+An indirect built-in function-value guard bypass is closed for all shared math
+users. Calca still evaluates one line at a time; CALCA-3's input grammar, symbolic
+answers, function inversion and general systems remain future work.
 
 ### Goal and prioritization
 

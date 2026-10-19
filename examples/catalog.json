@@ -171,9 +171,10 @@
     "id": "calca-typical",
     "format": "calca",
     "kind": "typical",
-    "title": "Equations and functions",
-    "description": "Solve linear and quadratic equations, reverse a definition, and call a function.",
-    "path": "examples/calca/typical.calca"
+    "title": "Equations, functions, and scopes",
+    "description": "Reverse definitions, constrained roots, and heading visibility.",
+    "path": "examples/calca/typical.calca",
+    "profile": "calca-scopes-v1"
   },
   {
     "id": "calca-edge",

@@ -1,7 +1,9 @@
 /** Behavior versions are explicit; omitted profiles retain the original rules. */
 export const CALCA_BLOCKS = "calca-blocks-v1";
+export const CALCA_SCOPES = "calca-scopes-v1";
 export const profiles = [
   { id: CALCA_BLOCKS, format: "calca", label: "Structured blocks" },
+  { id: CALCA_SCOPES, format: "calca", label: "Scoped definitions" },
 ];
 export function validateProfile(profile, format = "auto") {
   if (profile === undefined || profile === null) return undefined;
