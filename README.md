@@ -15,7 +15,8 @@ app-file download. Calca supports numeric linear and quadratic equation solving.
 Its optional **Structured blocks** mode separates calculation input from literal
 code, TeX, and Mermaid. **Scoped definitions** adds immutable definitions, heading
 scopes, deferred numeric dependencies, and connected relation checks. Existing
-unprofiled Calca documents retain Legacy rules.
+unprofiled Calca documents retain Legacy rules. CalcFile converts EUR to/from
+USD, GBP and JPY through the shared, dated ECB cache, preserving decimal rate text.
 
 ## Run locally
 
@@ -99,6 +100,8 @@ After changing example source or preview styling, regenerate the covers with:
 ```sh
 npx playwright install chromium
 npm run gallery:covers
+# Reproducible currency preview using the recorded ECB feed:
+node scripts/render-gallery.mjs --only=calcfile-edge --rates-fixture=tests/fixtures/exchange-rates/ecb-api-2026-10-16.csv
 ```
 
 The script starts and stops its own temporary local server, renders all 36

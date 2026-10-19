@@ -1,6 +1,7 @@
 import { test, expect } from "@playwright/test";
 import { readFile } from "node:fs/promises";
 import { writeURL } from "../../src/url-state.js";
+import { ECB_URL } from "../../src/exchange-rates.js";
 const examples = JSON.parse(
   await readFile(new URL("../../examples/catalog.json", import.meta.url)),
 );
@@ -21,6 +22,19 @@ const setSource = (page, source) =>
   );
 for (const format of [...new Set(examples.map((s) => s.format))])
   test(`${format}: every gallery example renders`, async ({ page }) => {
+    if (format === "calcfile") {
+      const xml = await readFile(
+        new URL(
+          "../fixtures/exchange-rates/ecb-api-2026-10-16.csv",
+          import.meta.url,
+        ),
+        "utf8",
+      );
+      await page.route(ECB_URL, (route) =>
+        route.fulfill({ body: xml, contentType: "text/csv" }),
+      );
+      await page.clock.setFixedTime(new Date("2026-10-18T12:00:00Z"));
+    }
     const errors = [];
     page.on("pageerror", (e) => errors.push(e.message));
     for (const sample of examples.filter((s) => s.format === format)) {

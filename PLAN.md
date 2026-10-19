@@ -373,6 +373,20 @@ An indirect built-in function-value guard bypass is closed for all shared math
 users. Calca still evaluates one line at a time; CALCA-3's input grammar, symbolic
 answers, function inversion and general systems remain future work.
 
+Fourth increment: CF-1 connects CalcFile's actual missing-external-data diagnostics
+to the shared ECB service. The official data API supplies a CORS-readable decimal
+CSV; a validated daily XML snapshot retains existing Numbat/cache interfaces and
+excludes discontinued older series. Decimal rate lexemes and publication dates reach the
+pinned engine unchanged, enabling EUR ↔ USD/GBP/JPY. Requests are skipped for
+same-currency arithmetic/conversion, prose, comments and ordinary unit conversion.
+The cache validates daily-feed structure, positive rates, dates and timestamps;
+stale/offline fallback retains its original date and shows a notice. Cancellations
+do not render or cache late responses. Source links and saved documents retain
+source, not rate snapshots. The pinned engine's EUR-base pair and four-currency
+boundaries remain disclosed under CF-05. The original 37 conformance cases remain
+unchanged. Shared-consumer coverage also found and fixed Hurmet's numeric-rate
+bridge: its rational parser now receives decimal strings instead of numbers.
+
 ### Goal and prioritization
 
 Close gaps that change results first, then widely used missing capabilities, then

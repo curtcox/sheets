@@ -1,10 +1,22 @@
 import { test, expect } from "@playwright/test";
 import { catalog } from "../../src/formats/registry.js";
 import { readURL } from "../../src/url-state.js";
+import { readFile } from "node:fs/promises";
+import { ECB_URL } from "../../src/exchange-rates.js";
 
 test("documentation examples open their source with the required context and limitations are discoverable", async ({
   page,
 }) => {
+  const xml = await readFile(
+    new URL(
+      "../fixtures/exchange-rates/ecb-api-2026-10-16.csv",
+      import.meta.url,
+    ),
+    "utf8",
+  );
+  await page.route(ECB_URL, (route) =>
+    route.fulfill({ body: xml, contentType: "text/csv" }),
+  );
   for (const id of [
     "index",
     "url-format",
@@ -104,6 +116,29 @@ test("documentation examples open their source with the required context and lim
   await page.goto("/docs.html?page=url-format");
   await page.getByRole("link", { name: "#<cid>", exact: true }).click();
   await expect(page.locator("#preview")).toContainText("2 + 2 => 4");
+
+  await page.goto("/docs.html?page=formats/calcfile");
+  await page
+    .locator("#docs-content pre")
+    .filter({ hasText: "Budget = 100 EUR" })
+    .locator("xpath=following-sibling::p[1]")
+    .getByRole("link")
+    .click();
+  await expect(page.locator("#format")).toHaveValue("calcfile");
+  await expect(page.locator("#render-status")).toHaveText(/^Ready/);
+  await expect(page.locator('.result-line[data-line="2"] output')).toHaveText(
+    "112.53 USD",
+  );
+  await page.goto("/docs.html?page=formats/hurmet");
+  await page
+    .locator("#docs-content pre")
+    .filter({ hasText: "100 'EUR'" })
+    .locator("xpath=following-sibling::p[1]")
+    .getByRole("link")
+    .click();
+  await expect(page.locator("#format")).toHaveValue("hurmet");
+  await expect(page.locator("#render-status")).toHaveText(/^Ready/);
+  await expect(page.locator("#preview")).toContainText("112.53");
 
   await page.goto("/docs.html?page=formats/beancount");
   await page

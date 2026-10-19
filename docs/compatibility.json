@@ -247,7 +247,7 @@
       "milestone": "NUM-1",
       "dependsOn": [],
       "expected": "Verify each behavior against Numbat 1.24.0; separate deliberate policy from unsupported upstream capabilities.",
-      "disclosure": "Some short names are predefined units and cannot be redefined. Currency rates depend on the ECB request/cache; missing or stale rates are disclosed rather than replaced with an invented value.",
+      "disclosure": "Some short names are predefined units and cannot be redefined. Currency rates depend on the ECB request/cache; missing or stale rates are disclosed rather than replaced with an invented value. Browser requests now use the official ECB data API; the shared service builds the daily XML required by Numbat, excluding discontinued older series. The original daily XML download blocks cross-origin reads.",
       "baselineDisclosure": "Some short names are predefined units and cannot be redefined. Currency rates depend on the ECB request/cache; missing or stale rates are disclosed rather than replaced with an invented value.",
       "reproducer": null,
       "evidence": []
@@ -270,17 +270,26 @@
     {
       "id": "CF-02",
       "format": "calcfile",
-      "title": "All 37 required upstream conformance cases pass, including cases with supplied exchange rates",
+      "title": "ECB decimal rate environment supplied to CalcFile",
       "kind": "gap",
-      "status": "open",
+      "status": "resolved",
       "priority": "P1",
       "milestone": "CF-1",
       "dependsOn": [],
-      "expected": "Verify each behavior against CalcFile b11ecb44e4a5 (v0.1 draft); separate deliberate policy from unsupported upstream capabilities.",
-      "disclosure": "All 37 required upstream conformance cases pass, including cases with supplied exchange rates. The **Sheets UI supplies no currency-rate environment** to CalcFile, so cross-currency conversion reports missing external data.",
+      "expected": "The adapter supplies the pinned engine with validated decimal-string ECB rates only when actual calculations need external data. Online, cached/offline, missing, malformed and cancelled requests have deliberate results; the 37-case corpus remains unchanged.",
+      "disclosure": "The shared service reads the browser-accessible official ECB data API and builds a validated daily XML snapshot while preserving decimal rate text and the latest publication date. Discontinued older series are excluded. CalcFile now supplies validated decimal-string ECB rates with their publication date, fetching only when the engine reports missing external data. Supported EUR-base conversions work online or with a valid cache. Refresh failures disclose older cached rates; malformed or unavailable data keeps source-line diagnostics. Cancellation discards late responses without cache writes. The original 37 required upstream conformance cases still pass. Pair/currency and rate-snapshot boundaries remain under CF-05.",
       "baselineDisclosure": "All 37 required upstream conformance cases pass, including cases with supplied exchange rates. The **Sheets UI supplies no currency-rate environment** to CalcFile, so cross-currency conversion reports missing external data.",
-      "reproducer": null,
-      "evidence": []
+      "reproducer": {
+        "path": "examples/calcfile/edge.calc"
+      },
+      "evidence": [
+        "tests/fixtures/exchange-rates/ecb-2026-10-16.xml",
+        "tests/fixtures/exchange-rates/ecb-api-2026-10-16.csv",
+        "tests/unit/calcfile-rates.test.js",
+        "tests/unit/exchange-rates.test.js",
+        "tests/browser/calcfile-rates.spec.js",
+        "tests/browser/offline.spec.js"
+      ]
     },
     {
       "id": "CF-03",
@@ -869,6 +878,50 @@
         "tests/unit/calca-scopes.test.js",
         "tests/unit/profiles.test.js",
         "tests/browser/calca-profiles.spec.js"
+      ]
+    },
+    {
+      "id": "CF-05",
+      "format": "calcfile",
+      "title": "ECB base pairs, cache availability and changing external data",
+      "kind": "mixed",
+      "status": "retained",
+      "priority": "P2",
+      "milestone": "FORMAT-1",
+      "dependsOn": [
+        "CF-02"
+      ],
+      "expected": "Keep the pinned rate-table API and its supported currencies explicit; broader conversion behavior requires a separately verified adapter or newer reference target. Never invent missing rates or imply source links freeze external data.",
+      "disclosure": "The pinned engine recognizes EUR, USD, GBP and JPY and converts only when one side is the rate table base. Sheets supplies the ECB EUR base, so direct non-EUR pairs and currencies such as CHF remain unsupported. Validated rates are cached for 24 hours; refresh failure may use an older snapshot with a notice and original date, and publications older than seven days are flagged. Offline conversion needs a previously cached snapshot plus installed app files; offline installation does not preload rates. Malformed feeds and corrupt/future cache entries are rejected. Requests have a twenty-second deadline. Optional storage may be unavailable or evicted. Source links, downloads and HashBin documents store source rather than rates; rendered HTML preserves the finished answers and date. The original daily XML download blocks cross-origin browser reads; the official ECB data API is used instead, with no document source in requests.",
+      "baselineDisclosure": "The Sheets UI supplies no currency-rate environment to CalcFile, so cross-currency conversion reports missing external data.",
+      "reproducer": {
+        "path": "examples/calcfile/edge.calc"
+      },
+      "evidence": [
+        "tests/unit/calcfile-rates.test.js",
+        "tests/unit/exchange-rates.test.js",
+        "tests/browser/calcfile-rates.spec.js",
+        "tests/browser/offline.spec.js"
+      ]
+    },
+    {
+      "id": "HUR-04",
+      "format": "hurmet",
+      "title": "Decimal-string ECB rates reach the rational parser",
+      "kind": "gap",
+      "status": "resolved",
+      "priority": "P0",
+      "milestone": "CF-1",
+      "dependsOn": [],
+      "expected": "Supply exact decimal strings to the pinned Hurmet rational parser; a real worker conversion with the shared ECB snapshot must produce the reference result.",
+      "disclosure": "The Hurmet worker now supplies ECB decimal strings, including EUR = 1, instead of JavaScript numbers. This fixes the currency rational-parser runtime error. Validated shared rates use the 24-hour cache and a disclosed older fallback when refreshing fails. Missing rates retain diagnostics, and source links do not freeze rate snapshots. The shared service uses the CORS-readable official ECB data API rather than the blocked daily XML download.",
+      "baselineDisclosure": "The worker supplied JavaScript numbers to Hurmet’s decimal-string rational parser, causing a runtime error for ECB currency calculations.",
+      "reproducer": {
+        "path": "tests/fixtures/exchange-rates/ecb-2026-10-16.xml",
+        "source": "¢`100 'EUR' = ?? USD`"
+      },
+      "evidence": [
+        "tests/browser/calcfile-rates.spec.js"
       ]
     }
   ]

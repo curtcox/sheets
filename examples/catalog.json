@@ -115,16 +115,16 @@
     "id": "calcfile-edge",
     "format": "calcfile",
     "kind": "edge",
-    "title": "A different locale",
-    "description": "German numeric notation and physical units.",
+    "title": "Locales, units, and exchange rates",
+    "description": "German numbers, physical units, and EUR conversions using ECB rates.",
     "path": "examples/calcfile/edge.calc"
   },
   {
     "id": "calcfile-error",
     "format": "calcfile",
     "kind": "error",
-    "title": "An unavailable exchange rate",
-    "description": "Currency conversion reports missing external data.",
+    "title": "Convert before adding",
+    "description": "Different currencies must be converted before addition.",
     "path": "examples/calcfile/error.calc"
   },
   {

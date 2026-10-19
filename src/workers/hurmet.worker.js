@@ -1,7 +1,9 @@
-import { ratesFromXML } from "../exchange-rates.js";
+import { rateTableFromXML } from "../exchange-rates.js";
 self.onmessage = async ({ data: { src, xml } }) => {
   try {
-    if (xml) globalThis.currencyRates = ratesFromXML(xml);
+    // Hurmet's rational parser expects decimal text, including the EUR base.
+    if (xml)
+      globalThis.currencyRates = { EUR: "1", ...rateTableFromXML(xml).rates };
     const { renderHurmet } = await import("../formats/hurmet/engine.js");
     const result = await renderHurmet(src);
     self.postMessage({

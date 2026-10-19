@@ -19,7 +19,7 @@ code; they do not promise automatic conversion or a complete language runtime.
 | [GitHub Markdown](formats/gfm.md) | No | No | No | No |
 | [AsciiMath](formats/asciimath.md) | No; notation only | No | No | No |
 | [Numbat](formats/numbat.md) | Yes | Variables and functions | Yes; dimensional checking | No automatic solver |
-| [CalcFile](formats/calcfile.md) | Yes | Friendly variable names, `ans` | Selected units; no currency-rate feed | No |
+| [CalcFile](formats/calcfile.md) | Yes | Friendly variable names, `ans` | Selected units; EUR ↔ USD/GBP/JPY using ECB rates | No |
 | [Org tables](formats/org.md) | Table formulas | Cell and range references | Limited mathjs unit expressions | No |
 | [Calca](formats/calca.md) | Arrow calculations | Variables and functions; optional heading scopes | Yes, through mathjs | Real scalar linear/quadratic subset |
 | [Hurmet](formats/hurmet.md) | Calculation cells | Values shared across cells | Yes; unit-aware calculations | No Sheets-specific solver; use explicit formulas |
@@ -68,7 +68,7 @@ Typesetting an equation in any format does not by itself evaluate or solve it.
 | GitHub Markdown | Local renderer | Yes | External images/links |
 | AsciiMath | Local translator and renderer | Yes | External images/links in prose |
 | Numbat | Fresh worker; 20-second deadline | Yes, ordinary calculations | Fresh ECB currency rates; cached rates may be available |
-| CalcFile | Local evaluator | Yes | Currency conversion has no rate feed in this UI |
+| CalcFile | Local evaluator with optional rate request | Yes; currency conversions need cached rates | Fresh ECB rates; dated cache fallback on failure |
 | Org tables | Local formula evaluator | Yes | External links |
 | Calca | Local constrained evaluator | Yes | External images/links in prose |
 | Hurmet | Fresh worker; 20-second deadline | Yes, ordinary calculations | Fresh ECB rates and upstream remote-data fetches |
@@ -97,6 +97,7 @@ or notebook cells. External image URLs still need their server. See
 | Immutable definition | The first visible definition remains bound to its expression. A later definition of the same name becomes a constraint rather than overwriting the first. |
 | Connected constraint check | Testing all relations linked to a queried name against candidate numeric solutions. Conflicting candidates produce a diagnostic; this is narrower than solving a general simultaneous system. |
 | Unit conversion | Carrying a measurement's unit and changing its representation, such as kilometers to meters. Currency conversion additionally needs exchange rates. |
+| Reference exchange rate | A dated price of one currency in another. CalcFile supplies ECB EUR-base rates to its pinned engine, which supports EUR ↔ USD/GBP/JPY. Fresh rates need a connection; a disclosed older cache may work offline. Source links do not freeze rates. |
 | Dimensional checking | Rejecting incompatible physical operations, such as adding a length to a duration. Writing a unit label in prose alone does not provide this check. |
 | Equation solving | Finding an unknown from a relation, rather than evaluating an expression whose inputs are already known. Calca's solver is limited to supported real linear/quadratic relations. |
 | Compatibility profile | An explicit version of a format's behavior, stored in shared links and profiled saved documents. Calca's Structured blocks profile changes block classification; Scoped definitions adds immutable bindings, heading scopes, and connected numeric constraint checks; plain source downloads need the mode selected again. |

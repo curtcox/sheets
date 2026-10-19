@@ -87,7 +87,28 @@ test("opt-in offline files support new source links, vendored workers, docs and 
   });
   await ready(page);
   expect(await page.evaluate(() => ace.edit("editor").getValue())).toBe(source);
+  const ratesXML = await readFile(
+    new URL("../fixtures/exchange-rates/ecb-2026-10-16.xml", import.meta.url),
+    "utf8",
+  );
+  // Seed a previously obtained snapshot, then exercise a real offline refresh
+  // failure. Online cache population is tested without a service worker separately.
+  await page.evaluate((xml) => {
+    localStorage.setItem(
+      "sheets:ecb-rates:v1",
+      JSON.stringify({ xml, time: Date.now() - 2 * 86400000 }),
+    );
+  }, ratesXML);
   await context.setOffline(true);
+  await page.goto(
+    writeURL(base, { src: "200 EUR in USD", format: "calcfile" }),
+  );
+  await ready(page);
+  await expect(page.locator("#render-status")).toHaveText(/^Ready/);
+  await expect(page.locator("#preview output")).toHaveText("225.06 USD");
+  await expect(page.locator("[data-exchange-rates]")).toContainText(
+    "Using cached ECB rates",
+  );
   await page.goto(
     writeURL(base, {
       src: source + "\n\nA fresh offline URL.",

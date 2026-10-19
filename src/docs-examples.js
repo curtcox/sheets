@@ -65,6 +65,9 @@ ${block("mermaid", "graph LR\n  Measure --> Review")}
     sample("@locale de-DE\n1,5 * 2\nround(10,234; 2)\n"),
     sample("// 100 + 200\n"),
     sample("100 EUR in USD\n"),
+    sample("100 USD in EUR\n100 EUR in GBP\n100 EUR in JPY\n"),
+    sample("100 USD in GBP\n"),
+    sample("100 EUR in CHF\n"),
   ],
   org: [
     sample(
@@ -123,6 +126,7 @@ ${block("mermaid", "graph LR\n  Measure --> Review")}
       ["= ?? unit"],
     ),
     sample("¢¢ x = 3 ¢¢\n\n¢¢ x^2 = ? ¢¢\n", ["¢¢ … ¢¢"]),
+    sample("¢`100 'EUR' = ?? USD`\n"),
   ],
   beancount: [
     sample(

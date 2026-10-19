@@ -51,6 +51,19 @@ Markdown table, whose cells are never evaluated. Start from the gallery's
 [table example](../../index.html?example=hurmet-edge&format=hurmet) when mixing
 source tables and calculations.
 
+Currency units use the same quoted notation:
+
+```text
+¢`100 'EUR' = ?? USD`
+```
+
+The shared service reads the browser-accessible official ECB data API; the
+original daily XML endpoint blocks cross-origin reads. The worker receives ECB
+rates as decimal strings, as required by Hurmet's
+rational-number parser. Validated rates use the shared 24-hour cache; a refresh
+failure can use an older snapshot with a notice. Missing rates retain calculation
+diagnostics. Source links contain source rather than a frozen rate snapshot.
+
 ## Engine behavior and limits
 
 The upstream engine handles units, calculation cells, and spreadsheet tables. Gallery examples cover inline calculations, a beam calculation with units, table cells, and an undefined variable. Calculation errors become editor diagnostics. Cached ECB currency rates populate `globalThis.currencyRates` in the worker.
@@ -77,4 +90,5 @@ These entries share the [central limitations ledger](../limitations.md). “Need
 | HUR-01 | Needs detailed audit | Sheets embeds a pinned upstream calculation/rendering engine, not Hurmet's rich-text editing application |
 | HUR-02 | Intentional | Every render gets a fresh worker with a 20-second deadline |
 | HUR-03 | Needs detailed audit | Remote-data fetches follow upstream behavior and browser CORS rules |
+| HUR-04 | Resolved | Decimal-string ECB rates reach the rational parser |
 <!-- compatibility:end -->

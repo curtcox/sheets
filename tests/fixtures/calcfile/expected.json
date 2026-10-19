@@ -24,7 +24,7 @@
   {
     "file": "error.calc",
     "contains": [
-      "Currency conversion needs supplied exchange rates"
+      "Currencies must match before they can be added"
     ],
     "diagnostics": 1
   }

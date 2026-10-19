@@ -62,7 +62,7 @@ See the [Numbat guide](formats/numbat.md). Compatibility target: Numbat 1.24.0.
 
 - **NUM-03 — A fresh worker starts for every render, with a 20-second deadline** (Intentional). A fresh worker starts for every render, with a **20-second deadline**. Editing or cancellation terminates it; definitions do not persist between renders.
 
-- **NUM-04 — Some short names are predefined units and cannot be redefined** (Needs detailed audit). Some short names are predefined units and cannot be redefined. Currency rates depend on the ECB request/cache; missing or stale rates are disclosed rather than replaced with an invented value.
+- **NUM-04 — Some short names are predefined units and cannot be redefined** (Needs detailed audit). Some short names are predefined units and cannot be redefined. Currency rates depend on the ECB request/cache; missing or stale rates are disclosed rather than replaced with an invented value. Browser requests now use the official ECB data API; the shared service builds the daily XML required by Numbat, excluding discontinued older series. The original daily XML download blocks cross-origin reads.
 
 ## CalcFile
 
@@ -70,11 +70,15 @@ See the [CalcFile guide](formats/calcfile.md). Compatibility target: CalcFile b1
 
 - **CF-01 — This is a pinned v0.1 draft reference engine, not a compatibility promise for every application using the…** (Needs detailed audit). This is a pinned **v0.1 draft** reference engine, not a compatibility promise for every application using the same file extension. Functions, units, and locale behavior are limited to that draft.
 
-- **CF-02 — All 37 required upstream conformance cases pass, including cases with supplied exchange rates** (Known gap). All 37 required upstream conformance cases pass, including cases with supplied exchange rates. The **Sheets UI supplies no currency-rate environment** to CalcFile, so cross-currency conversion reports missing external data.
-
 - **CF-03 — Auto detection deliberately does not select CalcFile from ambiguous prose** (Needs detailed audit). Auto detection deliberately does not select CalcFile from ambiguous prose. Choose it explicitly. Raw HashBin text lacks a filename and uses Auto unless the format is overridden or stored in a Sheets envelope.
 
 - **CF-04 — Output is a line calculator with headers and text, not a Markdown renderer or an interactive spreadsheet** (Needs detailed audit). Output is a line calculator with headers and text, not a Markdown renderer or an interactive spreadsheet. Incomplete input can remain incomplete while typing; aggregates reject incompatible types.
+
+- **CF-05 — ECB base pairs, cache availability and changing external data** (Intentional). The pinned engine recognizes EUR, USD, GBP and JPY and converts only when one side is the rate table base. Sheets supplies the ECB EUR base, so direct non-EUR pairs and currencies such as CHF remain unsupported. Validated rates are cached for 24 hours; refresh failure may use an older snapshot with a notice and original date, and publications older than seven days are flagged. Offline conversion needs a previously cached snapshot plus installed app files; offline installation does not preload rates. Malformed feeds and corrupt/future cache entries are rejected. Requests have a twenty-second deadline. Optional storage may be unavailable or evicted. Source links, downloads and HashBin documents store source rather than rates; rendered HTML preserves the finished answers and date. The original daily XML download blocks cross-origin browser reads; the official ECB data API is used instead, with no document source in requests.
+
+### Resolved compatibility gaps
+
+- **CF-02 — ECB decimal rate environment supplied to CalcFile** (Resolved). The shared service reads the browser-accessible official ECB data API and builds a validated daily XML snapshot while preserving decimal rate text and the latest publication date. Discontinued older series are excluded. CalcFile now supplies validated decimal-string ECB rates with their publication date, fetching only when the engine reports missing external data. Supported EUR-base conversions work online or with a valid cache. Refresh failures disclose older cached rates; malformed or unavailable data keeps source-line diagnostics. Cancellation discards late responses without cache writes. The original 37 required upstream conformance cases still pass. Pair/currency and rate-snapshot boundaries remain under CF-05.
 
 ## Org tables
 
@@ -119,6 +123,10 @@ See the [Hurmet guide](formats/hurmet.md). Compatibility target: Hurmet 24abefda
 - **HUR-02 — Every render gets a fresh worker with a 20-second deadline** (Intentional). Every render gets a fresh worker with a **20-second deadline**. There is no persistent calculation session across edits.
 
 - **HUR-03 — Remote-data fetches follow upstream behavior and browser CORS rules** (Needs detailed audit). Remote-data fetches follow upstream behavior and browser CORS rules. Fresh ECB currency rates and uncached remote data need a connection; ordinary calculations can use downloaded offline assets. HTML exports contain finished static output, rather than a live Hurmet interpreter.
+
+### Resolved compatibility gaps
+
+- **HUR-04 — Decimal-string ECB rates reach the rational parser** (Resolved). The Hurmet worker now supplies ECB decimal strings, including EUR = 1, instead of JavaScript numbers. This fixes the currency rational-parser runtime error. Validated shared rates use the 24-hour cache and a disclosed older fallback when refreshing fails. Missing rates retain diagnostics, and source links do not freeze rate snapshots. The shared service uses the CORS-readable official ECB data API rather than the blocked daily XML download.
 
 ## Beancount
 

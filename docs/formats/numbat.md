@@ -43,7 +43,11 @@ The upstream prelude, units, functions, declarations, and dimensional checking a
 
 A render has a 20-second deadline. Editing or cancelling terminates the worker, and the next render starts a fresh context. The statement grouper covers common multiline calculations, not every possible lexical corner of the full language. Terminal commands and an interactive REPL are outside this editor.
 
-Currency documents request cached ECB XML and pass it to `set_exchange_rates`. On failure a visible notice explains that rates are unavailable or cached. Unit tests execute the actual committed WASM binary.
+Currency documents request cached ECB XML and pass it to `set_exchange_rates`.
+The shared service obtains decimal data from the browser-accessible official ECB
+data API and builds a daily XML snapshot; the original XML download endpoint
+does not permit cross-origin reads. Only rates from the latest publication are
+used, excluding discontinued older series. On failure a visible notice explains that rates are unavailable or cached. Unit tests execute the actual committed WASM binary.
 
 The source editor highlights declarations, conversions, numbers, identifiers, strings, and comments, including common Greek identifiers used in calculations. Highlighting is a lexical aid; rendering diagnostics report evaluation errors.
 

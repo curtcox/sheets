@@ -6,12 +6,20 @@ import { readFile, mkdir, mkdtemp, cp, rm, writeFile } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { fileURLToPath } from "node:url";
 import { createStaticServer } from "./serve.mjs";
+import {
+  ECB_URL,
+  rateTableFromXML,
+  rateXMLFromCSV,
+} from "../src/exchange-rates.js";
 
 const root = fileURLToPath(new URL("../", import.meta.url));
 const catalog = JSON.parse(
   await readFile(new URL("../examples/catalog.json", import.meta.url)),
 );
 const only = process.argv.find((arg) => arg.startsWith("--only="))?.slice(7);
+const ratesFixture = process.argv
+  .find((arg) => arg.startsWith("--rates-fixture="))
+  ?.slice(16);
 if (only && !catalog.some((item) => item.id === only))
   throw new Error("Unknown gallery example.");
 const temporary = await mkdtemp(`${tmpdir()}/sheets-covers-`);
@@ -31,6 +39,14 @@ try {
     timezoneId: "UTC",
   });
   const page = await context.newPage();
+  if (ratesFixture) {
+    const csv = await readFile(ratesFixture, "utf8"),
+      table = rateTableFromXML(rateXMLFromCSV(csv));
+    await page.clock.setFixedTime(new Date(table.asOf + "T12:00:00Z"));
+    await page.route(ECB_URL, (route) =>
+      route.fulfill({ body: csv, contentType: "text/csv" }),
+    );
+  }
   const hashes = only
     ? JSON.parse(await readFile(`${root}examples/covers/manifest.json`, "utf8"))
         .sources
