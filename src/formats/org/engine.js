@@ -1,5 +1,5 @@
-import { evaluate, formatValue, math } from "../../math.js";
-import { orgDocument, tableBindings, outsideStrings } from "./bindings.js";
+import { orgDocument, tableBindings } from "./bindings.js";
+import { evaluateCalc, formatCalc, parseModes } from "./calc.js";
 import {
   address,
   cell,
@@ -43,54 +43,37 @@ export function recalculateTable(
   validateProfile(profile, "org");
   const diagnostics = [];
   bindings ||= tableBindings(table, { diagnostics });
-  function calculate(expression, row, col, numeric) {
-    const scope = new Map();
-    let slot = 0;
-    const bind = (value) => {
-      const name = `ref${slot++}`;
-      scope.set(name, value);
-      return name;
-    };
-    expression = outsideStrings(expression, (segment) => {
-      segment = segment.replace(
-        /\bremote\s*\(([^(),]*),([^()]*)\)/g,
-        (_, name, ref) => {
-          if (!remote)
-            throw new Error(
-              "Remote references need a same-document named table.",
-            );
-          return bind(remote(name, ref, numeric));
-        },
-      );
-      segment = segment.replace(/\$([A-Za-z][A-Za-z0-9_]*)/g, (_, name) => {
-        const column = bindings.column(name);
-        return column ? `$${column}` : bind(bindings.value(name));
-      });
-      segment = segment.replace(
-        /(@(?:[+-]?\d+|[<>]|[IVX]+)(?:\$(?:[+-]?\d+|[<>]))?|\$(?:[+-]?\d+|[<>]))\.\.(@(?:[+-]?\d+|[<>]|[IVX]+)(?:\$(?:[+-]?\d+|[<>]))?|\$(?:[+-]?\d+|[<>]))/g,
-        (_, a, b) => {
-          return bind(range(table, a, b, row, col, numeric));
-        },
-      );
-      segment = segment.replace(
-        /@(?:[+-]?\d+|[<>]|[IVX]+)(?:\$(?:[+-]?\d+|[<>]))?|\$(?:[+-]?\d+|[<>])/g,
-        (ref) => {
-          const [r, c] = address(ref, row, col, table);
-          return bind(cell(table, r, c, numeric));
-        },
-      );
-      return segment;
+  // References become placeholders bound to their field text, as Org's
+  // org-table-make-reference substitutes text before calling Calc.
+  function calculate(expression, row, col, modes) {
+    const refs = [];
+    const bind = (ref) => `\uE000${refs.push(ref) - 1}\uE001`;
+    expression = expression.replace(
+      /\bremote\s*\(([^(),]*),([^()]*)\)/g,
+      (_, name, ref) => {
+        if (!remote)
+          throw new Error(
+            "Remote references need a same-document named table.",
+          );
+        return bind(remote(name, ref));
+      },
+    );
+    expression = expression.replace(/\$([A-Za-z][A-Za-z0-9_]*)/g, (_, name) => {
+      const column = bindings.column(name);
+      return column ? `$${column}` : bind({ constant: bindings.value(name) });
     });
-    for (const [name, fn] of Object.entries({
-      vsum: (a) => math.sum(a),
-      vmean: (a) => math.mean(a),
-      vmin: (a) => math.min(a),
-      vmax: (a) => math.max(a),
-      vcount: (a) => a.length,
-      vprod: (a) => math.prod(a),
-    }))
-      scope.set(name, fn);
-    return evaluate(expression, scope);
+    expression = expression.replace(
+      /(@(?:[+-]?\d+|[<>]|[IVX]+)(?:\$(?:[+-]?\d+|[<>]))?|\$(?:[+-]?\d+|[<>]))\.\.(@(?:[+-]?\d+|[<>]|[IVX]+)(?:\$(?:[+-]?\d+|[<>]))?|\$(?:[+-]?\d+|[<>]))/g,
+      (_, a, b) => bind({ range: range(table, a, b, row, col) }),
+    );
+    expression = expression.replace(
+      /@(?:[+-]?\d+|[<>]|[IVX]+)(?:\$(?:[+-]?\d+|[<>]))?|\$(?:[+-]?\d+|[<>])/g,
+      (ref) => {
+        const [r, c] = address(ref, row, col, table);
+        return bind({ field: cell(table, r, c) });
+      },
+    );
+    return evaluateCalc(expression, refs, modes);
   }
   const assignments = [];
   for (const part of formula.split("::")) {
@@ -99,9 +82,10 @@ export function recalculateTable(
       diagnostics.push({ line, message: "Invalid TBLFM assignment." });
       continue;
     }
-    const [expression, ...options] = match[2].split(";");
-    const numeric = options.some((s) => s.includes("N")),
-      precision = /%.(\d+)f/.exec(options.join(";"));
+    // Org splits the mode suffix at the last semicolon.
+    const split = match[2].lastIndexOf(";"),
+      expression = split < 0 ? match[2] : match[2].slice(0, split),
+      modeText = split < 0 ? null : match[2].slice(split + 1);
     const target = match[1].trim(),
       named = /^\$([A-Za-z][A-Za-z0-9_]*)$/.exec(target),
       namedField = named && bindings.fields.get(named[1]),
@@ -110,6 +94,7 @@ export function recalculateTable(
     try {
       if (/^\s*'/.test(expression))
         throw new Error("Emacs Lisp formulas are unsupported.");
+      const modes = parseModes(modeText, bindings.format);
       if (named && !namedField)
         throw new Error(
           `Unknown named field target ${target}; use a numeric column target for a named column.`,
@@ -151,21 +136,19 @@ export function recalculateTable(
         field,
         targets,
         expression: expression.trim(),
-        numeric,
-        precision,
+        modes,
       });
     } catch (error) {
       diagnostics.push({ line, message: error.message });
     }
   }
   const apply = (assignment, row, col) => {
-    const { target, expression, numeric, precision } = assignment;
+    const { target, expression, modes } = assignment;
     try {
-      const value = calculate(expression, row, col, numeric);
-      table.rows[row - 1][col - 1] =
-        precision && typeof value === "number"
-          ? value.toFixed(Math.min(20, Number(precision[1])))
-          : formatValue(value);
+      table.rows[row - 1][col - 1] = formatCalc(
+        calculate(expression, row, col, modes),
+        modes,
+      );
     } catch (error) {
       diagnostics.push({
         line,
@@ -240,8 +223,8 @@ export function recalculateOrg(src, { profile } = {}) {
   const byStart = new Map(tables.map(({ start, table }) => [start, table]));
   // References read the current pass state. They never recursively recalculate
   // another table, so forward links, self references and cycles stay bounded.
-  const remote = (name, ref, numeric) =>
-    remoteValue(name, ref, byStart, document, numeric, (table) =>
+  const remote = (name, ref) =>
+    remoteValue(name, ref, byStart, document, (table) =>
       tableBindings(table, { constants: document.constants }),
     );
   for (const { start, end, table } of tables) {

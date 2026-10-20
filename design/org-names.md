@@ -27,7 +27,9 @@ constant lookup and global recalculation.
   CONSTANTS keywords apply regardless of their position; later definitions win.
   Lookup order is column alias, named-field snapshot, table parameter, file
   constant. Names are case-sensitive.
-- Decimal/scientific finite JavaScript numeric values are supported; overflow and nonzero underflow are diagnosed. The existing mathjs number precision remains. Expression-valued or
+- Decimal/scientific numeric values are supported. Since ORG-1C, Calc reads them
+  exactly (see `design/org-calc.md`); JavaScript overflow/underflow no longer
+  applies, and only exponents beyond Calc's range are diagnosed. Expression-valued or
   string constants/parameters and inherited PROP_ constants remain unsupported;
   their diagnostics do not fall back to a lower-precedence value.
 - If any calculation marker exists, only #/* rows receive column formulas,

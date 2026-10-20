@@ -111,10 +111,11 @@ test("Org field, column, relative, boundary, range, formatting and N modes", () 
     "| n | val |\n|---+---|\n| 2 | 0 |\n| 3 | 0 |\n#+TBLFM: $2=$1*2;%.2f::@3$2=@-1$2+1",
   );
   assert.equal(result.diagnostics.length, 0);
+  // Emacs Calc reads the formatted "4.00" as a float, so 4. + 1 displays "5.".
   assert.deepEqual(result.tables[0].table.rows, [
     ["n", "val"],
     ["2", "4.00"],
-    ["3", "5"],
+    ["3", "5."],
   ]);
   const table = parseTable([
     "| a | n |",

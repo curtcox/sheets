@@ -7,8 +7,8 @@ define with parameters. A named value, a ledger directive, or a typeset function
 name alone does not define a callable function.
 
 The overview lists representative functions for the larger libraries. The
-CalcFile list and the Calca/Org allowlist below are complete for the current
-adapter. Upstream reference links describe larger libraries and may include
+CalcFile list, the Calca allowlist and the Org Calc list below are complete for
+the current adapter. Upstream reference links describe larger libraries and may include
 features outside Sheets; consult the [limitations](limitations.md) as well.
 
 ## Compare the formats
@@ -19,7 +19,7 @@ features outside Sheets; consult the [limitations](limitations.md) as well.
 | [AsciiMath](formats/asciimath.md) | Names such as `sqrt`, `sin`, `log` and `sum` describe notation, without evaluating it | Matrix notation is displayed, without matrix calculations | No; writing `f(x)` only typesets it |
 | [Numbat](formats/numbat.md) | `abs`, `sqrt`, `cbrt`, `exp`, `ln`, `log10`, `sin`, `cos`, `round`, `round_in`; dimensional checking | `sum`, `mean`, `median`, `minimum`, `maximum`, `stdev`; lists, strings, dates, random sampling and domain helpers | **Yes**, with `fn`; optional type/dimension annotations and local `where` bindings |
 | [CalcFile](formats/calcfile.md) | Exactly `sqrt`, `abs`, `round`, `floor`, `ceil`, `min`, `max` | Line aggregates: `subtotal`, `total`, `grand total`, `avg`, `subavg` | **No** in the pinned v0.1 engine; named values are supported |
-| [Org tables](formats/org.md) | The constrained mathjs allowlist below, in table formulas | Named numeric bindings, same-document `remote()` references and six range helpers: `vsum`, `vmean`, `vmin`, `vmax`, `vcount`, `vprod` | **No** in Sheets; formula assignments write cells, and Emacs Lisp/custom Calc extensions are unavailable |
+| [Org tables](formats/org.md) | Emacs Calc names such as `sqrt`, `exp`, `ln`, `log10`, `sin`, `arcsin`, `round`; degrees by default | Named numeric bindings, same-document `remote()` references and Calc vector helpers such as `vsum`, `vmean`, `vmedian`, `vsdev` | **No** in Sheets; formula assignments write cells, and Emacs Lisp/custom Calc extensions are unavailable |
 | [Calca](formats/calca.md) | The constrained mathjs allowlist below; numeric, trigonometric and symbolic helpers | Statistics, matrices and units through the same allowlist | **Yes**, single-line named functions in calculation blocks; availability follows the selected Calca profile |
 | [Hurmet](formats/hurmet.md) | `abs`, `sqrt`, `sin`, `cos`, `exp`, `ln`, `log`, `floor`, `ceil`, `round`; real/complex and unit-aware calculations | `sum`, `product`, `mean`, `median`, `variance`, `stddev`, `transpose`, `zeros`, `ones`, `length`, `dataframe`, `fetch` | **Yes**, a multiline `function` / `return` / `end` calculation cell; recursion is unsupported |
 | [Beancount](formats/beancount.md) | No general expression/function library in the ledger source | Fixed account reports, balance checks, posting inference and lot handling | **No**; Python plugins and a query-function console are not shipped |
@@ -30,9 +30,9 @@ features outside Sheets; consult the [limitations](limitations.md) as well.
 Auto detection chooses a format; it does not add a function library or translate
 function names. Select a format explicitly when comparing examples.
 
-## Calca and Org: complete callable allowlist
+## Calca: complete callable allowlist
 
-Both adapters use mathjs **15.2.0** through the same constrained expression layer.
+Calca uses mathjs **15.2.0** through a constrained expression layer.
 These are the permitted built-in call names; this is not the full mathjs API.
 
 | Family | Allowed names |
@@ -47,17 +47,36 @@ These are the permitted built-in call names; this is not the full mathjs API.
 | Symbolic operations | `simplify`, `derivative` |
 | Conversion and construction | `number`, `unit` |
 
-Calca additionally accepts functions defined in its calculation context. Org adds
-its six range helpers and same-document `remote(table,reference)` syntax, but creates a fresh formula scope for each calculation;
-there is no document syntax for installing a custom function. The shared call
-allowlist does not give Org the complete GNU Calc language or Calca's equation
-solver. Array/matrix values use the expression syntax supported by the adapter;
-object access, ranges, arbitrary JavaScript, imports and unlisted mathjs calls are
-unavailable. Individual function arguments must still have compatible types.
+Calca additionally accepts functions defined in its calculation context. Array/matrix
+values use the expression syntax supported by the adapter; object access, ranges,
+arbitrary JavaScript, imports and unlisted mathjs calls are unavailable. Individual
+function arguments must still have compatible types.
 
 [mathjs function reference](https://mathjs.org/docs/reference/functions.html)
 describes signatures; only the names above are exposed here. For example,
-`log` is available, but `ln` is not a Calca/Org alias.
+`log` is available, but `ln` is not a Calca alias.
+
+## Org: complete Calc function list
+
+Org table formulas use a project-owned subset of
+[Emacs Calc](https://www.gnu.org/software/emacs/manual/html_node/calc/), with
+Org's default modes: angles in degrees, 12 internal digits and an 8-digit float
+display. These are the supported names:
+
+- **Roots, exponentials and logarithms:** `sqrt`, `exp`, `ln`, `log` (natural
+  logarithm, or `log(x, base)`), `log10`
+- **Trigonometry:** `sin`, `cos`, `tan`, `arcsin`, `arccos`, `arctan`, `arctan2`;
+  hyperbolic `sinh`, `cosh`, `tanh`
+- **Rounding and magnitude:** `abs`, `floor`, `ceil`, `round` (optionally
+  `round(x, digits)`), `trunc`, `min`, `max`, `fact` (also postfix `!` and `!!`)
+- **Vector helpers:** `vsum`, `vmean`, `vmedian`, `vmin`, `vmax`, `vcount`,
+  `vprod`, `vsdev`, `vpsdev`, `vvar`, `vpvar`
+
+Operators are `+ - * / % \ ^` and postfix percent. As in Calc, `*` binds more
+tightly than `/`, so `10/4*2` is `1.25`. mathjs names such as `asin` are not Calc
+functions; Emacs leaves them unevaluated, and Sheets reports a diagnostic that
+names the Calc equivalent. Org creates a fresh formula scope for each calculation
+and has no document syntax for installing a custom function.
 
 ## CalcFile: functions versus line aggregates
 
@@ -84,9 +103,10 @@ values; the adapter does not support parameterised function declarations.
 
 ## Org: functions inside table formulas
 
-Range helpers operate on referenced table values. Nonnumeric range entries are
-normally skipped; the numeric coercion flag changes that behavior. A formula's
-left side is a target cell or column, not a function declaration.
+Vector helpers operate on referenced table values. Empty range entries are
+skipped unless the `E` mode keeps them; nonnumeric text is symbolic in Calc and
+reports a diagnostic unless `N` converts it to a number. A formula's left side is
+a target cell or column, not a function declaration.
 
 ```org
 | 2 | 0 |

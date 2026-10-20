@@ -36,7 +36,8 @@ the current editor text, while a rendered HTML export contains the calculated ta
 | `vsum(...)`, `vmean(...)`, `vcount(...)` | Aggregate a range |
 | `::` | Separate assignments; scheduling follows the selected mode |
 | `;%.2f` | Format the result with two decimal places |
-| `;N` | Treat nonnumeric referenced values as zero |
+| `;N` | Convert referenced text to numbers; nonnumeric text becomes zero |
+| `;R`, `;n3`, `;F` | Other Calc modes; see **Calc arithmetic and modes** below |
 
 Row numbers count actual table rows, including header rows; horizontal separator
 lines do not count as rows. Thus `@2` in the example is the first data row. A column
@@ -93,16 +94,63 @@ Names start with an ASCII letter and contain letters, digits or underscores;
 lookup is case-sensitive. Column aliases take precedence over named fields,
 then table parameters, then file constants. The first duplicate column alias
 wins; later duplicate field names, parameters and file constants win. Supported
-bindings contain finite decimal or scientific-notation numbers representable
-by the existing JavaScript/mathjs number type; nonzero underflow is diagnosed.
-This does not add arbitrary-precision Calc arithmetic. Unknown names,
-unsupported parameter/constant values and invalid targets produce source-line
-diagnostics instead of selecting a lower-precedence value.
+bindings contain decimal or scientific-notation numbers, which Calc reads
+exactly. Unknown names, unsupported parameter/constant values and invalid targets
+produce source-line diagnostics instead of selecting a lower-precedence value.
+A `$` row may also set `%=%.2f`, a table-wide format that Org applies to formulas
+with a mode suffix.
 
 Source, example and export blocks are literal: their apparent tables/formulas and
-constants do not execute. Comment blocks are omitted. Formula references inside
-quoted string arguments are not substituted. Preview/copy retain metadata rows;
-this is not the complete native Org export layout.
+constants do not execute. Comment blocks are omitted. Calc strings are
+unsupported, so a quoted formula argument produces a diagnostic. Preview/copy
+retain metadata rows; this is not the complete native Org export layout.
+
+## Calc arithmetic and modes
+
+Formulas follow Emacs Calc with Org's default modes, in both calculation modes:
+
+```text
+| sin(30) | 1/3 | 2^0.5 | 10/4*2 | 2.5*2 | 2^70 |
+|---------+-----+-------+--------+-------+------|
+|       0 |   0 |     0 |      0 |     0 |    0 |
+#+TBLFM: @2$1=sin(30)::@2$2=1/3::@2$3=2^0.5::@2$4=10/4*2::@2$5=2.5*2::@2$6=2^70
+```
+
+The results are **0.5**, **0.33333333**, **1.4142136**, **1.25**, **5.** and
+**1180591620717411303424**. Angles are in degrees. Floats are calculated with 12
+digits and displayed with up to 8 significant digits; very large or small floats
+use Calc's scientific notation, such as `1e-3`. Integers stay exact, and a whole
+float keeps Calc's trailing point. As in Calc, `*` binds more tightly than `/`,
+so `10/4*2` means `10/(4*2)`. Use Calc function names such as `arcsin` and `ln`;
+see the [complete function list](../function-comparison.md).
+
+Cell text is read as Calc input: `2.50` is a float and `7` an integer. An empty
+field is zero, and ranges skip empty fields. Nonnumeric text is symbolic in Calc;
+Sheets reports it instead of writing a symbolic result, unless `N` converts it.
+
+| Suffix | Effect |
+| --- | --- |
+| `;R`, `;D` | Radians or degrees |
+| `;p20` | Calculate with 20 internal digits |
+| `;n3`, `;f2`, `;s3`, `;e3` | Display 3 significant digits, 2 decimals, scientific or engineering notation |
+| `;F` | Prefer fractions, so `6/4` displays `3:2` |
+| `;N` | Convert referenced text with Emacs number parsing; nonnumbers become zero |
+| `;E` | Keep empty fields; they become `nan` in calculations |
+| `;%.2f` | One `%d`, `%f`, `%e` or `%g` conversion, applied to the displayed value |
+
+Letters combine, as in `;N%.2f`. Like Org, a printf format applies to the 8-digit
+display, so `1/3;%.10f` gives `0.3333333300`. Duration modes (`T`, `t`, `U`),
+symbolic mode `S` and unit mode `u` are unsupported. Symbolic results (including
+unknown names, `pi` and unknown functions), complex numbers, infinities, units,
+dates and strings report source-line diagnostics and retain the cell, where Emacs
+would write symbolic text or `#ERROR`.
+
+**Changed results.** Earlier releases used JavaScript numbers in radians, with 12
+display digits and ordinary precedence, and skipped nonnumeric range entries. All
+links, in both calculation modes, now show the Emacs values. For example,
+`sin(30)` changes from `-0.988031624093` to `0.5`, `1/3` from `0.333333333333`
+to `0.33333333`, and `10/4*2` from `5` to `1.25`. Source text is unchanged. This
+is an arithmetic correction rather than a new profile; see ORG-09.
 
 ## Emacs calculation order
 
@@ -182,11 +230,11 @@ to 100,000 cells.
 
 For ordinary unmarked tables, column formulas apply to rows after the first horizontal separator, or all rows when no separator exists. Marked tables use the row-selection rules above. Field formulas target one cell. Legacy assignments separated by `::` run in source order and can use earlier results. Emacs order follows the scheduling rules above.
 
-Supported references include `$3`, `@2$3`, relative `@-1`, boundaries `@<`, `@>`, `$<`, `$>`, and hlines `@I`, `@II`. Ranges such as `@2$1..@>$1` become arrays. `vsum`, `vmean`, `vmin`, `vmax`, `vcount`, `vprod`, ordinary arithmetic, and common math functions are available. `;%.2f` formats a numeric result and `;N` coerces nonnumeric values to zero. Otherwise ranges skip nonnumeric cells.
+Supported references include `$3`, `@2$3`, relative `@-1`, boundaries `@<`, `@>`, `$<`, `$>`, and hlines `@I`, `@II`. Ranges such as `@2$1..@>$1` become Calc vectors for helpers such as `vsum`, `vmean`, `vmedian` and `vcount`. Calc arithmetic, functions and mode suffixes follow the section above.
 
 **Copy recalculated source** copies updated, aligned tables and the original surrounding source. Auto detects `#+TBLFM:`, Org keywords, and table hlines. Headings, simple lists, emphasis, and links are rendered through the Org AST.
 
-Emacs Lisp formulas produce an explicit unsupported diagnostic. This is a core subset: cross-file/ID remote tables, dynamic remote indirection, target ranges, iteration modes, inherited property/external constants, expression-valued or string bindings, global format parameters, arbitrary Calc syntax, and exact Emacs display-width alignment are not implemented. Emacs order supplies supported column/field priority and duplicate-target checks; Legacy keeps its original source-order contract. Neither mode supplies a full dependency solver or repeated convergence. Reference checks compare supported numeric tables against `emacs --batch`; the Lisp error example is excluded from that comparison.
+Emacs Lisp formulas produce an explicit unsupported diagnostic. This is a core subset: cross-file/ID remote tables, dynamic remote indirection, target ranges, iteration modes, inherited property/external constants, expression-valued or string bindings, Calc symbolic/complex/unit/date/duration results, and exact Emacs display-width alignment are not implemented. Emacs order supplies supported column/field priority and duplicate-target checks; Legacy keeps its original source-order contract. Neither mode supplies a full dependency solver or repeated convergence. Reference checks compare supported numeric tables against `emacs --batch`; the Lisp error example is excluded from that comparison.
 
 The source editor highlights headings, table separators and numbers, keywords, and formula references. Source blocks remain distinct from surrounding Org prose. Highlighting is a lexical aid; rendering diagnostics report evaluation errors.
 
@@ -215,4 +263,5 @@ These entries share the [central limitations ledger](../limitations.md). “Need
 | ORG-06 | Resolved | Literal Org blocks no longer run formulas or install constants |
 | ORG-07 | Resolved | Explicit Emacs order matches supported native scheduling and duplicate-target rejection |
 | ORG-08 | Resolved | Same-document remote references read current pass state without recursive evaluation |
+| ORG-09 | Resolved | Formulas use Emacs Calc default modes, exact integers and Calc display |
 <!-- compatibility:end -->

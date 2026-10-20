@@ -97,12 +97,14 @@ test("Missing, relative, dynamic and oversized remote references retain cells an
     assert.equal(result.diagnostics[0].line, 5, expression);
     assert.equal(result.tables[1].table.rows[0][0], "77", expression);
   }
+  // Org substitutes remote references before Calc sees quotes; strings are
+  // not Calc numbers, so the cell is retained with a diagnostic.
   const quotes = recalculateOrg(
     '| 0 |\n#+TBLFM: $1="remote(missing,@1$1)"',
     options,
   );
-  assert.deepEqual(quotes.diagnostics, []);
-  assert.equal(rows(quotes)[0][0], "remote(missing,@1$1)");
+  assert.equal(quotes.diagnostics.length, 1);
+  assert.equal(rows(quotes)[0][0], "0");
 });
 
 test("Emacs mode and exact source persist through URL/share/HashBin overrides and OAuth snapshots", async () => {

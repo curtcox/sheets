@@ -43,13 +43,13 @@ export function checkAddress(row, col, table) {
   )
     throw new Error(`Reference @${row}$${col} is outside the table.`);
 }
-export function cell(table, r, c, numeric) {
+// Field text is returned unchanged. Calc parsing, empty-field and ;N/;E
+// conversion follow org-table-make-reference in calc.js.
+export function cell(table, r, c) {
   checkAddress(r, c, table);
-  const text = table.rows[r - 1][c - 1],
-    value = Number(text);
-  return text !== "" && Number.isFinite(value) ? value : numeric ? 0 : text;
+  return table.rows[r - 1][c - 1];
 }
-export function range(table, a, b, row, col, numeric) {
+export function range(table, a, b, row, col) {
   const [r1, c1] = address(a, row, col, table),
     [r2, c2] = address(b, row, col, table),
     values = [],
@@ -63,21 +63,11 @@ export function range(table, a, b, row, col, numeric) {
   if ((last - first + 1) * (right - left + 1) > 100000)
     throw new Error("Org range exceeds 100,000 cells.");
   for (let r = first; r <= last; r++)
-    for (let c = left; c <= right; c++) {
-      const value = cell(table, r, c, numeric);
-      if (typeof value === "number" || numeric) values.push(value);
-    }
+    for (let c = left; c <= right; c++) values.push(cell(table, r, c));
   return values;
 }
 
-export function remoteValue(
-  name,
-  descriptor,
-  tables,
-  document,
-  numeric,
-  bindingsFor,
-) {
+export function remoteValue(name, descriptor, tables, document, bindingsFor) {
   name = name.trim();
   if (!/^[A-Za-z0-9_][A-Za-z0-9_.-]*$/.test(name))
     throw new Error(
@@ -91,7 +81,8 @@ export function remoteValue(
     );
   const bindings = bindingsFor(table);
   const field = /^\$([A-Za-z][A-Za-z0-9_]*)$/.exec(descriptor.trim());
-  if (field && !bindings.column(field[1])) return bindings.value(field[1]);
+  if (field && !bindings.column(field[1]))
+    return { constant: bindings.value(field[1]) };
   const ref = descriptor
     .trim()
     .replace(/\$([A-Za-z][A-Za-z0-9_]*)/g, (_, name) => {
@@ -106,7 +97,7 @@ export function remoteValue(
       "Remote references require absolute @row$column cells or ranges; relative and dynamic references are unsupported.",
     );
   if (parts.length === 2)
-    return range(table, parts[0].trim(), parts[1].trim(), 1, 1, numeric);
+    return { range: range(table, parts[0].trim(), parts[1].trim(), 1, 1) };
   const [row, col] = address(ref, 1, 1, table);
-  return cell(table, row, col, numeric);
+  return { field: cell(table, row, col) };
 }

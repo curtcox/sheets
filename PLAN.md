@@ -343,7 +343,8 @@ The function comparison page separates callable libraries, custom definitions,
 imported packages and display-only notation. The original inventory at
 `d99cb58` is retained in the ledger's baseline disclosure fields.
 
-The ledger, `docs/compatibility.json`, has 68 entries:
+After ORG-1C the baseline is 325 unit tests and 267 browser tests. The ledger,
+`docs/compatibility.json`, has 69 entries:
 
 | Format | Resolved | Retained | Open | Audit |
 | --- | ---: | ---: | ---: | ---: |
@@ -351,18 +352,18 @@ The ledger, `docs/compatibility.json`, has 68 entries:
 | AsciiMath | 2 | 2 | 1 | 0 |
 | Numbat | 1 | 2 | 0 | 2 |
 | CalcFile | 1 | 1 | 0 | 3 |
-| Org | 4 | 0 | 1 | 3 |
+| Org | 5 | 0 | 1 | 3 |
 | Calca | 2 | 0 | 0 | 6 |
 | Hurmet | 1 | 1 | 0 | 2 |
 | Beancount | 3 | 0 | 2 | 4 |
 | Quarto | 4 | 0 | 2 | 6 |
 | Plain text | 0 | 2 | 0 | 0 |
 | Shared | 0 | 0 | 0 | 4 |
-| **Total** | **19** | **12** | **6** | **31** |
+| **Total** | **20** | **12** | **6** | **31** |
 
 None of the 31 compound `audit` entries has an atomic reproducer yet, so they
-may still hide wrong results. A 2026-10-19 spot check found one that does
-(ORG-09 below). This refresh therefore puts known and suspected
+may still hide wrong results. A 2026-10-19 spot check found one that did
+(ORG-09, now resolved). This refresh therefore puts known and suspected
 result-changing defects first, then classification of everything still unknown,
 then missing capabilities, then new runtimes and architecture.
 
@@ -395,7 +396,7 @@ whole format.
 
 | Order / slice | Tier | Ledger IDs | Limitation to eliminate | Completion evidence |
 | --- | --- | --- | --- | --- |
-| 1 / ORG-1C (S–M) | P0 wrong result | new **ORG-09**, split from ORG-02/03 | Org evaluates formulas with Emacs `org-calc-default-modes`: degree angle mode, 12-digit internal precision, `(float 8)` display, and no fraction preference. Sheets uses radians and 12 significant display digits. Example: `sin(30)`, `1/3` and `2^0.5` render `-0.988031624093`, `0.333333333333` and `1.41421356237`. Emacs 31.1 with Org 9.8.7 renders `0.5`, `0.33333333` and `1.4142136`. Formula mode letters other than `N` and `%.Nf` (`p`, `n`/`s`/`e`/`f`, `D`/`R`, `F`, `E`, `L`) are silently ignored. | Record ORG-09 with this reproducer before changing code. Add Emacs fixtures for trig, inexact division, powers, large and small magnitudes, integers, existing `%.Nf`/`;N`, and each supported mode letter. Re-check all existing reference documents. Apply the fix to both Legacy and Emacs order, because it is arithmetic correctness, not profile semantics. Document the changed displayed values in the guide's migration notes. Unsupported mode letters get source-line diagnostics. |
+| 1 / ORG-1C (M, implemented) | P0 wrong result | **ORG-09** (resolved), split from ORG-02/03 | Org evaluates formulas with Emacs `org-calc-default-modes`: degree angle mode, 12-digit internal precision, `(float 8)` display, and no fraction preference. Sheets uses radians and 12 significant display digits. Example: `sin(30)`, `1/3` and `2^0.5` render `-0.988031624093`, `0.333333333333` and `1.41421356237`. Emacs 31.1 with Org 9.8.7 renders `0.5`, `0.33333333` and `1.4142136`. Formula mode letters other than `N` and `%.Nf` (`p`, `n`/`s`/`e`/`f`, `D`/`R`, `F`, `E`, `L`) are silently ignored. | Record ORG-09 with this reproducer before changing code. Add Emacs fixtures for trig, inexact division, powers, large and small magnitudes, integers, existing `%.Nf`/`;N`, and each supported mode letter. Re-check all existing reference documents. Apply the fix to both Legacy and Emacs order, because it is arithmetic correctness, not profile semantics. Document the changed displayed values in the guide's migration notes. Unsupported mode letters get source-line diagnostics. |
 | 2 / LEDGER-1 (M, one commit per format) | P0 classification | all 31 `audit` entries | Split each compound entry into two kinds of record: retained policy/upstream statements with evidence, and atomic open gaps with a reproducer, expected behavior, priority and slice. Order by how likely an entry is to hide a result difference: ORG-01/03/04 (mathjs vs Calc on empty cells, integers and ranges), then CALCA-01/02/05 (floating point and displayed digits vs public reference examples), then BEAN-01/02/03/05 (link the existing native assertion/pad/inference fixtures). Next comes the bounded NUM-2/HUR-1 audit of NUM-02/04 and HUR-01/03, then CF-01/03/04, QT-03–08, GFM-03 and SHARED-01–04. | The `audit` count is 0, which completes Phase 11 items 1–2. The limitations page and guides are regenerated and drift tests pass. Every new open item is placed in this queue or in Phases 14–16. If the audit finds a wrong result, it becomes a P0 slice ahead of order 4. |
 | 3 / CALCA-V (S prep; external verification) | P0, blocked on a Calca licence | CALCA-03, CALCA-04 | Native-app behavior for equation selection, child redefinition, deferred binding, conflict presentation and Setext headings. | Publish `design/calca-verification.md`: minimal documents with Sheets' current output and space to record the licensed-app result. Results that match become fixtures. A mismatch becomes a profile change (`calca-scopes-v2` if semantics change). Until results exist, both entries stay unresolved and labeled as Sheets policy. This row does not block later rows. |
 | 4 / CALCA-3A (M) | P1 | CALCA-07, CALCA-01 (grammar parts) | Indented multiline definitions, named arguments, multiple statements per line, calls to functions defined later, local bindings, and safe indexing/ranges. | Use public reference cases, plus CALCA-V results where available, in a new explicit profile. Legacy, Structured and Scoped links stay unchanged, as do expression guards and bounds. Solver expansion waits for this grammar. |
@@ -839,6 +840,25 @@ this bounded slice; BEAN-09 retains combined costs, lot interpolation, broader
 commodity inference and mixed-inventory audit. See `design/beancount-booking.md`.
 Next: **CALCA-3A**, beginning with reference-backed definition/binding grammar;
 Beancount valuation and query expansion follow numeric correctness separately.
+
+**ORG-1C implemented (2026-10-19).** Org formulas now use a DOM-free Emacs Calc
+subset (`src/formats/org/calc.js`) in both calculation modes. It follows Calc's
+precedence (`*` binds tighter than `/`), exact integers, decimal floats rounded to
+the internal precision, the native-double path for transcendental functions with
+Calc's own argument reduction, `math-format-number` display, and Org's mode
+parser. Supported letters are p/n/f/s/e/D/R/F/E/N/L, plus one printf conversion
+applied to the displayed value and the table `%` parameter. Field text is read as
+Calc input with Org's empty/E/N reference rules. Symbolic, complex, unit, date,
+string and duration results are diagnosed and keep the cell. Two new Emacs
+reference documents (`calc-modes.org`, `calc-arithmetic.org`) are checked in both
+modes. All 20 earlier reference documents keep their values, and gallery examples
+are unchanged. One docs example now uses `;N`, as Emacs requires for text cells.
+Tests that encoded mathjs behavior were changed only to Emacs-verified results:
+`5.` for a float sum, exact `1e309`/`1e-400` constants, and diagnostics for quoted
+Calc strings. During development, a differential harness of 484 hand-written and
+1,200 generated formulas found no numeric mismatch for any formula Sheets
+evaluates. ORG-09 is resolved; ORG-02/03 are narrowed. See `design/org-calc.md`.
+Next: **LEDGER-1**.
 
 ### Original implementation batch (historical)
 

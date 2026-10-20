@@ -475,8 +475,8 @@
       "priority": "P2",
       "milestone": "ORG-1",
       "dependsOn": [],
-      "expected": "Verify remaining target syntax, Calc modes, iteration, remote indirection/file inputs and native layout in separate reference-backed slices.",
-      "disclosure": "Numeric named bindings and same-document remote cells/ranges work. The explicit Emacs-order profile supplies row-major sorted columns, protected fields, sorted field formulas and duplicate-target rejection; Legacy retains source-order links. Target ranges, relative targets in Emacs order, dynamic remote indirection, A1 remote notation, cross-file/ID references, iteration, property/external or nonnumeric bindings, global format parameters, broader Calc modes/precision and exact Emacs display-width/export layout remain unsupported. Remote failure diagnostics retain the affected cell instead of native error markers.",
+      "expected": "Verify remaining target syntax, iteration, remote indirection/file inputs, symbolic and duration Calc results, and native layout in separate reference-backed slices.",
+      "disclosure": "Numeric named bindings, same-document remote cells/ranges and Emacs Calc default/explicit numeric modes work (ORG-09). The explicit Emacs-order profile supplies row-major sorted columns, protected fields, sorted field formulas and duplicate-target rejection; Legacy retains source-order links. Target ranges, relative targets in Emacs order, dynamic remote indirection, A1 remote notation, cross-file/ID references, iteration, property/external or nonnumeric bindings, Calc symbolic/complex/unit/date/duration results and exact Emacs display-width/export layout remain unsupported. Remote and Calc failure diagnostics retain the affected cell instead of native symbolic or #ERROR text.",
       "baselineDisclosure": "Named fields, remote tables, iteration modes, arbitrary Calc syntax, and exact Emacs display-width alignment are not implemented. Formulas execute in order, rather than iterating until results converge.",
       "reproducer": {
         "path": "design/org-order.md"
@@ -496,7 +496,7 @@
       "milestone": "ORG-1",
       "dependsOn": [],
       "expected": "Verify each behavior against Emacs numeric fixture oracle; documented Calc subset; separate deliberate policy from unsupported upstream capabilities.",
-      "disclosure": "Surrounding prose supports basic headings, lists, emphasis, and links, rather than the full Org application/export environment. Numeric table calculations use the constrained mathjs evaluator; this is not a general dimension-checked physical modeling language. Ranges skip nonnumeric cells unless numeric coercion is requested.",
+      "disclosure": "Surrounding prose supports basic headings, lists, emphasis, and links, rather than the full Org application/export environment. Numeric table calculations use a project-owned Emacs Calc subset (ORG-09), not the complete Calc language or a dimension-checked physical modeling language. Cell text is read as Calc input: empty fields become zero and are dropped from ranges unless E keeps them as nan; nonnumeric text is symbolic in Calc and produces a diagnostic unless N converts it with Emacs number parsing.",
       "baselineDisclosure": "Surrounding prose supports basic headings, lists, emphasis, and links, rather than the full Org application/export environment. Numeric table calculations use the constrained mathjs evaluator; this is not a general dimension-checked physical modeling language. Ranges skip nonnumeric cells unless numeric coercion is requested.",
       "reproducer": null,
       "evidence": []
@@ -604,6 +604,30 @@
         "tests/fixtures/org/rejections.json",
         "tests/unit/org-order.test.js",
         "tests/browser/org-order.spec.js"
+      ]
+    },
+    {
+      "id": "ORG-09",
+      "format": "org",
+      "title": "Formulas use Emacs Calc default modes, exact integers and Calc display",
+      "kind": "gap",
+      "status": "resolved",
+      "priority": "P0",
+      "milestone": "ORG-1C",
+      "dependsOn": [],
+      "expected": "Match Emacs org-calc-default-modes (degrees, 12-digit internal precision, (float 8) display, no fraction preference), Calc precedence, exact integers and the supported mode letters in both calculation modes.",
+      "disclosure": "Formulas follow a DOM-free Emacs Calc subset in both Legacy and Emacs order: degree angles, 12 internal digits and an 8-significant-digit float display, exact integers, trailing-point floats (5.), Calc scientific-notation thresholds, multiplication binding tighter than division (10/4*2 is 1.25), Calc function names (arcsin, not asin) and Calc exact trigonometric/logarithm special cases. Mode letters p, n, f, s, e, D, R, F, E, N and L, one printf conversion (%d, %f, %e or %g, applied to the displayed value as Emacs does) and the table % format parameter are supported. Symbolic results, complex numbers, infinities, units, dates, strings, durations (T, t, U), symbolic mode S and unit mode u produce source-line diagnostics and retain the cell instead of native symbolic or #ERROR text.",
+      "baselineDisclosure": "Formulas used JavaScript/mathjs numbers in radians with 12 significant display digits, standard precedence and mathjs function names. Mode letters other than N and %.Nf were silently ignored, and %.Nf formatted the unrounded double, so sin(30), 1/3 and 2^0.5 showed -0.988031624093, 0.333333333333 and 1.41421356237 instead of 0.5, 0.33333333 and 1.4142136.",
+      "reproducer": {
+        "path": "tests/fixtures/org/calc-modes.org"
+      },
+      "evidence": [
+        "design/org-calc.md",
+        "tests/fixtures/org/calc-modes.org",
+        "tests/fixtures/org/calc-arithmetic.org",
+        "tests/fixtures/org/reference.json",
+        "tests/unit/org-calc.test.js",
+        "tests/browser/org-bindings.spec.js"
       ]
     },
     {

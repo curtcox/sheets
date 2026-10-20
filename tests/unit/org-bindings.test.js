@@ -80,12 +80,21 @@ test("Org column aliases are RHS references, while only named fields can be assi
   assert.equal(result.tables[0].table.rows[1][2], "0");
 });
 
-test("Org dollar signs in quoted expression arguments remain literal", () => {
-  const result = recalculateOrg(
-    '| 0 |\n#+TBLFM: @1$1=simplify("$missing + 1")\n',
+test("Org quoted Calc strings and unknown functions are diagnosed without changing the cell", () => {
+  for (const formula of [
+    '@1$1=simplify("$missing + 1")',
+    '@1$1="text"',
+    "@1$1=asin(0.5)",
+  ]) {
+    const result = recalculateOrg(`| 0 |\n#+TBLFM: ${formula}\n`);
+    assert.equal(result.diagnostics.length, 1, formula);
+    assert.equal(result.diagnostics[0].line, 2, formula);
+    assert.equal(result.tables[0].table.rows[0][0], "0", formula);
+  }
+  assert.match(
+    recalculateOrg("| 0 |\n#+TBLFM: @1$1=asin(0.5)\n").diagnostics[0].message,
+    /Use arcsin\(\)/,
   );
-  assert.deepEqual(result.diagnostics, []);
-  assert.equal(result.tables[0].table.rows[0][0], "$missing + 1");
 });
 
 test("Org named fields require immediately adjacent data rows, not a row across an hline", () => {
@@ -114,20 +123,24 @@ test("Org literal blocks preserve their source and do not install constants or r
   );
 });
 
-test("Org numeric binding overflow and nonzero underflow are diagnosed instead of becoming infinite or zero", () => {
-  for (const value of ["1e309", "1e-400"]) {
+test("Org numeric bindings beyond JavaScript numbers are read exactly as Calc floats, matching Emacs", () => {
+  for (const [value, expected] of [
+    ["1e309", "1e309"],
+    ["1e-400", "1e-400"],
+    ["0e-400", "0."],
+  ]) {
     const result = recalculateOrg(
       `#+CONSTANTS: value=${value}\n| 99 |\n#+TBLFM: @1$1=$value\n`,
     );
-    assert.deepEqual(
-      result.diagnostics.map((d) => d.line),
-      [1, 3],
-    );
-    assert.equal(result.tables[0].table.rows[0][0], "99");
+    assert.deepEqual(result.diagnostics, [], value);
+    assert.equal(result.tables[0].table.rows[0][0], expected, value);
   }
-  assert.deepEqual(
-    recalculateOrg("#+CONSTANTS: value=0e-400\n| 1 |\n#+TBLFM: @1$1=$value\n")
-      .diagnostics,
-    [],
+  const outside = recalculateOrg(
+    "#+CONSTANTS: value=1e9999999\n| 99 |\n#+TBLFM: @1$1=$value\n",
   );
+  assert.deepEqual(
+    outside.diagnostics.map((d) => d.line),
+    [1, 3],
+  );
+  assert.equal(outside.tables[0].table.rows[0][0], "99");
 });

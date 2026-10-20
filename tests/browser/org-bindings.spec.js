@@ -162,3 +162,28 @@ test("Org named-binding documentation and gallery examples open correctly on mob
     ),
   ).toBe(true);
 });
+
+test("Org Calc default/explicit modes and arithmetic match the Emacs reference documents in the editor", async ({
+  page,
+}) => {
+  const reference = JSON.parse(await file("tests/fixtures/org/reference.json")),
+    errors = [];
+  page.on("pageerror", (e) => errors.push(e.message));
+  for (const name of ["calc-modes.org", "calc-arithmetic.org"]) {
+    await page.goto(url(await file(`tests/fixtures/org/${name}`)));
+    await ready(page);
+    await expect(page.locator("#render-status")).toHaveText(/^Ready/);
+    const rows = await page
+      .locator("#preview tr")
+      .evaluateAll((trs) =>
+        trs.map((tr) => [...tr.cells].map((td) => td.textContent)),
+      );
+    expect(rows, name).toEqual(reference[name]);
+  }
+  await page.goto(url("| 0 |\n#+TBLFM: @1$1=asin(0.5)\n"));
+  await ready(page);
+  expect(
+    await page.evaluate(() => ace.edit("editor").session.getAnnotations()),
+  ).toMatchObject([{ row: 1, text: expect.stringContaining("arcsin") }]);
+  expect(errors).toEqual([]);
+});

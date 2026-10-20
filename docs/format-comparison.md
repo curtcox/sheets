@@ -23,7 +23,7 @@ code; they do not promise automatic conversion or a complete language runtime.
 | [AsciiMath](formats/asciimath.md) | No; notation only | No | No | No |
 | [Numbat](formats/numbat.md) | Yes | Variables and functions | Yes; dimensional checking | No automatic solver |
 | [CalcFile](formats/calcfile.md) | Yes | Friendly variable names, `ans` | Selected units; EUR ↔ USD/GBP/JPY using ECB rates | No |
-| [Org tables](formats/org.md) | Table formulas | Cell/range and same-document remote references, named inputs | Limited mathjs unit expressions | No |
+| [Org tables](formats/org.md) | Table formulas with Emacs Calc numbers and modes | Cell/range and same-document remote references, named inputs | No; Calc units are diagnosed | No |
 | [Calca](formats/calca.md) | Arrow calculations | Variables and functions; optional heading scopes | Yes, through mathjs | Real scalar linear/quadratic subset |
 | [Hurmet](formats/hurmet.md) | Calculation cells | Values shared across cells | Yes; unit-aware calculations | No Sheets-specific solver; use explicit formulas |
 | [Beancount](formats/beancount.md) | Ledger balancing and reports | Accounts and commodities | Cost/price weights; no report revaluation | One missing posting amount inferred |
@@ -32,9 +32,9 @@ code; they do not promise automatic conversion or a complete language runtime.
 
 Beancount's missing posting inference balances a transaction; it is not a general
 equation solver. Its commodities (such as USD or shares) are tracked quantities,
-rather than a physical unit system. Org's constrained formula evaluator accepts
-some mathjs unit expressions, but it is primarily a numeric table calculator;
-choose Numbat for dimension-checked models.
+rather than a physical unit system. Org's formula evaluator is a numeric subset of
+Emacs Calc with Org's default modes; Calc units, symbolic algebra and dates are not
+included. Choose Numbat for dimension-checked models.
 
 ## Presentation and data
 

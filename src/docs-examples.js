@@ -140,7 +140,7 @@ ${block("mermaid", "graph LR\n  Measure --> Review")}
 | 4     | 0      |
 |-------+--------|
 | Total | 0      |
-#+TBLFM: @>$2=vsum(@I$1..@II$1);N::@2$2=vmean(@I$1..@II$1)::@3$2=vcount(@I$1..@II$1)::@4$2=vmin(@I$1..@II$1)
+#+TBLFM: @>$2=vsum(@I$1..@II$1);N::@2$2=vmean(@I$1..@II$1);N::@3$2=vcount(@I$1..@II$1)::@4$2=vmin(@I$1..@II$1);N
 
 * More aggregates and column boundaries
 | 2 | 0 |
@@ -149,6 +149,10 @@ ${block("mermaid", "graph LR\n  Measure --> Review")}
 #+TBLFM: @1$2=vmax(@1$1..@3$1)::@2$2=vprod(@1$1..@3$1)::@3$2=@3$<+@3$>
 `,
       ["vsum(...)", "vmean(...)", "vcount(...)", "@3$2"],
+    ),
+    sample(
+      "| sin(30) | sin(30) R | 1/3 n3 | 6/4 F |\n|---------+-----------+--------+-------|\n| 0 | 0 | 0 | 0 |\n#+TBLFM: @2$1=sin(30)::@2$2=sin(30);R::@2$3=1/3;n3::@2$4=6/4;F\n",
+      [";R", ";n3", ";F"],
     ),
   ],
   calca: [

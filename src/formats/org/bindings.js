@@ -2,16 +2,12 @@ import * as orga from "../../../vendor/orga.js";
 const namePattern = /^[A-Za-z][A-Za-z0-9_]*$/;
 const numericPattern = /^[+-]?(?:\d+(?:\.\d*)?|\.\d+)(?:e[+-]?\d+)?$/i;
 export function numericBinding(value, name) {
-  const number = Number(value);
-  if (
-    !numericPattern.test(value.trim()) ||
-    !Number.isFinite(number) ||
-    (number === 0 && /[1-9]/.test(value.trim().split(/[eE]/)[0]))
-  )
+  if (!numericPattern.test(value.trim()))
     throw new Error(
       `Named value $${name} must be a finite decimal number; Calc expressions, strings and property constants are unsupported.`,
     );
-  return number;
+  if (Math.abs(Number(value.trim().split(/[eE]/)[1] || 0)) > 1000000)
+    throw new Error(`Named value $${name} exceeds Calc's exponent range.`);
 }
 export function orgDocument(src, diagnostics) {
   const starts = [],
@@ -115,6 +111,8 @@ export function tableBindings(
           continue;
         }
         parameters.set(match[1], match[2]);
+        // `%` is Org's table-wide format prefix for formulas with a mode suffix.
+        if (match[1] === "%") continue;
         try {
           numericBinding(match[2], match[1]);
         } catch (error) {
@@ -142,8 +140,10 @@ export function tableBindings(
   }
   return {
     fields,
+    format: parameters.get("%"),
     marked: table.rows.some((row) => /^[!$^_#*]$/.test(row[0])),
     column: (name) => columns.get(name),
+    // Returns validated numeric source text; Calc reads it exactly.
     value(name) {
       const value =
         fields.get(name)?.value ?? parameters.get(name) ?? constants.get(name);
@@ -151,34 +151,8 @@ export function tableBindings(
         throw new Error(
           `Undefined named reference $${name}. Names are case-sensitive; inherited property and external constants are unsupported.`,
         );
-      return numericBinding(value, name);
+      numericBinding(value, name);
+      return value.trim();
     },
   };
-}
-
-// Formula strings keep literal dollar signs. Only calculation segments undergo
-// table reference substitution; quoted mathjs arguments remain unchanged.
-export function outsideStrings(source, transform) {
-  let result = "",
-    start = 0,
-    at = 0;
-  while (at < source.length) {
-    if (source[at] !== '"' && source[at] !== "'") {
-      at++;
-      continue;
-    }
-    result += transform(source.slice(start, at));
-    const quote = source[at],
-      from = at++;
-    while (at < source.length) {
-      if (source[at] === "\\") {
-        at += 2;
-        continue;
-      }
-      if (source[at++] === quote) break;
-    }
-    result += source.slice(from, at);
-    start = at;
-  }
-  return result + transform(source.slice(start));
 }
