@@ -328,6 +328,15 @@ loaded in a fresh browser without signing in, preserving the exact source, forma
 Split view, and calculated answers. See README.md and the HashBin guide for
 deployment settings.
 
+## Field reports
+
+Problems found by using Sheets for real work, recorded but not yet triaged into
+the ledger or the queue below:
+
+- [HashBin money model (2026-10-24)](design/field-report-hashbin-money-model.md):
+  nine items, including a reload data-loss bug for documents whose link exceeds
+  the host's URL limit, and undisclosed missing `if()`/comparisons in Org formulas.
+
 ---
 
 ## Compatibility roadmap: prioritize and eliminate limitations
