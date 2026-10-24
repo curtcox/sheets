@@ -144,3 +144,17 @@ test("Org numeric bindings beyond JavaScript numbers are read exactly as Calc fl
   );
   assert.equal(outside.tables[0].table.rows[0][0], "99");
 });
+
+test("Org prose follows export defaults for TODO keywords, tags, planning lines and drawers", () => {
+  const { html } = renderOrg(
+    "* TODO Task :tag:b:\nSCHEDULED: <2026-01-01 Thu>\n:PROPERTIES:\n:SECRET: 1\n:END:\n:NOTES:\nvisible\n:END:\nText.\n",
+  );
+  assert.ok(!html.includes("[object Object]"));
+  assert.ok(!html.includes("SCHEDULED"));
+  assert.ok(!html.includes("SECRET"));
+  assert.ok(html.includes("visible"));
+  assert.match(
+    html,
+    /<h1><span class="org-todo">TODO<\/span> Task <span class="org-tags">tag b<\/span><\/h1>/,
+  );
+});

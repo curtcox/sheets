@@ -17,8 +17,22 @@ function nodeHTML(node) {
         }[node.style];
       return tag ? `<${tag}>${text}</${tag}>` : text;
     }
-    case "headline":
-      return `<h${Math.min(node.level || 2, 6)}>${children()}</h${Math.min(node.level || 2, 6)}>`;
+    case "headline": {
+      const level = Math.min(node.level || 2, 6),
+        title = (node.children || [])
+          .filter((n) => !["todo", "tags"].includes(n.type))
+          .map(nodeHTML)
+          .join("");
+      // Org's HTML export shows TODO keywords and tags by default.
+      return `<h${level}>${node.keyword ? `<span class="org-todo">${escapeHTML(node.keyword)}</span> ` : ""}${title}${node.tags?.length ? ` <span class="org-tags">${node.tags.map(escapeHTML).join(" ")}</span>` : ""}</h${level}>`;
+    }
+    case "planning":
+      // Org omits planning lines and these drawers from exports by default.
+      return "";
+    case "drawer":
+      return ["PROPERTIES", "LOGBOOK"].includes(node.name?.toUpperCase())
+        ? ""
+        : children();
     case "paragraph":
       return `<p>${children()}</p>`;
     case "list": {
