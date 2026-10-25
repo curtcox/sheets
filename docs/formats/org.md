@@ -74,6 +74,7 @@ Without calculation marks, the ordinary header/separator rule below applies.
 | `#`, `*` | Select a row for column-formula recalculation |
 | `$Qty..$UnitPrice` | Use column aliases as range endpoints |
 | `#+CONSTANTS: tax=0.10` | Define a file-wide numeric constant |
+| `#+SHEETS_CONSTANTS: table` | Show effective file constants in a preview summary (Sheets extension) |
 
 Named fields are also valid assignment targets. For example, the two names here
 refer to the row between the marker lines:
@@ -192,11 +193,46 @@ and a single evaluation permits at most 10,000 numeric comparisons. A selected
 branch error reports the original formula line and retains the cell; always read
 diagnostics even when the old value is numeric.
 
+## Show file constants
+
+Add `#+SHEETS_CONSTANTS: table` to expose a model's file-level assumptions:
+
+```org
+#+SHEETS_CONSTANTS: table
+#+CONSTANTS: price=0.03 users=100
+| Monthly revenue | 0 |
+#+TBLFM: @1$2=$price*$users;%.2f
+```
+
+The preview shows **File constants**, with names, original numeric text and source
+line numbers, followed by monthly revenue **3.00**. The summary appears after the
+opening prose, before the first calculation table; without calculation tables it
+appears after the prose. It is a read-only Sheets extension (ORG-13), available in
+Legacy and Emacs order. Native Org HTML export hides these keywords by default.
+
+Omit the option or use `#+SHEETS_CONSTANTS: none` to keep constants hidden. Option
+names and values are case-insensitive; the last real directive wins. Directives
+inside literal source/example/export/comment blocks do not take effect. An invalid
+option produces a warning and keeps the summary hidden.
+
+The summary uses the same file bindings as formulas. Duplicate names show their
+last declared value and defining line, in first-declaration order. Values preserve
+their source spelling and precision. Unsupported values remain visibly marked
+**Unsupported** and retain calculation diagnostics; malformed declarations are
+diagnosed and omitted. With no named declarations the preview says there are no
+file constants. Table parameters and named fields can override file values, so
+this summary does not claim to show every table's effective inputs.
+
+The option lives in the source, so sharing, HashBin saves, source downloads,
+recalculated source and file-to-link commands preserve it without a new profile.
+HTML export and printing include the visible summary. Editing inputs still
+requires editing source; input styling and cell notes remain UI-1 work.
+
 ## Financial-model workflow limits
 
-- `#+CONSTANTS:` values calculate but are hidden in the preview, as in native
-  Org HTML export (ORG-13). Add an Inputs table and echo constants through
-  field formulas, for example `@2$2=$price`, to show assumptions to readers.
+- `#+CONSTANTS:` values stay hidden by default, as in native Org HTML export.
+  Use `#+SHEETS_CONSTANTS: table` for a file constants summary (ORG-13), or echo
+  constants through field formulas in a custom Inputs table.
 - Inputs cannot be shared across source documents yet (ORG-02 / FILE-1).
   `remote()` reads tables in the same document only. Splitting a model means
   keeping duplicated constants synchronized manually.
@@ -373,5 +409,5 @@ These entries share the [central limitations ledger](../limitations.md). “Need
 | ORG-10 | Resolved | Numeric Calc conditionals and comparisons match Emacs fixtures |
 | ORG-11 | Resolved | Org table values stay intact in narrow previews and HTML exports |
 | ORG-12 | Resolved | Table header groups and numeric-column alignment match native HTML fixtures |
-| ORG-13 | Known gap | File constants calculate but are hidden in the preview |
+| ORG-13 | Resolved | File constants have an optional preview summary |
 <!-- compatibility:end -->

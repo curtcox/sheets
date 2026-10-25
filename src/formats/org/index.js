@@ -4,6 +4,7 @@ import { recalculateOrg } from "./engine.js";
 import { escapeHTML } from "../../util.js";
 import { renderOrgTable } from "./table-html.js";
 import { orgParserSource } from "./bindings.js";
+import { renderFileConstants } from "./constants-html.js";
 function nodeHTML(node) {
   const children = () => (node.children || []).map(nodeHTML).join("");
   switch (node.type) {
@@ -87,14 +88,22 @@ export function renderOrg(src, options = {}) {
   src = orgParserSource(src);
   const result = recalculateOrg(src, options),
     parts = [];
-  let pos = 0;
+  let pos = 0,
+    constantsPending = result.showConstants;
+  const constants = () => {
+    if (!constantsPending) return;
+    parts.push(renderFileConstants(result.fileConstants));
+    constantsPending = false;
+  };
   for (const { start, end, table } of result.tables) {
     const prose = src.split("\n").slice(pos, start).join("\n");
     parts.push(nodeHTML(orga.parse(prose)));
+    constants();
     parts.push(renderOrgTable(table));
     pos = end;
   }
   parts.push(nodeHTML(orga.parse(src.split("\n").slice(pos).join("\n"))));
+  constants();
   return {
     html:
       parts.join("") +

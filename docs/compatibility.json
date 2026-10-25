@@ -1499,23 +1499,29 @@
     {
       "id": "ORG-13",
       "format": "org",
-      "title": "File constants calculate but are hidden in the preview",
+      "title": "File constants have an optional preview summary",
       "kind": "gap",
-      "status": "open",
+      "status": "resolved",
       "priority": "P2",
       "milestone": "ORG-INPUT-1",
       "dependsOn": [],
-      "expected": "Design an explicit option to display numeric file constants as an assumptions table while preserving source and the default native export behavior. Keep direct cell editing in UI-1.",
-      "disclosure": "#+CONSTANTS: supplies numeric inputs but its keyword is omitted from the preview, as in native Org HTML export. Readers therefore cannot see those assumptions unless the source or a separate Inputs table exposes them. Echo constants through field formulas in an Inputs table today. An optional constants display is a usability feature request, not an arithmetic compatibility defect.",
+      "expected": "Provide an explicit source option to display effective numeric file constants with provenance while preserving source, arithmetic and default native keyword hiding. Keep direct cell editing in UI-1.",
+      "disclosure": "#+SHEETS_CONSTANTS: table displays effective file constants with exact source values and defining lines in Legacy and Emacs order. Omitted options and none retain native-style keyword hiding. The last real display directive wins; literal source/example/export/comment blocks cannot enable it or install constants. Duplicate names show the last declared value and line, in first-declaration order. Unsupported values are visibly marked and retain diagnostics; malformed declarations are diagnosed and omitted. Table parameters and named fields can override these file-level values. The source option travels through sharing, HashBin, downloads and CLI links; HTML exports and printing include the summary. This is a read-only Sheets presentation extension, not native Org export behavior. Input editing, styling, notes and goal seek remain UI-1 work.",
       "baselineDisclosure": "First recorded in the 2026-10-24 HashBin money-model field report, item 3.",
       "reproducer": {
-        "path": "design/field-report-hashbin-money-model.md",
-        "section": 3
+        "path": "tests/fixtures/org/constants-display.org"
       },
       "evidence": [
-        "design/field-report-hashbin-money-model.md",
-        "src/formats/org/index.js",
-        "src/formats/org/engine.js"
+        "design/org-constants-display.md",
+        "src/formats/org/bindings.js",
+        "src/formats/org/constants-html.js",
+        "tests/fixtures/org/constants-display.org",
+        "tests/fixtures/org/reference.json",
+        "scripts/org-expected.el",
+        "scripts/org-expected.sh",
+        "tests/unit/org-constants.test.js",
+        "tests/browser/org-constants.spec.js",
+        "tests/browser/offline.spec.js"
       ]
     }
   ]

@@ -152,7 +152,7 @@
     "format": "org",
     "kind": "edge",
     "title": "Named inputs and marked rows",
-    "description": "Use named inputs and marked rows, then summarize a named table.",
+    "description": "Show file constants, use named inputs and marked rows, then summarize a named table.",
     "path": "examples/org/edge.org",
     "profile": "org-emacs-v1"
   },

@@ -53,7 +53,7 @@ export function confidence(id, src) {
     case "calcfile":
       return 0.05;
     case "org":
-      return /^\s*#\+(?:TBLFM|TITLE):|^\s*\|[-+]+\|/im.test(src) ? 0.95 : 0;
+      return /^\s*#\+(?:TBLFM|TITLE|CONSTANTS|SHEETS_CONSTANTS):|^\s*\|[-+]+\|/im.test(src) ? 0.95 : 0;
     case "calca":
       return /^.+=>.*$/m.test(src) ? 0.9 : 0;
     case "hurmet":

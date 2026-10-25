@@ -1,4 +1,5 @@
 #+TITLE: Named inputs and marked rows
+#+SHEETS_CONSTANTS: table
 #+CONSTANTS: tax=0.10
 
 #+NAME: order

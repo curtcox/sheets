@@ -16,7 +16,9 @@ export function numericBinding(value, name) {
 export function orgDocument(src, diagnostics) {
   const starts = [],
     constants = new Map(),
+    constantEntries = new Map(),
     keywords = [],
+    displayKeywords = [],
     names = [],
     headings = [],
     stack = [orga.parse(src)];
@@ -40,6 +42,8 @@ export function orgDocument(src, diagnostics) {
     }
     if (node.type === "keyword" && node.key?.toUpperCase() === "CONSTANTS")
       keywords.push(node);
+    if (node.type === "keyword" && node.key?.toUpperCase() === "SHEETS_CONSTANTS")
+      displayKeywords.push(node);
     if (node.type === "keyword" && /^(?:NAME|TBLNAME)$/i.test(node.key))
       names.push(node);
     if (node.type === "headline") headings.push(node.position.start.line - 1);
@@ -62,9 +66,12 @@ export function orgDocument(src, diagnostics) {
         continue;
       }
       constants.set(match[1], match[2]);
+      const entry = { name: match[1], value: match[2], line, valid: true };
+      constantEntries.set(match[1], entry);
       try {
         numericBinding(match[2], match[1]);
       } catch (error) {
+        entry.valid = false;
         diagnostics.push({ line, message: error.message });
       }
     }
@@ -85,7 +92,21 @@ export function orgDocument(src, diagnostics) {
     if (!namedTables.has(name))
       namedTables.set(name, headings[headingIndex] < start ? undefined : start);
   }
-  return { starts, constants, namedTables };
+  const display = displayKeywords.sort(
+    (a, b) => a.position.start.line - b.position.start.line,
+  ).at(-1);
+  const displayValue = (display?.value || "").trim().toLowerCase();
+  if (display && !["table", "none"].includes(displayValue))
+    diagnostics.push({
+      line: display.position.start.line,
+      severity: "warning",
+      message: "Unsupported SHEETS_CONSTANTS option. Use table or none.",
+    });
+  return {
+    starts, constants, namedTables,
+    constantEntries: [...constantEntries.values()],
+    showConstants: displayValue === "table",
+  };
 }
 export function tableBindings(
   table,

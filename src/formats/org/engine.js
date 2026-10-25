@@ -256,5 +256,9 @@ export function recalculateOrg(src, { profile } = {}) {
   const output = lines.slice();
   for (const { start, end, table } of tables.slice().reverse())
     output.splice(start, end - start, ...tableSource(table));
-  return { tables, diagnostics, source: output.join("\n") };
+  return {
+    tables, diagnostics, source: output.join("\n"),
+    fileConstants: document.constantEntries,
+    showConstants: document.showConstants,
+  };
 }

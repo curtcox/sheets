@@ -154,6 +154,10 @@ ${block("mermaid", "graph LR\n  Measure --> Review")}
       "| sin(30) | sin(30) R | 1/3 n3 | 6/4 F |\n|---------+-----------+--------+-------|\n| 0 | 0 | 0 | 0 |\n#+TBLFM: @2$1=sin(30)::@2$2=sin(30);R::@2$3=1/3;n3::@2$4=6/4;F\n",
       [";R", ";n3", ";F"],
     ),
+    ...["table", "none"].map((display) => sample(
+      `#+SHEETS_CONSTANTS: ${display}\n#+CONSTANTS: price=0.03 users=100\n| Monthly revenue | 0 |\n#+TBLFM: @1$2=$price*$users;%.2f\n`,
+      [`#+SHEETS_CONSTANTS: ${display}`],
+    )),
   ],
   calca: [
     sample(
@@ -363,7 +367,7 @@ export function inlineExample(page, code) {
     if (["?profile=org-emacs-v1", "org-emacs-v1"].includes(code))
       return {
         format: "org",
-        src: syntaxExamples.org[1].source,
+        src: syntaxExamples.org.find((example) => example.aliases.includes(ORG_EMACS)).source,
         profile: ORG_EMACS,
       };
     if (

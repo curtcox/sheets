@@ -7,7 +7,8 @@ documents, about 19 KB of source in total, in the HashBin repository under
 Org engine in Node (`recalculateOrg`), with zero diagnostics.
 
 **Sharing recovery, numeric conditionals, table wrapping, header/alignment
-semantics and file-to-link tooling are implemented; other issues remain open.** Triaged on 2026-10-25 into
+semantics, file-to-link tooling and optional constants display are implemented;
+other issues remain open.** Triaged on 2026-10-25 into
 `docs/compatibility.json` and the active field-report priorities in [PLAN.md](../PLAN.md#field-report-priorities--active-order-from-2026-10-25).
 The missing disclosures are now in the generated limitations page and Org guide;
 SHARE-1 subsequently reproduced old reload loss end to end against an enforcing
@@ -20,13 +21,15 @@ keeps narrow-table values intact with local scrolling; see
 groups and numeric column alignment; see [the HTML contract](org-table-html.md).
 LINK-1 now supplies the documented local-file snapshot command; see
 [the CLI contract](link-tool.md). The raw-URL loader remains a separate open
-FILE-1 proposal (SHARED-07). Other items remain open.
+FILE-1 proposal (SHARED-07). ORG-INPUT-1 now shows file assumptions with
+`#+SHEETS_CONSTANTS: table`; see [the constants display contract](org-constants-display.md).
+Other items remain open.
 
 | # | Problem | Classification | Related |
 |---|---------|----------------|---------|
 | 1 | Documents over ~8 KB: links fail, and a reload loses the document | Mostly user workflow; **one bug risk**, one wording issue | SHARED-02/05; SHARE-1 |
 | 2 | No inputs shared across documents | Known gap | ORG-02 (cross-file); FILE-1 |
-| 3 | `#+CONSTANTS:` values are invisible in the preview | Missing feature | ORG-13; ORG-INPUT-1 |
+| 3 | `#+CONSTANTS:` values are invisible in the preview | Optional file constants summary implemented | ORG-13 (resolved); ORG-INPUT-1 |
 | 4 | No `if()` or comparison operators in Org formulas | Numeric subset implemented; wider Calc behavior remains limited | ORG-10 (resolved); ORG-1E |
 | 5 | `a/b*c` means `a/(b*c)` | Documented, Emacs-faithful; usability trap | ORG-09; ORG-HINT-1 |
 | 6 | Money tables are hard to read | Wrapping and header/alignment fixed; grouping request remains open | ORG-11/12 (resolved), ORG-02; ORG-TABLE-1/2, ORG-MONEY-1 |

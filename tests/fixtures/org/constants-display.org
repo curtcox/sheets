@@ -1,0 +1,20 @@
+#+TITLE: Visible file assumptions
+#+SHEETS_CONSTANTS: table
+#+CONSTANTS: rate=2.5 shift=1e1 dup=1
+
+| ! | value | result |
+| # |     4 |      0 |
+| $ | rate=3 |       |
+#+TBLFM: $3=$value*$rate+$shift+$dup;%.2f
+
+| 4 | 0 |
+#+TBLFM: $2=$1*$rate+$dup;%.2f
+
+#+CONSTANTS: dup=5
+
+#+BEGIN_SRC org
+#+SHEETS_CONSTANTS: none
+#+CONSTANTS: rate=999 hidden=123
+| 8 | 0 |
+#+TBLFM: $2=999
+#+END_SRC
