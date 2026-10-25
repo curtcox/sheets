@@ -6,21 +6,23 @@ documents, about 19 KB of source in total, in the HashBin repository under
 `docs/business/*.org`. It ran against production (`curtcox.github.io/sheets`) and against the
 Org engine in Node (`recalculateOrg`), with zero diagnostics.
 
-**Nothing here is fixed yet.** Each item has a classification and a reproducer, and points to a
-related ledger ID where one exists. Triage these into `docs/compatibility.json` or the
-PLAN.md queue before working on them.
+**Runtime issues remain open.** Triaged on 2026-10-25 into
+`docs/compatibility.json` and the active field-report priorities in [PLAN.md](../PLAN.md#field-report-priorities--active-order-from-2026-10-25).
+The missing disclosures are now in the generated limitations page and Org guide;
+this does not claim implementation fixes. Reload/session-restore loss still needs
+end-to-end reproduction, separately from the observed HTTP 414.
 
 | # | Problem | Classification | Related |
 |---|---------|----------------|---------|
-| 1 | Documents over ~8 KB: links fail, and a reload loses the document | Mostly user workflow; **one bug**, one wording issue | SHARED-02 |
-| 2 | No inputs shared across documents | Known gap | ORG-02 (cross-file), FILE-1 |
-| 3 | `#+CONSTANTS:` values are invisible in the preview | Missing feature | — |
-| 4 | No `if()` or comparison operators in Org formulas | Compatibility gap, **not disclosed** | ORG-01, ORG-02 |
-| 5 | `a/b*c` means `a/(b*c)` | Documented, Emacs-faithful; usability trap | ORG-09 |
-| 6 | Money tables are hard to read | One CSS bug, one compatibility gap, one feature request | ORG-02 (layout) |
-| 7 | No goal seek or what-if | Missing feature | CALCA-02 has a solver; Org has none |
-| 8 | Inputs can't be marked apart from formulas; cells can't carry notes | Missing feature | — |
-| 9 | No supported way to turn a file into a link | Missing tooling | — |
+| 1 | Documents over ~8 KB: links fail, and a reload loses the document | Mostly user workflow; **one bug risk**, one wording issue | SHARED-02/05; SHARE-1 |
+| 2 | No inputs shared across documents | Known gap | ORG-02 (cross-file); FILE-1 |
+| 3 | `#+CONSTANTS:` values are invisible in the preview | Missing feature | ORG-13; ORG-INPUT-1 |
+| 4 | No `if()` or comparison operators in Org formulas | Compatibility gap; disclosure added in triage | ORG-10; ORG-1E |
+| 5 | `a/b*c` means `a/(b*c)` | Documented, Emacs-faithful; usability trap | ORG-09; ORG-HINT-1 |
+| 6 | Money tables are hard to read | One CSS bug, one compatibility gap, one feature request | ORG-11/12, ORG-02; ORG-TABLE-1/2, ORG-MONEY-1 |
+| 7 | No goal seek or what-if | Missing feature | ORG-04; UI-1 (CALCA-02 is a separate solver) |
+| 8 | Inputs can't be marked apart from formulas; cells can't carry notes | Missing feature | ORG-04; UI-1 |
+| 9 | No supported way to turn a file into a link | Missing tooling | SHARED-06; LINK-1, FILE-1 |
 
 ## 1. Documents over ~8 KB
 
@@ -88,8 +90,9 @@ field formulas (`@2$2=$price::@3$2=$depositSize::…`).
 ```
 
 Emacs Calc gives **10**. Sheets reports `Unsupported Calc syntax near ">2,10,20)"` and leaves the
-cell unchanged. Neither the Org guide nor ORG-02's disclosure lists relational operators or
-`if` among the unsupported Calc features. The workaround for a step function ("free up to
+cell unchanged. At the time of the report, neither the Org guide nor ORG-02's
+disclosure listed relational operators or `if` among the unsupported Calc features.
+The 2026-10-25 triage adds that disclosure as ORG-10. The workaround for a step function ("free up to
 50,000 users, then $25 a month") was `min(1, max(0, $users - 50000))`.
 
 *Expected:* support Calc's `if(c, a, b)` and `<`, `>`, `<=`, `>=`, `==`, `!=`, checked against

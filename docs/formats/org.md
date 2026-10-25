@@ -121,7 +121,9 @@ The results are **0.5**, **0.33333333**, **1.4142136**, **1.25**, **5.** and
 digits and displayed with up to 8 significant digits; very large or small floats
 use Calc's scientific notation, such as `1e-3`. Integers stay exact, and a whole
 float keeps Calc's trailing point. As in Calc, `*` binds more tightly than `/`,
-so `10/4*2` means `10/(4*2)`. Use Calc function names such as `arcsin` and `ln`;
+so `10/4*2` means `10/(4*2)`. Parenthesize each intended division when adapting
+spreadsheet formulas; Sheets does not currently warn about this precedence.
+Use Calc function names such as `arcsin` and `ln`;
 see the [complete function list](../function-comparison.md).
 
 Cell text is read as Calc input: `2.50` is a float and `7` an integer. An empty
@@ -151,6 +153,31 @@ links, in both calculation modes, now show the Emacs values. For example,
 `sin(30)` changes from `-0.988031624093` to `0.5`, `1/3` from `0.333333333333`
 to `0.33333333`, and `10/4*2` from `5` to `1.25`. Source text is unchanged. This
 is an arithmetic correction rather than a new profile; see ORG-09.
+
+**Unsupported conditionals (ORG-10).** Calc's `if(c,a,b)` and comparison
+operators `<`, `>`, `<=`, `>=`, `==` and `!=` are not implemented. For example,
+`$2=if($1>2,10,20)` reports unsupported syntax and leaves the previous cell value
+in place. Check diagnostics even when a table still displays numeric values.
+
+## Financial-model workflow limits
+
+- `#+CONSTANTS:` values calculate but are hidden in the preview, as in native
+  Org HTML export (ORG-13). Add an Inputs table and echo constants through
+  field formulas, for example `@2$2=$price`, to show assumptions to readers.
+- Inputs cannot be shared across source documents yet (ORG-02 / FILE-1).
+  `remote()` reads tables in the same document only. Splitting a model means
+  keeping duplicated constants synchronized manually.
+- Narrow Split previews can wrap inside numbers (ORG-11). Widen the preview or
+  use Preview view. Headers and numeric alignment also lack native export
+  semantics (ORG-12). `;%.2f` controls decimal places; `;$%.2f` can add a
+  literal dollar prefix, but thousands grouping is unavailable.
+- Preview cells cannot be edited, marked as inputs, or given per-cell notes.
+  Put input instructions and source notes in the document. Org has no goal seek
+  or what-if tool (ORG-04); Calca's scalar solver works in its own format.
+- Long source links can fail to open or reload on the host (SHARED-05). Download
+  source or finish a HashBin save before reloading or closing a long-link tab.
+  Offline app files are not a document backup. There is no supported file-to-link
+  CLI or raw-source `?url=` loader yet (SHARED-06).
 
 ## Emacs calculation order
 
@@ -264,4 +291,8 @@ These entries share the [central limitations ledger](../limitations.md). “Need
 | ORG-07 | Resolved | Explicit Emacs order matches supported native scheduling and duplicate-target rejection |
 | ORG-08 | Resolved | Same-document remote references read current pass state without recursive evaluation |
 | ORG-09 | Resolved | Formulas use Emacs Calc default modes, exact integers and Calc display |
+| ORG-10 | Known gap | Calc conditionals and comparison operators are unsupported |
+| ORG-11 | Known gap | Narrow preview tables can split numeric text across lines |
+| ORG-12 | Known gap | Preview tables lack native header semantics and numeric alignment |
+| ORG-13 | Known gap | File constants calculate but are hidden in the preview |
 <!-- compatibility:end -->

@@ -27,9 +27,9 @@ cell diagnostics, cancellation and deadlines. All items in the original phases
 0–10, including the optional offline and equation/R execution work, are implemented.
 The compatibility roadmap below is in progress. The ledger, the profile design,
 and the first slices for Beancount, Calca, CalcFile, GFM, Numbat, AsciiMath,
-Quarto and Org are delivered. Its prioritized elimination queue starts with a
-confirmed Org arithmetic defect (ORG-1C) and the classification of all remaining
-compound disclosures (LEDGER-1).
+Quarto and Org are delivered, including the Org arithmetic correction (ORG-1C).
+The 2026-10-25 field-report priorities below put long-link recovery first, then
+Org conditionals and readable tables, alongside the remaining ledger audit.
 HashBin is registered and enabled using its public client ID and exact Pages
 callback. Live PKCE authorization, quoted save confirmation, and an anonymous
 saved-document round-trip have been verified. The repository uses MIT and Pages
@@ -330,18 +330,20 @@ deployment settings.
 
 ## Field reports
 
-Problems found by using Sheets for real work, recorded but not yet triaged into
-the ledger or the queue below:
+Problems found by using Sheets for real work, with triage recorded in the ledger
+and the active priorities below:
 
 - [HashBin money model (2026-10-24)](design/field-report-hashbin-money-model.md):
-  nine items, including a reload data-loss bug for documents whose link exceeds
-  the host's URL limit, and undisclosed missing `if()`/comparisons in Org formulas.
+  all nine items triaged on 2026-10-25. HTTP 414 was reproduced; end-to-end
+  reload loss still needs verification (SHARED-05). Missing `if()`/comparisons
+  now have an explicit disclosure (ORG-10). No runtime fixes are claimed.
 
 ---
 
 ## Compatibility roadmap: prioritize and eliminate limitations
 
-Status: **in progress**, refreshed 2026-10-19 after `e548fae` (BEAN-2A).
+Status: **in progress**, priorities refreshed 2026-10-25 after the HashBin
+money-model field report; the implementation baseline below is historical.
 This roadmap extends the completed original plan. Its first slices are delivered:
 Phases 11–13, then ORG-1A, ORG-1B, QT-2A and BEAN-2A from the previous queue.
 Their records are kept under *Delivered slices* below. The verified baseline is
@@ -352,8 +354,9 @@ The function comparison page separates callable libraries, custom definitions,
 imported packages and display-only notation. The original inventory at
 `d99cb58` is retained in the ledger's baseline disclosure fields.
 
-After ORG-1C the baseline is 325 unit tests and 267 browser tests. The ledger,
-`docs/compatibility.json`, has 69 entries:
+After ORG-1C the recorded baseline is 325 unit tests and 267 browser tests.
+The field-report triage adds six open entries; `docs/compatibility.json` now has
+75 entries (documentation changes do not resolve implementation gaps):
 
 | Format | Resolved | Retained | Open | Audit |
 | --- | ---: | ---: | ---: | ---: |
@@ -361,14 +364,14 @@ After ORG-1C the baseline is 325 unit tests and 267 browser tests. The ledger,
 | AsciiMath | 2 | 2 | 1 | 0 |
 | Numbat | 1 | 2 | 0 | 2 |
 | CalcFile | 1 | 1 | 0 | 3 |
-| Org | 5 | 0 | 1 | 3 |
+| Org | 5 | 0 | 5 | 3 |
 | Calca | 2 | 0 | 0 | 6 |
 | Hurmet | 1 | 1 | 0 | 2 |
 | Beancount | 3 | 0 | 2 | 4 |
 | Quarto | 4 | 0 | 2 | 6 |
 | Plain text | 0 | 2 | 0 | 0 |
-| Shared | 0 | 0 | 0 | 4 |
-| **Total** | **20** | **12** | **6** | **31** |
+| Shared | 0 | 0 | 2 | 4 |
+| **Total** | **20** | **12** | **12** | **31** |
 
 None of the 31 compound `audit` entries has an atomic reproducer yet, so they
 may still hide wrong results. A 2026-10-19 spot check found one that did
@@ -395,12 +398,37 @@ progress:
 | Deliberate safety or reproducibility policy | Preserve the default. Add a bounded, explicit alternative only when useful; do not remove sanitization, cancellation, payload bounds, or interpreter isolation to claim parity. |
 | Browser or deployment constraint | First test a browser implementation; otherwise provide an optional native execution route with an explicit architecture decision. Do not label an unimplemented route as resolved. |
 
+### Field-report priorities — active order from 2026-10-25
+
+These priorities take precedence over the older queue below for the affected
+slices. The remaining queue keeps its relative order. LEDGER-1 continues in
+bounded per-format slices; it must not delay recovery from the reported reload
+risk. Any newly verified wrong result still becomes a P0 ahead of new syntax.
+The field report is evidence of workflow failures, not an upstream oracle.
+
+| Order / slice | Tier | Ledger / report items | Work and completion evidence |
+| --- | --- | --- | --- |
+| 1 / SHARE-1 (M) | P0 recovery risk | SHARED-05, SHARED-02; report 1 | Reproduce reload/session restore against a server enforcing a request-line limit. Design local draft recovery and/or fragment source before implementation; retain CID precedence, old links, complete source/format/view/profile and bounded decoding. Warn with enough headroom before failure, explain the reload risk and offer source download. Test storage failure if drafts are chosen, plus share, OAuth, offline and reload round-trips. The report confirms 414, not end-to-end data loss; verify that distinction first. |
+| 2 / ORG-1E (M) | P1 model formulas | ORG-10, ORG-01/02; report 4 | Implement numeric `if` and comparisons only after independent Emacs fixtures establish precedence, nesting and branch/error evaluation. Check both calculation modes and all existing numeric references. The missing syntax is disclosed now; no arithmetic correction is inferred from a rejected formula. |
+| 3a / ORG-TABLE-1 (S) | P1 readability defect | ORG-11; report 6 | Stop narrow cells from splitting numbers. Test the 800 px Split reproducer, mobile overflow, long labels and exports in all browser projects. This bounded CSS fix can ship independently of native export parity. |
+| 3b / ORG-TABLE-2 (M) | P1 export compatibility | ORG-12, ORG-02 layout; report 6 | Add independent Emacs HTML-export fixtures for header rows and numeric alignment, then verify sanitized preview, export and print. Keep source display width as a separate ORG-1D concern. |
+| 4 / LINK-1 (S) | P1 authoring workflow | SHARED-06; report 9 and 1 | Add documented `node scripts/link.mjs <file> [--format=org]` using the shared serializer. Round-trip exact source and format/view/profile, handle invalid options, and flag/reject oversized URLs. A CLI does not solve storage or make oversized links usable. Keep it outside the Pages deployment allowlist. |
+| 5 / ORG-INPUT-1 and ORG-HINT-1 (S–M, separate slices) | P2 assumptions and formula clarity | ORG-13, ORG-09; report 3 and 5 | Design an optional constants table; keep native keyword hiding as the default. Separately add an opt-in source-line hint for potentially surprising division/multiplication without changing Calc precedence or warning on explicit grouping. Inputs-table and parenthesis workarounds are documented now. ORG-09 stays resolved because its arithmetic is faithful. |
+| 6 / FILE-1 (L, design first) | P2 shared inputs | ORG-02 cross-file, SHARED-06; report 2 and raw-URL alternative in 9 | Bring the project-input design forward ahead of other Phase 15 work. Evaluate explicitly supplied CID inputs as reproducible shared assumptions, bounded aggregate size/depth, cycles and a versioned share representation. A `?url=` loader is a separate proposal: define CORS/fetch failure, source snapshot and mutable-URL behavior before promising reproducibility. Preserve existing single-document links. |
+| 7 / ORG-MONEY-1 (S–M) | P2 display feature | ORG-02 formatting; report 6 | Design opt-in thousands grouping, including grouped currency display, without feeding decorated strings back into numeric calculation or changing existing `;%.2f` values. Literal dollar prefixes already work. This is a requested extension, not proven native printf parity. Test recalculation, source copy and export. |
+| 8 / UI-1 (L, separate designs) | P3 model tools | ORG-04; report 3, 7 and 8 | Evaluate source-backed preview input editing, input styling and per-cell notes separately. Goal seek/what-if needs a bounded numeric contract with no-solution/nonconvergence diagnostics and explicit source updates/undo. Calca’s existing scalar solver does not provide Org goal seek. Keep these below recovery, formula support and readable assumptions. |
+
+This maps every field-report item to a ledger disclosure and an implementation
+slice. New records remain open. Cosmetic cues and solver tools do not gate the
+bounded sharing, formula and table fixes above.
+
 ### Prioritized elimination queue — refreshed 2026-10-19
 
-This queue replaces the previous active queue. Its orders 1–4 are delivered.
-Every unresolved ledger ID is assigned to at least one row below. Take the rows
-in order. The only exception is that a newly reproduced wrong result always goes
-ahead of new syntax as its own P0 slice. A delivered slice does not close its
+This is the broader queue retained after the field-report priorities above.
+Only order 1 (ORG-1C) is delivered; orders 2–4 remain open. The six new
+field-report entries are assigned above; all earlier unresolved IDs are assigned
+below. Take the remaining rows in order. The only exception is that a newly
+reproduced wrong result always goes ahead of new syntax as its own P0 slice. A delivered slice does not close its
 whole format.
 
 | Order / slice | Tier | Ledger IDs | Limitation to eliminate | Completion evidence |
@@ -542,7 +570,9 @@ entire format rewrite and an unrelated runtime expansion in one release.
    files for Beancount includes, cross-file Org tables, and notebook data. Resolve
    only supplied files, detect cycles, and bound aggregate size/depth. Version the
    bundle/share representation while preserving single-document links and existing
-   CID precedence. Never infer access to arbitrary local files from an include.
+   CID precedence. Evaluate explicitly supplied HashBin CID inputs and the separate
+   raw-URL loading proposal from the field report, including fetch bounds and
+   snapshot semantics. Never infer access to arbitrary local files from an include.
 3. **OFFLINE-1 — optional scientific runtimes (L):** investigate self-hosting pinned,
    verified Python/R runtime assets and an explicit package set in a separate
    opt-in download. Measure transfer size, startup, storage, and memory first.

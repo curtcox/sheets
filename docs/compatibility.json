@@ -476,7 +476,7 @@
       "milestone": "ORG-1",
       "dependsOn": [],
       "expected": "Verify remaining target syntax, iteration, remote indirection/file inputs, symbolic and duration Calc results, and native layout in separate reference-backed slices.",
-      "disclosure": "Numeric named bindings, same-document remote cells/ranges and Emacs Calc default/explicit numeric modes work (ORG-09). The explicit Emacs-order profile supplies row-major sorted columns, protected fields, sorted field formulas and duplicate-target rejection; Legacy retains source-order links. Target ranges, relative targets in Emacs order, dynamic remote indirection, A1 remote notation, cross-file/ID references, iteration, property/external or nonnumeric bindings, Calc symbolic/complex/unit/date/duration results and exact Emacs display-width/export layout remain unsupported. Remote and Calc failure diagnostics retain the affected cell instead of native symbolic or #ERROR text.",
+      "disclosure": "Numeric named bindings, same-document remote cells/ranges and Emacs Calc default/explicit numeric modes work (ORG-09). The explicit Emacs-order profile supplies row-major sorted columns, protected fields, sorted field formulas and duplicate-target rejection; Legacy retains source-order links. Target ranges, relative targets in Emacs order, dynamic remote indirection, A1 remote notation, cross-file/ID references, iteration, property/external or nonnumeric bindings, Calc symbolic/complex/unit/date/duration results and exact Emacs display-width/export layout remain unsupported. Remote and Calc failure diagnostics retain the affected cell instead of native symbolic or #ERROR text. Conditional formulas and comparisons are tracked separately in ORG-10, and preview table layout in ORG-12. Thousands grouping, including grouped currency display, is not provided. ;%.2f controls decimal places and a literal dollar prefix is possible, but it does not add grouping. Cross-document inputs still require duplicated constants or tables until FILE-1.",
       "baselineDisclosure": "Named fields, remote tables, iteration modes, arbitrary Calc syntax, and exact Emacs display-width alignment are not implemented. Formulas execute in order, rather than iterating until results converge.",
       "reproducer": {
         "path": "design/org-order.md"
@@ -511,7 +511,7 @@
       "milestone": "ORG-1",
       "dependsOn": [],
       "expected": "Verify each behavior against Emacs numeric fixture oracle; documented Calc subset; separate deliberate policy from unsupported upstream capabilities.",
-      "disclosure": "Recalculation updates the preview. The editor retains the original source until you copy recalculated source and paste it. Out-of-range references report diagnostics instead of creating cells. Independent Emacs comparisons cover supported numeric fixtures and exclude the intentional Lisp-error example.",
+      "disclosure": "Recalculation updates the preview. The editor retains the original source until you copy recalculated source and paste it. Out-of-range references report diagnostics instead of creating cells. Independent Emacs comparisons cover supported numeric fixtures and exclude the intentional Lisp-error example. Preview cells cannot be edited directly, marked as inputs, or given per-cell notes. Org has no goal seek or what-if tool; Calca\u2019s scalar solver is a separate format and does not solve Org table cells. These are UI-1 feature requests, not native recalculation fixes.",
       "baselineDisclosure": "Recalculation updates the preview. The editor retains the original source until you copy recalculated source and paste it. Out-of-range references report diagnostics instead of creating cells. Independent Emacs comparisons cover supported numeric fixtures and exclude the intentional Lisp-error example.",
       "reproducer": null,
       "evidence": []
@@ -616,7 +616,7 @@
       "milestone": "ORG-1C",
       "dependsOn": [],
       "expected": "Match Emacs org-calc-default-modes (degrees, 12-digit internal precision, (float 8) display, no fraction preference), Calc precedence, exact integers and the supported mode letters in both calculation modes.",
-      "disclosure": "Formulas follow a DOM-free Emacs Calc subset in both Legacy and Emacs order: degree angles, 12 internal digits and an 8-significant-digit float display, exact integers, trailing-point floats (5.), Calc scientific-notation thresholds, multiplication binding tighter than division (10/4*2 is 1.25), Calc function names (arcsin, not asin) and Calc exact trigonometric/logarithm special cases. Mode letters p, n, f, s, e, D, R, F, E, N and L, one printf conversion (%d, %f, %e or %g, applied to the displayed value as Emacs does) and the table % format parameter are supported. Symbolic results, complex numbers, infinities, units, dates, strings, durations (T, t, U), symbolic mode S and unit mode u produce source-line diagnostics and retain the cell instead of native symbolic or #ERROR text.",
+      "disclosure": "Formulas follow a DOM-free Emacs Calc subset in both Legacy and Emacs order: degree angles, 12 internal digits and an 8-significant-digit float display, exact integers, trailing-point floats (5.), Calc scientific-notation thresholds, multiplication binding tighter than division (10/4*2 is 1.25), Calc function names (arcsin, not asin) and Calc exact trigonometric/logarithm special cases. Mode letters p, n, f, s, e, D, R, F, E, N and L, one printf conversion (%d, %f, %e or %g, applied to the displayed value as Emacs does) and the table % format parameter are supported. Symbolic results, complex numbers, infinities, units, dates, strings, durations (T, t, U), symbolic mode S and unit mode u produce source-line diagnostics and retain the cell instead of native symbolic or #ERROR text. No advisory hint warns about mixed multiplication/division; parenthesize the intended division explicitly.",
       "baselineDisclosure": "Formulas used JavaScript/mathjs numbers in radians with 12 significant display digits, standard precedence and mathjs function names. Mode letters other than N and %.Nf were silently ignored, and %.Nf formatted the unrounded double, so sin(30), 1/3 and 2^0.5 showed -0.988031624093, 0.333333333333 and 1.41421356237 instead of 0.5, 0.33333333 and 1.4142136.",
       "reproducer": {
         "path": "tests/fixtures/org/calc-modes.org"
@@ -1138,7 +1138,7 @@
       "milestone": "FILE-1",
       "dependsOn": [],
       "expected": "Verify each behavior against Sheets browser deployment; separate deliberate policy from unsupported upstream capabilities.",
-      "disclosure": "Source links retain the document, format, and view. Around 8 KB the UI suggests HashBin; browser, messaging, and proxy URL limits vary. Decoded shared source and HashBin payloads are bounded at **5 MiB**; unsupported envelope versions are rejected.",
+      "disclosure": "Source links retain the document, format, and view. Around 8 KB the UI suggests HashBin; browser, messaging, and proxy URL limits vary. Decoded shared source and HashBin payloads are bounded at **5 MiB**; unsupported envelope versions are rejected. A long query URL can fail to open or reload with HTTP 414 on the production host; the warning is not a backup (SHARED-05). No supported file-to-link CLI or ?url= raw-source loader is available (SHARED-06).",
       "baselineDisclosure": "Source links retain the document, format, and view. Around 8 KB the UI suggests HashBin; browser, messaging, and proxy URL limits vary. Decoded shared source and HashBin payloads are bounded at **5 MiB**; unsupported envelope versions are rejected.",
       "reproducer": null,
       "evidence": []
@@ -1342,6 +1342,136 @@
       "reproducer": null,
       "evidence": [
         "design/beancount-booking.md"
+      ]
+    },
+    {
+      "id": "SHARED-05",
+      "format": "shared",
+      "title": "Long query URLs can prevent reopening a document; no ordinary local draft is saved",
+      "kind": "gap",
+      "status": "open",
+      "priority": "P0",
+      "milestone": "SHARE-1",
+      "dependsOn": [],
+      "expected": "Reproduce the reload/session-restore path end to end, then preserve complete source, format, view and profile across reloads without sending an oversized request. Warn before the supported host limit and provide a source-download fallback. Choose local draft recovery and/or fragment source through an explicit URL-state design; preserve CID precedence and decoding bounds.",
+      "disclosure": "The editor persists ordinary edits in the query URL, without a local draft backup. The field report reproduced HTTP 414 for a production URL of about 8,219 characters on 2026-10-24; limits vary with the host and the complete request. Reload/session-restore loss follows from the persistence path but has not yet been reproduced end to end. The notice appears only above 8,192 characters and says easier sharing, understating the risk. Download the source or complete a HashBin save before closing or reloading a long-link tab; offline app files do not back up documents.",
+      "baselineDisclosure": "First recorded in the 2026-10-24 HashBin money-model field report, item 1.",
+      "reproducer": {
+        "path": "design/field-report-hashbin-money-model.md",
+        "section": 1
+      },
+      "evidence": [
+        "design/field-report-hashbin-money-model.md",
+        "src/app.js",
+        "src/url-state.js"
+      ]
+    },
+    {
+      "id": "SHARED-06",
+      "format": "shared",
+      "title": "Files have no supported command-line link generator or raw-URL loader",
+      "kind": "gap",
+      "status": "open",
+      "priority": "P1",
+      "milestone": "LINK-1",
+      "dependsOn": [],
+      "expected": "Provide a documented file-to-link command using the shared URL serializer, preserving source/format/view/profile and reporting oversized URLs. Treat a remote raw-source loader as a separate FILE-1 design with bounded fetching and reproducible sharing.",
+      "disclosure": "No supported script turns a local source file into a Sheets link, and ?url= does not load raw source. Hand-built compressed links bypass the app\u2019s length notice and may exceed host limits. A file-to-link command would still need to reject or clearly flag oversized links; it would not itself provide storage. HashBin saves require interactive owner sign-in, balance and per-save confirmation; public saved CIDs load without sign-in.",
+      "baselineDisclosure": "First recorded in the 2026-10-24 HashBin money-model field report, item 9.",
+      "reproducer": {
+        "path": "design/field-report-hashbin-money-model.md",
+        "section": 9
+      },
+      "evidence": [
+        "design/field-report-hashbin-money-model.md",
+        "src/url-state.js",
+        "docs/hashbin.md"
+      ]
+    },
+    {
+      "id": "ORG-10",
+      "format": "org",
+      "title": "Calc conditionals and comparison operators are unsupported",
+      "kind": "gap",
+      "status": "open",
+      "priority": "P1",
+      "milestone": "ORG-1E",
+      "dependsOn": [],
+      "expected": "Add independent Emacs fixtures for if(c,a,b), <, >, <=, >=, == and !=, including precedence, nested conditions and error/branch evaluation. Implement the verified numeric subset in both calculation modes.",
+      "disclosure": "if(c,a,b) and comparison operators <, >, <=, >=, == and != are unsupported. For example, $2=if($1>2,10,20) reports unsupported Calc syntax and retains the old cell. A retained numeric value is not a successful calculation; read diagnostics. The report used min/max to express one bounded step function, but that is not a general replacement for conditional formulas.",
+      "baselineDisclosure": "First recorded in the 2026-10-24 HashBin money-model field report, item 4.",
+      "reproducer": {
+        "path": "design/field-report-hashbin-money-model.md",
+        "section": 4
+      },
+      "evidence": [
+        "design/field-report-hashbin-money-model.md",
+        "src/formats/org/calc.js"
+      ]
+    },
+    {
+      "id": "ORG-11",
+      "format": "org",
+      "title": "Narrow preview tables can split numeric text across lines",
+      "kind": "gap",
+      "status": "open",
+      "priority": "P1",
+      "milestone": "ORG-TABLE-1",
+      "dependsOn": [],
+      "expected": "Keep numeric values unbroken in narrow Split view, using horizontal overflow where needed. Verify 800 px Split and mobile layouts across browser projects, including long labels and HTML export.",
+      "disclosure": "In narrow Split view, preview cells inherit arbitrary text wrapping: the report saw 0.03 split into 0.0 and 3 at an 800 px window. Widen the preview or select Preview view as a temporary workaround. This CSS defect is separate from native Org header/alignment compatibility (ORG-12).",
+      "baselineDisclosure": "First recorded in the 2026-10-24 HashBin money-model field report, item 6.",
+      "reproducer": {
+        "path": "design/field-report-hashbin-money-model.md",
+        "section": 6
+      },
+      "evidence": [
+        "design/field-report-hashbin-money-model.md",
+        "src/styles.css"
+      ]
+    },
+    {
+      "id": "ORG-12",
+      "format": "org",
+      "title": "Preview tables lack native header semantics and numeric alignment",
+      "kind": "gap",
+      "status": "open",
+      "priority": "P1",
+      "milestone": "ORG-TABLE-2",
+      "dependsOn": [],
+      "expected": "Compare emitted HTML with independent Emacs export fixtures for rows before the first separator and numeric-column alignment, then preserve the supported semantics through sanitization, export and printing.",
+      "disclosure": "Org preview tables currently render every cell as td and left-align columns. Rows before the first separator do not become thead/th, and numeric columns are not right-aligned as in native Org HTML export. This is an HTML presentation gap, separate from source display-width alignment and the narrow-cell wrapping defect (ORG-11).",
+      "baselineDisclosure": "First recorded in the 2026-10-24 HashBin money-model field report, item 6.",
+      "reproducer": {
+        "path": "design/field-report-hashbin-money-model.md",
+        "section": 6
+      },
+      "evidence": [
+        "design/field-report-hashbin-money-model.md",
+        "src/formats/org/index.js",
+        "src/styles.css"
+      ]
+    },
+    {
+      "id": "ORG-13",
+      "format": "org",
+      "title": "File constants calculate but are hidden in the preview",
+      "kind": "gap",
+      "status": "open",
+      "priority": "P2",
+      "milestone": "ORG-INPUT-1",
+      "dependsOn": [],
+      "expected": "Design an explicit option to display numeric file constants as an assumptions table while preserving source and the default native export behavior. Keep direct cell editing in UI-1.",
+      "disclosure": "#+CONSTANTS: supplies numeric inputs but its keyword is omitted from the preview, as in native Org HTML export. Readers therefore cannot see those assumptions unless the source or a separate Inputs table exposes them. Echo constants through field formulas in an Inputs table today. An optional constants display is a usability feature request, not an arithmetic compatibility defect.",
+      "baselineDisclosure": "First recorded in the 2026-10-24 HashBin money-model field report, item 3.",
+      "reproducer": {
+        "path": "design/field-report-hashbin-money-model.md",
+        "section": 3
+      },
+      "evidence": [
+        "design/field-report-hashbin-money-model.md",
+        "src/formats/org/index.js",
+        "src/formats/org/engine.js"
       ]
     }
   ]
