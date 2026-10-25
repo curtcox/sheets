@@ -476,7 +476,7 @@
       "milestone": "ORG-1",
       "dependsOn": [],
       "expected": "Verify remaining target syntax, iteration, remote indirection/file inputs, symbolic and duration Calc results, and native layout in separate reference-backed slices.",
-      "disclosure": "Numeric named bindings, same-document remote cells/ranges and Emacs Calc default/explicit numeric modes work (ORG-09). The explicit Emacs-order profile supplies row-major sorted columns, protected fields, sorted field formulas and duplicate-target rejection; Legacy retains source-order links. Target ranges, relative targets in Emacs order, dynamic remote indirection, A1 remote notation, cross-file/ID references, iteration, property/external or nonnumeric bindings, Calc symbolic/complex/unit/date/duration results and exact Emacs display-width/export layout remain unsupported. Remote and Calc failure diagnostics retain the affected cell instead of native symbolic or #ERROR text. Numeric conditional formulas and comparisons are supported (ORG-10), while vector/symbolic conditions and comparisons, logical operators and ternary syntax remain unsupported, and preview table layout in ORG-12. Thousands grouping, including grouped currency display, is not provided. ;%.2f controls decimal places and a literal dollar prefix is possible, but it does not add grouping. Cross-document inputs still require duplicated constants or tables until FILE-1.",
+      "disclosure": "Numeric named bindings, same-document remote cells/ranges and Emacs Calc default/explicit numeric modes work (ORG-09). The explicit Emacs-order profile supplies row-major sorted columns, protected fields, sorted field formulas and duplicate-target rejection; Legacy retains source-order links. Target ranges, relative targets in Emacs order, dynamic remote indirection, A1 remote notation, cross-file/ID references, iteration, property/external or nonnumeric bindings, Calc symbolic/complex/unit/date/duration results and exact Emacs display-width/full export layout remain unsupported. Header groups and numeric column alignment are supported (ORG-12); rich table-cell markup, captions, column groups, native width handling and export omission of calculation marker rows/columns remain incomplete. Remote and Calc failure diagnostics retain the affected cell instead of native symbolic or #ERROR text. Numeric conditional formulas and comparisons are supported (ORG-10), while vector/symbolic conditions and comparisons, logical operators and ternary syntax remain unsupported. Thousands grouping, including grouped currency display, is not provided. ;%.2f controls decimal places and a literal dollar prefix is possible, but it does not add grouping. Cross-document inputs still require duplicated constants or tables until FILE-1.",
       "baselineDisclosure": "Named fields, remote tables, iteration modes, arbitrary Calc syntax, and exact Emacs display-width alignment are not implemented. Formulas execute in order, rather than iterating until results converge.",
       "reproducer": {
         "path": "design/org-order.md"
@@ -1427,7 +1427,7 @@
       "milestone": "ORG-TABLE-1",
       "dependsOn": [],
       "expected": "Keep numeric values unbroken in narrow Split view, using horizontal overflow where needed. Verify 800 px Split and mobile layouts across browser projects, including long labels and HTML export.",
-      "disclosure": "Org tables use a bounded horizontal scroll area instead of breaking single-token cells across lines. This keeps values such as 0.03, signed amounts, scientific notation and one-word headings intact; multiword cells can wrap at ordinary word boundaries. The preview scroll area is keyboard-focusable and supports left/right arrows, and standalone HTML exports retain the layout without scripts. Screen overflow is released for printing; tables wider than the printable page can still need landscape or wider paper. Native header semantics and numeric alignment remain a separate open gap (ORG-12).",
+      "disclosure": "Org tables use a bounded horizontal scroll area instead of breaking single-token cells across lines. This keeps values such as 0.03, signed amounts, scientific notation and one-word headings intact; multiword cells can wrap at ordinary word boundaries. The preview scroll area is keyboard-focusable and supports left/right arrows, and standalone HTML exports retain the layout without scripts. Screen overflow is released for printing; tables wider than the printable page can still need landscape or wider paper. Native header groups and numeric alignment are supplied separately by ORG-12.",
       "baselineDisclosure": "First recorded in the 2026-10-24 HashBin money-model field report, item 6.",
       "reproducer": {
         "path": "tests/browser/org-tables.spec.js"
@@ -1444,23 +1444,30 @@
     {
       "id": "ORG-12",
       "format": "org",
-      "title": "Preview tables lack native header semantics and numeric alignment",
+      "title": "Table header groups and numeric-column alignment match native HTML fixtures",
       "kind": "gap",
-      "status": "open",
+      "status": "resolved",
       "priority": "P1",
       "milestone": "ORG-TABLE-2",
       "dependsOn": [],
       "expected": "Compare emitted HTML with independent Emacs export fixtures for rows before the first separator and numeric-column alignment, then preserve the supported semantics through sanitization, export and printing.",
-      "disclosure": "Org preview tables currently render every cell as td and left-align columns. Rows before the first separator do not become thead/th, and numeric columns are not right-aligned as in native Org HTML export. This is an HTML presentation gap, separate from source display-width alignment and the narrow-cell wrapping defect (ORG-11).",
+      "disclosure": "Ordinary Org tables now export header groups as thead/th with column scope, body groups as tbody/td, and whole-column left/right alignment using the native default 50% number-like threshold, including header cells and blank runs. Alignment is inferred from recalculated values. Alignment-cookie-only rows are hidden; the last <l>, <r> or <c> cookie in a column wins, including cookies with width suffixes. Preview, sanitized standalone HTML and print preserve these semantics and alignment. The independent HTML oracle covers 19 tables in five documents. Calculation marker rows/columns stay visible under the existing Sheets policy; full rich cell markup, captions, column groups, native width handling and broader export settings remain outside this slice (ORG-02).",
       "baselineDisclosure": "First recorded in the 2026-10-24 HashBin money-model field report, item 6.",
       "reproducer": {
-        "path": "design/field-report-hashbin-money-model.md",
-        "section": 6
+        "path": "tests/fixtures/org-html/headers.org"
       },
       "evidence": [
-        "design/field-report-hashbin-money-model.md",
-        "src/formats/org/index.js",
-        "src/styles.css"
+        "design/org-table-html.md",
+        "scripts/org-html-expected.el",
+        "scripts/org-expected.sh",
+        "tests/fixtures/org-html/reference.json",
+        "tests/fixtures/org-html/headers.org",
+        "tests/fixtures/org-html/alignment.org",
+        "tests/fixtures/org-html/cookies.org",
+        "tests/fixtures/org-html/number-like.org",
+        "tests/fixtures/org-html/calculated.org",
+        "tests/unit/org-table-html.test.js",
+        "tests/browser/org-html.spec.js"
       ]
     },
     {

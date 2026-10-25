@@ -52,7 +52,7 @@ test("Legacy source order and multiple formula lines remain stable; migration is
   const multiple = "| 1 | 0 |\n#+TBLFM: $2=3\n#+TBLFM: $2=8\n";
   assert.deepEqual(rows(recalculateOrg(multiple)), [["1", "8"]]);
   assert.deepEqual(rows(recalculateOrg(multiple, options)), [["1", "3"]]);
-  assert.ok(renderOrg(source, options).html.includes("<td>12</td>"));
+  assert.ok(renderOrg(source, options).html.includes('<td class="org-right">12</td>'));
 });
 
 test("Remote names and current table state are isolated between renders, including cycles and literal blocks", () => {

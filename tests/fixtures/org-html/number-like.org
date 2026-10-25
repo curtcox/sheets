@@ -1,0 +1,11 @@
+#+TITLE: Scientific number appearance is not validation
+
+| Hex | Radix | Fraction | Percent | Nan | Infinity | Currency | Grouped |
+|-----+-------+----------+---------+-----+----------+----------+---------|
+| 0xff | 16#ff | 2:3 | 25% | nan | inf | $2.00 | 1,234.56 |
+| 0Xab | 2#11 | -1:2 | 10% | nan | -inf | $3.00 | 2,345.67 |
+
+| Comparison | Power | Bare caret |
+|------------+-------+------------|
+| <3.5       | 2^3   | ^2         |
+| >2.5       | 3^4   | 2^         |

@@ -1,0 +1,7 @@
+#+TITLE: Align the recalculated values
+
+| Users | Cost | Result |
+|-------+------+--------|
+| 50000 | 0    | text   |
+| 50001 | 0    | text   |
+#+TBLFM: $2=if($1>50000,25,0);%.2f::$3=$1>50000

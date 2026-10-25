@@ -111,7 +111,7 @@ test("Org literal blocks preserve their source and do not install constants or r
   assert.deepEqual(result.diagnostics, []);
   assert.ok(result.recalculatedSource.includes("| 2 | 0 |"));
   assert.ok(result.html.includes("<pre><code>#+CONSTANTS: rate=999"));
-  assert.ok(result.html.includes("<td>6</td>"));
+  assert.ok(result.html.includes('<td class="org-right">6</td>'));
   const malicious = renderOrg(
     "#+BEGIN_EXPORT html\n<script>bad()</script>\n| 2 | 0 |\n#+TBLFM: $2=2\n#+END_EXPORT\n",
   );

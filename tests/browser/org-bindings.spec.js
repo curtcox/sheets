@@ -90,7 +90,7 @@ test("Org named-reference DOM matches Emacs fixtures and literal blocks stay saf
         .locator("#preview table tr")
         .evaluateAll((rows) =>
           rows.map((row) =>
-            [...row.querySelectorAll("td")].map((cell) => cell.textContent),
+            [...row.querySelectorAll("td,th")].map((cell) => cell.textContent),
           ),
         ),
     ).toEqual(reference[name + ".org"]);

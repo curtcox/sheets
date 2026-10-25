@@ -2,8 +2,8 @@
   {
     "file": "basic.org",
     "contains": [
-      "<td>12</td>",
-      "<td>14</td>"
+      "<td class=\"org-right\">12</td>",
+      "<td class=\"org-right\">14</td>"
     ],
     "diagnostics": 0
   },
@@ -17,7 +17,7 @@
   {
     "file": "edge.org",
     "contains": [
-      "<td>14</td>"
+      "<td class=\"org-right\">14</td>"
     ],
     "diagnostics": 0
   },

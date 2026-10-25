@@ -2,12 +2,7 @@ import { plugin } from "../registry.js";
 import * as orga from "../../../vendor/orga.js";
 import { recalculateOrg } from "./engine.js";
 import { escapeHTML } from "../../util.js";
-function cellHTML(cell) {
-  // Keep individual values intact, including signed/scientific money text.
-  // Multiword labels may wrap at ordinary word boundaries.
-  const wrap = /\s/.test(cell) ? ' class="org-table-wrap"' : "";
-  return `<td${wrap}>${escapeHTML(cell)}</td>`;
-}
+import { renderOrgTable } from "./table-html.js";
 function nodeHTML(node) {
   const children = () => (node.children || []).map(nodeHTML).join("");
   switch (node.type) {
@@ -94,9 +89,7 @@ export function renderOrg(src, options = {}) {
   for (const { start, end, table } of result.tables) {
     const prose = src.split("\n").slice(pos, start).join("\n");
     parts.push(nodeHTML(orga.parse(prose)));
-    parts.push(
-      `<div class="org-table-scroll" role="region" aria-label="Org table" tabindex="0"><table>${table.layout.map((index) => (index === null ? "" : `<tr>${table.rows[index].map(cellHTML).join("")}</tr>`)).join("")}</table></div>`,
-    );
+    parts.push(renderOrgTable(table));
     pos = end;
   }
   parts.push(nodeHTML(orga.parse(src.split("\n").slice(pos).join("\n"))));

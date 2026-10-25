@@ -1,0 +1,27 @@
+#+TITLE: Column fractions and blank runs
+
+| Label | Amount | Mixed | Leading blank | Trailing blank |
+|-------+--------+-------+---------------+----------------|
+| A     | 2      | 2     |               | 3              |
+| B     | -3.5   | text  |               |                |
+| C     | 1e-3   | text  | 4             | text           |
+
+| 3    |
+|      |
+| text |
+| text |
+
+|      |
+| 3    |
+| text |
+| text |
+
+| Heading |
+|---------|
+| 3       |
+
+| 3    |
+|------|
+|      |
+| text |
+| text |

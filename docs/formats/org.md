@@ -103,7 +103,9 @@ with a mode suffix.
 Source, example and export blocks are literal: their apparent tables/formulas and
 constants do not execute. Comment blocks are omitted. Calc strings are
 unsupported, so a quoted formula argument produces a diagnostic. Preview/copy
-retain metadata rows; this is not the complete native Org export layout.
+retain calculation marker rows and columns. Alignment-cookie-only rows are hidden
+in the preview; recalculated source retains them. This is not the complete
+native Org export layout.
 
 ## Calc arithmetic and modes
 
@@ -202,7 +204,6 @@ diagnostics even when the old value is numeric.
   when too wide (ORG-11). Multiword labels can wrap between words. Focus the
   table region and use Left/Right arrows to scroll the preview; HTML exports keep
   the same layout. Very wide printed tables may need landscape or wider paper.
-  Headers and numeric alignment still lack native export semantics (ORG-12).
   `;%.2f` controls decimal places; `;$%.2f` can add a literal dollar prefix, but
   thousands grouping is unavailable.
 - Preview cells cannot be edited, marked as inputs, or given per-cell notes.
@@ -213,6 +214,44 @@ diagnostics even when the old value is numeric.
   download source or save to HashBin for a separate copy. Offline app files are
   not a document backup. There is no supported file-to-link CLI or raw-source
   `?url=` loader yet (SHARED-06).
+
+## Table headers and alignment
+
+Rows in the first group before an internal separator render as column headers
+with `<thead>` and `<th scope="col">`; subsequent groups use `<tbody>` and `<td>`.
+Leading separators and a single trailing separator alone do not create headers.
+Both calculation modes use this presentation (ORG-12).
+
+Alignment applies to the whole column, including headers. The native default is
+right alignment when at least half the cells look numeric; headers count in that
+fraction. Blank cells following a numeric-looking cell continue its numeric run.
+The preview classifies the recalculated values, so alignment can change after an
+edit. This presentation rule does not validate a number or make currency text a
+valid calculation input.
+
+Use alignment cookies to override the inference, especially for currency strings
+that contain a dollar sign or grouping commas:
+
+```org
+| Item    | Amount |
+| <l>     | <r>    |
+|---------+--------|
+| Reserve | $2.50  |
+| Deposit | $3.00  |
+```
+
+The Item column is left-aligned and Amount is right-aligned. A row containing
+only cookies and empty cells is hidden in the preview. `<c>` centers a column;
+the last alignment cookie wins. Cookie rows remain in source and count in
+`@row` references. Width suffixes such as `<r10>` retain their alignment meaning,
+but native width/truncation behavior is not implemented.
+
+Header semantics and alignment survive sanitized HTML export and printing.
+Calculation marker rows/columns remain visible under Sheets' established preview
+policy; native Org export would omit them. Rich cell markup is still shown
+literally, and captions, column groups and broader native export settings remain
+outside this subset. Ragged rows retain the engine's existing padding. Wide
+tables keep the scrolling/printing limits above.
 
 ## Emacs calculation order
 
@@ -328,6 +367,6 @@ These entries share the [central limitations ledger](../limitations.md). “Need
 | ORG-09 | Resolved | Formulas use Emacs Calc default modes, exact integers and Calc display |
 | ORG-10 | Resolved | Numeric Calc conditionals and comparisons match Emacs fixtures |
 | ORG-11 | Resolved | Org table values stay intact in narrow previews and HTML exports |
-| ORG-12 | Known gap | Preview tables lack native header semantics and numeric alignment |
+| ORG-12 | Resolved | Table header groups and numeric-column alignment match native HTML fixtures |
 | ORG-13 | Known gap | File constants calculate but are hidden in the preview |
 <!-- compatibility:end -->

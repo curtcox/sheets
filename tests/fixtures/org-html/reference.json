@@ -1,0 +1,435 @@
+{
+  "alignment.org": [
+    [
+      {
+        "tag": "thead",
+        "rows": [
+          [
+            "th:col:left",
+            "th:col:right",
+            "th:col:left",
+            "th:col:left",
+            "th:col:right"
+          ]
+        ]
+      },
+      {
+        "tag": "tbody",
+        "rows": [
+          [
+            "td::left",
+            "td::right",
+            "td::left",
+            "td::left",
+            "td::right"
+          ],
+          [
+            "td::left",
+            "td::right",
+            "td::left",
+            "td::left",
+            "td::right"
+          ],
+          [
+            "td::left",
+            "td::right",
+            "td::left",
+            "td::left",
+            "td::right"
+          ]
+        ]
+      }
+    ],
+    [
+      {
+        "tag": "tbody",
+        "rows": [
+          [
+            "td::right"
+          ],
+          [
+            "td::right"
+          ],
+          [
+            "td::right"
+          ],
+          [
+            "td::right"
+          ]
+        ]
+      }
+    ],
+    [
+      {
+        "tag": "tbody",
+        "rows": [
+          [
+            "td::left"
+          ],
+          [
+            "td::left"
+          ],
+          [
+            "td::left"
+          ],
+          [
+            "td::left"
+          ]
+        ]
+      }
+    ],
+    [
+      {
+        "tag": "thead",
+        "rows": [
+          [
+            "th:col:right"
+          ]
+        ]
+      },
+      {
+        "tag": "tbody",
+        "rows": [
+          [
+            "td::right"
+          ]
+        ]
+      }
+    ],
+    [
+      {
+        "tag": "thead",
+        "rows": [
+          [
+            "th:col:right"
+          ]
+        ]
+      },
+      {
+        "tag": "tbody",
+        "rows": [
+          [
+            "td::right"
+          ],
+          [
+            "td::right"
+          ],
+          [
+            "td::right"
+          ]
+        ]
+      }
+    ]
+  ],
+  "calculated.org": [
+    [
+      {
+        "tag": "thead",
+        "rows": [
+          [
+            "th:col:right",
+            "th:col:right",
+            "th:col:right"
+          ]
+        ]
+      },
+      {
+        "tag": "tbody",
+        "rows": [
+          [
+            "td::right",
+            "td::right",
+            "td::right"
+          ],
+          [
+            "td::right",
+            "td::right",
+            "td::right"
+          ]
+        ]
+      }
+    ]
+  ],
+  "cookies.org": [
+    [
+      {
+        "tag": "thead",
+        "rows": [
+          [
+            "th:col:left",
+            "th:col:right",
+            "th:col:center"
+          ]
+        ]
+      },
+      {
+        "tag": "tbody",
+        "rows": [
+          [
+            "td::left",
+            "td::right",
+            "td::center"
+          ],
+          [
+            "td::left",
+            "td::right",
+            "td::center"
+          ]
+        ]
+      }
+    ],
+    [
+      {
+        "tag": "thead",
+        "rows": [
+          [
+            "th:col:left",
+            "th:col:center"
+          ]
+        ]
+      },
+      {
+        "tag": "tbody",
+        "rows": [
+          [
+            "td::left",
+            "td::center"
+          ]
+        ]
+      }
+    ],
+    [
+      {
+        "tag": "thead",
+        "rows": [
+          [
+            "th:col:left",
+            "th:col:right"
+          ]
+        ]
+      },
+      {
+        "tag": "tbody",
+        "rows": [
+          [
+            "td::left",
+            "td::right"
+          ]
+        ]
+      }
+    ],
+    [
+      {
+        "tag": "tbody",
+        "rows": [
+          [
+            "td::right",
+            "td::left"
+          ]
+        ]
+      }
+    ],
+    [
+      {
+        "tag": "tbody",
+        "rows": [
+          [
+            "td::left",
+            "td::right"
+          ],
+          [
+            "td::left",
+            "td::right"
+          ]
+        ]
+      }
+    ]
+  ],
+  "headers.org": [
+    [
+      {
+        "tag": "thead",
+        "rows": [
+          [
+            "th:col:left",
+            "th:col:right"
+          ]
+        ]
+      },
+      {
+        "tag": "tbody",
+        "rows": [
+          [
+            "td::left",
+            "td::right"
+          ],
+          [
+            "td::left",
+            "td::right"
+          ]
+        ]
+      },
+      {
+        "tag": "tbody",
+        "rows": [
+          [
+            "td::left",
+            "td::right"
+          ]
+        ]
+      }
+    ],
+    [
+      {
+        "tag": "thead",
+        "rows": [
+          [
+            "th:col:left",
+            "th:col:left"
+          ],
+          [
+            "th:col:left",
+            "th:col:left"
+          ]
+        ]
+      },
+      {
+        "tag": "tbody",
+        "rows": [
+          [
+            "td::left",
+            "td::left"
+          ]
+        ]
+      }
+    ],
+    [
+      {
+        "tag": "tbody",
+        "rows": [
+          [
+            "td::left",
+            "td::right"
+          ],
+          [
+            "td::left",
+            "td::right"
+          ]
+        ]
+      }
+    ],
+    [
+      {
+        "tag": "tbody",
+        "rows": [
+          [
+            "td::left",
+            "td::right"
+          ]
+        ]
+      }
+    ],
+    [
+      {
+        "tag": "thead",
+        "rows": [
+          [
+            "th:col:left",
+            "th:col:right"
+          ]
+        ]
+      }
+    ],
+    [
+      {
+        "tag": "thead",
+        "rows": [
+          [
+            "th:col:left",
+            "th:col:right"
+          ]
+        ]
+      },
+      {
+        "tag": "tbody",
+        "rows": [
+          [
+            "td::left",
+            "td::right"
+          ]
+        ]
+      }
+    ]
+  ],
+  "number-like.org": [
+    [
+      {
+        "tag": "thead",
+        "rows": [
+          [
+            "th:col:right",
+            "th:col:right",
+            "th:col:right",
+            "th:col:right",
+            "th:col:right",
+            "th:col:right",
+            "th:col:left",
+            "th:col:left"
+          ]
+        ]
+      },
+      {
+        "tag": "tbody",
+        "rows": [
+          [
+            "td::right",
+            "td::right",
+            "td::right",
+            "td::right",
+            "td::right",
+            "td::right",
+            "td::left",
+            "td::left"
+          ],
+          [
+            "td::right",
+            "td::right",
+            "td::right",
+            "td::right",
+            "td::right",
+            "td::right",
+            "td::left",
+            "td::left"
+          ]
+        ]
+      }
+    ],
+    [
+      {
+        "tag": "thead",
+        "rows": [
+          [
+            "th:col:left",
+            "th:col:left",
+            "th:col:right"
+          ]
+        ]
+      },
+      {
+        "tag": "tbody",
+        "rows": [
+          [
+            "td::left",
+            "td::left",
+            "td::right"
+          ],
+          [
+            "td::left",
+            "td::left",
+            "td::right"
+          ]
+        ]
+      }
+    ]
+  ]
+}

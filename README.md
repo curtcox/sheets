@@ -90,7 +90,9 @@ Without native R, run the Python subset with `--language python`. Set
 `SHEETS_QUARTO_BIN` when the pinned Quarto executable is outside PATH.
 
 CI runs these reference checks before browser tests. Generated reference outputs
-are committed and compared with the browser adapters by unit/browser tests.
+are committed and compared with the browser adapters by unit/browser tests. The Org check also
+exports five HTML fixture documents (19 tables) to compare header groups, scopes
+and alignment; it requires an Emacs build with libxml2 support.
 
 ## Offline access
 

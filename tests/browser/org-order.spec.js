@@ -15,7 +15,7 @@ const rows = (page) =>
   page
     .locator("#preview table tr")
     .evaluateAll((rows) =>
-      rows.map((r) => [...r.querySelectorAll("td")].map((c) => c.textContent)),
+      rows.map((r) => [...r.querySelectorAll("td,th")].map((c) => c.textContent)),
     );
 
 test("Emacs mode migration preserves exact source, copy, exports, views and shared results", async ({
@@ -48,7 +48,7 @@ test("Emacs mode migration preserves exact source, copy, exports, views and shar
     const { htmlDownload } = await import("./src/export-document.js");
     return htmlDownload(document.querySelector("#preview")).blob.text();
   });
-  expect(exported).toContain("<td>12</td>");
+  expect(exported).toContain('<td class="org-right">12</td>');
   await page.locator("#download-menu summary").click();
   const download = page.waitForEvent("download");
   await page.locator("#download-source").click();

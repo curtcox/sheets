@@ -1,0 +1,25 @@
+#+TITLE: Alignment cookies
+
+| Label | Currency | Center |
+|-------+----------+--------|
+| <l>   | <r>      | <c>    |
+| A     | $2.00    | text   |
+| B     | $3.00    | text   |
+
+| <r> | <l> |
+| Heading | Value |
+|---------+-------|
+| A       | 3     |
+| <l10>   | <c4>  |
+
+| <10> | <20> |
+| Text | Number |
+|------+--------|
+| A    | 3      |
+
+| <r> | <l> |
+|-----+-----|
+| A   | 3   |
+
+| Not a directive | <r> |
+| text            | 3   |
