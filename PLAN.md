@@ -28,8 +28,9 @@ cell diagnostics, cancellation and deadlines. All items in the original phases
 The compatibility roadmap below is in progress. The ledger, the profile design,
 and the first slices for Beancount, Calca, CalcFile, GFM, Numbat, AsciiMath,
 Quarto and Org are delivered, including the Org arithmetic correction (ORG-1C).
-The 2026-10-25 field-report priorities below put long-link recovery first, then
-Org conditionals and readable tables, alongside the remaining ledger audit.
+The 2026-10-25 field-report priorities below start with long-link recovery
+(SHARE-1, now implemented). Org conditionals are next, followed by readable
+tables, alongside the remaining ledger audit.
 HashBin is registered and enabled using its public client ID and exact Pages
 callback. Live PKCE authorization, quoted save confirmation, and an anonymous
 saved-document round-trip have been verified. The repository uses MIT and Pages
@@ -58,7 +59,7 @@ docs.html               renders docs/*.md with the site's own GFM renderer
 docs/                   index.md, url-format.md, hashbin.md, formats/<id>.md
 src/
   app.js                wiring: editor, toolbar, view modes, scheduler
-  url-state.js          read/write ?format, ?view, ?compressed, #<cid>
+  url-state.js          read/write ?format, ?view, ?compressed, #src=, #<cid>
   view-modes.js         split | source | preview, resizable divider, narrow-screen stacking
   render-scheduler.js   debounce, revision counter, cancellation
   sanitize.js           DOMPurify config shared by all formats
@@ -107,13 +108,14 @@ with minimal changes:
 
 - `?format=<id>` sets the format. If it is missing, Auto detection picks one.
 - `?view=split|source|preview` sets the view. Split is the default.
-- `?compressed=<lz-string>` holds the source.
+- `?compressed=<lz-string>` holds short source; generated URLs above 7,000
+  characters move source to `#src=<lz-string>` to avoid HTTP request limits.
 - `#<cid>` loads the document from HashBin.
 - `?example=<id>` loads a gallery example once. The source is then stored in `compressed`.
 
 The URL is updated with `history.replaceState`, debounced, so typing does not fill
-up browser history. When the URL gets longer than roughly 8 KB, the status bar
-suggests saving to HashBin.
+up browser history. Long-link notices recommend a source download or
+HashBin for a separate copy; complete-URL limits in other apps still vary.
 
 ### HashBin document
 
@@ -334,9 +336,10 @@ Problems found by using Sheets for real work, with triage recorded in the ledger
 and the active priorities below:
 
 - [HashBin money model (2026-10-24)](design/field-report-hashbin-money-model.md):
-  all nine items triaged on 2026-10-25. HTTP 414 was reproduced; end-to-end
-  reload loss still needs verification (SHARED-05). Missing `if()`/comparisons
-  now have an explicit disclosure (ORG-10). No runtime fixes are claimed.
+  all nine items triaged on 2026-10-25. SHARE-1 now reproduces the old reload
+  HTTP 414 end to end and protects generated long-source links with fragments
+  (SHARED-05). Missing `if()`/comparisons remain open and explicitly disclosed
+  (ORG-10).
 
 ---
 
@@ -355,8 +358,8 @@ imported packages and display-only notation. The original inventory at
 `d99cb58` is retained in the ledger's baseline disclosure fields.
 
 After ORG-1C the recorded baseline is 325 unit tests and 267 browser tests.
-The field-report triage adds six open entries; `docs/compatibility.json` now has
-75 entries (documentation changes do not resolve implementation gaps):
+The field-report triage adds six entries; `docs/compatibility.json` now has
+75 entries; SHARE-1 resolves one of the six new gaps:
 
 | Format | Resolved | Retained | Open | Audit |
 | --- | ---: | ---: | ---: | ---: |
@@ -370,8 +373,8 @@ The field-report triage adds six open entries; `docs/compatibility.json` now has
 | Beancount | 3 | 0 | 2 | 4 |
 | Quarto | 4 | 0 | 2 | 6 |
 | Plain text | 0 | 2 | 0 | 0 |
-| Shared | 0 | 0 | 2 | 4 |
-| **Total** | **20** | **12** | **12** | **31** |
+| Shared | 1 | 0 | 1 | 4 |
+| **Total** | **21** | **12** | **11** | **31** |
 
 None of the 31 compound `audit` entries has an atomic reproducer yet, so they
 may still hide wrong results. A 2026-10-19 spot check found one that did
@@ -405,22 +408,24 @@ slices. The remaining queue keeps its relative order. LEDGER-1 continues in
 bounded per-format slices; it must not delay recovery from the reported reload
 risk. Any newly verified wrong result still becomes a P0 ahead of new syntax.
 The field report is evidence of workflow failures, not an upstream oracle.
+SHARE-1 is implemented; the next implementation slice is ORG-1E.
 
 | Order / slice | Tier | Ledger / report items | Work and completion evidence |
 | --- | --- | --- | --- |
-| 1 / SHARE-1 (M) | P0 recovery risk | SHARED-05, SHARED-02; report 1 | Reproduce reload/session restore against a server enforcing a request-line limit. Design local draft recovery and/or fragment source before implementation; retain CID precedence, old links, complete source/format/view/profile and bounded decoding. Warn with enough headroom before failure, explain the reload risk and offer source download. Test storage failure if drafts are chosen, plus share, OAuth, offline and reload round-trips. The report confirms 414, not end-to-end data loss; verify that distinction first. |
+| 1 / SHARE-1 (M, implemented) | P0 recovery risk | SHARED-05 (resolved), SHARED-02; report 1 | Source moves to `#src=` above 7,000 URL characters; short query links, CID precedence, complete profiled state and bounded decoding remain supported. The enforcing-server test reproduces old reload HTTP 414 and verifies new reload/reopening without browser storage. OAuth, source download and offline update/reload use long source. The notice recommends a separate source copy; no local draft store is added. See `design/long-source-links.md`. |
 | 2 / ORG-1E (M) | P1 model formulas | ORG-10, ORG-01/02; report 4 | Implement numeric `if` and comparisons only after independent Emacs fixtures establish precedence, nesting and branch/error evaluation. Check both calculation modes and all existing numeric references. The missing syntax is disclosed now; no arithmetic correction is inferred from a rejected formula. |
 | 3a / ORG-TABLE-1 (S) | P1 readability defect | ORG-11; report 6 | Stop narrow cells from splitting numbers. Test the 800 px Split reproducer, mobile overflow, long labels and exports in all browser projects. This bounded CSS fix can ship independently of native export parity. |
 | 3b / ORG-TABLE-2 (M) | P1 export compatibility | ORG-12, ORG-02 layout; report 6 | Add independent Emacs HTML-export fixtures for header rows and numeric alignment, then verify sanitized preview, export and print. Keep source display width as a separate ORG-1D concern. |
-| 4 / LINK-1 (S) | P1 authoring workflow | SHARED-06; report 9 and 1 | Add documented `node scripts/link.mjs <file> [--format=org]` using the shared serializer. Round-trip exact source and format/view/profile, handle invalid options, and flag/reject oversized URLs. A CLI does not solve storage or make oversized links usable. Keep it outside the Pages deployment allowlist. |
+| 4 / LINK-1 (S) | P1 authoring workflow | SHARED-06; report 9 and 1 | Add documented `node scripts/link.mjs <file> [--format=org]` using the shared serializer. Round-trip exact source and format/view/profile, handle invalid options, and use the fragment fallback while flagging remaining complete-URL transport limits. A CLI does not provide storage or remove complete-URL transport limits. Keep it outside the Pages deployment allowlist. |
 | 5 / ORG-INPUT-1 and ORG-HINT-1 (S–M, separate slices) | P2 assumptions and formula clarity | ORG-13, ORG-09; report 3 and 5 | Design an optional constants table; keep native keyword hiding as the default. Separately add an opt-in source-line hint for potentially surprising division/multiplication without changing Calc precedence or warning on explicit grouping. Inputs-table and parenthesis workarounds are documented now. ORG-09 stays resolved because its arithmetic is faithful. |
 | 6 / FILE-1 (L, design first) | P2 shared inputs | ORG-02 cross-file, SHARED-06; report 2 and raw-URL alternative in 9 | Bring the project-input design forward ahead of other Phase 15 work. Evaluate explicitly supplied CID inputs as reproducible shared assumptions, bounded aggregate size/depth, cycles and a versioned share representation. A `?url=` loader is a separate proposal: define CORS/fetch failure, source snapshot and mutable-URL behavior before promising reproducibility. Preserve existing single-document links. |
 | 7 / ORG-MONEY-1 (S–M) | P2 display feature | ORG-02 formatting; report 6 | Design opt-in thousands grouping, including grouped currency display, without feeding decorated strings back into numeric calculation or changing existing `;%.2f` values. Literal dollar prefixes already work. This is a requested extension, not proven native printf parity. Test recalculation, source copy and export. |
 | 8 / UI-1 (L, separate designs) | P3 model tools | ORG-04; report 3, 7 and 8 | Evaluate source-backed preview input editing, input styling and per-cell notes separately. Goal seek/what-if needs a bounded numeric contract with no-solution/nonconvergence diagnostics and explicit source updates/undo. Calca’s existing scalar solver does not provide Org goal seek. Keep these below recovery, formula support and readable assumptions. |
 
 This maps every field-report item to a ledger disclosure and an implementation
-slice. New records remain open. Cosmetic cues and solver tools do not gate the
-bounded sharing, formula and table fixes above.
+slice. SHARED-05 is resolved; the other five new records remain open. Cosmetic
+cues and solver tools do not gate the bounded sharing, formula and table fixes
+above.
 
 ### Prioritized elimination queue — refreshed 2026-10-19
 

@@ -5,6 +5,7 @@ import { tmpdir } from "node:os";
 import { stage } from "../../scripts/stage.mjs";
 import { createStaticServer } from "../../scripts/serve.mjs";
 import { writeURL } from "../../src/url-state.js";
+import { longSource } from "../fixtures/long-source.js";
 import {
   CALCA_SCOPES,
   ASCIIMATH_FORMULAS,
@@ -266,7 +267,7 @@ test("updates wait for activation, preserve source, and replace the old release 
 }) => {
   await install(page);
   const previous = await page.evaluate(() => caches.keys());
-  const source = "# Keep my latest edit";
+  const source = "# Keep my latest edit\n\n" + longSource;
   await page.evaluate(
     (source) => ace.edit("editor").setValue(source, -1),
     source,
@@ -283,7 +284,7 @@ test("updates wait for activation, preserve source, and replace the old release 
     "Offline download failed",
     { timeout: 60000 },
   );
-  expect(await page.evaluate(() => caches.keys())).toEqual(previous);
+  await expect.poll(() => page.evaluate(() => caches.keys())).toEqual(previous);
   await context.setOffline(true);
   await page.reload();
   await ready(page);
@@ -301,6 +302,11 @@ test("updates wait for activation, preserve source, and replace the old release 
   );
   await page.locator("#offline-update").click();
   await expect(page.locator("#commit")).toHaveText("offline2");
+  await ready(page);
+  expect(await page.evaluate(() => ace.edit("editor").getValue())).toBe(latest);
+  expect(new URL(page.url()).hash.startsWith("#src=")).toBe(true);
+  await context.setOffline(true);
+  await page.reload();
   await ready(page);
   expect(await page.evaluate(() => ace.edit("editor").getValue())).toBe(latest);
   const current = await page.evaluate(() => caches.keys());

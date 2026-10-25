@@ -1,5 +1,10 @@
 import { catalog, detect, loadFormat } from "./formats/registry.js";
-import { readURL, writeURL, readOverrides } from "./url-state.js";
+import {
+  readURL,
+  writeURL,
+  readOverrides,
+  SOURCE_FRAGMENT_THRESHOLD,
+} from "./url-state.js";
 import {
   profiles,
   CALCA_SCOPES,
@@ -143,7 +148,11 @@ function persist() {
   history.replaceState(null, "", url);
   navigationURL = url;
   $("url-notice").textContent =
-    url.length > 8192 ? "Long link · save to HashBin for easier sharing" : "";
+    url.split("#", 1)[0].length > SOURCE_FRAGMENT_THRESHOLD
+      ? "Long address · remove extra query parameters; use Download → Source for a separate copy."
+      : url.length > SOURCE_FRAGMENT_THRESHOLD
+        ? "Long link · some apps may truncate it. Use Download → Source or save to HashBin for a separate copy."
+        : "";
   $("source-size").textContent =
     `${getSource().length.toLocaleString()} characters`;
 }
@@ -293,7 +302,7 @@ $("cancel-render").onclick = () => {
 preview.addEventListener("click", async (event) => {
   const reference = event.target.closest('a[href^="#"]');
   if (reference) {
-    // The fragment can hold a HashBin CID. References scroll within the preview
+    // The fragment can hold a CID or source. References scroll within the preview
     // without replacing any part of the document address.
     event.preventDefault();
     try {
@@ -449,7 +458,12 @@ async function restore() {
 }
 // Document anchors (footnotes and Quarto figures) do not reload interpreters.
 function navigateFromURL() {
-  if (location.hash && !HashBinDocuments.cid(location.hash)) return;
+  if (
+    location.hash &&
+    !location.hash.startsWith("#src=") &&
+    !HashBinDocuments.cid(location.hash)
+  )
+    return;
   if (navigationURL === location.href) return;
   panel.cancelLoad();
   scheduler.cancel();

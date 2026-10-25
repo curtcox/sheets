@@ -3,6 +3,8 @@
 A buildless, single-page editor for calculation-oriented text documents. Source,
 format, and view live in the URL. Optional HashBin storage provides CID links.
 Explicit compatibility profiles also travel with shared links and saved documents.
+Generated links above 7,000 characters keep compressed source in the fragment,
+avoiding host request-line limits on reload; short query links remain readable.
 
 Supports GitHub Markdown, AsciiMath, Numbat, CalcFile, Org tables, a Calca-compatible
 subset, Hurmet, a Beancount core subset, and Quarto notebooks with Python and R. Includes

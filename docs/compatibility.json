@@ -1138,7 +1138,7 @@
       "milestone": "FILE-1",
       "dependsOn": [],
       "expected": "Verify each behavior against Sheets browser deployment; separate deliberate policy from unsupported upstream capabilities.",
-      "disclosure": "Source links retain the document, format, and view. Around 8 KB the UI suggests HashBin; browser, messaging, and proxy URL limits vary. Decoded shared source and HashBin payloads are bounded at **5 MiB**; unsupported envelope versions are rejected. A long query URL can fail to open or reload with HTTP 414 on the production host; the warning is not a backup (SHARED-05). No supported file-to-link CLI or ?url= raw-source loader is available (SHARED-06).",
+      "disclosure": "Source links retain the document, format, view and explicit profile. Above 7,000 characters, generated links move source to #src= so it is omitted from HTTP requests (SHARED-05). Short ?compressed= links remain readable. Browser, messaging and proxy limits on complete URLs still vary; the UI recommends a source download or HashBin for a separate copy. Existing oversized query links can still fail before the app loads. Decoded shared source and HashBin payloads are bounded at **5 MiB**; unsupported envelope versions are rejected. No supported file-to-link CLI or ?url= raw-source loader is available (SHARED-06).",
       "baselineDisclosure": "Source links retain the document, format, and view. Around 8 KB the UI suggests HashBin; browser, messaging, and proxy URL limits vary. Decoded shared source and HashBin payloads are bounded at **5 MiB**; unsupported envelope versions are rejected.",
       "reproducer": null,
       "evidence": []
@@ -1347,23 +1347,26 @@
     {
       "id": "SHARED-05",
       "format": "shared",
-      "title": "Long query URLs can prevent reopening a document; no ordinary local draft is saved",
+      "title": "Long source URLs use fragments to avoid server request limits",
       "kind": "gap",
-      "status": "open",
+      "status": "resolved",
       "priority": "P0",
       "milestone": "SHARE-1",
       "dependsOn": [],
       "expected": "Reproduce the reload/session-restore path end to end, then preserve complete source, format, view and profile across reloads without sending an oversized request. Warn before the supported host limit and provide a source-download fallback. Choose local draft recovery and/or fragment source through an explicit URL-state design; preserve CID precedence and decoding bounds.",
-      "disclosure": "The editor persists ordinary edits in the query URL, without a local draft backup. The field report reproduced HTTP 414 for a production URL of about 8,219 characters on 2026-10-24; limits vary with the host and the complete request. Reload/session-restore loss follows from the persistence path but has not yet been reproduced end to end. The notice appears only above 8,192 characters and says easier sharing, understating the risk. Download the source or complete a HashBin save before closing or reloading a long-link tab; offline app files do not back up documents.",
+      "disclosure": "Generated source links longer than 7,000 characters put compressed source in #src=, keeping it out of HTTP requests. Short ?compressed= links and CID precedence are preserved; reachable legacy query links migrate when the editor persists them. An enforcing-server regression reproduces the old reload HTTP 414 and verifies reload, fresh-tab sharing, source download and profiled state with browser storage blocked. OAuth and offline-update/reload tests use long source. This adds no local draft store: complete URLs may still be truncated by other apps, so the notice recommends Download \u2192 Source or HashBin for a separate copy. Old links already rejected by a host cannot load the app to migrate; unrelated oversized query parameters can still exceed host limits.",
       "baselineDisclosure": "First recorded in the 2026-10-24 HashBin money-model field report, item 1.",
       "reproducer": {
-        "path": "design/field-report-hashbin-money-model.md",
-        "section": 1
+        "path": "tests/browser/long-links.spec.js"
       },
       "evidence": [
-        "design/field-report-hashbin-money-model.md",
+        "design/long-source-links.md",
+        "src/url-state.js",
         "src/app.js",
-        "src/url-state.js"
+        "tests/unit/url-state.test.js",
+        "tests/browser/long-links.spec.js",
+        "tests/browser/hashbin-save.spec.js",
+        "tests/browser/offline.spec.js"
       ]
     },
     {
@@ -1375,8 +1378,8 @@
       "priority": "P1",
       "milestone": "LINK-1",
       "dependsOn": [],
-      "expected": "Provide a documented file-to-link command using the shared URL serializer, preserving source/format/view/profile and reporting oversized URLs. Treat a remote raw-source loader as a separate FILE-1 design with bounded fetching and reproducible sharing.",
-      "disclosure": "No supported script turns a local source file into a Sheets link, and ?url= does not load raw source. Hand-built compressed links bypass the app\u2019s length notice and may exceed host limits. A file-to-link command would still need to reject or clearly flag oversized links; it would not itself provide storage. HashBin saves require interactive owner sign-in, balance and per-save confirmation; public saved CIDs load without sign-in.",
+      "expected": "Provide a documented file-to-link command using the shared URL serializer, preserving source/format/view/profile and reporting long URLs and their remaining transport limits. Treat a remote raw-source loader as a separate FILE-1 design with bounded fetching and reproducible sharing.",
+      "disclosure": "No supported script turns a local source file into a Sheets link, and ?url= does not load raw source. Hand-built query links bypass the shared serializer\u2019s fragment fallback and may exceed host limits. A file-to-link command should use the shared serializer and clearly flag long links and remaining browser/messaging limits; it would not itself provide storage. HashBin saves require interactive owner sign-in, balance and per-save confirmation; public saved CIDs load without sign-in.",
       "baselineDisclosure": "First recorded in the 2026-10-24 HashBin money-model field report, item 9.",
       "reproducer": {
         "path": "design/field-report-hashbin-money-model.md",

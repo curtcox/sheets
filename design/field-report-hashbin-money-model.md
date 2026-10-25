@@ -6,11 +6,13 @@ documents, about 19 KB of source in total, in the HashBin repository under
 `docs/business/*.org`. It ran against production (`curtcox.github.io/sheets`) and against the
 Org engine in Node (`recalculateOrg`), with zero diagnostics.
 
-**Runtime issues remain open.** Triaged on 2026-10-25 into
+**Sharing recovery is implemented; other runtime issues remain open.** Triaged on 2026-10-25 into
 `docs/compatibility.json` and the active field-report priorities in [PLAN.md](../PLAN.md#field-report-priorities--active-order-from-2026-10-25).
 The missing disclosures are now in the generated limitations page and Org guide;
-this does not claim implementation fixes. Reload/session-restore loss still needs
-end-to-end reproduction, separately from the observed HTTP 414.
+SHARE-1 subsequently reproduced old reload loss end to end against an enforcing
+server and protects generated long-source links with fragments. See
+[the implementation contract](long-source-links.md). The findings below describe
+2026-10-24 behavior; this does not claim fixes for the other items.
 
 | # | Problem | Classification | Related |
 |---|---------|----------------|---------|

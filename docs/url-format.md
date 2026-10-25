@@ -15,9 +15,14 @@ The URL is the document. Typing replaces the current history entry after a 300 m
 | `#<cid>` | A HashBin content identifier. |
 | `?example=<id>` | Load an example once, then replace this parameter with its compressed source. |
 
-Loading precedence is **CID → compressed source → example → starter document**. A HashBin document supplies its stored format and view unless query parameters explicitly override them. Unknown formats and views safely default to Auto and Split. Invalid compressed links report an error. Decoding stops at 5 MiB to bound expansion.
+Source in a generated URL longer than 7,000 characters moves to `#src=…`,
+using the same lz-string encoding as `?compressed=…`. Fragments are not sent to
+the web server, so the long source does not trigger its request-line limit when
+you open or reload the document. Short links keep query source.
 
-Editing a loaded CID clears the CID and embeds the new source. Changing the view of an unchanged saved document retains the CID; the view query parameter overrides the saved document's view when the link is loaded. Share links clear stale example, source, and OAuth callback parameters. Unrelated query parameters are preserved.
+Loading precedence is **CID → fragment source → query source → example → starter document**. A HashBin document supplies its stored format and view unless query parameters explicitly override them. Unknown formats and views safely default to Auto and Split. Invalid compressed links report an error. Decoding stops at 5 MiB to bound expansion.
+
+Editing a loaded CID clears the CID and embeds the new source. Changing the view of an unchanged saved document retains the CID; the view query parameter overrides the saved document's view when the link is loaded. Share links clear stale example, source, and OAuth callback parameters. Unrelated query parameters are preserved. A source fragment wins over stale query source; invalid fragment source reports an error. Editing a long document down to a short one returns its source to the query.
 
 Compatibility profiles are format-specific behavior versions. The supported
 `calca-blocks-v1` profile separates calculation blocks from literal code, TeX,
@@ -35,6 +40,23 @@ and removes a previously loaded CID. View changes, sharing, OAuth returns, and
 offline reloads preserve the selected profile.
 
 The supported format IDs are `gfm`, `asciimath`, `numbat`, `calcfile`, `org`, `calca`, `hurmet`, `beancount`, `quarto`, and `text`.
+
+## Long links and separate copies
+
+Source-fragment links require this version of Sheets. If you use installed offline
+files from an older release, update them before opening a new fragment link.
+
+The fragment protects generated long-source links from the server's request-line
+limit. Browsers, messaging apps and shortening services can still truncate or
+reject complete URLs. The long-link notice recommends **Download → Source** or
+HashBin for a separate copy; source remains in the URL, without a local draft
+backup. Offline app files do not store documents.
+
+Existing long query links remain readable if the host accepts them, and the app
+moves them to a fragment on its next URL update. A link that receives HTTP 414
+before the app loads cannot migrate itself: paste the original source into a
+reachable editor when available. Unrelated query parameters are preserved; if
+those alone make the request too long, remove them before reloading.
 
 ## Optional short links
 

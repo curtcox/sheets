@@ -15,6 +15,9 @@ export const formats = [
   "text",
 ];
 export const views = ["split", "source", "preview"];
+// Leave headroom below the production host's observed ~8 KiB request limit.
+// Fragments never enter the HTTP request; short existing query links stay stable.
+export const SOURCE_FRAGMENT_THRESHOLD = 7000;
 export function readURL(input) {
   const url = new URL(input);
   const format = formats.includes(url.searchParams.get("format"))
@@ -29,8 +32,10 @@ export function readURL(input) {
   const settings = { format, view, ...(profile ? { profile } : {}) };
   const cid = HashBinDocuments.cid(url.hash);
   if (cid) return { ...settings, cid, kind: "hashbin" };
-  if (url.searchParams.has("compressed")) {
-    const value = url.searchParams.get("compressed");
+  if (url.hash.startsWith("#src=") || url.searchParams.has("compressed")) {
+    const value = url.hash.startsWith("#src=")
+      ? url.hash.slice(5)
+      : url.searchParams.get("compressed");
     if (value.length > 1_000_000)
       throw new Error("Shared source is too large.");
     const src = decompressSource(value);
@@ -77,11 +82,14 @@ export function writeURL(
   if (views.includes(view) && view !== "split")
     url.searchParams.set("view", view);
   if (cid && HashBinDocuments.isCID(cid)) url.hash = cid;
-  else
-    url.searchParams.set(
-      "compressed",
-      LZString.compressToEncodedURIComponent(src),
-    );
+  else {
+    const compressed = LZString.compressToEncodedURIComponent(src);
+    url.searchParams.set("compressed", compressed);
+    if (url.href.length > SOURCE_FRAGMENT_THRESHOLD) {
+      url.searchParams.delete("compressed");
+      url.hash = `src=${compressed}`;
+    }
+  }
   return url.href;
 }
 export function readOverrides(input) {

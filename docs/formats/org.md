@@ -174,10 +174,11 @@ in place. Check diagnostics even when a table still displays numeric values.
 - Preview cells cannot be edited, marked as inputs, or given per-cell notes.
   Put input instructions and source notes in the document. Org has no goal seek
   or what-if tool (ORG-04); Calca's scalar solver works in its own format.
-- Long source links can fail to open or reload on the host (SHARED-05). Download
-  source or finish a HashBin save before reloading or closing a long-link tab.
-  Offline app files are not a document backup. There is no supported file-to-link
-  CLI or raw-source `?url=` loader yet (SHARED-06).
+- Generated long source links now use fragments to avoid the host’s request-line
+  limit on reload (SHARED-05). Other apps can still truncate complete links;
+  download source or save to HashBin for a separate copy. Offline app files are
+  not a document backup. There is no supported file-to-link CLI or raw-source
+  `?url=` loader yet (SHARED-06).
 
 ## Emacs calculation order
 

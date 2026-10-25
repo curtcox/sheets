@@ -1,5 +1,6 @@
 import { test, expect } from "@playwright/test";
 import { writeURL } from "../../src/url-state.js";
+import { longSource } from "../fixtures/long-source.js";
 const clientId = "app_8e03e133-83b4-4ee2-b3d5-39397f573879";
 const ready = (page) =>
   expect(page.locator("#render-status")).toHaveText(
@@ -87,7 +88,7 @@ test("HashBin connect restores the document, requotes edits, and saves a reloada
   await page.route("https://256t.us/" + cid, (route) =>
     route.fulfill({ body: savedPayload, contentType: "application/json" }),
   );
-  const original = "# OAuth source 日本語\n\n2+2 =>";
+  const original = "# OAuth source 日本語\n\n2+2 =>\n\n" + longSource;
   await page.goto(
     writeURL("http://127.0.0.1:4173/", {
       src: original,

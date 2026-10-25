@@ -44,7 +44,7 @@ collected from all format guides.
 
 ## Save and share
 
-**Share** copies a complete source link. No account or server storage is required. Links longer than about 8 KB get a reminder to use [HashBin](hashbin.md). Browser, messaging, and proxy limits vary; the app does not truncate your source.
+**Share** copies a complete source link. No account or server storage is required. Above 7,000 characters, generated links put source in the fragment so reloading does not send the long source to the server. Browser and messaging limits still vary; the notice recommends **Download → Source** or [HashBin](hashbin.md) for a separate copy. The app does not truncate your source. See [Sharing links](url-format.md).
 
 **Download → Source** saves the exact current source with the selected or detected
 format’s file extension. **Rendered HTML** saves the finished preview with embedded
