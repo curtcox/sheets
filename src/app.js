@@ -299,6 +299,22 @@ $("cancel-render").onclick = () => {
   $("cancel-render").hidden = true;
   preview.setAttribute("aria-busy", "false");
 };
+preview.addEventListener("keydown", (event) => {
+  const area = event.target.closest(".org-table-scroll");
+  if (
+    event.target !== area ||
+    !["ArrowLeft", "ArrowRight"].includes(event.key) ||
+    event.altKey ||
+    event.ctrlKey ||
+    event.metaKey ||
+    event.shiftKey ||
+    area.scrollWidth <= area.clientWidth
+  )
+    return;
+  // Native horizontal keyboard scrolling varies across browser engines.
+  event.preventDefault();
+  area.scrollLeft += event.key === "ArrowRight" ? 40 : -40;
+});
 preview.addEventListener("click", async (event) => {
   const reference = event.target.closest('a[href^="#"]');
   if (reference) {

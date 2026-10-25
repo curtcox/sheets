@@ -363,6 +363,23 @@ li > code {
 .document tr:nth-child(2n) {
   background: #fafbf8;
 }
+.org-table-scroll {
+  max-width: 100%;
+  overflow-x: auto;
+  margin: 20px 0;
+}
+.document .org-table-scroll table {
+  margin: 0;
+  overflow-wrap: normal;
+  word-break: normal;
+}
+.document .org-table-scroll td,
+.document .org-table-scroll th {
+  white-space: nowrap;
+}
+.document .org-table-scroll .org-table-wrap {
+  white-space: normal;
+}
 .document blockquote,
 .markdown-alert,
 .callout {
@@ -951,6 +968,9 @@ dialog label {
     overflow: visible;
     padding: 0;
     font-size: 11pt;
+  }
+  .org-table-scroll {
+    overflow: visible;
   }
   #preview pre,
   #preview figure,

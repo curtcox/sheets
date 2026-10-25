@@ -1420,22 +1420,25 @@
     {
       "id": "ORG-11",
       "format": "org",
-      "title": "Narrow preview tables can split numeric text across lines",
+      "title": "Org table values stay intact in narrow previews and HTML exports",
       "kind": "gap",
-      "status": "open",
+      "status": "resolved",
       "priority": "P1",
       "milestone": "ORG-TABLE-1",
       "dependsOn": [],
       "expected": "Keep numeric values unbroken in narrow Split view, using horizontal overflow where needed. Verify 800 px Split and mobile layouts across browser projects, including long labels and HTML export.",
-      "disclosure": "In narrow Split view, preview cells inherit arbitrary text wrapping: the report saw 0.03 split into 0.0 and 3 at an 800 px window. Widen the preview or select Preview view as a temporary workaround. This CSS defect is separate from native Org header/alignment compatibility (ORG-12).",
+      "disclosure": "Org tables use a bounded horizontal scroll area instead of breaking single-token cells across lines. This keeps values such as 0.03, signed amounts, scientific notation and one-word headings intact; multiword cells can wrap at ordinary word boundaries. The preview scroll area is keyboard-focusable and supports left/right arrows, and standalone HTML exports retain the layout without scripts. Screen overflow is released for printing; tables wider than the printable page can still need landscape or wider paper. Native header semantics and numeric alignment remain a separate open gap (ORG-12).",
       "baselineDisclosure": "First recorded in the 2026-10-24 HashBin money-model field report, item 6.",
       "reproducer": {
-        "path": "design/field-report-hashbin-money-model.md",
-        "section": 6
+        "path": "tests/browser/org-tables.spec.js"
       },
       "evidence": [
-        "design/field-report-hashbin-money-model.md",
-        "src/styles.css"
+        "design/org-table-wrapping.md",
+        "src/formats/org/index.js",
+        "src/styles.css",
+        "src/app.js",
+        "src/export-document.js",
+        "tests/browser/org-tables.spec.js"
       ]
     },
     {

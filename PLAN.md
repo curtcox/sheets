@@ -29,8 +29,9 @@ The compatibility roadmap below is in progress. The ledger, the profile design,
 and the first slices for Beancount, Calca, CalcFile, GFM, Numbat, AsciiMath,
 Quarto and Org are delivered, including the Org arithmetic correction (ORG-1C).
 The 2026-10-25 field-report priorities below start with long-link recovery
-(SHARE-1) and numeric Org conditionals/comparisons (ORG-1E), both implemented.
-Readable tables are next, alongside the remaining ledger audit.
+(SHARE-1), numeric Org conditionals/comparisons (ORG-1E), and intact narrow-table
+values (ORG-TABLE-1), all implemented. Native table headers/alignment are next,
+alongside the remaining ledger audit.
 HashBin is registered and enabled using its public client ID and exact Pages
 callback. Live PKCE authorization, quoted save confirmation, and an anonymous
 saved-document round-trip have been verified. The repository uses MIT and Pages
@@ -359,7 +360,7 @@ imported packages and display-only notation. The original inventory at
 
 After ORG-1C the recorded baseline is 325 unit tests and 267 browser tests.
 The field-report triage adds six entries; `docs/compatibility.json` now has
-75 entries; SHARE-1 and ORG-1E resolve two of the six new gaps:
+75 entries; SHARE-1, ORG-1E and ORG-TABLE-1 resolve three of the six new gaps:
 
 | Format | Resolved | Retained | Open | Audit |
 | --- | ---: | ---: | ---: | ---: |
@@ -367,14 +368,14 @@ The field-report triage adds six entries; `docs/compatibility.json` now has
 | AsciiMath | 2 | 2 | 1 | 0 |
 | Numbat | 1 | 2 | 0 | 2 |
 | CalcFile | 1 | 1 | 0 | 3 |
-| Org | 6 | 0 | 4 | 3 |
+| Org | 7 | 0 | 3 | 3 |
 | Calca | 2 | 0 | 0 | 6 |
 | Hurmet | 1 | 1 | 0 | 2 |
 | Beancount | 3 | 0 | 2 | 4 |
 | Quarto | 4 | 0 | 2 | 6 |
 | Plain text | 0 | 2 | 0 | 0 |
 | Shared | 1 | 0 | 1 | 4 |
-| **Total** | **22** | **12** | **10** | **31** |
+| **Total** | **23** | **12** | **9** | **31** |
 
 None of the 31 compound `audit` entries has an atomic reproducer yet, so they
 may still hide wrong results. A 2026-10-19 spot check found one that did
@@ -408,13 +409,13 @@ slices. The remaining queue keeps its relative order. LEDGER-1 continues in
 bounded per-format slices; it must not delay recovery from the reported reload
 risk. Any newly verified wrong result still becomes a P0 ahead of new syntax.
 The field report is evidence of workflow failures, not an upstream oracle.
-SHARE-1 and ORG-1E are implemented; the next implementation slice is ORG-TABLE-1.
+SHARE-1, ORG-1E and ORG-TABLE-1 are implemented; the next slice is ORG-TABLE-2.
 
 | Order / slice | Tier | Ledger / report items | Work and completion evidence |
 | --- | --- | --- | --- |
 | 1 / SHARE-1 (M, implemented) | P0 recovery risk | SHARED-05 (resolved), SHARED-02; report 1 | Source moves to `#src=` above 7,000 URL characters; short query links, CID precedence, complete profiled state and bounded decoding remain supported. The enforcing-server test reproduces old reload HTTP 414 and verifies new reload/reopening without browser storage. OAuth, source download and offline update/reload use long source. The notice recommends a separate source copy; no local draft store is added. See `design/long-source-links.md`. |
 | 2 / ORG-1E (M, implemented) | P1 model formulas | ORG-10 (resolved), ORG-01/02; report 4 | Numeric `if` and comparisons work in both modes, including native precedence, selected-branch evaluation, exact comparisons and supported native chains. Two new independent Emacs documents preserve all 22 earlier reference results. Browser checks cover pricing, shares and retained cells on selected errors. Remaining symbolic/vector conditions and Boolean syntax are explicitly disclosed. See `design/org-conditions.md`. |
-| 3a / ORG-TABLE-1 (S) | P1 readability defect | ORG-11; report 6 | Stop narrow cells from splitting numbers. Test the 800 px Split reproducer, mobile overflow, long labels and exports in all browser projects. This bounded CSS fix can ship independently of native export parity. |
+| 3a / ORG-TABLE-1 (S, implemented) | P1 readability defect | ORG-11 (resolved); report 6 | Single-token cells no longer inherit arbitrary wrapping; multiword labels wrap normally. Wide tables scroll locally, with focused preview arrow keys and matching standalone HTML styles. Geometry checks reproduce the old failure and verify 800 px Split, 390 px mobile, signed/scientific values, long labels, both modes and print overflow. Org gallery covers were regenerated. See `design/org-table-wrapping.md`. |
 | 3b / ORG-TABLE-2 (M) | P1 export compatibility | ORG-12, ORG-02 layout; report 6 | Add independent Emacs HTML-export fixtures for header rows and numeric alignment, then verify sanitized preview, export and print. Keep source display width as a separate ORG-1D concern. |
 | 4 / LINK-1 (S) | P1 authoring workflow | SHARED-06; report 9 and 1 | Add documented `node scripts/link.mjs <file> [--format=org]` using the shared serializer. Round-trip exact source and format/view/profile, handle invalid options, and use the fragment fallback while flagging remaining complete-URL transport limits. A CLI does not provide storage or remove complete-URL transport limits. Keep it outside the Pages deployment allowlist. |
 | 5 / ORG-INPUT-1 and ORG-HINT-1 (S–M, separate slices) | P2 assumptions and formula clarity | ORG-13, ORG-09; report 3 and 5 | Design an optional constants table; keep native keyword hiding as the default. Separately add an opt-in source-line hint for potentially surprising division/multiplication without changing Calc precedence or warning on explicit grouping. Inputs-table and parenthesis workarounds are documented now. ORG-09 stays resolved because its arithmetic is faithful. |
@@ -423,7 +424,8 @@ SHARE-1 and ORG-1E are implemented; the next implementation slice is ORG-TABLE-1
 | 8 / UI-1 (L, separate designs) | P3 model tools | ORG-04; report 3, 7 and 8 | Evaluate source-backed preview input editing, input styling and per-cell notes separately. Goal seek/what-if needs a bounded numeric contract with no-solution/nonconvergence diagnostics and explicit source updates/undo. Calca’s existing scalar solver does not provide Org goal seek. Keep these below recovery, formula support and readable assumptions. |
 
 This maps every field-report item to a ledger disclosure and an implementation
-slice. SHARED-05 and ORG-10 are resolved; the other four new records remain open. Cosmetic
+slice. SHARED-05, ORG-10 and ORG-11 are resolved; the other three new records
+remain open. Cosmetic
 cues and solver tools do not gate the bounded sharing, formula and table fixes
 above.
 

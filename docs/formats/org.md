@@ -198,10 +198,13 @@ diagnostics even when the old value is numeric.
 - Inputs cannot be shared across source documents yet (ORG-02 / FILE-1).
   `remote()` reads tables in the same document only. Splitting a model means
   keeping duplicated constants synchronized manually.
-- Narrow Split previews can wrap inside numbers (ORG-11). Widen the preview or
-  use Preview view. Headers and numeric alignment also lack native export
-  semantics (ORG-12). `;%.2f` controls decimal places; `;$%.2f` can add a
-  literal dollar prefix, but thousands grouping is unavailable.
+- Tables keep single-token values and headings intact and scroll horizontally
+  when too wide (ORG-11). Multiword labels can wrap between words. Focus the
+  table region and use Left/Right arrows to scroll the preview; HTML exports keep
+  the same layout. Very wide printed tables may need landscape or wider paper.
+  Headers and numeric alignment still lack native export semantics (ORG-12).
+  `;%.2f` controls decimal places; `;$%.2f` can add a literal dollar prefix, but
+  thousands grouping is unavailable.
 - Preview cells cannot be edited, marked as inputs, or given per-cell notes.
   Put input instructions and source notes in the document. Org has no goal seek
   or what-if tool (ORG-04); Calca's scalar solver works in its own format.
@@ -324,7 +327,7 @@ These entries share the [central limitations ledger](../limitations.md). “Need
 | ORG-08 | Resolved | Same-document remote references read current pass state without recursive evaluation |
 | ORG-09 | Resolved | Formulas use Emacs Calc default modes, exact integers and Calc display |
 | ORG-10 | Resolved | Numeric Calc conditionals and comparisons match Emacs fixtures |
-| ORG-11 | Known gap | Narrow preview tables can split numeric text across lines |
+| ORG-11 | Resolved | Org table values stay intact in narrow previews and HTML exports |
 | ORG-12 | Known gap | Preview tables lack native header semantics and numeric alignment |
 | ORG-13 | Known gap | File constants calculate but are hidden in the preview |
 <!-- compatibility:end -->
