@@ -160,6 +160,157 @@
       "10"
     ]
   ],
+  "calc-branches.org": [
+    [
+      "zero divide",
+      "false branch",
+      "complex",
+      "unknown call",
+      "symbolic",
+      "nested"
+    ],
+    [
+      "7",
+      "8",
+      "9",
+      "10",
+      "11",
+      "12"
+    ],
+    [
+      "expression",
+      "result"
+    ],
+    [
+      "1/0",
+      "7"
+    ],
+    [
+      "sqrt(-1)",
+      "7"
+    ],
+    [
+      "symbol",
+      "7"
+    ],
+    [
+      "blank",
+      "default",
+      "N",
+      "E unused"
+    ],
+    [
+      "",
+      "20",
+      "20",
+      "7"
+    ]
+  ],
+  "calc-conditions.org": [
+    [
+      "less",
+      "greater",
+      "less equal",
+      "greater equal",
+      "equal",
+      "unequal",
+      "equal alias"
+    ],
+    [
+      "1",
+      "0",
+      "1",
+      "0",
+      "1",
+      "1",
+      "1"
+    ],
+    [
+      "arithmetic",
+      "power",
+      "negative",
+      "fraction",
+      "exact integer",
+      "tiny",
+      "huge"
+    ],
+    [
+      "1",
+      "1",
+      "1",
+      "1",
+      "1",
+      "1",
+      "1"
+    ],
+    [
+      "display",
+      "internal",
+      "higher precision"
+    ],
+    [
+      "1",
+      "0",
+      "1"
+    ],
+    [
+      "ascending",
+      "descending",
+      "inclusive",
+      "outside",
+      "grouped",
+      "equals",
+      "distinct",
+      "repeated"
+    ],
+    [
+      "1",
+      "1",
+      "1",
+      "0",
+      "0",
+      "1",
+      "1",
+      "0"
+    ],
+    [
+      "condition",
+      "yes",
+      "no",
+      "negative",
+      "float zero",
+      "nested",
+      "format"
+    ],
+    [
+      "3",
+      "10",
+      "20",
+      "10",
+      "20",
+      "30",
+      "12.50"
+    ],
+    [
+      "Count",
+      "Monthly cost"
+    ],
+    [
+      "49999",
+      "0.00"
+    ],
+    [
+      "50000",
+      "0.00"
+    ],
+    [
+      "50001",
+      "25.00"
+    ],
+    [
+      "100"
+    ]
+  ],
   "calc-modes.org": [
     [
       "sin(30)",

@@ -71,8 +71,13 @@ display. These are the supported names:
   `round(x, digits)`), `trunc`, `min`, `max`, `fact` (also postfix `!` and `!!`)
 - **Vector helpers:** `vsum`, `vmean`, `vmedian`, `vmin`, `vmax`, `vcount`,
   `vprod`, `vsdev`, `vpsdev`, `vvar`, `vpvar`
+- **Numeric decisions:** `if(c,a,b)` evaluates the selected branch only; a real
+  scalar condition is false at zero and true otherwise
 
-Operators are `+ - * / % \ ^` and postfix percent. As in Calc, `*` binds more
+Operators are `+ - * / % \ ^`, postfix percent, and numeric comparisons
+`< > <= >= == = !=` returning 0 or 1. Comparisons bind below arithmetic. Vector
+and symbolic conditions/comparisons, logical operators and ternary syntax remain
+unsupported. As in Calc, `*` binds more
 tightly than `/`, so `10/4*2` is `1.25`. mathjs names such as `asin` are not Calc
 functions; Emacs leaves them unevaluated, and Sheets reports a diagnostic that
 names the Calc equivalent. Org creates a fresh formula scope for each calculation

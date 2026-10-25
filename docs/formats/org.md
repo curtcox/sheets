@@ -154,10 +154,41 @@ links, in both calculation modes, now show the Emacs values. For example,
 to `0.33333333`, and `10/4*2` from `5` to `1.25`. Source text is unchanged. This
 is an arithmetic correction rather than a new profile; see ORG-09.
 
-**Unsupported conditionals (ORG-10).** Calc's `if(c,a,b)` and comparison
-operators `<`, `>`, `<=`, `>=`, `==` and `!=` are not implemented. For example,
-`$2=if($1>2,10,20)` reports unsupported syntax and leaves the previous cell value
-in place. Check diagnostics even when a table still displays numeric values.
+## Conditions and comparisons
+
+Use `if(c,a,b)` for numeric decisions. A zero condition is false; any other real
+number is true. Comparisons `<`, `>`, `<=`, `>=`, `==` (also `=`) and `!=` return
+integer **1** or **0**, with arithmetic evaluated first. Both Legacy and Emacs
+order support these formulas:
+
+```org
+| Users | Monthly cost |
+|-------+--------------|
+| 50000 | 0            |
+| 50001 | 0            |
+#+TBLFM: $2=if($1>50000,25,0);%.2f
+```
+
+The costs are **0.00** and **25.00**. Nested `if` expressions work too. Only the
+selected branch evaluates: `if(1,7,1/0)` returns **7**. Both branches must still
+have supported syntax. Named inputs, table addresses and referenced field text
+are resolved/parsed before branch selection; an unused invalid address or malformed
+field still produces a diagnostic.
+
+Comparisons use integer, fraction or decimal values at the selected Calc internal
+precision, rather than the rounded display. As in Calc, `1<2<3` and `3>2>1` test the middle value against both
+bounds, while `(3>2)>1` compares the Boolean result with 1 and gives **0**.
+`1==1.0==1` tests equality; `1!=2!=1` gives **0** because the values are not all
+distinct. Mixing directions or equality with inequalities in an unparenthesized
+chain is invalid. Use explicit parentheses for more complex combinations; longer
+inequality chains follow Calc's grouping rather than a general all-pairs test.
+
+This is the numeric subset (ORG-10). Vector conditions/comparisons, unresolved
+symbolic or `nan` conditions/comparisons, logical `&&`, `||`, `!`, and ternary
+`c?a:b` syntax are not supported. Formula length, size and nesting bounds remain,
+and a single evaluation permits at most 10,000 numeric comparisons. A selected
+branch error reports the original formula line and retains the cell; always read
+diagnostics even when the old value is numeric.
 
 ## Financial-model workflow limits
 
@@ -292,7 +323,7 @@ These entries share the [central limitations ledger](../limitations.md). “Need
 | ORG-07 | Resolved | Explicit Emacs order matches supported native scheduling and duplicate-target rejection |
 | ORG-08 | Resolved | Same-document remote references read current pass state without recursive evaluation |
 | ORG-09 | Resolved | Formulas use Emacs Calc default modes, exact integers and Calc display |
-| ORG-10 | Known gap | Calc conditionals and comparison operators are unsupported |
+| ORG-10 | Resolved | Numeric Calc conditionals and comparisons match Emacs fixtures |
 | ORG-11 | Known gap | Narrow preview tables can split numeric text across lines |
 | ORG-12 | Known gap | Preview tables lack native header semantics and numeric alignment |
 | ORG-13 | Known gap | File constants calculate but are hidden in the preview |

@@ -6,20 +6,22 @@ documents, about 19 KB of source in total, in the HashBin repository under
 `docs/business/*.org`. It ran against production (`curtcox.github.io/sheets`) and against the
 Org engine in Node (`recalculateOrg`), with zero diagnostics.
 
-**Sharing recovery is implemented; other runtime issues remain open.** Triaged on 2026-10-25 into
+**Sharing recovery and numeric conditionals are implemented; other runtime issues remain open.** Triaged on 2026-10-25 into
 `docs/compatibility.json` and the active field-report priorities in [PLAN.md](../PLAN.md#field-report-priorities--active-order-from-2026-10-25).
 The missing disclosures are now in the generated limitations page and Org guide;
 SHARE-1 subsequently reproduced old reload loss end to end against an enforcing
 server and protects generated long-source links with fragments. See
 [the implementation contract](long-source-links.md). The findings below describe
-2026-10-24 behavior; this does not claim fixes for the other items.
+2026-10-24 behavior. ORG-1E now supplies numeric `if` and comparisons in both
+calculation modes; see [the condition contract](org-conditions.md). Other items
+remain open.
 
 | # | Problem | Classification | Related |
 |---|---------|----------------|---------|
 | 1 | Documents over ~8 KB: links fail, and a reload loses the document | Mostly user workflow; **one bug risk**, one wording issue | SHARED-02/05; SHARE-1 |
 | 2 | No inputs shared across documents | Known gap | ORG-02 (cross-file); FILE-1 |
 | 3 | `#+CONSTANTS:` values are invisible in the preview | Missing feature | ORG-13; ORG-INPUT-1 |
-| 4 | No `if()` or comparison operators in Org formulas | Compatibility gap; disclosure added in triage | ORG-10; ORG-1E |
+| 4 | No `if()` or comparison operators in Org formulas | Numeric subset implemented; wider Calc behavior remains limited | ORG-10 (resolved); ORG-1E |
 | 5 | `a/b*c` means `a/(b*c)` | Documented, Emacs-faithful; usability trap | ORG-09; ORG-HINT-1 |
 | 6 | Money tables are hard to read | One CSS bug, one compatibility gap, one feature request | ORG-11/12, ORG-02; ORG-TABLE-1/2, ORG-MONEY-1 |
 | 7 | No goal seek or what-if | Missing feature | ORG-04; UI-1 (CALCA-02 is a separate solver) |

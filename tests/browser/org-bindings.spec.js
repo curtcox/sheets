@@ -169,7 +169,12 @@ test("Org Calc default/explicit modes and arithmetic match the Emacs reference d
   const reference = JSON.parse(await file("tests/fixtures/org/reference.json")),
     errors = [];
   page.on("pageerror", (e) => errors.push(e.message));
-  for (const name of ["calc-modes.org", "calc-arithmetic.org"]) {
+  for (const name of [
+    "calc-modes.org",
+    "calc-arithmetic.org",
+    "calc-conditions.org",
+    "calc-branches.org",
+  ]) {
     await page.goto(url(await file(`tests/fixtures/org/${name}`)));
     await ready(page);
     await expect(page.locator("#render-status")).toHaveText(/^Ready/);
@@ -186,4 +191,43 @@ test("Org Calc default/explicit modes and arithmetic match the Emacs reference d
     await page.evaluate(() => ace.edit("editor").session.getAnnotations()),
   ).toMatchObject([{ row: 1, text: expect.stringContaining("arcsin") }]);
   expect(errors).toEqual([]);
+});
+
+test("Org conditional pricing works in both modes, shares exact source, and keeps failing cells with diagnostics", async ({
+  page,
+  context,
+}) => {
+  const source = "#+CONSTANTS: limit=50000\n| Users | Cost |\n|-------+------|\n| 50001 | 0 |\n#+TBLFM: $2=if($1>$limit,25,0);%.2f\n";
+  for (const profile of [undefined, "org-emacs-v1"]) {
+    await page.goto(writeURL("http://127.0.0.1:4173/", {
+      src: source, format: "org", profile,
+    }));
+    await ready(page);
+    await expect(page.locator("#render-status")).toHaveText(/^Ready/);
+    await expect(page.locator("#preview tr").last()).toHaveText("5000125.00");
+    await page.locator("#share").click();
+    const fresh = await context.newPage();
+    await fresh.goto(await page.locator("#share-url").inputValue());
+    await ready(fresh);
+    expect(await fresh.evaluate(() => ace.edit("editor").getValue())).toBe(source);
+    await expect(fresh.locator("#preview tr").last()).toHaveText("5000125.00");
+    await fresh.close();
+    await page.locator("#share-close").click();
+    const changed = source.replace("50001", "50000");
+    await page.evaluate((src) => ace.edit("editor").setValue(src, -1), changed);
+    await expect(page.locator("#preview tr").last()).toHaveText("500000.00");
+    const failed = "| 3 | 77 |\n#+TBLFM: $2=if($1>2,1/0,7)\n";
+    await page.evaluate((src) => ace.edit("editor").setValue(src, -1), failed);
+    await expect(page.locator("#render-status")).toContainText("1 diagnostic");
+    await expect(page.locator("#preview tr")).toHaveText("377");
+    expect(await page.evaluate(() => ace.edit("editor").session.getAnnotations()))
+      .toMatchObject([{ row: 1, text: expect.stringContaining("Division by zero") }]);
+  }
+  await page.goto("/docs.html?page=formats/org");
+  await page.locator("#docs-content pre")
+    .filter({ hasText: "if($1>50000,25,0)" })
+    .locator("xpath=following-sibling::p[1]").getByRole("link").click();
+  await ready(page);
+  await expect(page.locator("#render-status")).toHaveText(/^Ready/);
+  await expect(page.locator("#preview tr").last()).toHaveText("5000125.00");
 });

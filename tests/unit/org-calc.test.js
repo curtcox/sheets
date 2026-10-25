@@ -104,6 +104,64 @@ test("Org field references use org-table-make-reference empty, E and N rules", (
   assert.match(symbolic.diagnostics[0].message, /symbolic.*;N/);
 });
 
+test("Numeric Calc comparisons preserve exact values, precedence and native chains", () => {
+  for (const [expression, expected] of [
+    ["3<=3", "1"],
+    ["3>=4", "0"],
+    ["3=3.0", "1"],
+    ["3!=3.0", "0"],
+    ["1+2<2*2", "1"],
+    ["9007199254740993>9007199254740992", "1"],
+    ["1e1000000>1e999999", "1"],
+    ["-1e1000000<-1e999999", "1"],
+    ["1e-1000000>0", "1"],
+    ["-1e-1000000<0", "1"],
+    ["1<2<3", "1"],
+    ["3>2>1", "1"],
+    ["1<=1<2", "1"],
+    ["(3>2)>1", "0"],
+    ["1==1.0==1", "1"],
+    ["1!=2!=1", "0"],
+    ["1!=2!=3", "1"],
+    ["1<2<3<4", "1"],
+    ["3<2<1<4", "1"],
+  ])
+    assert.equal(calc(expression), expected, expression);
+  assert.equal(calc("1/3<0.34", "F"), "1");
+  assert.equal(calc("1e20==100000000000000000000"), "1");
+  assert.equal(calc("1.0001>1", "n3"), "1");
+  assert.equal(calc("1.0000000000001>1"), "0");
+  assert.equal(calc("1.0000000000001>1", "p20"), "1");
+});
+
+test("if() evaluates only the selected branch but parses both branches and referenced fields", () => {
+  for (const [expression, expected] of [
+    ["if(3>2,10,20)", "10"],
+    ["if(3<2,10,20)", "20"],
+    ["if(-2,10,20)", "10"],
+    ["if(0.0,10,20)", "20"],
+    ["if(1,7,1/0)", "7"],
+    ["if(0,sqrt(-1),8)", "8"],
+    ["if(1,9,unknown(3))", "9"],
+    ["if(1,if(0,1/0,12),sqrt(-1))", "12"],
+    ["if(1,[1,2],0)", "[1, 2]"],
+  ])
+    assert.equal(calc(expression), expected, expression);
+  assert.equal(cell("if(1,7,$1)", "1/0").value, "7");
+  assert.equal(cell("if($1,10,20);N", "text").value, "20");
+  assert.equal(cell("if(1,7,$1);E", "").value, "7");
+  assert.match(cell("if(1,7,$1)", "bad???").diagnostics[0].message, /Field value/);
+  assert.match(cell("if(1,7,@99$1)", "1").diagnostics[0].message, /outside the table/i);
+  assert.match(cell("if(1,7,$missing)", "1").diagnostics[0].message, /Undefined/);
+  assert.throws(() => calc("if(1,7,2+)"), /Unexpected|Incomplete/);
+  // No repeat work in an equality chain; the quadratic distinctness check is bounded.
+  assert.equal(calc(Array(160).fill("1").join("==")), "1");
+  assert.throws(
+    () => calc(Array.from({ length: 160 }, (_, i) => i).join("!=")),
+    /work limit/,
+  );
+});
+
 test("Unsupported Calc results and modes are diagnosed and retain the cell", () => {
   for (const [formula, pattern] of [
     ["asin(0.5)", /Use arcsin\(\)/],
@@ -125,6 +183,18 @@ test("Unsupported Calc results and modes are diagnosed and retain the cell", () 
     ["0.5!", /nonnegative integers/],
     ["vmean()", /at least one/],
     ['"text"', /Unsupported Calc syntax/],
+    ["if(1,1/0,7)", /Division by zero/],
+    ["if(0,7,sqrt(-1))", /complex/],
+    ["if(1,7)", /wrong number/],
+    ["if(0,7,8,9)", /wrong number/],
+    ["if(nan,7,8)", /nan unresolved/],
+    ["nan<1", /nan unresolved/],
+    ["if(x,7,8)", /symbolic/],
+    ["if([0,1],7,8)", /vector/],
+    ["[1,2]==[1,2]", /vector/],
+    ["1<2>1", /mixed Calc comparison/],
+    ["1==2<3", /mixed Calc comparison/],
+    ["1&&2", /Unsupported Calc syntax/],
   ]) {
     const result = recalculateOrg(`| 7 |\n#+TBLFM: @1$1=${formula}\n`);
     assert.equal(result.diagnostics.length, 1, formula);

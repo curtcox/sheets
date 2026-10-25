@@ -97,11 +97,23 @@ const rational = (x) =>
         ? [x.m * 10n ** BigInt(x.e), 1n]
         : [x.m, 10n ** BigInt(-x.e)];
 function compare(a, b) {
-  const [an, ad] = rational(a),
-    [bn, bd] = rational(b),
+  // Compare magnitudes before aligning decimal exponents. This keeps a test
+  // such as 1e1000000 > 1 from allocating a million-digit power of ten.
+  const parts = (x) =>
+    x.t === "float" ? [x.m, 1n, x.e] : [...rational(x), 0];
+  const [an, ad, ae] = parts(a),
+    [bn, bd, be] = parts(b),
     l = an * bd,
     r = bn * ad;
-  return l < r ? -1 : l > r ? 1 : 0;
+  const sign = (v) => (v < 0n ? -1 : v > 0n ? 1 : 0);
+  if (sign(l) !== sign(r)) return sign(l) < sign(r) ? -1 : 1;
+  if (l === 0n) return 0;
+  const lm = numdigs(abs(l)) + ae,
+    rm = numdigs(abs(r)) + be;
+  if (lm !== rm) return (lm < rm ? -1 : 1) * sign(l);
+  const left = ae > be ? l * 10n ** BigInt(ae - be) : l,
+    right = be > ae ? r * 10n ** BigInt(be - ae) : r;
+  return left < right ? -1 : left > right ? 1 : 0;
 }
 const negative = (x) => rational(x)[0] < 0n;
 
@@ -812,12 +824,20 @@ const INFIX = {
   "\\": [190, 191],
   "+": [180, 181],
   "-": [180, 181],
+  "<": [160, 161],
+  ">": [160, 161],
+  "<=": [160, 161],
+  ">=": [160, 161],
+  "=": [160, 161],
+  "==": [160, 161],
+  "!=": [160, 161],
 };
+const comparisons = new Set(["<", ">", "<=", ">=", "=", "==", "!="]);
 function tokenize(source) {
   if (source.length > MAX_LENGTH) fail("Formula is too long.");
   const tokens = [],
     pattern =
-      /\s+|(\uE000(\d+)\uE001)|((?:\d+\.?\d*|\.\d+)(?:[eE][-+]?\d+)?)|([A-Za-z][A-Za-z0-9]*)|(\*\*|!!|[-+*/%\\^!(),\[\]])/y;
+      /\s+|(\uE000(\d+)\uE001)|((?:\d+\.?\d*|\.\d+)(?:[eE][-+]?\d+)?)|([A-Za-z][A-Za-z0-9]*)|(\*\*|!!|<=|>=|==|!=|[-+*/%\\^!(),\[\]<>=])/y;
   let at = 0;
   while (at < source.length) {
     pattern.lastIndex = at;
@@ -847,7 +867,8 @@ export function parseCalc(source) {
     t && (t.type !== "op" || ["(", "[", "-", "+"].includes(t.value));
   function level(minPrec) {
     if (++depth > MAX_DEPTH) fail("Formula nesting is too deep.");
-    let x = factor();
+    let x = factor(),
+      first = true;
     for (;;) {
       const t = peek();
       let op = null,
@@ -873,11 +894,31 @@ export function parseCalc(source) {
       if (!op || lp < minPrec) break;
       if (op !== "2x") i++;
       const y = level(rp);
-      x = node({
-        type: "binary",
-        op: op === "2x" ? "*" : op === "**" ? "^" : op,
-        args: [x, y],
-      });
+      if (comparisons.has(op)) {
+        if (op === "=") op = "==";
+        // calc-prog.el math-composite-inequalities: parentheses start a new
+        // level, so (3>2)>1 compares a Boolean rather than forming an interval.
+        if (!first && x.type === "compare") {
+          if ((op === "==" || op === "!=") && x.op === op)
+            x = node({ ...x, args: [...x.args, y] });
+          else if (
+            (["<", "<="].includes(op) && ["<", "<="].includes(x.op)) ||
+            ([">", ">="].includes(op) && [">", ">="].includes(x.op))
+          )
+            x = node({
+              type: "between",
+              ops: [x.op, op],
+              args: [...x.args, y],
+            });
+          else fail("Invalid mixed Calc comparison chain; use parentheses.");
+        } else x = node({ type: "compare", op, args: [x, y] });
+      } else
+        x = node({
+          type: "binary",
+          op: op === "2x" ? "*" : op === "**" ? "^" : op,
+          args: [x, y],
+        });
+      first = false;
     }
     depth--;
     return x;
@@ -1039,39 +1080,56 @@ export function evaluateCalc(expression, refs, modes) {
     }
   };
   const blank = (text) => !/\S/.test(text);
+  const fieldTree = (text) =>
+    blank(text)
+      ? {
+          type: "value",
+          value: !modes.keepEmpty || modes.numbers ? int(0n) : NAN,
+        }
+      : parseText(modes.numbers ? numberText(text) : text);
+  // Org substitutes all referenced field text before Calc parses the formula.
+  // Check syntax in both branches, but defer evaluation until a value is needed.
+  const trees = refs.map((ref) =>
+    "constant" in ref
+      ? parseText(ref.constant)
+      : "field" in ref
+        ? fieldTree(ref.field)
+        : {
+            type: "vector",
+            items: ref.range
+              .filter((t) => modes.keepEmpty || !blank(t))
+              .map(fieldTree),
+          },
+  );
   function reference(index) {
     if (cache.has(index)) return cache.get(index);
-    const ref = refs[index];
-    let value;
-    if ("constant" in ref) value = evaluate(parseText(ref.constant));
-    else if ("field" in ref)
-      value = blank(ref.field)
-        ? !modes.keepEmpty || modes.numbers
-          ? int(0n)
-          : NAN
-        : evaluate(
-            parseText(modes.numbers ? numberText(ref.field) : ref.field),
-          );
-    else {
-      const texts = modes.keepEmpty
-        ? ref.range
-        : ref.range.filter((t) => !blank(t));
-      value = {
-        t: "vec",
-        items: texts.map((text) =>
-          blank(text)
-            ? modes.numbers
-              ? int(0n)
-              : NAN
-            : evaluate(parseText(modes.numbers ? numberText(text) : text)),
-        ),
-      };
-    }
+    const value = evaluate(trees[index]);
     cache.set(index, value);
     return value;
   }
+  const numeric = (value, what) => {
+    scalar(value, what);
+    if (value.t === "nan")
+      fail(`${what} needs a real numeric value; Calc leaves nan unresolved.`);
+    return value;
+  };
+  let comparisonWork = 0;
+  function testComparison(op, a, b) {
+    if (++comparisonWork > 10000) fail("Calc comparison work limit exceeded.");
+    const order = compare(numeric(a, "Comparison"), numeric(b, "Comparison"));
+    return {
+      "<": order < 0,
+      ">": order > 0,
+      "<=": order <= 0,
+      ">=": order >= 0,
+      "==": order === 0,
+      "!=": order !== 0,
+    }[op];
+  }
   function evaluate(n) {
     switch (n.type) {
+      case "value":
+        return n.value;
       case "number":
         return readNumber(n.value, modes.prec);
       case "ref":
@@ -1086,9 +1144,34 @@ export function evaluateCalc(expression, refs, modes) {
         return calc.factorial(evaluate(n.arg), n.step);
       case "binary":
         return calc.binary(n.op, evaluate(n.args[0]), evaluate(n.args[1]));
+      case "compare": {
+        const args = n.args.map(evaluate);
+        let result = true;
+        // Equality chains require all equal; != chains require all distinct.
+        if (n.op === "!=") {
+          for (let i = 0; i < args.length && result; i++)
+            for (let j = i + 1; j < args.length && result; j++)
+              result = testComparison(n.op, args[i], args[j]);
+        } else
+          for (let j = 1; j < args.length && result; j++)
+            result = testComparison(n.op, args[0], args[j]);
+        return int(result ? 1n : 0n);
+      }
+      case "between": {
+        const [a, b, c] = n.args.map(evaluate);
+        const left = testComparison(n.ops[0], a, b),
+          right = testComparison(n.ops[1], b, c);
+        return int(left && right ? 1n : 0n);
+      }
       case "vector":
         return { t: "vec", items: n.items.map(evaluate) };
       case "call": {
+        if (n.name === "if") {
+          if (n.args.length !== 3)
+            fail("if() has the wrong number of arguments.");
+          const condition = numeric(evaluate(n.args[0]), "if() condition");
+          return evaluate(n.args[isZero(condition) ? 2 : 1]);
+        }
         const fn = Object.hasOwn(calc.functions, n.name)
           ? calc.functions[n.name]
           : null;

@@ -476,7 +476,7 @@
       "milestone": "ORG-1",
       "dependsOn": [],
       "expected": "Verify remaining target syntax, iteration, remote indirection/file inputs, symbolic and duration Calc results, and native layout in separate reference-backed slices.",
-      "disclosure": "Numeric named bindings, same-document remote cells/ranges and Emacs Calc default/explicit numeric modes work (ORG-09). The explicit Emacs-order profile supplies row-major sorted columns, protected fields, sorted field formulas and duplicate-target rejection; Legacy retains source-order links. Target ranges, relative targets in Emacs order, dynamic remote indirection, A1 remote notation, cross-file/ID references, iteration, property/external or nonnumeric bindings, Calc symbolic/complex/unit/date/duration results and exact Emacs display-width/export layout remain unsupported. Remote and Calc failure diagnostics retain the affected cell instead of native symbolic or #ERROR text. Conditional formulas and comparisons are tracked separately in ORG-10, and preview table layout in ORG-12. Thousands grouping, including grouped currency display, is not provided. ;%.2f controls decimal places and a literal dollar prefix is possible, but it does not add grouping. Cross-document inputs still require duplicated constants or tables until FILE-1.",
+      "disclosure": "Numeric named bindings, same-document remote cells/ranges and Emacs Calc default/explicit numeric modes work (ORG-09). The explicit Emacs-order profile supplies row-major sorted columns, protected fields, sorted field formulas and duplicate-target rejection; Legacy retains source-order links. Target ranges, relative targets in Emacs order, dynamic remote indirection, A1 remote notation, cross-file/ID references, iteration, property/external or nonnumeric bindings, Calc symbolic/complex/unit/date/duration results and exact Emacs display-width/export layout remain unsupported. Remote and Calc failure diagnostics retain the affected cell instead of native symbolic or #ERROR text. Numeric conditional formulas and comparisons are supported (ORG-10), while vector/symbolic conditions and comparisons, logical operators and ternary syntax remain unsupported, and preview table layout in ORG-12. Thousands grouping, including grouped currency display, is not provided. ;%.2f controls decimal places and a literal dollar prefix is possible, but it does not add grouping. Cross-document inputs still require duplicated constants or tables until FILE-1.",
       "baselineDisclosure": "Named fields, remote tables, iteration modes, arbitrary Calc syntax, and exact Emacs display-width alignment are not implemented. Formulas execute in order, rather than iterating until results converge.",
       "reproducer": {
         "path": "design/org-order.md"
@@ -1394,22 +1394,27 @@
     {
       "id": "ORG-10",
       "format": "org",
-      "title": "Calc conditionals and comparison operators are unsupported",
+      "title": "Numeric Calc conditionals and comparisons match Emacs fixtures",
       "kind": "gap",
-      "status": "open",
+      "status": "resolved",
       "priority": "P1",
       "milestone": "ORG-1E",
       "dependsOn": [],
       "expected": "Add independent Emacs fixtures for if(c,a,b), <, >, <=, >=, == and !=, including precedence, nested conditions and error/branch evaluation. Implement the verified numeric subset in both calculation modes.",
-      "disclosure": "if(c,a,b) and comparison operators <, >, <=, >=, == and != are unsupported. For example, $2=if($1>2,10,20) reports unsupported Calc syntax and retains the old cell. A retained numeric value is not a successful calculation; read diagnostics. The report used min/max to express one bounded step function, but that is not a general replacement for conditional formulas.",
+      "disclosure": "Both calculation modes support if(c,a,b) with a real scalar condition (zero is false, nonzero is true), and exact numeric <, >, <=, >=, ==, = and != comparisons returning 0 or 1. Arithmetic binds before comparisons. Only the selected branch evaluates, but both branches and referenced field text must parse; table addresses and named inputs resolve before selection. Ascending/descending three-value chains, homogeneous equality/distinctness chains and explicit grouping follow native Calc. Symbolic/nan conditions or unresolved comparisons, vector conditions/comparisons, logical operators and ternary syntax remain outside this slice. Selected errors retain the cell with a source-line diagnostic. Formula bounds remain in force, with at most 10,000 numeric comparisons per evaluation.",
       "baselineDisclosure": "First recorded in the 2026-10-24 HashBin money-model field report, item 4.",
       "reproducer": {
-        "path": "design/field-report-hashbin-money-model.md",
-        "section": 4
+        "path": "tests/fixtures/org/calc-conditions.org"
       },
       "evidence": [
-        "design/field-report-hashbin-money-model.md",
-        "src/formats/org/calc.js"
+        "design/org-conditions.md",
+        "tests/fixtures/org/calc-conditions.org",
+        "tests/fixtures/org/calc-branches.org",
+        "tests/fixtures/org/reference.json",
+        "scripts/org-expected.sh",
+        "tests/unit/org-calc.test.js",
+        "tests/unit/org-order.test.js",
+        "tests/browser/org-bindings.spec.js"
       ]
     },
     {
