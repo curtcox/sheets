@@ -3,6 +3,7 @@ import * as orga from "../../../vendor/orga.js";
 import { recalculateOrg } from "./engine.js";
 import { escapeHTML } from "../../util.js";
 import { renderOrgTable } from "./table-html.js";
+import { orgParserSource } from "./bindings.js";
 function nodeHTML(node) {
   const children = () => (node.children || []).map(nodeHTML).join("");
   switch (node.type) {
@@ -83,6 +84,7 @@ function nodeHTML(node) {
   }
 }
 export function renderOrg(src, options = {}) {
+  src = orgParserSource(src);
   const result = recalculateOrg(src, options),
     parts = [];
   let pos = 0;

@@ -1,4 +1,4 @@
-import { orgDocument, tableBindings } from "./bindings.js";
+import { orgDocument, tableBindings, orgParserSource } from "./bindings.js";
 import { evaluateCalc, formatCalc, parseModes } from "./calc.js";
 import {
   address,
@@ -210,6 +210,7 @@ export function tableSource(table) {
 }
 export function recalculateOrg(src, { profile } = {}) {
   validateProfile(profile, "org");
+  src = orgParserSource(src);
   const lines = src.split("\n"),
     diagnostics = [],
     document = orgDocument(src, diagnostics);

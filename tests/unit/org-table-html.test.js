@@ -1,6 +1,20 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
 import { renderOrg } from "../../src/formats/org/index.js";
+import { recalculateOrg } from "../../src/formats/org/engine.js";
+
+test("Org UTF-8 BOM and CRLF parse like LF without changing diagnostic lines", () => {
+  const source = "#+CONSTANTS: price=3\n* Model\n| 0 | 0 |\n#+TBLFM: $1=$price::$2=$1+10\n\n#+BEGIN_SRC org\n| literal | table |\n#+END_SRC\n\n| 4 | 0 |\n#+TBLFM: $2=unknown($1)\n";
+  for (const profile of [undefined, "org-emacs-v1"]) {
+    const options = { profile }, expected = renderOrg(source, options);
+    assert.ok(expected.html.includes(">13</td>"));
+    assert.equal(expected.diagnostics[0].line, 11);
+    for (const variant of ["\uFEFF" + source, source.replaceAll("\n", "\r\n"), "\uFEFF" + source.replaceAll("\n", "\r\n")]) {
+      assert.deepEqual(renderOrg(variant, options), expected);
+      assert.deepEqual(recalculateOrg(variant, options), recalculateOrg(source, options));
+    }
+  }
+});
 
 test("Org headers, row groups and column alignment do not change calculated source", () => {
   const src = "| Item | Amount |\n| <l> | <r> |\n|------+--------|\n| A | 0 |\n#+TBLFM: @3$2=2.5;%.2f\n";

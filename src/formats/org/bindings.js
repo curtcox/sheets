@@ -1,6 +1,10 @@
 import * as orga from "../../../vendor/orga.js";
 const namePattern = /^[A-Za-z][A-Za-z0-9_]*$/;
 const numericPattern = /^[+-]?(?:\d+(?:\.\d*)?|\.\d+)(?:e[+-]?\d+)?$/i;
+// Normalize parser input only; the editor and shared source retain original bytes.
+export function orgParserSource(src) {
+  return src.replace(/^\uFEFF/, "").replaceAll("\r\n", "\n");
+}
 export function numericBinding(value, name) {
   if (!numericPattern.test(value.trim()))
     throw new Error(

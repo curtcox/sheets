@@ -37,6 +37,18 @@ Open <http://127.0.0.1:4173/>. Any static server can serve the repository direct
 Vendored libraries and WASM are committed. Python and R download their pinned
 Pyodide/webR runtimes on demand. HashBin's OAuth SDK is loaded only for sign-in.
 
+## Create a link from a file
+
+```sh
+node scripts/link.mjs examples/org/typical.org --view=preview --profile=org-emacs-v1
+```
+
+The command reads a UTF-8 file, infers its format from the extension, and prints
+one URL to stdout. It embeds a snapshot; regenerate the link after editing the
+file. Options include `--format`, `--view`, `--profile` and `--base` for another
+editor address. Long links use source fragments and warn on stderr. See
+[file-to-link usage and limits](docs/url-format.md#links-from-source-files).
+
 ## Verify
 
 ```sh

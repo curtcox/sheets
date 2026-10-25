@@ -58,6 +58,47 @@ before the app loads cannot migrate itself: paste the original source into a
 reachable editor when available. Unrelated query parameters are preserved; if
 those alone make the request too long, remove them before reloading.
 
+## Links from source files
+
+From a repository checkout with Node 22 or newer:
+
+```sh
+node scripts/link.mjs examples/org/typical.org --view=preview --profile=org-emacs-v1
+node scripts/link.mjs path/to/model.org --base=http://127.0.0.1:4173/index.html
+```
+
+`scripts/link.mjs` reads one UTF-8 regular file and prints exactly one URL followed
+by a newline to stdout. Warnings and errors go to stderr. Errors exit with status
+1 and produce no URL. The command does not execute source, upload it, or modify
+the file. The filename is not embedded. The default editor is
+`https://curtcox.github.io/sheets/index.html`.
+
+- `--format <id>` overrides the filename extension. Known extensions select their
+  registered format; unknown extensions use Auto. Use `--format auto` to request
+  content detection even for a known extension.
+- `--view split|source|preview` selects the initial view; Split is the default.
+- `--profile <id>` selects an explicit compatible profile. Omit it to retain the
+  original rules, including Org Legacy source order. A compatible profile also
+  selects its format under Auto.
+- `--base <url>` selects another absolute HTTP(S) editor address, without embedded
+  credentials. It must serve a compatible Sheets app. Stale source, example,
+  CID and OAuth parameters are cleared; unrelated query parameters are preserved.
+- `--help` lists supported format/profile IDs. Values also accept `--option=value`.
+  Put `--` before a filename beginning with a dash.
+
+The shared app serializer preserves source, format, view and profile, including
+Unicode, a UTF-8 BOM, CRLF and trailing whitespace. Invalid UTF-8 is rejected.
+Files are bounded at 5 MiB, and generated links must pass the app reader's
+1,000,000-character compressed-source limit. Poorly compressing files can exceed
+that encoded limit before reaching 5 MiB.
+
+Links above 7,000 characters use the source-fragment fallback and warn on stderr
+about remaining complete-URL limits. Oversized non-source base parameters get a
+separate warning. This is a source snapshot: later file edits require generating
+a new link. Keep the source file or use HashBin for a separate copy. The CLI
+provides no storage and remains outside the deployed Pages assets (SHARED-06).
+Loading a remote raw file with `?url=` is still unsupported (SHARED-07; FILE-1).
+
 ## Optional short links
 
 Choose **Shorten with is.gd** in the Share dialog. This explicitly sends the complete source link through AllOrigins to is.gd. The app validates the returned HTTPS is.gd URL. If shortening fails, the original source link remains ready to copy. HashBin provides a separate content-storage option for large documents.

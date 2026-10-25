@@ -212,8 +212,13 @@ diagnostics even when the old value is numeric.
 - Generated long source links now use fragments to avoid the host’s request-line
   limit on reload (SHARED-05). Other apps can still truncate complete links;
   download source or save to HashBin for a separate copy. Offline app files are
-  not a document backup. There is no supported file-to-link CLI or raw-source
-  `?url=` loader yet (SHARED-06).
+  not a document backup. The [file-to-link CLI](../url-format.md#links-from-source-files)
+  embeds a local file snapshot (SHARED-06); a raw-source `?url=` loader remains
+  unsupported (SHARED-07).
+
+Org parsing accepts a UTF-8 BOM and Windows CRLF line endings. Shared links and
+the editor preserve original source; **Copy recalculated source** uses normalized
+LF text without the BOM.
 
 ## Table headers and alignment
 

@@ -476,7 +476,7 @@
       "milestone": "ORG-1",
       "dependsOn": [],
       "expected": "Verify remaining target syntax, iteration, remote indirection/file inputs, symbolic and duration Calc results, and native layout in separate reference-backed slices.",
-      "disclosure": "Numeric named bindings, same-document remote cells/ranges and Emacs Calc default/explicit numeric modes work (ORG-09). The explicit Emacs-order profile supplies row-major sorted columns, protected fields, sorted field formulas and duplicate-target rejection; Legacy retains source-order links. Target ranges, relative targets in Emacs order, dynamic remote indirection, A1 remote notation, cross-file/ID references, iteration, property/external or nonnumeric bindings, Calc symbolic/complex/unit/date/duration results and exact Emacs display-width/full export layout remain unsupported. Header groups and numeric column alignment are supported (ORG-12); rich table-cell markup, captions, column groups, native width handling and export omission of calculation marker rows/columns remain incomplete. Remote and Calc failure diagnostics retain the affected cell instead of native symbolic or #ERROR text. Numeric conditional formulas and comparisons are supported (ORG-10), while vector/symbolic conditions and comparisons, logical operators and ternary syntax remain unsupported. Thousands grouping, including grouped currency display, is not provided. ;%.2f controls decimal places and a literal dollar prefix is possible, but it does not add grouping. Cross-document inputs still require duplicated constants or tables until FILE-1.",
+      "disclosure": "Numeric named bindings, same-document remote cells/ranges and Emacs Calc default/explicit numeric modes work (ORG-09). The explicit Emacs-order profile supplies row-major sorted columns, protected fields, sorted field formulas and duplicate-target rejection; Legacy retains source-order links. Target ranges, relative targets in Emacs order, dynamic remote indirection, A1 remote notation, cross-file/ID references, iteration, property/external or nonnumeric bindings, Calc symbolic/complex/unit/date/duration results and exact Emacs display-width/full export layout remain unsupported. Header groups and numeric column alignment are supported (ORG-12); rich table-cell markup, captions, column groups, native width handling and export omission of calculation marker rows/columns remain incomplete. Remote and Calc failure diagnostics retain the affected cell instead of native symbolic or #ERROR text. Numeric conditional formulas and comparisons are supported (ORG-10), while vector/symbolic conditions and comparisons, logical operators and ternary syntax remain unsupported. Thousands grouping, including grouped currency display, is not provided. ;%.2f controls decimal places and a literal dollar prefix is possible, but it does not add grouping. Cross-document inputs still require duplicated constants or tables until FILE-1. UTF-8 BOM and CRLF files parse through normalized input; shared/editor source remains exact, while recalculated source uses LF without a BOM.",
       "baselineDisclosure": "Named fields, remote tables, iteration modes, arbitrary Calc syntax, and exact Emacs display-width alignment are not implemented. Formulas execute in order, rather than iterating until results converge.",
       "reproducer": {
         "path": "design/org-order.md"
@@ -1138,7 +1138,7 @@
       "milestone": "FILE-1",
       "dependsOn": [],
       "expected": "Verify each behavior against Sheets browser deployment; separate deliberate policy from unsupported upstream capabilities.",
-      "disclosure": "Source links retain the document, format, view and explicit profile. Above 7,000 characters, generated links move source to #src= so it is omitted from HTTP requests (SHARED-05). Short ?compressed= links remain readable. Browser, messaging and proxy limits on complete URLs still vary; the UI recommends a source download or HashBin for a separate copy. Existing oversized query links can still fail before the app loads. Decoded shared source and HashBin payloads are bounded at **5 MiB**; unsupported envelope versions are rejected. No supported file-to-link CLI or ?url= raw-source loader is available (SHARED-06).",
+      "disclosure": "Source links retain the document, format, view and explicit profile. Above 7,000 characters, generated links move source to #src= so it is omitted from HTTP requests (SHARED-05). Short ?compressed= links remain readable. Browser, messaging and proxy limits on complete URLs still vary; the UI recommends a source download or HashBin for a separate copy. Existing oversized query links can still fail before the app loads. Decoded shared source and HashBin payloads are bounded at **5 MiB**; unsupported envelope versions are rejected. The file-to-link CLI embeds local file snapshots (SHARED-06); a ?url= raw-source loader remains unsupported (SHARED-07).",
       "baselineDisclosure": "Source links retain the document, format, and view. Around 8 KB the UI suggests HashBin; browser, messaging, and proxy URL limits vary. Decoded shared source and HashBin payloads are bounded at **5 MiB**; unsupported envelope versions are rejected.",
       "reproducer": null,
       "evidence": []
@@ -1372,23 +1372,49 @@
     {
       "id": "SHARED-06",
       "format": "shared",
-      "title": "Files have no supported command-line link generator or raw-URL loader",
+      "title": "Local source files have a supported command-line link generator",
       "kind": "gap",
-      "status": "open",
+      "status": "resolved",
       "priority": "P1",
       "milestone": "LINK-1",
       "dependsOn": [],
-      "expected": "Provide a documented file-to-link command using the shared URL serializer, preserving source/format/view/profile and reporting long URLs and their remaining transport limits. Treat a remote raw-source loader as a separate FILE-1 design with bounded fetching and reproducible sharing.",
-      "disclosure": "No supported script turns a local source file into a Sheets link, and ?url= does not load raw source. Hand-built query links bypass the shared serializer\u2019s fragment fallback and may exceed host limits. A file-to-link command should use the shared serializer and clearly flag long links and remaining browser/messaging limits; it would not itself provide storage. HashBin saves require interactive owner sign-in, balance and per-save confirmation; public saved CIDs load without sign-in.",
+      "expected": "Provide a documented file-to-link command using the shared URL serializer, preserving source/format/view/profile and reporting remaining URL transport limits.",
+      "disclosure": "node scripts/link.mjs <file> embeds a UTF-8 file snapshot using the shared app serializer. Registered extensions select their format; explicit format, view, profile and editor base URL are supported. Source bytes, including BOM, CRLF and trailing whitespace, round-trip exactly within the 5 MiB decoded and 1,000,000-character encoded limits. Long links use fragments and warn on stderr about remaining complete-URL transport limits. The command does not execute, modify or upload source and supplies no storage; regenerate links after editing a file. The script is excluded from Pages assets. The separate raw-source ?url= proposal remains open as SHARED-07.",
       "baselineDisclosure": "First recorded in the 2026-10-24 HashBin money-model field report, item 9.",
       "reproducer": {
         "path": "design/field-report-hashbin-money-model.md",
         "section": 9
       },
       "evidence": [
-        "design/field-report-hashbin-money-model.md",
+        "design/link-tool.md",
+        "scripts/link.mjs",
         "src/url-state.js",
-        "docs/hashbin.md"
+        "tests/unit/link-cli.test.js",
+        "tests/browser/link-cli.spec.js",
+        "tests/unit/deployment.test.js",
+        "docs/url-format.md"
+      ]
+    },
+    {
+      "id": "SHARED-07",
+      "format": "shared",
+      "title": "Remote raw-source URLs have no loader",
+      "kind": "gap",
+      "status": "open",
+      "priority": "P2",
+      "milestone": "FILE-1",
+      "dependsOn": [],
+      "expected": "Design bounded raw-source fetching with explicit CORS/fetch failures, mutable-URL behavior and reproducible source snapshots before implementing a ?url= loader.",
+      "disclosure": "?url= does not load a remote raw source file. The file-to-link CLI embeds a local snapshot (SHARED-06), and public HashBin CIDs load immutable saved documents. Loading mutable remote files requires a separate FILE-1 design for bounded fetching, errors and reproducible sharing.",
+      "baselineDisclosure": "Originally part of SHARED-06, recorded in the 2026-10-24 HashBin money-model field report, item 9; split when LINK-1 delivered the CLI.",
+      "reproducer": {
+        "path": "design/field-report-hashbin-money-model.md",
+        "section": 9
+      },
+      "evidence": [
+        "design/link-tool.md",
+        "src/url-state.js",
+        "docs/url-format.md"
       ]
     },
     {
