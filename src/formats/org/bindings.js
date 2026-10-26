@@ -19,6 +19,7 @@ export function orgDocument(src, diagnostics) {
     constantEntries = new Map(),
     keywords = [],
     displayKeywords = [],
+    hintKeywords = [],
     names = [],
     headings = [],
     stack = [orga.parse(src)];
@@ -44,6 +45,8 @@ export function orgDocument(src, diagnostics) {
       keywords.push(node);
     if (node.type === "keyword" && node.key?.toUpperCase() === "SHEETS_CONSTANTS")
       displayKeywords.push(node);
+    if (node.type === "keyword" && node.key?.toUpperCase() === "SHEETS_HINTS")
+      hintKeywords.push(node);
     if (node.type === "keyword" && /^(?:NAME|TBLNAME)$/i.test(node.key))
       names.push(node);
     if (node.type === "headline") headings.push(node.position.start.line - 1);
@@ -92,20 +95,22 @@ export function orgDocument(src, diagnostics) {
     if (!namedTables.has(name))
       namedTables.set(name, headings[headingIndex] < start ? undefined : start);
   }
-  const display = displayKeywords.sort(
-    (a, b) => a.position.start.line - b.position.start.line,
-  ).at(-1);
-  const displayValue = (display?.value || "").trim().toLowerCase();
-  if (display && !["table", "none"].includes(displayValue))
-    diagnostics.push({
-      line: display.position.start.line,
-      severity: "warning",
-      message: "Unsupported SHEETS_CONSTANTS option. Use table or none.",
-    });
+  function option(nodes, key, values) {
+    const last = nodes.sort((a, b) => a.position.start.line - b.position.start.line).at(-1),
+      value = (last?.value || "").trim().toLowerCase();
+    if (last && !values.includes(value))
+      diagnostics.push({
+        line: last.position.start.line,
+        severity: "warning",
+        message: `Unsupported ${key} option. Use ${values.join(" or ")}.`,
+      });
+    return value;
+  }
   return {
     starts, constants, namedTables,
     constantEntries: [...constantEntries.values()],
-    showConstants: displayValue === "table",
+    showConstants: option(displayKeywords, "SHEETS_CONSTANTS", ["table", "none"]) === "table",
+    precedenceHints: option(hintKeywords, "SHEETS_HINTS", ["precedence", "none"]) === "precedence",
   };
 }
 export function tableBindings(

@@ -1,0 +1,15 @@
+#+TITLE: Explicit grouping and native multiplication precedence
+#+CONSTANTS: divisor=4 factor=2
+
+| 10 | 4 | 2 | 0 | 0 | 0 |
+| 20 | 5 | 2 | 0 | 0 | 0 |
+#+TBLFM: $4=$1/$2*$3::$5=($1/$2)*$3::$6=$1/($2*$3);%.2f
+
+| 0 | 0 | 0 | 0 | 0 |
+#+TBLFM: $1=if(1,10/4*2,7)::$2=if(0,10/4*2,7)::$3=10/4**2::$4=10/4 2::$5=10/$divisor*$factor
+
+#+NAME: inputs
+| 4 | 2 |
+
+| 0 |
+#+TBLFM: $1=remote(inputs,@1$1)/2*remote(inputs,@1$2);%.2f

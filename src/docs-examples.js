@@ -158,6 +158,10 @@ ${block("mermaid", "graph LR\n  Measure --> Review")}
       `#+SHEETS_CONSTANTS: ${display}\n#+CONSTANTS: price=0.03 users=100\n| Monthly revenue | 0 |\n#+TBLFM: @1$2=$price*$users;%.2f\n`,
       [`#+SHEETS_CONSTANTS: ${display}`],
     )),
+    ...["precedence", "none"].map((hints) => sample(
+      `#+SHEETS_HINTS: ${hints}\n| 0 | 0 | 0 |\n#+TBLFM: $1=10/4*2::$2=(10/4)*2::$3=10/(4*2)\n`,
+      [`#+SHEETS_HINTS: ${hints}`],
+    )),
   ],
   calca: [
     sample(

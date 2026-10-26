@@ -8,6 +8,7 @@ import {
   remoteValue,
 } from "./references.js";
 import { ORG_EMACS, validateProfile } from "../../compatibility-profiles.js";
+import { formulaPrecedenceHints } from "./precedence-hints.js";
 const isHline = (line) => /^\s*\|[-+:]+\|?\s*$/.test(line);
 export function parseTable(lines) {
   const rows = [],
@@ -213,6 +214,7 @@ export function recalculateOrg(src, { profile } = {}) {
   src = orgParserSource(src);
   const lines = src.split("\n"),
     diagnostics = [],
+    formulaHints = [],
     document = orgDocument(src, diagnostics);
   const tables = document.starts.map((start) => {
     let end = start;
@@ -242,13 +244,16 @@ export function recalculateOrg(src, { profile } = {}) {
       formulaIndex < lines.length &&
       /^\s*#\+TBLFM:/i.test(lines[formulaIndex])
     ) {
+      const formula = lines[formulaIndex].replace(/^\s*#\+TBLFM:\s*/i, "");
       diagnostics.push(
         ...recalculateTable(
           table,
-          lines[formulaIndex].replace(/^\s*#\+TBLFM:\s*/i, ""),
+          formula,
           { line: formulaIndex + 1, bindings, profile, remote },
         ),
       );
+      if (document.precedenceHints)
+        formulaHints.push(...formulaPrecedenceHints(formula, formulaIndex + 1));
       formulaIndex++;
       if (profile === ORG_EMACS) break; // Only the first stored formula line is active.
     }
@@ -257,7 +262,8 @@ export function recalculateOrg(src, { profile } = {}) {
   for (const { start, end, table } of tables.slice().reverse())
     output.splice(start, end - start, ...tableSource(table));
   return {
-    tables, diagnostics, source: output.join("\n"),
+    tables, diagnostics: [...diagnostics, ...formulaHints], source: output.join("\n"),
+    formulaHints,
     fileConstants: document.constantEntries,
     showConstants: document.showConstants,
   };

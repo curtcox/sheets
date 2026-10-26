@@ -104,6 +104,10 @@ export function renderOrg(src, options = {}) {
   }
   parts.push(nodeHTML(orga.parse(src.split("\n").slice(pos).join("\n"))));
   constants();
+  if (result.formulaHints.length)
+    parts.push('<aside class="notice" aria-label="Formula hints"><strong>Formula hints</strong><ul>' +
+      result.formulaHints.map(({ line, message }) => `<li>Line ${line}: ${escapeHTML(message)}</li>`).join("") +
+      "</ul></aside>");
   return {
     html:
       parts.join("") +

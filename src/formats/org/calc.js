@@ -7,8 +7,8 @@ import Decimal from "../../../vendor/decimal.js";
 
 const MAX_DIGITS = 10000,
   MAX_NODES = 1000,
-  MAX_DEPTH = 200,
-  MAX_LENGTH = 4000;
+  MAX_DEPTH = 200;
+export const MAX_CALC_LENGTH = 4000;
 const sym = (name) => ({ t: "sym", name });
 const NAN = { t: "nan" };
 const int = (v) => ({ t: "int", v });
@@ -834,7 +834,7 @@ const INFIX = {
 };
 const comparisons = new Set(["<", ">", "<=", ">=", "=", "==", "!="]);
 function tokenize(source) {
-  if (source.length > MAX_LENGTH) fail("Formula is too long.");
+  if (source.length > MAX_CALC_LENGTH) fail("Formula is too long.");
   const tokens = [],
     pattern =
       /\s+|(\uE000(\d+)\uE001)|((?:\d+\.?\d*|\.\d+)(?:[eE][-+]?\d+)?)|([A-Za-z][A-Za-z0-9]*)|(\*\*|!!|<=|>=|==|!=|[-+*/%\\^!(),\[\]<>=])/y;
@@ -852,11 +852,16 @@ function tokenize(source) {
   }
   return tokens;
 }
-export function parseCalc(source) {
+export function parseCalc(source, { onDivisionProduct } = {}) {
   const tokens = tokenize(source);
+  // Advisory metadata stays outside the arithmetic tree. Parentheses mark
+  // explicit grouping; only ungrouped products containing an explicit * count.
+  const grouped = new WeakSet(),
+    explicitProducts = new WeakSet();
   let i = 0,
     nodes = 0,
-    depth = 0;
+    depth = 0,
+    divisionProduct = false;
   const peek = () => tokens[i],
     isOp = (v) => tokens[i]?.type === "op" && tokens[i].value === v;
   const node = (n) => {
@@ -912,12 +917,19 @@ export function parseCalc(source) {
             });
           else fail("Invalid mixed Calc comparison chain; use parentheses.");
         } else x = node({ type: "compare", op, args: [x, y] });
-      } else
+      } else {
+        const product = op === "*" || (op === "2x" && [x, y].some(
+          (child) => explicitProducts.has(child) && !grouped.has(child),
+        ));
+        if (op === "/" && explicitProducts.has(y) && !grouped.has(y))
+          divisionProduct = true;
         x = node({
           type: "binary",
           op: op === "2x" ? "*" : op === "**" ? "^" : op,
           args: [x, y],
         });
+        if (product) explicitProducts.add(x);
+      }
       first = false;
     }
     depth--;
@@ -957,6 +969,7 @@ export function parseCalc(source) {
         );
       if (!isOp(")")) fail("Missing ).");
       i++;
+      grouped.add(x);
       return x;
     }
     if (t.value === "[") {
@@ -978,6 +991,7 @@ export function parseCalc(source) {
   }
   const tree = level(0);
   if (i < tokens.length) fail(`Unexpected ${tokens[i].value} in Calc formula.`);
+  if (divisionProduct) onDivisionProduct?.();
   return tree;
 }
 

@@ -32,8 +32,8 @@ The 2026-10-25 field-report priorities below start with long-link recovery
 (SHARE-1), numeric Org conditionals/comparisons (ORG-1E), and intact narrow-table
 values (ORG-TABLE-1), all implemented. Native table headers/alignment
 (ORG-TABLE-2), file-to-link tooling (LINK-1) and optional constants display
-(ORG-INPUT-1) are also delivered. Formula clarity hints are next, alongside the
-remaining ledger audit.
+(ORG-INPUT-1) are also delivered, followed by optional formula clarity hints
+(ORG-HINT-1). Shared-input design is next, alongside the remaining ledger audit.
 HashBin is registered and enabled using its public client ID and exact Pages
 callback. Live PKCE authorization, quoted save confirmation, and an anonymous
 saved-document round-trip have been verified. The repository uses MIT and Pages
@@ -413,8 +413,8 @@ slices. The remaining queue keeps its relative order. LEDGER-1 continues in
 bounded per-format slices; it must not delay recovery from the reported reload
 risk. Any newly verified wrong result still becomes a P0 ahead of new syntax.
 The field report is evidence of workflow failures, not an upstream oracle.
-SHARE-1, ORG-1E, ORG-TABLE-1/2, LINK-1 and ORG-INPUT-1 are implemented; the next
-slice is ORG-HINT-1.
+SHARE-1, ORG-1E, ORG-TABLE-1/2, LINK-1, ORG-INPUT-1 and ORG-HINT-1 are
+implemented; the next slice is FILE-1 design for reproducible shared inputs.
 
 | Order / slice | Tier | Ledger / report items | Work and completion evidence |
 | --- | --- | --- | --- |
@@ -424,7 +424,7 @@ slice is ORG-HINT-1.
 | 3b / ORG-TABLE-2 (M, implemented) | P1 export compatibility | ORG-12 (resolved), ORG-02 layout; report 6 | Five independent Emacs HTML-export documents cover 19 tables: header/body groups, scopes, default numeric threshold, blank runs, cookies and recalculated values. Both modes, sanitized HTML, print and narrow-table scrolling are checked in browsers. Calculation metadata stays visible under the established policy; rich cell markup and wider export features remain disclosed. See `design/org-table-html.md`. |
 | 4 / LINK-1 (S, implemented) | P1 authoring workflow | SHARED-06 (resolved); report 9 and 1 | Documented `node scripts/link.mjs <file>` uses the shared serializer, extension inference and explicit format/view/profile/base options. Unit and browser checks cover exact UTF-8 source, snapshots, both size limits, errors and fragment warnings. Org BOM/CRLF parser handling is corrected. The CLI supplies no storage and stays outside Pages assets. See `design/link-tool.md`. |
 | 5a / ORG-INPUT-1 (S, implemented) | P2 readable assumptions | ORG-13 (resolved); report 3 | `#+SHEETS_CONSTANTS: table` shows effective file constants and defining lines in both modes, while omitted options retain native keyword hiding. One new independent Emacs fixture checks duplicate constants, local overrides and literal ownership; unit/browser checks cover errors, exact values, sharing, saved documents, downloads, offline, print and mobile. See `design/org-constants-display.md`. |
-| 5b / ORG-HINT-1 (S) | P2 formula clarity | ORG-09 (resolved); report 5 | Add an opt-in source-line hint for potentially surprising division/multiplication without changing Calc precedence or warning on explicit grouping. Parenthesis workarounds are documented now. ORG-09 stays resolved because its arithmetic is faithful. |
+| 5b / ORG-HINT-1 (S, implemented) | P2 formula clarity | ORG-09 (resolved); report 5 | `#+SHEETS_HINTS: precedence` adds one informational annotation and preview explanation per active formula line for ungrouped divisor products. The Calc parser distinguishes explicit grouping, powers and multiplication; arithmetic, mode scheduling and errors remain unchanged. An independent Emacs fixture and unit/browser checks cover bounds, references, source round-trips, exports and offline use. See `design/org-precedence-hints.md`. |
 | 6 / FILE-1 (L, design first) | P2 shared inputs | ORG-02 cross-file, SHARED-07; report 2 and raw-URL alternative in 9 | Bring the project-input design forward ahead of other Phase 15 work. Evaluate explicitly supplied CID inputs as reproducible shared assumptions, bounded aggregate size/depth, cycles and a versioned share representation. A `?url=` loader is a separate proposal: define CORS/fetch failure, source snapshot and mutable-URL behavior before promising reproducibility. Preserve existing single-document links. |
 | 7 / ORG-MONEY-1 (S–M) | P2 display feature | ORG-02 formatting; report 6 | Design opt-in thousands grouping, including grouped currency display, without feeding decorated strings back into numeric calculation or changing existing `;%.2f` values. Literal dollar prefixes already work. This is a requested extension, not proven native printf parity. Test recalculation, source copy and export. |
 | 8 / UI-1 (L, separate designs) | P3 model tools | ORG-04; report 3, 7 and 8 | Evaluate source-backed preview input editing, input styling and per-cell notes separately. Goal seek/what-if needs a bounded numeric contract with no-solution/nonconvergence diagnostics and explicit source updates/undo. Calca’s existing scalar solver does not provide Org goal seek. Keep these below recovery, formula support and readable assumptions. |

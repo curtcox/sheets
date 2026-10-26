@@ -171,7 +171,7 @@ test("opt-in offline files support new source links, vendored workers, docs and 
   await expect(page.locator("#preview")).toContainText("value => value");
   await page.goto(
     writeURL(base, {
-      src: "#+SHEETS_CONSTANTS: table\n#+CONSTANTS: price=0.03\n#+NAME: data\n| 1 | 0 | 0 |\n#+TBLFM: $3=$2+1::$2=$1+10\n\n| 0 |\n#+TBLFM: $1=remote(data,@1$3)\n",
+      src: "#+SHEETS_HINTS: precedence\n#+SHEETS_CONSTANTS: table\n#+CONSTANTS: price=0.03\n#+NAME: data\n| 1 | 0 | 0 |\n#+TBLFM: $3=$2+1::$2=$1+10\n\n| 0 |\n#+TBLFM: $1=remote(data,@1$3)/1*1\n",
       format: "org",
       profile: ORG_EMACS,
     }),
@@ -180,9 +180,10 @@ test("opt-in offline files support new source links, vendored workers, docs and 
   await page.reload();
   await ready(page);
   await expect(page.locator("#profile")).toHaveValue(ORG_EMACS);
-  await expect(page.locator("#render-status")).toHaveText(/^Ready/);
+  await expect(page.locator("#render-status")).toHaveText(/^1 diagnostic/);
   await expect(page.locator("#preview table").last()).toHaveText("12");
   await expect(page.locator("#preview .org-constants")).toContainText("0.03");
+  await expect(page.locator('#preview aside[aria-label="Formula hints"]')).toContainText("Calc multiplies before dividing");
   const requests = await page.evaluate(async () => {
     const names = (await caches.keys()).filter((name) =>
       name.startsWith(

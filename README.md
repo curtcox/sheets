@@ -25,6 +25,8 @@ Its optional **Emacs order** mode supplies native column/field scheduling and
 duplicate-target checks; existing unprofiled links retain Legacy source order.
 Org's source option `#+SHEETS_CONSTANTS: table` shows file assumptions with their
 defining lines; omitted options retain native keyword hiding.
+`#+SHEETS_HINTS: precedence` adds optional formula-line hints for unparenthesized
+division/multiplication without changing Calc results.
 
 ## Run locally
 
@@ -105,7 +107,7 @@ Without native R, run the Python subset with `--language python`. Set
 
 CI runs these reference checks before browser tests. Generated reference outputs
 are committed and compared with the browser adapters by unit/browser tests. The
-Org check covers 25 numeric fixture documents and four rejections. It also
+Org check covers 26 numeric fixture documents and four rejections. It also
 exports five HTML fixture documents (19 tables) to compare header groups, scopes
 and alignment; it requires an Emacs build with libxml2 support.
 

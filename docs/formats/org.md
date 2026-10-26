@@ -125,7 +125,8 @@ digits and displayed with up to 8 significant digits; very large or small floats
 use Calc's scientific notation, such as `1e-3`. Integers stay exact, and a whole
 float keeps Calc's trailing point. As in Calc, `*` binds more tightly than `/`,
 so `10/4*2` means `10/(4*2)`. Parenthesize each intended division when adapting
-spreadsheet formulas; Sheets does not currently warn about this precedence.
+spreadsheet formulas. Use `#+SHEETS_HINTS: precedence` for optional source-line
+hints about an unparenthesized divisor product.
 Use Calc function names such as `arcsin` and `ln`;
 see the [complete function list](../function-comparison.md).
 
@@ -156,6 +157,42 @@ links, in both calculation modes, now show the Emacs values. For example,
 `sin(30)` changes from `-0.988031624093` to `0.5`, `1/3` from `0.333333333333`
 to `0.33333333`, and `10/4*2` from `5` to `1.25`. Source text is unchanged. This
 is an arithmetic correction rather than a new profile; see ORG-09.
+
+## Optional precedence hints
+
+Enable informational hints with a source keyword:
+
+```org
+#+SHEETS_HINTS: precedence
+| 0 | 0 | 0 |
+#+TBLFM: $1=10/4*2::$2=(10/4)*2::$3=10/(4*2)
+```
+
+The results remain **1.25**, **5.** and **1.25**. The formula line gets one
+informational ACE annotation and a **Formula hints** explanation in the preview:
+Calc multiplies before dividing, so `a/b*c` means `a/(b*c)`. Group either the
+division or the denominator product explicitly to make your intent clear.
+`(a/b)*c` and `a/(b*c)` produce no hint. Parentheses around just one factor,
+as in `a/(b)*c`, or the entire expression `(a/b*c)` do not clarify that choice
+and still get a hint. Powers such as `a/b**c` are not multiplication hints.
+
+Omit the keyword or select `#+SHEETS_HINTS: none` to disable these hints. The last
+real directive wins, names/values are case-insensitive, and literal source,
+example, export and comment blocks cannot enable hints or supply active formulas.
+An invalid option gives a warning and disables hints. Both calculation modes
+support the option; it travels in source through links, HashBin and downloads.
+HTML exports and printing include the preview explanation.
+
+This is a bounded syntax advisory, not a change to Calc arithmetic (ORG-09).
+It checks each active stored formula line once and emits at most one hint per
+line, even for many target cells. Named inputs, ranges and remote references are
+treated as atomic references. It does not inspect substituted cell expressions,
+mode/printf strings, or products using only implicit multiplication. A mixed
+product containing an explicit `*` may get a hint. Malformed expressions and
+expressions beyond the existing 4,000-character/parser bounds receive no hint;
+normal calculation errors still apply. A supported expression in an unused
+`if` branch can get a hint because the check inspects syntax, not runtime values.
+Hints never block writes or replace errors, including duplicate-target errors.
 
 ## Conditions and comparisons
 
