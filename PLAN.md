@@ -33,8 +33,9 @@ The 2026-10-25 field-report priorities below start with long-link recovery
 values (ORG-TABLE-1), all implemented. Native table headers/alignment
 (ORG-TABLE-2), file-to-link tooling (LINK-1) and optional constants display
 (ORG-INPUT-1) are also delivered, followed by optional formula clarity hints
-(ORG-HINT-1). FILE-1A now supplies bounded CID-pinned numeric Org inputs; broader
-shared-input packaging and raw-URL design remain next, alongside the ledger audit.
+(ORG-HINT-1). FILE-1A now supplies bounded CID-pinned numeric Org inputs and
+FILE-1B supplies portable Org snapshots; raw-URL design and broader project
+resources remain next, alongside the ledger audit.
 HashBin is registered and enabled using its public client ID and exact Pages
 callback. Live PKCE authorization, quoted save confirmation, and an anonymous
 saved-document round-trip have been verified. The repository uses MIT and Pages
@@ -417,7 +418,7 @@ risk. Any newly verified wrong result still becomes a P0 ahead of new syntax.
 The field report is evidence of workflow failures, not an upstream oracle.
 SHARE-1, ORG-1E, ORG-TABLE-1/2, LINK-1, ORG-INPUT-1 and ORG-HINT-1 are
 implemented. FILE-1A now supplies pinned numeric constants; broader FILE-1 work
-continues with portable dependency snapshots and raw-URL loader design.
+now includes portable Org snapshots (FILE-1B). Raw-URL loader design remains next.
 
 | Order / slice | Tier | Ledger / report items | Work and completion evidence |
 | --- | --- | --- | --- |
@@ -429,7 +430,7 @@ continues with portable dependency snapshots and raw-URL loader design.
 | 5a / ORG-INPUT-1 (S, implemented) | P2 readable assumptions | ORG-13 (resolved); report 3 | `#+SHEETS_CONSTANTS: table` shows effective file constants and defining lines in both modes, while omitted options retain native keyword hiding. One new independent Emacs fixture checks duplicate constants, local overrides and literal ownership; unit/browser checks cover errors, exact values, sharing, saved documents, downloads, offline, print and mobile. See `design/org-constants-display.md`. |
 | 5b / ORG-HINT-1 (S, implemented) | P2 formula clarity | ORG-09 (resolved); report 5 | `#+SHEETS_HINTS: precedence` adds one informational annotation and preview explanation per active formula line for ungrouped divisor products. The Calc parser distinguishes explicit grouping, powers and multiplication; arithmetic, mode scheduling and errors remain unchanged. An independent Emacs fixture and unit/browser checks cover bounds, references, source round-trips, exports and offline use. See `design/org-precedence-hints.md`. |
 | 6a / FILE-1A (M, implemented) | P2 shared numeric inputs | ORG-14 (resolved), ORG-02; report 2 | Versioned source declarations import numeric Org file constants from CID-pinned inputs, verify length/SHA-512, and expose scalar namespaces with provenance. Limits, atomic failures, cancellation, literal ownership and nonrecursive imports are tested; an independent local Emacs equivalent confirms exact arithmetic. Existing envelopes preserve source declarations. See `design/project-inputs.md`. |
-| 6b / FILE-1 (L, separate designs) | P2 portable projects and raw loading | ORG-02 cross-file, SHARED-07; report 2 and 9 | Portable verified dependency snapshots need a versioned representation and migration/size fixtures. A `?url=` loader remains a separate mutable-source proposal: define bounded fetching, CORS/fetch failure, redirects and conversion into an embedded source snapshot. General cross-file table/include graphs need depth/cycle and execution budgets. Preserve existing single-document links. |
+| 6b / FILE-1B (M, implemented) | P2 portable projects and raw loading | ORG-02 cross-file, SHARED-07; report 2 and 9 | Version-1 Org project files preserve source/mode/view and verified bytes; project fragments and HashBin version 3 preserve complete state. File validation, closed input loading, explicit live detachment, CLI and offline migration are tested. See `design/portable-projects.md`. A `?url=` loader remains a separate mutable-source proposal: define bounded fetching, CORS/fetch failure, redirects and conversion into an embedded source snapshot. General cross-file table/include graphs need depth/cycle and execution budgets. Preserve existing single-document links. |
 | 7 / ORG-MONEY-1 (S–M) | P2 display feature | ORG-02 formatting; report 6 | Design opt-in thousands grouping, including grouped currency display, without feeding decorated strings back into numeric calculation or changing existing `;%.2f` values. Literal dollar prefixes already work. This is a requested extension, not proven native printf parity. Test recalculation, source copy and export. |
 | 8 / UI-1 (L, separate designs) | P3 model tools | ORG-04; report 3, 7 and 8 | Evaluate source-backed preview input editing, input styling and per-cell notes separately. Goal seek/what-if needs a bounded numeric contract with no-solution/nonconvergence diagnostics and explicit source updates/undo. Calca’s existing scalar solver does not provide Org goal seek. Keep these below recovery, formula support and readable assumptions. |
 
@@ -591,7 +592,8 @@ entire format rewrite and an unrelated runtime expansion in one release.
    snapshot semantics. Never infer access to arbitrary local files from an include.
    FILE-1A delivers versioned, verified CID numeric imports for Org; see
    `design/project-inputs.md`. It does not deliver a general file manifest,
-   dependency bundle or arbitrary raw-URL loader.
+   general multi-format dependency bundle or arbitrary raw-URL loader. FILE-1B now
+   supplies portable snapshots for the supported Org numeric inputs.
 
 3. **OFFLINE-1 — optional scientific runtimes (L):** investigate self-hosting pinned,
    verified Python/R runtime assets and an explicit package set in a separate

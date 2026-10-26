@@ -27,7 +27,9 @@ FILE-1 proposal (SHARED-07). ORG-INPUT-1 now shows file assumptions with
 ORG-HINT-1 adds opt-in formula-line hints with `#+SHEETS_HINTS: precedence`;
 see [the hint contract](org-precedence-hints.md). FILE-1A imports CID-pinned
 numeric Org constants without running dependency formulas; see
-[the shared-input contract](project-inputs.md). Other items remain open.
+[the shared-input contract](project-inputs.md). FILE-1B adds portable Org snapshots
+that retain source, mode and verified inputs; see [the snapshot contract](portable-projects.md).
+Other items remain open.
 
 | # | Problem | Classification | Related |
 |---|---------|----------------|---------|

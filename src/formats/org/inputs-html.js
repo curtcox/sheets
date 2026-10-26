@@ -1,8 +1,9 @@
 import { escapeHTML } from "../../util.js";
 
-export function renderSharedInputs(inputs) {
+export function renderSharedInputs(inputs, bundled = false) {
   if (!inputs.length) return "";
-  return '<section class="org-shared-inputs"><h2>Shared inputs</h2><p>Read-only file constants pinned by CID. Dependency formulas are not executed. Reloading needs these inputs to remain available.</p>' +
+  return '<section class="org-shared-inputs"><h2>Shared inputs</h2><p>Read-only file constants pinned by CID. Dependency formulas are not executed. ' +
+    (bundled ? 'Verified bundled inputs are used without network fallback.' : 'Reloading needs these inputs to remain available.') + '</p>' +
     inputs.map(({ alias, cid, line, entries, error }) => {
       const label = escapeHTML(alias || "Invalid declaration");
       if (error) return `<p class="error">${label} (line ${line}): ${escapeHTML(error)}</p>`;

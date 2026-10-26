@@ -95,7 +95,7 @@ export function renderOrg(src, options = {}) {
     constantsPending = result.showConstants;
   const constants = () => {
     if (sharedPending) {
-      parts.push(renderSharedInputs(result.sharedInputs));
+      parts.push(renderSharedInputs(result.sharedInputs, options.inputSnapshot !== undefined));
       sharedPending = false;
     }
     if (!constantsPending) return;
@@ -121,11 +121,15 @@ export function renderOrg(src, options = {}) {
       '<button data-action="copy-org">Copy recalculated source</button>',
     diagnostics: result.diagnostics,
     recalculatedSource: result.source,
+    inputsReady: !result.sharedInputs.some((input) => input.error),
   };
 }
 export async function renderOrgWithInputs(src, options = {}) {
   const inputs = await loadOrgInputs(src, options);
   options.signal?.throwIfAborted();
-  return renderOrg(src, { ...options, inputs });
+  return {
+    ...renderOrg(src, { ...options, inputs }),
+    inputPayloads: new Map([...inputs.values()].filter((input) => !input.error).map((input) => [input.cid, input.bytes])),
+  };
 }
 export default plugin("org", renderOrgWithInputs);

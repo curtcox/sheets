@@ -29,6 +29,9 @@ defining lines; omitted options retain native keyword hiding.
 division/multiplication without changing Calc results.
 `#+SHEETS_INPUT: v1 prices <cid>` imports read-only numeric constants from a pinned
 Org document as `$prices.name`, with verified content and visible CID provenance.
+Org can download/open portable `.sheets.json` files containing source, mode, view
+and verified inputs. Their links and HashBin saves preserve bundled data. See
+[portable snapshots](docs/url-format.md#portable-project-snapshots).
 
 ## Run locally
 

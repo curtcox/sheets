@@ -1,6 +1,8 @@
 import { test, expect } from "@playwright/test";
 import { writeURL } from "../../src/url-state.js";
 import { longSource } from "../fixtures/long-source.js";
+import { readFile } from "node:fs/promises";
+import { parseProjectFile } from "../../src/project-state.js";
 const clientId = "app_8e03e133-83b4-4ee2-b3d5-39397f573879";
 const ready = (page) =>
   expect(page.locator("#render-status")).toHaveText(
@@ -26,6 +28,41 @@ const sdk = `export class HashBinClient {
  async authorizedFetch(path,options={}){if(path==='/api/content')globalThis.testHashBinUpload=await options.body.get('content').text();return fetch(this.options.baseUrl+path,{...options,headers:{...options.headers,Authorization:'Bearer test-only'}});}
  clearTokens(){localStorage.removeItem('test-hashbin-tokens');}
 }`;
+
+test("portable projects are quoted and confirmed as version 3 and reload with bundled inputs", async ({ page }) => {
+  const document = parseProjectFile(await readFile(new URL("../fixtures/projects/v1.sheets.json", import.meta.url), "utf8")),
+    cid = Buffer.from([0, 0, 0, 0, 0, 65]).toString("base64url") + "a".repeat(85) + "A";
+  let saves = 0, savedPayload;
+  await page.route("https://hashbin.org/**", async (route) => {
+    const path = new URL(route.request().url()).pathname;
+    if (path === "/sdk/hashbin.js") return route.fulfill({ body: sdk, contentType: "application/javascript" });
+    if (path === "/api/account/settings") return route.fulfill({ json: { default_retention_months: 3 } });
+    if (path === "/api/balance") return route.fulfill({ json: { balance_cents: 100 } });
+    if (path === "/api/payments/calculate") return route.fulfill({ json: { cost_cents: 1 } });
+    if (path === "/api/content") {
+      saves++; savedPayload = await page.evaluate(() => globalThis.testHashBinUpload);
+      return route.fulfill({ json: { cid } });
+    }
+    throw Error("Unexpected project save request " + path);
+  });
+  await page.route("https://256t.us/**", (route) => {
+    expect(route.request().url()).toBe("https://256t.us/" + cid);
+    return route.fulfill({ body: savedPayload, contentType: "application/json" });
+  });
+  await page.goto(writeURL("http://127.0.0.1:4173/", { ...document, format: "org" })); await ready(page);
+  await page.evaluate(() => localStorage.setItem("test-hashbin-tokens", JSON.stringify({ accessToken: "test-only", refreshToken: "test-only", expiresAt: Date.now() + 3600000 })));
+  await page.locator("#hashbin-open").click(); await page.locator("#hashbin-save").click();
+  await expect(page.locator("#hashbin-confirm")).toBeEnabled();
+  await expect(page.locator("#hashbin-message")).toContainText("Cost: $0.01"); expect(saves).toBe(0);
+  await page.locator("#hashbin-confirm").click(); await expect(page.locator("#hashbin-status")).toHaveText("Saved to HashBin.");
+  const saved = JSON.parse(savedPayload);
+  expect(saved.version).toBe(3); expect(saved.inputSnapshot).toEqual(document.inputSnapshot); expect(saved.src).toBe(document.src);
+  expect(saves).toBe(1);
+  await page.reload(); await ready(page);
+  await expect(page.locator("#profile")).toHaveValue("org-emacs-v1");
+  await expect(page.locator("#project-controls")).toBeVisible();
+  await expect(page.locator("#preview table:not(.org-inputs)").last()).toHaveText("1003.00");
+});
 
 test("HashBin connect restores the document, requotes edits, and saves a reloadable source link only after confirmation", async ({
   page,

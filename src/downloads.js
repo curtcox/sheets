@@ -1,6 +1,9 @@
 import { catalog } from "./formats/registry.js";
+import { serializeProjectFile } from "./project-state.js";
+import { snapshotFromPayloads } from "./input-snapshot.js";
 
 export function sourceTitle(source) {
+  source = source.replace(/^\uFEFF/, "");
   const title =
     /^(?:#{1,6}\s+|\*+\s+|#\+TITLE:\s*)(.+)$/im.exec(source)?.[1] ||
     (/^---\r?\n/.test(source) && /^title:\s*(.+)$/m.exec(source)?.[1]) ||
@@ -25,4 +28,9 @@ export function sourceDownload(source, format) {
     name: fileName(sourceTitle(source), extension),
     blob: new Blob([source], { type: "text/plain;charset=utf-8" }),
   };
+}
+export function projectDownload(document, payloads) {
+  const inputSnapshot = snapshotFromPayloads(payloads, document.src),
+    text = serializeProjectFile({ ...document, type: "org", inputSnapshot });
+  return { name: fileName(sourceTitle(document.src), ".sheets.json"), blob: new Blob([text], { type: "application/json;charset=utf-8" }) };
 }

@@ -82,13 +82,21 @@ Source links/downloads are not bundles of dependencies. Offline app files do not
 cache input payloads. Updating assumptions creates a new CID; consumers explicitly
 change their reference. Old models remain pinned rather than silently refreshing.
 
+## Portable snapshots delivered: FILE-1B
+
+Versioned Org project files, complete fragment links and version-3 saved envelopes
+now retain verified inputs with exact source, mode and view. See
+[the portable snapshot contract](portable-projects.md). Plain source downloads
+and ordinary source links retain the earlier reference-only contract.
+
 ## Remaining FILE-1 designs
 
 1. A portable project snapshot should bundle a versioned root plus verified
    dependency bytes, preserve aliases/CIDs and recorded engine profiles, and use
-   aggregate bounds before parsing. Missing or conflicting payloads must fail,
+   aggregate bounds before parsing. FILE-1B delivers the bounded Org numeric subset.
+   Broader multi-format resources still need separate designs. Missing or conflicting payloads must fail,
    with no fallback to mutable network content. Import/export UI and share size
-   behavior need their own migration fixtures; no bundle format is promised yet.
+   behavior for broader projects need their own migration fixtures.
 2. A `?url=` loader is a separate mutable-source workflow. It must define explicit
    user URL selection, CORS/status/redirect handling, a bounded fetch deadline,
    strict decoding, and conversion into an embedded source snapshot. Keeping a

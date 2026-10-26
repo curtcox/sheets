@@ -20,7 +20,7 @@ using the same lz-string encoding as `?compressed=…`. Fragments are not sent t
 the web server, so the long source does not trigger its request-line limit when
 you open or reload the document. Short links keep query source.
 
-Loading precedence is **CID → fragment source → query source → example → starter document**. A HashBin document supplies its stored format and view unless query parameters explicitly override them. Unknown formats and views safely default to Auto and Split. Invalid compressed links report an error. Decoding stops at 5 MiB to bound expansion.
+Loading precedence is **CID → project fragment → fragment source → query source → example → starter document**. A HashBin document supplies its stored format and view unless query parameters explicitly override them. Unknown formats and views safely default to Auto and Split. Invalid compressed links report an error. Decoding stops at 5 MiB to bound expansion.
 
 Editing a loaded CID clears the CID and embeds the new source. Changing the view of an unchanged saved document retains the CID; the view query parameter overrides the saved document's view when the link is loaded. Share links clear stale example, source, and OAuth callback parameters. Unrelated query parameters are preserved. A source fragment wins over stale query source; invalid fragment source reports an error. Editing a long document down to a short one returns its source to the query.
 
@@ -103,6 +103,37 @@ Org shared-input declarations (`#+SHEETS_INPUT: v1 alias <cid>`) travel inside
 source. They pin input content but do not embed its payload; hashed inputs need
 available content and a connection on reload. Source downloads keep the same
 references. See [pinned shared inputs](formats/org.md#pinned-shared-inputs).
+
+## Portable project snapshots
+
+For a ready Org document, choose **Download → Portable project (.sheets.json)**.
+The file contains exact source, calculation mode, view and verified input bytes.
+Choose **Download → Open project snapshot…** to reopen it in the normal Org editor.
+The source stays editable; **Source (.org)** still downloads root text only.
+
+Opened snapshots share complete state in `#project=…` fragments and save through
+HashBin version 3. They use bundled inputs without a network fallback. Missing or
+altered payloads report errors; changing a CID does not fetch a replacement.
+Org stays selected until **Use live inputs** explicitly detaches the bundle.
+Opening and detaching add history, so Back can restore the previous document.
+View/profile changes and source edits retain bundled data. A fresh browser or
+reload needs current app files; offline app files plus a project link/file let
+hashed inputs work without HashBin. A saved root CID still needs a connection.
+
+Version-1 project files reject unknown versions, duplicate CIDs, malformed data
+and incompatible modes. File JSON and decoded project JSON are bounded at 5 MiB;
+root source plus input bytes also has a 5 MiB limit. Input caps remain 8 payloads,
+64 KiB each and 256 KiB aggregate. Base64/JSON expansion can hit these limits
+earlier. Compressed links are bounded at 1,000,000 characters. Opening a file that
+cannot round-trip through the editor URL leaves the current document unchanged.
+If edits exceed sharing limits, Share is disabled and the notice recommends a
+source download before reloading. No local draft store is added.
+
+The CLI accepts `.sheets.json` files too. It verifies bundled bytes and preserves
+stored view/profile by default; explicit compatible options can override them.
+Import/export and CLI link generation do not upload anything. Project links
+include all bundled bytes; explicit shortening sends the complete link as usual.
+Raw-URL loading and general recursive projects remain unsupported (SHARED-07).
 
 ## Optional short links
 

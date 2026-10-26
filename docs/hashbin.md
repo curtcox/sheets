@@ -61,3 +61,15 @@ or charge, verify byte length and SHA-512, and never execute dependency formulas
 The preview exposes values and provenance. Root saves preserve declarations,
 not dependency payloads or their retention; input content must remain available.
 See [the bounded input contract](formats/org.md#pinned-shared-inputs).
+
+## Portable project saves
+
+Opened Org project snapshots use envelope version 3, with a version-1 inputSnapshot
+containing canonical CID/base64url payloads. Source, view, optional Org profile and
+input bytes survive save/load and sign-in restoration. Versions 1/2 remain unchanged.
+The existing quote and explicit confirmation include the bundled bytes in the saved
+size. No save or charge happens merely by opening/downloading a snapshot.
+
+Bundled dependencies no longer need separate retention when the root project is
+available; a root CID still needs to be retrieved. Missing/altered bundled bytes
+fail without fetching replacements. See [portable snapshots](url-format.md#portable-project-snapshots).

@@ -1,6 +1,7 @@
 import { HashBinDocuments } from "../../hashbin.js";
+import { SNAPSHOT_LIMITS } from "../../input-snapshot.js";
 
-export const INPUT_LIMITS = Object.freeze({ declarations: 8, bytes: 65536, aggregate: 262144, constants: 128, valueLength: 1000, deadline: 10000 });
+export const INPUT_LIMITS = Object.freeze({ ...SNAPSHOT_LIMITS, constants: 128, valueLength: 1000, deadline: 10000 });
 export function inputDeclarations(nodes) {
   const declarations = nodes.sort((a, b) => a.position.start.line - b.position.start.line).map((node) => {
     const match = /^v1\s+([A-Za-z][A-Za-z0-9_]{0,63})\s+(\S+)$/i.exec((node.value || "").trim()),

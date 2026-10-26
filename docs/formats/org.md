@@ -316,7 +316,9 @@ keep the references; they do not bundle dependency bytes. Offline app files do
 not cache these payloads, so hashed inputs still need a connection and available
 content on reload. Inline CIDs work offline. HTML exports/printing include the
 visible values and provenance as a separate static copy. Arbitrary raw `?url=`
-loading and portable dependency bundles remain FILE-1 work (SHARED-07).
+loading remains FILE-1 work (SHARED-07). [Portable Org snapshots](../url-format.md#portable-project-snapshots)
+now bundle verified bytes with source, calculation mode and view. Opened snapshots
+share and save those bytes and never fetch a missing replacement.
 
 ## Financial-model workflow limits
 
@@ -325,7 +327,8 @@ loading and portable dependency bundles remain FILE-1 work (SHARED-07).
   constants through field formulas in a custom Inputs table.
 - `#+SHEETS_INPUT: v1 alias <cid>` shares pinned numeric constants (ORG-14).
   `remote()` still reads tables in the same document only; general cross-file
-  tables, recursive imports and portable dependency bundles remain ORG-02 / FILE-1.
+  tables and recursive imports remain ORG-02 / FILE-1. Portable Org snapshots
+  preserve the supported numeric inputs.
 - Tables keep single-token values and headings intact and scroll horizontally
   when too wide (ORG-11). Multiword labels can wrap between words. Focus the
   table region and use Left/Right arrows to scroll the preview; HTML exports keep

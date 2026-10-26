@@ -92,7 +92,7 @@ for (const profile of [CALCA_BLOCKS, CALCA_SCOPES]) {
       { profile: "unknown" },
       { type: "org" },
       { profile: null },
-      { version: 3 },
+      { version: 4 },
     ])
       assert.throws(
         () => doc.parse(JSON.stringify({ ...JSON.parse(payload), ...extra })),

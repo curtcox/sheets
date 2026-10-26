@@ -2,6 +2,7 @@ import LZString from "../vendor/lz-string.js";
 import { decompressSource } from "./compression.js";
 import { HashBinDocuments } from "./hashbin.js";
 import { validateProfile } from "./compatibility-profiles.js";
+import { parseProjectFile, serializeProjectFile } from "./project-state.js";
 export const formats = [
   "gfm",
   "asciimath",
@@ -32,6 +33,21 @@ export function readURL(input) {
   const settings = { format, view, ...(profile ? { profile } : {}) };
   const cid = HashBinDocuments.cid(url.hash);
   if (cid) return { ...settings, cid, kind: "hashbin" };
+  if (url.hash.startsWith("#project=")) {
+    const value = url.hash.slice(9);
+    if (value.length > 1_000_000) throw new Error("Shared project is too large.");
+    const text = decompressSource(value);
+    if (text == null || LZString.compressToEncodedURIComponent(text) !== value)
+      throw new Error("The shared project could not be decompressed.");
+    const project = parseProjectFile(text);
+    if (url.searchParams.has("format") && !["org", "auto"].includes(format))
+      throw new Error("Portable snapshots require Org format.");
+    return {
+      src: project.src, format: "org", view: url.searchParams.has("view") ? view : project.view,
+      ...(url.searchParams.has("profile") ? (profile ? { profile } : {}) : project.profile ? { profile: project.profile } : {}),
+      inputSnapshot: project.inputSnapshot, kind: "project",
+    };
+  }
   if (url.hash.startsWith("#src=") || url.searchParams.has("compressed")) {
     const value = url.hash.startsWith("#src=")
       ? url.hash.slice(5)
@@ -58,7 +74,7 @@ export function readURL(input) {
 }
 export function writeURL(
   input,
-  { src = "", format = "auto", view = "split", cid = null, profile },
+  { src = "", format = "auto", view = "split", cid = null, profile, inputSnapshot },
 ) {
   validateProfile(profile, format);
   const url = new URL(input);
@@ -81,7 +97,10 @@ export function writeURL(
   if (profile) url.searchParams.set("profile", profile);
   if (views.includes(view) && view !== "split")
     url.searchParams.set("view", view);
+  if (inputSnapshot !== undefined && format !== "org") throw new Error("Portable snapshots require Org format.");
   if (cid && HashBinDocuments.isCID(cid)) url.hash = cid;
+  else if (inputSnapshot !== undefined)
+    url.hash = "project=" + LZString.compressToEncodedURIComponent(serializeProjectFile({ src, type: "org", view, profile, inputSnapshot }));
   else {
     const compressed = LZString.compressToEncodedURIComponent(src);
     url.searchParams.set("compressed", compressed);

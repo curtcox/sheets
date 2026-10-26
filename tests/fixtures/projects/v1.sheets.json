@@ -1,0 +1,19 @@
+{
+  "format": "sheets-project",
+  "version": 1,
+  "document": {
+    "src": "﻿#+TITLE: Portable model 日本語\r\n#+SHEETS_INPUT: v1 prices AAAAAAEZ04k3OZsqfaXoE1urJkUvULyVgWhi1TH_Hem-g-9zCD3gZL25E7iS1HIcsIl0QYhZBgMyNX6KRm3jOn6BhOcX0w\r\n| 1 | 0 | 0 |\r\n#+TBLFM: $3=$2+1::$2=$1+10\r\n\r\n| 100 | 0 |\r\n#+TBLFM: $2=$1*$prices.price;%.2f\r\n \t",
+    "type": "org",
+    "view": "preview",
+    "profile": "org-emacs-v1"
+  },
+  "inputSnapshot": {
+    "version": 1,
+    "payloads": [
+      {
+        "cid": "AAAAAAEZ04k3OZsqfaXoE1urJkUvULyVgWhi1TH_Hem-g-9zCD3gZL25E7iS1HIcsIl0QYhZBgMyNX6KRm3jOn6BhOcX0w",
+        "data": "77u_IytUSVRMRTogU2hhcmVkIGFzc3VtcHRpb25zDQojK0NPTlNUQU5UUzogcHJpY2U9MC4wMyB1c2Vycz0xMDAgdGF4PTAuMTAgZXhhY3Q9MTIzNDU2Nzg5MDEyMzQ1Njc4OTAxMjM0NTY3ODkwIGR1cGxpY2F0ZT0xDQojK0NPTlNUQU5UUzogZHVwbGljYXRlPTUNCg0KIytCRUdJTl9TUkMgb3JnDQojK0NPTlNUQU5UUzogcHJpY2U9OTk5IGhpZGRlbj0xMjMNCiMrU0hFRVRTX0lOUFVUOiB2MSBuZXN0ZWQgQUFBQUFBQUJNUQ0KIytFTkRfU1JDDQoNCnwgNzcgfA0KIytUQkxGTTogJDE9MS8wDQo"
+      }
+    ]
+  }
+}

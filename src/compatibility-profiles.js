@@ -32,10 +32,13 @@ export function resolveDocument(doc, overrides = {}) {
       ? undefined
       : doc.profile;
   validateProfile(profile, format);
+  if (doc.inputSnapshot && !["org", "auto"].includes(format))
+    throw new Error("Portable snapshots require Org format. Use live inputs before switching formats.");
   return {
     src: doc.src,
     format,
     view: overrides.view ?? doc.view ?? "split",
     ...(profile ? { profile } : {}),
+    ...(doc.inputSnapshot ? { format: "org", inputSnapshot: doc.inputSnapshot } : {}),
   };
 }

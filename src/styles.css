@@ -13,6 +13,8 @@
   --muted: #6c7c77;
   --split: 50%;
 }
+.project-status { margin: 0; padding: 8px 24px; }
+@media print { .project-status { display: none; } }
 * {
   box-sizing: border-box;
 }

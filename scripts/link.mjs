@@ -4,6 +4,8 @@ import { fileURLToPath } from "node:url";
 import { fromExtension } from "../src/formats/registry.js";
 import { profiles, validateProfile } from "../src/compatibility-profiles.js";
 import { HashBinDocuments } from "../src/hashbin.js";
+import { parseProjectFile } from "../src/project-state.js";
+import { verifyInputSnapshot } from "../src/input-snapshot.js";
 import {
   formats,
   views,
@@ -28,6 +30,7 @@ Requires Node 22 or newer and a UTF-8 source file.
 Values also accept --option=value. Formats: auto, ${formats.join(", ")}.
 Profiles: ${profiles.map((p) => p.id).join(", ")}.
 Known extensions select their format; unknown extensions use Auto.
+Portable .sheets.json projects preserve their source, mode, view and bundled inputs.
 Only the URL goes to stdout. Long-link warnings and errors go to stderr.
 `;
 
@@ -92,9 +95,19 @@ async function sourceFromFile(filename) {
 }
 
 export async function linkFromFile(filename, options = {}) {
-  const format = options.format ?? fromExtension(filename),
-    view = options.view ?? "split",
-    profile = options.profile;
+  const original = await sourceFromFile(filename);
+  let project;
+  let candidate;
+  if (original.trimStart().startsWith("{")) {
+    try { candidate = JSON.parse(original.replace(/^\uFEFF/, "")); } catch { /* Ordinary source may contain JSON-like text. */ }
+  }
+  if (filename.toLowerCase().endsWith(".sheets.json") || candidate?.format === "sheets-project") {
+    project = parseProjectFile(original);
+    await verifyInputSnapshot(project.inputSnapshot, project.src);
+  }
+  const format = options.format ?? project?.type ?? fromExtension(filename),
+    view = options.view ?? project?.view ?? "split",
+    profile = options.profile ?? project?.profile;
   if (format !== "auto" && !formats.includes(format))
     throw new Error(`Unknown format ${JSON.stringify(format)}.`);
   if (!views.includes(view)) throw new Error(`Unknown view ${JSON.stringify(view)}.`);
@@ -105,8 +118,8 @@ export async function linkFromFile(filename, options = {}) {
   try { base = new URL(options.base ?? defaultBase); } catch { /* Validated below. */ }
   if (!base || !["http:", "https:"].includes(base.protocol) || base.username || base.password)
     throw new Error("--base must be an absolute HTTP(S) editor URL without credentials.");
-  const src = await sourceFromFile(filename),
-    url = writeURL(base, { src, format, view, profile });
+  const src = project?.src ?? original,
+    url = writeURL(base, { src, format, view, profile, ...(project ? { inputSnapshot: project.inputSnapshot } : {}) });
   // Use the reader's canonical checks and both encoded/decoded size limits.
   try {
     if (readURL(url).src !== src) throw new Error("Source did not round-trip.");

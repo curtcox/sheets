@@ -1,6 +1,8 @@
 import { HashBinDocuments } from "../../hashbin.js";
 import { orgDocument, orgParserSource, numericBinding } from "./bindings.js";
 import { INPUT_LIMITS } from "./input-declarations.js";
+import { verifyCIDBytes } from "../../cid.js";
+import { verifyInputSnapshot } from "../../input-snapshot.js";
 
 function interrupted(work, signal) {
   signal.throwIfAborted();
@@ -16,10 +18,12 @@ function interrupted(work, signal) {
   });
 }
 
-async function payload(cid, fetchSource, signal, budget) {
+async function payload(cid, fetchSource, signal, budget, bundled) {
   const expected = HashBinDocuments.cidLength(cid);
   let bytes;
-  if (expected <= 64) bytes = HashBinDocuments.decode64(cid.slice(8));
+  if (bundled?.has(cid)) bytes = bundled.get(cid);
+  else if (expected <= 64) bytes = HashBinDocuments.decode64(cid.slice(8));
+  else if (bundled) throw new Error("Portable snapshot is missing a declared input payload; network fallback is disabled.");
   else {
     const response = await interrupted(() => fetchSource(`https://256t.us/${cid}`, {
       signal, credentials: "omit", redirect: "error", referrerPolicy: "no-referrer", cache: "no-store",
@@ -47,18 +51,11 @@ async function payload(cid, fetchSource, signal, budget) {
       if (!complete) void reader.cancel().catch(() => {});
     }
   }
-  if (bytes.byteLength !== expected) throw new Error("Shared input payload length does not match its CID.");
-  if (expected > 64) {
-    if (!globalThis.crypto?.subtle) throw new Error("Shared-input CID verification requires HTTPS or localhost.");
-    const digest = new Uint8Array(await interrupted(() => crypto.subtle.digest("SHA-512", bytes), signal)),
-      pinned = HashBinDocuments.decode64(cid.slice(8));
-    if (!digest.every((byte, index) => byte === pinned[index]))
-      throw new Error("Shared input content does not match its CID hash.");
-  }
+  await interrupted(() => verifyCIDBytes(cid, bytes, signal), signal);
   budget.used += bytes.byteLength;
   if (budget.used > INPUT_LIMITS.aggregate || budget.root + budget.used > HashBinDocuments.MAX_BYTES)
     throw new Error("Shared inputs exceed the 256 KiB aggregate or 5 MiB source-plus-input limit.");
-  return new TextDecoder("utf-8", { fatal: true }).decode(bytes);
+  return { text: new TextDecoder("utf-8", { fatal: true }).decode(bytes), bytes };
 }
 
 export function validateInputEntries(entries) {
@@ -87,15 +84,14 @@ function constantsFrom(text) {
 }
 
 // One render owns all reads and data. No persistent document cache or recursion.
-export async function loadOrgInputs(src, { signal, fetchSource = (...args) => fetch(...args), deadline = INPUT_LIMITS.deadline } = {}) {
+export async function loadOrgInputs(src, { signal, fetchSource = (...args) => fetch(...args), deadline = INPUT_LIMITS.deadline, inputSnapshot } = {}) {
   signal?.throwIfAborted();
   // Avoid another AST pass for ordinary documents, and reject oversized import
   // sources before parsing them or starting any network work.
-  if (!/^\s*#\+SHEETS_INPUT:/im.test(src)) return new Map();
+  if (inputSnapshot === undefined && !/^\s*#\+SHEETS_INPUT:/im.test(src)) return new Map();
   const rootBytes = new TextEncoder().encode(src).byteLength;
   if (rootBytes > HashBinDocuments.MAX_BYTES) throw new Error("Source plus shared inputs exceeds 5 MiB.");
   const declarations = orgDocument(orgParserSource(src), []).inputs;
-  if (!declarations.length) return new Map();
   const failed = (message) => new Map(declarations.filter((d) => d.alias).map((d) => [d.alias, { cid: d.cid, error: message }]));
   if (declarations.some((d) => d.error)) return failed("Shared input declarations are invalid; no inputs were loaded.");
   const controller = new AbortController(),
@@ -104,16 +100,21 @@ export async function loadOrgInputs(src, { signal, fetchSource = (...args) => fe
     budget = { used: 0, root: rootBytes },
     contents = new Map(), results = new Map();
   try {
+    const bundled = inputSnapshot === undefined ? undefined : await interrupted(() => verifyInputSnapshot(inputSnapshot, src, combined), combined);
     if (budget.root > HashBinDocuments.MAX_BYTES) throw new Error("Source plus shared inputs exceeds 5 MiB.");
     for (const { alias, cid } of declarations) {
       combined.throwIfAborted();
-      if (!contents.has(cid)) contents.set(cid, constantsFrom(await payload(cid, fetchSource, combined, budget)));
-      results.set(alias, { cid, entries: contents.get(cid) });
+      if (!contents.has(cid)) {
+        const loaded = await payload(cid, fetchSource, combined, budget, bundled);
+        contents.set(cid, { entries: constantsFrom(loaded.text), bytes: loaded.bytes });
+      }
+      results.set(alias, { cid, ...contents.get(cid) });
     }
     combined.throwIfAborted();
     return results;
   } catch (error) {
     if (signal?.aborted) throw signal.reason;
+    if (inputSnapshot !== undefined && !declarations.length) throw error;
     return failed(error.message || "Shared inputs could not be loaded.");
   } finally {
     clearTimeout(timer);

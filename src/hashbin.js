@@ -1,33 +1,15 @@
 /** Sheets document persistence and OAuth source restoration. */
 import { validateProfile } from "./compatibility-profiles.js";
+import { decode64, cidLength, isCID } from "./cid.js";
+import { validateProjectDocument } from "./project-state.js";
 const HashBinDocuments = {
   MAX_BYTES: 5 * 1024 * 1024,
   bytes(value) {
     return new TextEncoder().encode(value);
   },
-  decode64(value) {
-    return Uint8Array.from(
-      atob(value.replace(/-/g, "+").replace(/_/g, "/")),
-      (c) => c.charCodeAt(0),
-    );
-  },
-  cidLength(cid) {
-    return this.decode64(cid.slice(0, 8)).reduce((n, b) => n * 256 + b, 0);
-  },
-  isCID(value) {
-    if (typeof value !== "string" || !/^[A-Za-z0-9_-]{8,94}$/.test(value))
-      return false;
-    const length = this.cidLength(value);
-    if (value.length !== 8 + (length <= 64 ? Math.ceil((length * 4) / 3) : 86))
-      return false;
-    // Reject noncanonical base64 trailing bits, so ordinary source hashes stay source.
-    const rest = this.decode64(value.slice(8));
-    const encoded = btoa(String.fromCharCode(...rest))
-      .replace(/\+/g, "-")
-      .replace(/\//g, "_")
-      .replace(/=+$/, "");
-    return encoded === value.slice(8);
-  },
+  decode64,
+  cidLength,
+  isCID,
   cid(input) {
     const text = input.trim().replace(/^#/, "");
     if (this.isCID(text)) return text;
@@ -44,7 +26,7 @@ const HashBinDocuments = {
       return null;
     }
   },
-  serialize({ src, type, view = "split", profile }) {
+  serialize({ src, type, view = "split", profile, inputSnapshot }) {
     if (
       typeof src !== "string" ||
       ![
@@ -62,13 +44,15 @@ const HashBinDocuments = {
     )
       throw new Error("Choose a format before saving.");
     validateProfile(profile, type);
+    const project = inputSnapshot === undefined ? undefined : validateProjectDocument({ src, type, view, profile, inputSnapshot });
     const payload = JSON.stringify({
       format: "sheets-document",
-      version: profile ? 2 : 1,
+      version: project ? 3 : profile ? 2 : 1,
       type,
       src,
       view,
       ...(profile ? { profile } : {}),
+      ...(project ? { inputSnapshot: project.inputSnapshot } : {}),
     });
     if (this.bytes(payload).length > this.MAX_BYTES)
       throw new Error("Source exceeds the 5 MiB HashBin limit.");
@@ -85,10 +69,11 @@ const HashBinDocuments = {
     }
     if (doc?.format !== "sheets-document")
       return { src: text, type: null, view: "split" };
-    if (![1, 2].includes(doc.version))
+    if (![1, 2, 3].includes(doc.version))
       throw new Error("Unsupported saved document version.");
     if (typeof doc.src !== "string")
       throw new Error("Saved document has no source.");
+    if (doc.version === 3) return validateProjectDocument(doc);
     const type = [
       "gfm",
       "asciimath",

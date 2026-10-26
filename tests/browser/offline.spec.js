@@ -6,6 +6,7 @@ import { tmpdir } from "node:os";
 import { stage } from "../../scripts/stage.mjs";
 import { createStaticServer } from "../../scripts/serve.mjs";
 import { writeURL } from "../../src/url-state.js";
+import { parseProjectFile } from "../../src/project-state.js";
 import { longSource } from "../fixtures/long-source.js";
 import {
   CALCA_SCOPES,
@@ -195,6 +196,13 @@ test("opt-in offline files support new source links, vendored workers, docs and 
   await expect(page.locator("#render-status")).toHaveText(/^2 diagnostics/);
   await expect(page.locator("#preview table:not(.org-inputs)")).toHaveText("99");
   await expect(page.locator("#preview .org-shared-inputs .error")).toBeVisible();
+  const project = parseProjectFile(await readFile(new URL("../fixtures/projects/v1.sheets.json", import.meta.url), "utf8"));
+  await page.goto(writeURL(base, { ...project, format: "org" })); await ready(page);
+  await page.reload(); await ready(page);
+  await expect(page.locator("#render-status")).toHaveText(/^Ready/);
+  await expect(page.locator("#profile")).toHaveValue("org-emacs-v1");
+  await expect(page.locator("#project-controls")).toBeVisible();
+  await expect(page.locator("#preview table:not(.org-inputs)").last()).toHaveText("1003.00");
   const requests = await page.evaluate(async () => {
     const names = (await caches.keys()).filter((name) =>
       name.startsWith(
