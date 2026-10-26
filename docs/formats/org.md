@@ -265,14 +265,67 @@ recalculated source and file-to-link commands preserve it without a new profile.
 HTML export and printing include the visible summary. Editing inputs still
 requires editing source; input styling and cell notes remain UI-1 work.
 
+## Pinned shared inputs
+
+Use `#+SHEETS_INPUT: v1 prices <cid>` to read numeric file constants from another
+saved Org document. Reference them with a namespace, such as `$prices.price`:
+
+```org
+#+SHEETS_INPUT: v1 prices AAAAAAAXIytDT05TVEFOVFM6IHByaWNlPTAuMDM
+| Users | Monthly cost |
+|-------+--------------|
+| 100   | 0            |
+#+TBLFM: $2=$1*$prices.price;%.2f
+```
+
+The inline CID above contains `#+CONSTANTS: price=0.03`, so this example needs no
+network and calculates **3.00**. For a larger assumptions document, create an Org
+file with numeric `#+CONSTANTS:`, choose Org, and save it through the app's normal
+HashBin confirmation flow. Paste that bare CID into each consuming model. Versions
+1 and 2 of saved Org documents and plain Org source are accepted. Both root
+calculation modes work, and the source keyword preserves the choice in links,
+saved documents, CLI links and source downloads.
+
+The **Shared inputs** preview always shows imported values, their namespace,
+defining lines and CID provenance. Original numeric text and exact integers are
+preserved. Duplicate constants use their last declaration; literal blocks supply
+no values. Dependency tables/formulas never execute. This is a read-only Sheets
+extension (ORG-14), distinct from native cross-file `remote()` tables. References
+are scalar; imported ranges and assignments to imported values are unsupported.
+Namespaces/names are case-sensitive ASCII names of at most 64 characters and do
+not fall back to local bindings when an import or name is missing.
+
+Only bare canonical CIDs are accepted. Duplicate aliases, nested imports and
+cycles are rejected. Larger payloads load anonymously from `https://256t.us/`
+with no credentials or referrer; redirects are rejected. Byte length and SHA-512
+must match the CID before strict UTF-8 parsing. Hash verification needs HTTPS or
+localhost. Limits are **8 declarations**, **64 KiB per payload**, **256 KiB across
+distinct payloads**, **5 MiB root source plus payloads**, **128 constants per input**,
+**1,000 characters per numeric value**, and one **10-second loading deadline**.
+Repeated CIDs load once per render. Invalid numeric declarations reject the input.
+
+The imported set loads atomically: if any input fails, no imported values apply.
+The declaration and affected formulas get diagnostics, cells retain their old
+values, and ordinary local formulas can still calculate. Read diagnostics before
+trusting retained numeric cells. Edits, navigation and Cancel discard in-flight
+loads. No HashBin write, account authorization or charge occurs while reading.
+
+CIDs pin content rather than guarantee its retention. Updating assumptions means
+saving a new CID and explicitly updating consumers. Source downloads and links
+keep the references; they do not bundle dependency bytes. Offline app files do
+not cache these payloads, so hashed inputs still need a connection and available
+content on reload. Inline CIDs work offline. HTML exports/printing include the
+visible values and provenance as a separate static copy. Arbitrary raw `?url=`
+loading and portable dependency bundles remain FILE-1 work (SHARED-07).
+
 ## Financial-model workflow limits
 
 - `#+CONSTANTS:` values stay hidden by default, as in native Org HTML export.
   Use `#+SHEETS_CONSTANTS: table` for a file constants summary (ORG-13), or echo
   constants through field formulas in a custom Inputs table.
-- Inputs cannot be shared across source documents yet (ORG-02 / FILE-1).
-  `remote()` reads tables in the same document only. Splitting a model means
-  keeping duplicated constants synchronized manually.
+- `#+SHEETS_INPUT: v1 alias <cid>` shares pinned numeric constants (ORG-14).
+  `remote()` still reads tables in the same document only; general cross-file
+  tables, recursive imports and portable dependency bundles remain ORG-02 / FILE-1.
 - Tables keep single-token values and headings intact and scroll horizontally
   when too wide (ORG-11). Multiword labels can wrap between words. Focus the
   table region and use Left/Right arrows to scroll the preview; HTML exports keep
@@ -447,4 +500,5 @@ These entries share the [central limitations ledger](../limitations.md). “Need
 | ORG-11 | Resolved | Org table values stay intact in narrow previews and HTML exports |
 | ORG-12 | Resolved | Table header groups and numeric-column alignment match native HTML fixtures |
 | ORG-13 | Resolved | File constants have an optional preview summary |
+| ORG-14 | Resolved | Pinned numeric Org inputs load through versioned CID declarations |
 <!-- compatibility:end -->

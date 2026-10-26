@@ -9,6 +9,7 @@ import {
 } from "./references.js";
 import { ORG_EMACS, validateProfile } from "../../compatibility-profiles.js";
 import { formulaPrecedenceHints } from "./precedence-hints.js";
+import { validateInputEntries } from "./inputs.js";
 const isHline = (line) => /^\s*\|[-+:]+\|?\s*$/.test(line);
 export function parseTable(lines) {
   const rows = [],
@@ -39,7 +40,7 @@ export function parseTable(lines) {
 export function recalculateTable(
   table,
   formula,
-  { line = 1, bindings, profile, remote } = {},
+  { line = 1, bindings, profile, remote, sharedInput } = {},
 ) {
   validateProfile(profile, "org");
   const diagnostics = [];
@@ -59,6 +60,13 @@ export function recalculateTable(
         return bind(remote(name, ref));
       },
     );
+    const sharedReference = String.raw`\$[A-Za-z][A-Za-z0-9_]*\.[A-Za-z][A-Za-z0-9_]*`;
+    if (new RegExp(`${sharedReference}\\s*\\.\\.|\\.\\.\\s*${sharedReference}`).test(expression))
+      throw new Error("Shared-input references are scalar; imported ranges are unsupported.");
+    expression = expression.replace(/\$([A-Za-z][A-Za-z0-9_]*)\.([A-Za-z][A-Za-z0-9_]*)/g, (_, alias, name) => {
+      if (!sharedInput) throw new Error(`Shared input ${alias} has not been loaded.`);
+      return bind({ constant: sharedInput(alias, name) });
+    });
     expression = expression.replace(/\$([A-Za-z][A-Za-z0-9_]*)/g, (_, name) => {
       const column = bindings.column(name);
       return column ? `$${column}` : bind({ constant: bindings.value(name) });
@@ -209,13 +217,38 @@ export function tableSource(table) {
       : `| ${table.rows[index].map((cell, c) => (/^[-+]?\d+(?:\.\d+)?$/.test(cell) ? cell.padStart(widths[c]) : cell.padEnd(widths[c]))).join(" | ")} |`,
   );
 }
-export function recalculateOrg(src, { profile } = {}) {
+export function recalculateOrg(src, { profile, inputs = new Map() } = {}) {
   validateProfile(profile, "org");
   src = orgParserSource(src);
   const lines = src.split("\n"),
     diagnostics = [],
     formulaHints = [],
     document = orgDocument(src, diagnostics);
+  const sharedInputs = document.inputs.map((declaration) => {
+    const loaded = inputs.get(declaration.alias), entry = { ...declaration };
+    try {
+      if (entry.error) throw new Error(entry.error);
+      if (!loaded || loaded.cid !== entry.cid) throw new Error("Shared input has not been loaded for this CID.");
+      if (loaded.error) throw new Error(loaded.error);
+      entry.entries = validateInputEntries(loaded.entries);
+    } catch (error) { entry.error = error.message; }
+    return entry;
+  });
+  if (sharedInputs.some((entry) => entry.error))
+    for (const entry of sharedInputs) {
+      entry.error ||= "Other shared inputs failed; no shared values were applied.";
+      delete entry.entries;
+    }
+  const sharedByAlias = new Map(sharedInputs.map((entry) => [entry.alias, entry]));
+  for (const entry of sharedInputs)
+    if (entry.error) diagnostics.push({ line: entry.line, message: `Shared input ${entry.alias || "declaration"}: ${entry.error}` });
+  const sharedInput = (alias, name) => {
+    const input = sharedByAlias.get(alias);
+    if (!input || input.error) throw new Error(`Shared input ${alias} is unavailable; check its declaration and load diagnostics.`);
+    const value = input.entries.find((entry) => entry.name === name)?.value;
+    if (value === undefined) throw new Error(`Shared input ${alias} has no constant ${name}. Names are case-sensitive.`);
+    return value;
+  };
   const tables = document.starts.map((start) => {
     let end = start;
     const tableLines = [];
@@ -249,7 +282,7 @@ export function recalculateOrg(src, { profile } = {}) {
         ...recalculateTable(
           table,
           formula,
-          { line: formulaIndex + 1, bindings, profile, remote },
+          { line: formulaIndex + 1, bindings, profile, remote, sharedInput },
         ),
       );
       if (document.precedenceHints)
@@ -264,6 +297,7 @@ export function recalculateOrg(src, { profile } = {}) {
   return {
     tables, diagnostics: [...diagnostics, ...formulaHints], source: output.join("\n"),
     formulaHints,
+    sharedInputs,
     fileConstants: document.constantEntries,
     showConstants: document.showConstants,
   };

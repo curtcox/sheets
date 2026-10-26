@@ -1,6 +1,6 @@
 import { parseCalc, MAX_CALC_LENGTH } from "./calc.js";
 
-const reference = String.raw`(?:@(?:[+-]?\d+|[<>]|[IVX]+)(?:\$(?:[+-]?\d+|[<>]))?|\$(?:[A-Za-z][A-Za-z0-9_]*|[+-]?\d+|[<>]))`;
+const reference = String.raw`(?:@(?:[+-]?\d+|[<>]|[IVX]+)(?:\$(?:[+-]?\d+|[<>]))?|\$(?:[A-Za-z][A-Za-z0-9_]*(?:\.[A-Za-z][A-Za-z0-9_]*)?|[+-]?\d+|[<>]))`;
 const ranges = new RegExp(`${reference}\\.\\.${reference}`, "g");
 const references = new RegExp(reference, "g");
 const placeholder = "\uE0000\uE001";

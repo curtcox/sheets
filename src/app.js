@@ -141,6 +141,9 @@ function updateDownloadOptions(ready = false) {
   $("download-source").textContent = `Source (${extension})`;
   $("download-html").disabled = !ready;
   $("print-preview").disabled = !ready;
+  preview.querySelectorAll("[data-action=copy-org]").forEach((button) => {
+    button.disabled = !ready;
+  });
 }
 function persist() {
   clearTimeout(persistTimer);

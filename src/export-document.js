@@ -10,7 +10,7 @@ table{border-collapse:collapse;width:100%;margin:20px 0;font-size:.9em}td,th{bor
 .org-table-scroll{max-width:100%;overflow-x:auto;margin:20px 0}.org-table-scroll table{margin:0;overflow-wrap:normal;word-break:normal}
 .org-table-scroll td,.org-table-scroll th{white-space:nowrap}.org-table-scroll .org-table-wrap{white-space:normal}
 .org-table-scroll .org-left{text-align:left}.org-table-scroll .org-right{text-align:right}.org-table-scroll .org-center{text-align:center}
-.org-constants caption{text-align:left;font-weight:600;padding-bottom:8px}
+.org-constants caption,.org-inputs caption{text-align:left;font-weight:600;padding-bottom:8px}
 [align="center"]{text-align:center}[align="right"]{text-align:right}
 pre{background:#f5f7f3;padding:16px;white-space:pre-wrap;overflow:auto;border-radius:6px}code{font-family:ui-monospace,monospace;font-size:.9em}
 blockquote,.markdown-alert,.callout{border-left:3px solid #7cb99c;padding:4px 18px;margin:20px 0;background:#f1f7ef}

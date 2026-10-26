@@ -1,0 +1,11 @@
+#+TITLE: Shared assumptions
+#+CONSTANTS: price=0.03 users=100 tax=0.10 exact=123456789012345678901234567890 duplicate=1
+#+CONSTANTS: duplicate=5
+
+#+BEGIN_SRC org
+#+CONSTANTS: price=999 hidden=123
+#+SHEETS_INPUT: v1 nested AAAAAAABMQ
+#+END_SRC
+
+| 77 |
+#+TBLFM: $1=1/0

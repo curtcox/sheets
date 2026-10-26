@@ -1,4 +1,5 @@
 import * as orga from "../../../vendor/orga.js";
+import { inputDeclarations } from "./input-declarations.js";
 const namePattern = /^[A-Za-z][A-Za-z0-9_]*$/;
 const numericPattern = /^[+-]?(?:\d+(?:\.\d*)?|\.\d+)(?:e[+-]?\d+)?$/i;
 // Normalize parser input only; the editor and shared source retain original bytes.
@@ -20,6 +21,7 @@ export function orgDocument(src, diagnostics) {
     keywords = [],
     displayKeywords = [],
     hintKeywords = [],
+    inputKeywords = [],
     names = [],
     headings = [],
     stack = [orga.parse(src)];
@@ -47,6 +49,8 @@ export function orgDocument(src, diagnostics) {
       displayKeywords.push(node);
     if (node.type === "keyword" && node.key?.toUpperCase() === "SHEETS_HINTS")
       hintKeywords.push(node);
+    if (node.type === "keyword" && node.key?.toUpperCase() === "SHEETS_INPUT")
+      inputKeywords.push(node);
     if (node.type === "keyword" && /^(?:NAME|TBLNAME)$/i.test(node.key))
       names.push(node);
     if (node.type === "headline") headings.push(node.position.start.line - 1);
@@ -111,6 +115,7 @@ export function orgDocument(src, diagnostics) {
     constantEntries: [...constantEntries.values()],
     showConstants: option(displayKeywords, "SHEETS_CONSTANTS", ["table", "none"]) === "table",
     precedenceHints: option(hintKeywords, "SHEETS_HINTS", ["precedence", "none"]) === "precedence",
+    inputs: inputDeclarations(inputKeywords),
   };
 }
 export function tableBindings(

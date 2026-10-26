@@ -5,6 +5,8 @@ import { escapeHTML } from "../../util.js";
 import { renderOrgTable } from "./table-html.js";
 import { orgParserSource } from "./bindings.js";
 import { renderFileConstants } from "./constants-html.js";
+import { loadOrgInputs } from "./inputs.js";
+import { renderSharedInputs } from "./inputs-html.js";
 function nodeHTML(node) {
   const children = () => (node.children || []).map(nodeHTML).join("");
   switch (node.type) {
@@ -89,8 +91,13 @@ export function renderOrg(src, options = {}) {
   const result = recalculateOrg(src, options),
     parts = [];
   let pos = 0,
+    sharedPending = true,
     constantsPending = result.showConstants;
   const constants = () => {
+    if (sharedPending) {
+      parts.push(renderSharedInputs(result.sharedInputs));
+      sharedPending = false;
+    }
     if (!constantsPending) return;
     parts.push(renderFileConstants(result.fileConstants));
     constantsPending = false;
@@ -116,4 +123,9 @@ export function renderOrg(src, options = {}) {
     recalculatedSource: result.source,
   };
 }
-export default plugin("org", async (src, options) => renderOrg(src, options));
+export async function renderOrgWithInputs(src, options = {}) {
+  const inputs = await loadOrgInputs(src, options);
+  options.signal?.throwIfAborted();
+  return renderOrg(src, { ...options, inputs });
+}
+export default plugin("org", renderOrgWithInputs);

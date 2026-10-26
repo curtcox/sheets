@@ -476,14 +476,15 @@
       "milestone": "ORG-1",
       "dependsOn": [],
       "expected": "Verify remaining target syntax, iteration, remote indirection/file inputs, symbolic and duration Calc results, and native layout in separate reference-backed slices.",
-      "disclosure": "Numeric named bindings, same-document remote cells/ranges and Emacs Calc default/explicit numeric modes work (ORG-09). The explicit Emacs-order profile supplies row-major sorted columns, protected fields, sorted field formulas and duplicate-target rejection; Legacy retains source-order links. Target ranges, relative targets in Emacs order, dynamic remote indirection, A1 remote notation, cross-file/ID references, iteration, property/external or nonnumeric bindings, Calc symbolic/complex/unit/date/duration results and exact Emacs display-width/full export layout remain unsupported. Header groups and numeric column alignment are supported (ORG-12); rich table-cell markup, captions, column groups, native width handling and export omission of calculation marker rows/columns remain incomplete. Remote and Calc failure diagnostics retain the affected cell instead of native symbolic or #ERROR text. Numeric conditional formulas and comparisons are supported (ORG-10), while vector/symbolic conditions and comparisons, logical operators and ternary syntax remain unsupported. Thousands grouping, including grouped currency display, is not provided. ;%.2f controls decimal places and a literal dollar prefix is possible, but it does not add grouping. Cross-document inputs still require duplicated constants or tables until FILE-1. UTF-8 BOM and CRLF files parse through normalized input; shared/editor source remains exact, while recalculated source uses LF without a BOM.",
+      "disclosure": "Numeric named bindings, same-document remote cells/ranges and Emacs Calc default/explicit numeric modes work (ORG-09). The explicit Emacs-order profile supplies row-major sorted columns, protected fields, sorted field formulas and duplicate-target rejection; Legacy retains source-order links. Target ranges, relative targets in Emacs order, dynamic remote indirection, A1 remote notation, cross-file/ID references, iteration, native property/external or nonnumeric bindings, Calc symbolic/complex/unit/date/duration results and exact Emacs display-width/full export layout remain unsupported. Header groups and numeric column alignment are supported (ORG-12); rich table-cell markup, captions, column groups, native width handling and export omission of calculation marker rows/columns remain incomplete. Remote and Calc failure diagnostics retain the affected cell instead of native symbolic or #ERROR text. Numeric conditional formulas and comparisons are supported (ORG-10), while vector/symbolic conditions and comparisons, logical operators and ternary syntax remain unsupported. Thousands grouping, including grouped currency display, is not provided. ;%.2f controls decimal places and a literal dollar prefix is possible, but it does not add grouping. Versioned SHEETS_INPUT declarations import verified CID-pinned numeric Org constants under explicit scalar namespaces (ORG-14). General cross-file tables, recursive imports and portable dependency bundles remain FILE-1 work. UTF-8 BOM and CRLF files parse through normalized input; shared/editor source remains exact, while recalculated source uses LF without a BOM.",
       "baselineDisclosure": "Named fields, remote tables, iteration modes, arbitrary Calc syntax, and exact Emacs display-width alignment are not implemented. Formulas execute in order, rather than iterating until results converge.",
       "reproducer": {
         "path": "design/org-order.md"
       },
       "evidence": [
         "design/org-order.md",
-        "tests/unit/org-order.test.js"
+        "tests/unit/org-order.test.js",
+        "design/project-inputs.md"
       ]
     },
     {
@@ -1144,7 +1145,7 @@
       "milestone": "FILE-1",
       "dependsOn": [],
       "expected": "Verify each behavior against Sheets browser deployment; separate deliberate policy from unsupported upstream capabilities.",
-      "disclosure": "Source links retain the document, format, view and explicit profile. Above 7,000 characters, generated links move source to #src= so it is omitted from HTTP requests (SHARED-05). Short ?compressed= links remain readable. Browser, messaging and proxy limits on complete URLs still vary; the UI recommends a source download or HashBin for a separate copy. Existing oversized query links can still fail before the app loads. Decoded shared source and HashBin payloads are bounded at **5 MiB**; unsupported envelope versions are rejected. The file-to-link CLI embeds local file snapshots (SHARED-06); a ?url= raw-source loader remains unsupported (SHARED-07).",
+      "disclosure": "Source links retain the document, format, view and explicit profile. Above 7,000 characters, generated links move source to #src= so it is omitted from HTTP requests (SHARED-05). Short ?compressed= links remain readable. Browser, messaging and proxy limits on complete URLs still vary; the UI recommends a source download or HashBin for a separate copy. Existing oversized query links can still fail before the app loads. Decoded shared source and HashBin payloads are bounded at **5 MiB**; unsupported envelope versions are rejected. The file-to-link CLI embeds local file snapshots (SHARED-06); a ?url= raw-source loader remains unsupported (SHARED-07). Versioned Org input declarations travel in source, pinning dependency CIDs rather than bundling payloads. Reloads still require hashed input content to remain available (ORG-14).",
       "baselineDisclosure": "Source links retain the document, format, and view. Around 8 KB the UI suggests HashBin; browser, messaging, and proxy URL limits vary. Decoded shared source and HashBin payloads are bounded at **5 MiB**; unsupported envelope versions are rejected.",
       "reproducer": null,
       "evidence": []
@@ -1159,7 +1160,7 @@
       "milestone": "FILE-1",
       "dependsOn": [],
       "expected": "Verify each behavior against Sheets browser deployment; separate deliberate policy from unsupported upstream capabilities.",
-      "disclosure": "Offline files cache static app assets, not document URLs, HashBin payloads, external images, fresh currency rates, or Python/R runtimes. Browser storage may be evicted. HashBin and optional link shortening require a connection.",
+      "disclosure": "Offline files cache static app assets, not document URLs, HashBin payloads, external images, fresh currency rates, or Python/R runtimes. Browser storage may be evicted. HashBin and optional link shortening require a connection. Hashed Org shared-input payloads are not cached by offline app files; inline input CIDs decode without network (ORG-14).",
       "baselineDisclosure": "Offline files cache static app assets, not document URLs, HashBin payloads, external images, fresh currency rates, or Python/R runtimes. Browser storage may be evicted. HashBin and optional link shortening require a connection.",
       "reproducer": null,
       "evidence": []
@@ -1527,6 +1528,35 @@
         "scripts/org-expected.sh",
         "tests/unit/org-constants.test.js",
         "tests/browser/org-constants.spec.js",
+        "tests/browser/offline.spec.js"
+      ]
+    },
+    {
+      "id": "ORG-14",
+      "format": "org",
+      "title": "Pinned numeric Org inputs load through versioned CID declarations",
+      "kind": "gap",
+      "status": "resolved",
+      "priority": "P2",
+      "milestone": "FILE-1A",
+      "dependsOn": [],
+      "expected": "Import numeric file constants from explicitly declared immutable CIDs with exact namespace references, visible provenance, bounded verified loading, cancellation and backward-compatible source sharing.",
+      "disclosure": "SHEETS_INPUT: v1 alias <cid> imports read-only numeric file constants from saved Org versions 1/2 or plain Org source. References use $alias.name without local fallback. CID byte length and SHA-512 are verified before strict UTF-8 parsing; inline CIDs need no network. Dependency tables and formulas never execute. Literal blocks cannot install declarations/constants, duplicate aliases are rejected, and dependencies declaring further inputs are rejected rather than traversed. Limits are 8 declarations, 64 KiB per payload, 256 KiB distinct payloads, 5 MiB root plus inputs, 128 constants per input, 1,000 characters per value and one 10-second loading deadline. Any input failure applies no imported values, produces source diagnostics and retains affected cells while local formulas can still calculate. Reads use only anonymous HTTPS 256t.us, no redirects/referrer, and render-local state with cancellation. The preview and HTML/print exports expose values, defining lines and CID provenance. Source shares/downloads preserve references rather than dependency bytes; hashed inputs need retained content and a connection, while inline inputs work offline. General cross-file tables, recursive projects, portable bundles and raw-URL loading remain FILE-1 work.",
+      "baselineDisclosure": "Field-report item 2 required duplicated constants across documents; ORG-02 disclosed all cross-document inputs as unsupported before FILE-1A.",
+      "reproducer": {
+        "path": "tests/fixtures/org-inputs/model.org"
+      },
+      "evidence": [
+        "design/project-inputs.md",
+        "src/formats/org/input-declarations.js",
+        "src/formats/org/inputs.js",
+        "src/formats/org/inputs-html.js",
+        "tests/fixtures/org-inputs/assumptions.org",
+        "tests/fixtures/org/shared-inputs-equivalent.org",
+        "tests/fixtures/org/reference.json",
+        "scripts/org-expected.sh",
+        "tests/unit/org-inputs.test.js",
+        "tests/browser/org-inputs.spec.js",
         "tests/browser/offline.spec.js"
       ]
     }

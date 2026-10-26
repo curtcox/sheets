@@ -84,6 +84,7 @@ function orgRules() {
     ],
     "org-formula": [
       { token: "text", regex: /$/, next: "start" },
+      { token: "variable", regex: /\$[A-Za-z][A-Za-z0-9_]*(?:\.[A-Za-z][A-Za-z0-9_]*)?/ },
       { token: "variable", regex: /[@$](?:[+-]?\d+|[<>]|I+)/ },
       {
         token: "support.function",

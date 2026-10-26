@@ -162,6 +162,10 @@ ${block("mermaid", "graph LR\n  Measure --> Review")}
       `#+SHEETS_HINTS: ${hints}\n| 0 | 0 | 0 |\n#+TBLFM: $1=10/4*2::$2=(10/4)*2::$3=10/(4*2)\n`,
       [`#+SHEETS_HINTS: ${hints}`],
     )),
+    sample(
+      "#+SHEETS_INPUT: v1 prices AAAAAAAXIytDT05TVEFOVFM6IHByaWNlPTAuMDM\n| Users | Monthly cost |\n|-------+--------------|\n| 100 | 0 |\n#+TBLFM: $2=$1*$prices.price;%.2f\n",
+      ["#+SHEETS_INPUT: v1 prices <cid>", "$prices.price"],
+    ),
   ],
   calca: [
     sample(

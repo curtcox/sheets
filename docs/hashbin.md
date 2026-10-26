@@ -51,3 +51,13 @@ For another deployment, register its exact callback URI and set its public clien
 Live verification on 2026-10-18 completed account authorization and an explicitly approved $0.01 save of the public Calca gallery example for 12 months. A fresh browser loaded its CID link without signing in and restored the exact source, Calca format, Split view, and calculated answers.
 
 The client and save panel are adapted from [ManimOnline](https://github.com/curtcox/ManimOnline).
+
+## Org shared numeric inputs
+
+Org models can declare `#+SHEETS_INPUT: v1 alias <cid>` and reference numeric file
+constants as `$alias.name`. Save an Org assumptions document using the normal
+confirmation flow, then use its bare CID in consumers. Reads require no sign-in
+or charge, verify byte length and SHA-512, and never execute dependency formulas.
+The preview exposes values and provenance. Root saves preserve declarations,
+not dependency payloads or their retention; input content must remain available.
+See [the bounded input contract](formats/org.md#pinned-shared-inputs).

@@ -99,6 +99,11 @@ a new link. Keep the source file or use HashBin for a separate copy. The CLI
 provides no storage and remains outside the deployed Pages assets (SHARED-06).
 Loading a remote raw file with `?url=` is still unsupported (SHARED-07; FILE-1).
 
+Org shared-input declarations (`#+SHEETS_INPUT: v1 alias <cid>`) travel inside
+source. They pin input content but do not embed its payload; hashed inputs need
+available content and a connection on reload. Source downloads keep the same
+references. See [pinned shared inputs](formats/org.md#pinned-shared-inputs).
+
 ## Optional short links
 
 Choose **Shorten with is.gd** in the Share dialog. This explicitly sends the complete source link through AllOrigins to is.gd. The app validates the returned HTTPS is.gd URL. If shortening fails, the original source link remains ready to copy. HashBin provides a separate content-storage option for large documents.

@@ -1,5 +1,6 @@
 import { test, expect } from "@playwright/test";
 import { once } from "node:events";
+import { createHash } from "node:crypto";
 import { mkdtemp, rm, readFile, writeFile } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { stage } from "../../scripts/stage.mjs";
@@ -171,7 +172,7 @@ test("opt-in offline files support new source links, vendored workers, docs and 
   await expect(page.locator("#preview")).toContainText("value => value");
   await page.goto(
     writeURL(base, {
-      src: "#+SHEETS_HINTS: precedence\n#+SHEETS_CONSTANTS: table\n#+CONSTANTS: price=0.03\n#+NAME: data\n| 1 | 0 | 0 |\n#+TBLFM: $3=$2+1::$2=$1+10\n\n| 0 |\n#+TBLFM: $1=remote(data,@1$3)/1*1\n",
+      src: "#+SHEETS_INPUT: v1 prices AAAAAAAXIytDT05TVEFOVFM6IHByaWNlPTAuMDM\n#+SHEETS_HINTS: precedence\n#+SHEETS_CONSTANTS: table\n#+CONSTANTS: price=0.03\n#+NAME: data\n| 1 | 0 | 0 |\n#+TBLFM: $3=$2+1::$2=$1+10\n\n| 0 |\n#+TBLFM: $1=remote(data,@1$3)*($prices.price==0.03)/1*1\n",
       format: "org",
       profile: ORG_EMACS,
     }),
@@ -184,6 +185,16 @@ test("opt-in offline files support new source links, vendored workers, docs and 
   await expect(page.locator("#preview table").last()).toHaveText("12");
   await expect(page.locator("#preview .org-constants")).toContainText("0.03");
   await expect(page.locator('#preview aside[aria-label="Formula hints"]')).toContainText("Calc multiplies before dividing");
+  await expect(page.locator("#preview .org-inputs")).toContainText("0.03");
+  const dependency = "#+CONSTANTS: price=0.03\n#+COMMENT: " + "x".repeat(80),
+    bytes = Buffer.from(dependency), length = Buffer.alloc(6);
+  length.writeUIntBE(bytes.length, 0, 6);
+  const cid = length.toString("base64url") + createHash("sha512").update(bytes).digest("base64url");
+  await page.goto(writeURL(base, { src: `#+SHEETS_INPUT: v1 prices ${cid}\n| 99 |\n#+TBLFM: $1=$prices.price\n`, format: "org" }));
+  await ready(page);
+  await expect(page.locator("#render-status")).toHaveText(/^2 diagnostics/);
+  await expect(page.locator("#preview table:not(.org-inputs)")).toHaveText("99");
+  await expect(page.locator("#preview .org-shared-inputs .error")).toBeVisible();
   const requests = await page.evaluate(async () => {
     const names = (await caches.keys()).filter((name) =>
       name.startsWith(

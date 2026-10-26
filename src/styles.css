@@ -389,7 +389,8 @@ li > code {
 .document .org-table-scroll .org-center {
   text-align: center;
 }
-.document .org-constants caption {
+.document .org-constants caption,
+.document .org-inputs caption {
   text-align: left;
   font-weight: 600;
   padding-bottom: 8px;

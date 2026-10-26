@@ -1,0 +1,6 @@
+#+TITLE: Cost from pinned assumptions
+#+SHEETS_INPUT: v1 prices AAAAAAAXIytDT05TVEFOVFM6IHByaWNlPTAuMDM
+| Users | Monthly cost |
+|-------+--------------|
+| 100   | 0            |
+#+TBLFM: $2=$1*$prices.price;%.2f

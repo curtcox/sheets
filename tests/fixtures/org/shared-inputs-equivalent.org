@@ -1,0 +1,4 @@
+#+TITLE: Local equivalent of pinned shared inputs
+#+CONSTANTS: price=0.03 users=100 tax=0.10 exact=123456789012345678901234567890 duplicate=5
+| 0 | 0 | 0 | 0 |
+#+TBLFM: $1=$price*$users;%.2f::$2=$price*$users*(1+$tax);%.2f::$3=$exact+1::$4=$duplicate*2

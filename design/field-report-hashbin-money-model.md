@@ -7,7 +7,8 @@ documents, about 19 KB of source in total, in the HashBin repository under
 Org engine in Node (`recalculateOrg`), with zero diagnostics.
 
 **Sharing recovery, numeric conditionals, table wrapping, header/alignment
-semantics, file-to-link tooling, optional constants display and precedence hints are implemented;
+semantics, file-to-link tooling, optional constants display, precedence hints
+and pinned shared numeric inputs are implemented;
 other issues remain open.** Triaged on 2026-10-25 into
 `docs/compatibility.json` and the active field-report priorities in [PLAN.md](../PLAN.md#field-report-priorities--active-order-from-2026-10-25).
 The missing disclosures are now in the generated limitations page and Org guide;
@@ -24,12 +25,14 @@ LINK-1 now supplies the documented local-file snapshot command; see
 FILE-1 proposal (SHARED-07). ORG-INPUT-1 now shows file assumptions with
 `#+SHEETS_CONSTANTS: table`; see [the constants display contract](org-constants-display.md).
 ORG-HINT-1 adds opt-in formula-line hints with `#+SHEETS_HINTS: precedence`;
-see [the hint contract](org-precedence-hints.md). Other items remain open.
+see [the hint contract](org-precedence-hints.md). FILE-1A imports CID-pinned
+numeric Org constants without running dependency formulas; see
+[the shared-input contract](project-inputs.md). Other items remain open.
 
 | # | Problem | Classification | Related |
 |---|---------|----------------|---------|
 | 1 | Documents over ~8 KB: links fail, and a reload loses the document | Mostly user workflow; **one bug risk**, one wording issue | SHARED-02/05; SHARE-1 |
-| 2 | No inputs shared across documents | Known gap | ORG-02 (cross-file); FILE-1 |
+| 2 | No inputs shared across documents | Pinned numeric inputs implemented; general cross-file projects remain open | ORG-14 (resolved), ORG-02; FILE-1A, FILE-1 |
 | 3 | `#+CONSTANTS:` values are invisible in the preview | Optional file constants summary implemented | ORG-13 (resolved); ORG-INPUT-1 |
 | 4 | No `if()` or comparison operators in Org formulas | Numeric subset implemented; wider Calc behavior remains limited | ORG-10 (resolved); ORG-1E |
 | 5 | `a/b*c` means `a/(b*c)` | Emacs-faithful; optional precedence hints implemented | ORG-09 (resolved); ORG-HINT-1 |
