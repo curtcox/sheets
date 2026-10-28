@@ -17,7 +17,8 @@ export async function redirectStore() {
           return Promise.resolve({ redirected: true });
         }
         async handlePublishCallback({ hash }) {
-          if (hash.includes("error=")) throw new Error("access_denied");
+          if (hash.includes("error="))
+            throw Object.assign(new Error("access_denied"), { clientState });
           return { cid: "AAAAAAABeA", clientState };
         }
       },

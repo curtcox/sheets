@@ -180,7 +180,7 @@ Sheets is registered with public client ID
 registration. Saving is enabled through the toolbar panel.
 
 Public CIDs load without sign-in and are verified against their CID. Saves use
-HashBin Publish through the pinned SDK (`/sdk/v0.2.0/`): hashbin.org shows the
+HashBin Publish through the pinned SDK (`/sdk/v0.3.0/`): hashbin.org shows the
 retention, exact price and balance and takes the approval, so Sheets never holds a
 HashBin credential on the shared `curtcox.github.io` origin. A blocked popup falls
 back to a redirect that restores source, format, view and inputs. A

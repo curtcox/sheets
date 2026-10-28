@@ -23,7 +23,7 @@ const sdk = `export class HashBinClient {
   const mode=localStorage.getItem("test-hashbin-publish")||"approve";
   globalThis.testHashBinUpload=content;
   if(mode==="cancel")return Promise.reject(new Error("access_denied"));
-  if(mode==="redirect-cancel"){location.href=this.options.redirectUri+"#hashbin_publish=t&error=access_denied";return Promise.resolve({redirected:true});}
+  if(mode==="redirect-cancel"){sessionStorage.setItem("test-hashbin-state",JSON.stringify(clientState));location.href=this.options.redirectUri+"#hashbin_publish=t&error=access_denied";return Promise.resolve({redirected:true});}
   return window.__hashbinSave(content).then(cid=>{
    if(mode!=="redirect")return {cid};
    sessionStorage.setItem("test-hashbin-state",JSON.stringify(clientState));
@@ -34,7 +34,8 @@ const sdk = `export class HashBinClient {
  async handlePublishCallback({hash}){
   const params=new URLSearchParams(hash.slice(1)),clientState=JSON.parse(sessionStorage.getItem("test-hashbin-state")||"null");
   sessionStorage.removeItem("test-hashbin-state");
-  if(params.get("error"))throw new Error(params.get("error"));
+  // Like SDK v0.3.0, errors carry clientState.
+  if(params.get("error"))throw Object.assign(new Error(params.get("error")),{clientState});
   return {cid:params.get("cid"),clientState};
  }
  async disconnect(){localStorage.removeItem("hashbin:tokens:"+this.options.clientId);localStorage.setItem("test-hashbin-revoked","yes");}
@@ -53,7 +54,7 @@ export async function mockHashBin(page) {
     saves.push({ cid, payload: text });
     return cid;
   });
-  await page.route("https://hashbin.org/sdk/v0.2.0/hashbin.js", (route) =>
+  await page.route("https://hashbin.org/sdk/v0.3.0/hashbin.js", (route) =>
     route.fulfill({ body: sdk, contentType: "text/javascript" }),
   );
   await page.route("https://256t.us/**", (route) => {

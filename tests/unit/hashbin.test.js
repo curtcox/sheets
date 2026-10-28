@@ -141,6 +141,7 @@ test("saves go through HashBin Publish with the pinned SDK and verify the CID", 
   assert.deepEqual(options, {
     contentType: "application/json",
     clientState: { snapshot },
+    fileName: "sheet.json",
   });
   store.client.publish = async () => ({ cid: fullCID(payload + " ") });
   await assert.rejects(store.publish(payload, snapshot), /does not match its CID/);
@@ -149,7 +150,7 @@ test("saves go through HashBin Publish with the pinned SDK and verify the CID", 
   await assert.rejects(new HashBinStore().init(), /registered client ID/);
   assert.match(
     readFileSync(new URL("../../src/hashbin.js", import.meta.url), "utf8"),
-    /hashbin\.org\/sdk\/v0\.2\.0\/hashbin\.js/,
+    /hashbin\.org\/sdk\/v0\.3\.0\/hashbin\.js/,
   );
 });
 test("redirect saves restore the document after approval or cancellation", async () => {
@@ -166,7 +167,10 @@ test("redirect saves restore the document after approval or cancellation", async
           return Promise.resolve({ redirected: true });
         }
         async handlePublishCallback() {
-          if (outcome !== "approve") throw new Error("access_denied");
+          if (outcome !== "approve")
+            throw Object.assign(new Error("access_denied"), {
+              clientState: { snapshot },
+            });
           return { cid: fullCID(payload), clientState: { snapshot } };
         }
       },
