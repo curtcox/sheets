@@ -2,6 +2,7 @@ import { test, expect } from "@playwright/test";
 import { readFile } from "node:fs/promises";
 import { writeURL } from "../../src/url-state.js";
 import { HashBinDocuments } from "../../src/hashbin.js";
+import { mockHashBin } from "./hashbin-mock.js";
 import {
   CALCA_BLOCKS,
   CALCA_BLOCKS as profile,
@@ -15,20 +16,6 @@ const ready = (page) =>
   expect(page.locator("#render-status")).toHaveText(
     /^(?:Ready|\d+ diagnostic)/,
   );
-const cid =
-  Buffer.from([0, 0, 0, 0, 0, 65]).toString("base64url") + "a".repeat(85) + "A";
-const sdk = `export class HashBinClient {
-  getTokens() { return {refreshToken:"mock",expiresAt:Date.now()+100000}; }
-  async handleCallback() {}
-  async authorizedFetch(path, options = {}) {
-    let data;
-    if (path === "/api/account/settings") data={default_retention_months:1};
-    else if (path === "/api/balance") data={balance_cents:100};
-    else if (path === "/api/content") { globalThis.savedProfilePayload=await options.body.get("content").text(); data={cid:${JSON.stringify(cid)}}; }
-    else throw new Error("Unexpected mocked API request");
-    return new Response(JSON.stringify(data), {headers:{"Content-Type":"application/json"}});
-  }
-}`;
 
 test("scoped gallery definitions, shared links and migration retain their deliberate semantics", async ({
   page,
@@ -172,18 +159,12 @@ for (const profile of [CALCA_BLOCKS, CALCA_SCOPES]) {
   test(`HashBin saves ${profile} and honors legacy documents, CID precedence and explicit overrides`, async ({
     page,
   }) => {
-    await page.route("https://hashbin.org/sdk/hashbin.js", (route) =>
-      route.fulfill({ body: sdk, contentType: "text/javascript" }),
-    );
-    await page.route("https://hashbin.org/api/payments/calculate", (route) =>
-      route.fulfill({ json: { cost_cents: 1 } }),
-    );
-    let payload = HashBinDocuments.serialize({
-      src: "```python\nlegacyValue=9\n```\nlegacyValue =>",
-      type: "calca",
-    });
-    await page.route("https://256t.us/" + cid, (route) =>
-      route.fulfill({ body: payload }),
+    const hashbin = await mockHashBin(page);
+    let cid = hashbin.put(
+      HashBinDocuments.serialize({
+        src: "```python\nlegacyValue=9\n```\nlegacyValue =>",
+        type: "calca",
+      }),
     );
     await page.goto(base + "?compressed=invalid!#" + cid);
     await ready(page);
@@ -193,12 +174,13 @@ for (const profile of [CALCA_BLOCKS, CALCA_SCOPES]) {
     await ready(page);
     await page.getByRole("button", { name: "HashBin", exact: true }).click();
     await page.locator("#hashbin-save").click();
-    await expect(page.locator("#hashbin-message")).toContainText("Cost: $0.01");
+    await expect(page.locator("#hashbin-confirm")).toBeEnabled();
     await page.locator("#hashbin-confirm").click();
     await expect(page.locator("#hashbin-status")).toHaveText(
       "Saved to HashBin.",
     );
-    payload = await page.evaluate(() => globalThis.savedProfilePayload);
+    cid = hashbin.last.cid;
+    const payload = hashbin.last.payload;
     expect(JSON.parse(payload)).toMatchObject({
       version: 2,
       profile,
@@ -245,33 +227,24 @@ for (const profile of [CALCA_BLOCKS, CALCA_SCOPES]) {
   });
 }
 
-test("OAuth restoration keeps the Calca profile and exact source on success or denial", async ({
+test("redirect saves keep the Calca profile and exact source after approval or cancellation", async ({
   page,
 }) => {
-  const profile = CALCA_SCOPES;
-  await page.route("https://hashbin.org/sdk/hashbin.js", (route) =>
-    route.fulfill({ body: sdk, contentType: "text/javascript" }),
-  );
-  await page.addInitScript(
-    ({ source, profile }) => {
-      sessionStorage.setItem(
-        "sheets:hashbin:return:profile-test",
-        JSON.stringify({
-          createdAt: Date.now(),
-          snapshot: {
-            src: source,
-            type: "calca",
-            format: "calca",
-            view: "source",
-            profile,
-          },
-        }),
-      );
-    },
-    { source, profile },
-  );
-  for (const outcome of ["code=mock", "error=access_denied"]) {
-    await page.goto(base + "?state=profile-test&" + outcome);
+  const profile = CALCA_SCOPES,
+    hashbin = await mockHashBin(page);
+  for (const outcome of ["redirect", "redirect-cancel"]) {
+    await page.goto(
+      writeURL(base, { src: source, format: "calca", view: "source", profile }),
+    );
+    await ready(page);
+    await hashbin.mode(outcome);
+    await page.getByRole("button", { name: "HashBin", exact: true }).click();
+    await page.locator("#hashbin-save").click();
+    await expect(page.locator("#hashbin-confirm")).toBeEnabled();
+    await Promise.all([
+      page.waitForURL(/#hashbin_publish=/),
+      page.locator("#hashbin-confirm").click(),
+    ]);
     await ready(page);
     await expect(page.locator("#render-status")).toHaveText(/^Ready/);
     await expect(page.locator("#profile")).toHaveValue(profile);
@@ -280,7 +253,7 @@ test("OAuth restoration keeps the Calca profile and exact source on success or d
       source,
     );
     expect(new URL(page.url()).searchParams.get("profile")).toBe(profile);
-    expect(new URL(page.url()).searchParams.has("state")).toBe(false);
+    expect(page.url()).not.toContain("hashbin_publish");
   }
 });
 

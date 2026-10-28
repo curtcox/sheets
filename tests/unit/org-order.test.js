@@ -10,6 +10,7 @@ import {
 import { readURL, writeURL } from "../../src/url-state.js";
 import { HashBinDocuments, HashBinStore } from "../../src/hashbin.js";
 import { buildShareLink } from "../../src/share-links.js";
+import { redirectSnapshots } from "./publish-mock.js";
 const file = (name) =>
   readFile(new URL(`../fixtures/org/${name}`, import.meta.url), "utf8");
 const rows = (result) => result.tables.flatMap((t) => t.table.rows);
@@ -107,7 +108,7 @@ test("Missing, relative, dynamic and oversized remote references retain cells an
   assert.equal(rows(quotes)[0][0], "0");
 });
 
-test("Emacs mode and exact source persist through URL/share/HashBin overrides and OAuth snapshots", async () => {
+test("Emacs mode and exact source persist through URL/share/HashBin overrides and redirect saves", async () => {
   const src = "| 1 | 0 | 0 |\n#+TBLFM: $3=$2+1::$2=$1+10\n",
     base = "https://curtcox.github.io/sheets/index.html";
   for (const format of ["auto", "org"])
@@ -139,30 +140,7 @@ test("Emacs mode and exact source persist through URL/share/HashBin overrides an
     () => writeURL(base, { src, format: "calca", profile }),
     /requires org/,
   );
-  const data = new Map(),
-    storage = {
-      setItem: (k, v) => data.set(k, v),
-      getItem: (k) => data.get(k),
-      removeItem: (k) => data.delete(k),
-    };
-  const store = new HashBinStore({
-    clientId: "public",
-    transactionStorage: storage,
-    loadSDK: async () => ({
-      HashBinClient: class {
-        authorize() {
-          return { state: "org-test", url: "https://hashbin.org/authorize" };
-        }
-        handleCallback() {}
-      },
-    }),
-  });
   const snapshot = { src, type: "org", format: "org", view: "source", profile };
-  for (const query of [
-    "?state=org-test&code=mock",
-    "?state=org-test&error=access_denied",
-  ]) {
-    await store.connect(snapshot);
-    assert.deepEqual((await store.callback(query)).snapshot, snapshot);
-  }
+  for (const restored of await redirectSnapshots(snapshot))
+    assert.deepEqual(restored, snapshot);
 });

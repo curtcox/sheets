@@ -2,6 +2,7 @@ import { test, expect } from "@playwright/test";
 import { readFile } from "node:fs/promises";
 import { writeURL } from "../../src/url-state.js";
 import { HashBinDocuments } from "../../src/hashbin.js";
+import { mockHashBin } from "./hashbin-mock.js";
 import {
   ASCIIMATH_FORMULAS as formulas,
   ASCIIMATH_PROSE as prose,
@@ -15,20 +16,6 @@ const ready = (page) =>
 const text = (page) => page.evaluate(() => ace.edit("editor").getValue());
 const annotations = (page) =>
   page.evaluate(() => ace.edit("editor").session.getAnnotations());
-const cid =
-  Buffer.from([0, 0, 0, 0, 0, 65]).toString("base64url") + "a".repeat(85) + "A";
-const sdk = `export class HashBinClient {
- getTokens(){return {refreshToken:"mock",expiresAt:Date.now()+100000};}
- async handleCallback(){}
- async authorizedFetch(path,options={}){
- let data;
- if(path==="/api/account/settings")data={default_retention_months:1};
- else if(path==="/api/balance")data={balance_cents:100};
- else if(path==="/api/content"){globalThis.savedAsciiPayload=await options.body.get("content").text();data={cid:${JSON.stringify(cid)}};}
- else throw new Error("Unexpected mock API path");
- return new Response(JSON.stringify(data),{headers:{"Content-Type":"application/json"}});
- }
-}`;
 
 test("AsciiMath explicit modes survive edits, sharing, exports, reloads and format changes", async ({
   page,
@@ -128,15 +115,9 @@ test("AsciiMath mixed mode maps warnings and errors while preserving safe math a
 test("AsciiMath modes round-trip through mocked saves and CID overrides while legacy content stays Auto", async ({
   page,
 }) => {
-  await page.route("https://hashbin.org/sdk/hashbin.js", (r) =>
-    r.fulfill({ body: sdk, contentType: "text/javascript" }),
-  );
-  await page.route("https://hashbin.org/api/payments/calculate", (r) =>
-    r.fulfill({ json: { cost_cents: 1 } }),
-  );
-  let payload = HashBinDocuments.serialize({ src: source, type: "asciimath" });
-  await page.route("https://256t.us/" + cid, (r) =>
-    r.fulfill({ body: payload }),
+  const hashbin = await mockHashBin(page);
+  let cid = hashbin.put(
+    HashBinDocuments.serialize({ src: source, type: "asciimath" }),
   );
   await page.goto(base + "?compressed=invalid!#" + cid);
   await ready(page);
@@ -149,13 +130,13 @@ test("AsciiMath modes round-trip through mocked saves and CID overrides while le
     await ready(page);
     await page.getByRole("button", { name: "HashBin", exact: true }).click();
     await page.locator("#hashbin-save").click();
-    await expect(page.locator("#hashbin-message")).toContainText("Cost: $0.01");
+    await expect(page.locator("#hashbin-confirm")).toBeEnabled();
     await page.locator("#hashbin-confirm").click();
     await expect(page.locator("#hashbin-status")).toHaveText(
       "Saved to HashBin.",
     );
-    payload = await page.evaluate(() => globalThis.savedAsciiPayload);
-    expect(JSON.parse(payload)).toMatchObject({
+    cid = hashbin.last.cid;
+    expect(JSON.parse(hashbin.last.payload)).toMatchObject({
       version: 2,
       type: "asciimath",
       profile,
@@ -185,40 +166,40 @@ test("AsciiMath modes round-trip through mocked saves and CID overrides while le
   }
 });
 
-test("AsciiMath OAuth restoration retains modes and exact source on success and denial", async ({
+test("AsciiMath redirect saves retain modes and exact source after approval and cancellation", async ({
   page,
 }) => {
-  await page.route("https://hashbin.org/sdk/hashbin.js", (r) =>
-    r.fulfill({ body: sdk, contentType: "text/javascript" }),
-  );
-  await page.goto(base);
-  await ready(page);
+  const hashbin = await mockHashBin(page);
   for (const profile of [formulas, prose])
-    for (const outcome of ["code=mock", "error=access_denied"]) {
-      await page.evaluate(
-        ({ source, profile }) =>
-          sessionStorage.setItem(
-            "sheets:hashbin:return:ascii",
-            JSON.stringify({
-              createdAt: Date.now(),
-              snapshot: {
-                src: source,
-                type: "asciimath",
-                format: "asciimath",
-                view: "source",
-                profile,
-              },
-            }),
-          ),
-        { source, profile },
+    for (const outcome of ["redirect", "redirect-cancel"]) {
+      await page.goto(
+        writeURL(base, {
+          src: source,
+          format: "asciimath",
+          view: "source",
+          profile,
+        }),
       );
-      await page.goto(base + "?state=ascii&" + outcome);
       await ready(page);
+      await hashbin.mode(outcome);
+      await page.getByRole("button", { name: "HashBin", exact: true }).click();
+      await page.locator("#hashbin-save").click();
+      await expect(page.locator("#hashbin-confirm")).toBeEnabled();
+      await Promise.all([
+        page.waitForURL(/#hashbin_publish=/),
+        page.locator("#hashbin-confirm").click(),
+      ]);
+      await ready(page);
+      await expect(page.locator("#hashbin-status")).toHaveText(
+        outcome === "redirect"
+          ? "Saved to HashBin."
+          : "The save was cancelled on HashBin.",
+      );
       await expect(page.locator("#profile")).toHaveValue(profile);
       expect(await text(page)).toBe(source);
       await expect(page.locator("#preview-pane")).toBeHidden();
       expect(new URL(page.url()).searchParams.get("profile")).toBe(profile);
-      expect(new URL(page.url()).searchParams.has("state")).toBe(false);
+      expect(page.url()).not.toContain("hashbin_publish");
     }
 });
 

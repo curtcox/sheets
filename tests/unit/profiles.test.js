@@ -8,6 +8,7 @@ import {
   resolveDocument,
 } from "../../src/compatibility-profiles.js";
 import { buildShareLink } from "../../src/share-links.js";
+import { redirectSnapshots } from "./publish-mock.js";
 const base = "https://curtcox.github.io/sheets/index.html",
   src = "```python\nx=4\n```\nx =>";
 for (const profile of [CALCA_BLOCKS, CALCA_SCOPES]) {
@@ -125,25 +126,7 @@ for (const profile of [CALCA_BLOCKS, CALCA_SCOPES]) {
       /requires calca/,
     );
   });
-  test("OAuth snapshots retain profiles on successful and declined callbacks", async () => {
-    const data = new Map(),
-      storage = {
-        setItem: (k, v) => data.set(k, v),
-        getItem: (k) => data.get(k),
-        removeItem: (k) => data.delete(k),
-      };
-    const store = new HashBinStore({
-      clientId: "public",
-      transactionStorage: storage,
-      loadSDK: async () => ({
-        HashBinClient: class {
-          authorize() {
-            return { state: "nonce", url: "https://hashbin.org/authorize" };
-          }
-          handleCallback() {}
-        },
-      }),
-    });
+  test("redirect saves retain profiles on approval and cancellation", async () => {
     const snapshot = {
       src,
       type: "calca",
@@ -151,12 +134,7 @@ for (const profile of [CALCA_BLOCKS, CALCA_SCOPES]) {
       view: "source",
       profile,
     };
-    for (const search of [
-      "?state=nonce&code=one-time",
-      "?state=nonce&error=access_denied",
-    ]) {
-      await store.connect(snapshot);
-      assert.deepEqual((await store.callback(search)).snapshot, snapshot);
-    }
+    for (const restored of await redirectSnapshots(snapshot))
+      assert.deepEqual(restored, snapshot);
   });
 }

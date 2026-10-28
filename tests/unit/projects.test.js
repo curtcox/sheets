@@ -14,6 +14,7 @@ import { renderOrgWithInputs } from "../../src/formats/org/index.js";
 import { projectDownload } from "../../src/downloads.js";
 import { linkFromFile } from "../../scripts/link.mjs";
 import LZString from "../../vendor/lz-string.js";
+import { redirectSnapshots } from "./publish-mock.js";
 
 const fixture = () => readFile(new URL("../fixtures/projects/v1.sheets.json", import.meta.url), "utf8");
 const base = "https://curtcox.github.io/sheets/index.html";
@@ -120,15 +121,9 @@ test("portable files become CLI project links without execution, uploads or depe
   } finally { await rm(directory, { recursive: true, force: true }); }
 });
 
-test("OAuth snapshots retain project bytes on success and denial; aborted verification cannot finish", async () => {
-  const doc = parseProjectFile(await fixture()), map = new Map(), storage = { getItem: (k) => map.get(k), setItem: (k, v) => map.set(k, v), removeItem: (k) => map.delete(k) },
-    store = new HashBinStore({ clientId: "public", transactionStorage: storage, loadSDK: async () => ({ HashBinClient: class {
-      authorize() { return { state: "project-test", url: "https://hashbin.org/authorize" }; }
-      handleCallback() {}
-    } }) });
-  for (const query of ["?state=project-test&code=mock", "?state=project-test&error=access_denied"]) {
-    await store.connect(doc); assert.deepEqual((await store.callback(query)).snapshot, doc);
-  }
+test("redirect saves retain project bytes on approval and cancellation; aborted verification cannot finish", async () => {
+  const doc = parseProjectFile(await fixture());
+  for (const restored of await redirectSnapshots(doc)) assert.deepEqual(restored, doc);
   const controller = new AbortController(); controller.abort();
   await assert.rejects(verifyInputSnapshot(doc.inputSnapshot, doc.src, controller.signal), { name: "AbortError" });
 });

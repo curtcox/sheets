@@ -499,25 +499,23 @@ async function restore() {
   updateDownloadOptions(false);
   const revision = ++sourceRevision;
   try {
-    const callback = await store.callback(location.search);
+    // A redirect save returns here; its snapshot restores the document either way.
+    const published = await store.published(location.hash);
     if (revision !== sourceRevision) return;
-    if (callback?.error) {
+    if (published) {
       $("hashbin-panel").hidden = false;
-      $("hashbin-status").textContent = callback.error;
+      $("hashbin-status").textContent = published.error || "Saved to HashBin.";
+      history.replaceState(null, "", location.pathname + location.search);
     }
-    if (callback?.snapshot) {
-      const doc = callback.snapshot;
+    if (published?.snapshot) {
+      const doc = published.snapshot;
       setSource(doc.src);
       format.value = doc.format || doc.type || "auto";
       currentProfile = validateProfile(doc.profile, format.value);
       currentInputSnapshot = doc.inputSnapshot;
       view.setView(doc.view, false);
       updateProfileControls();
-      currentCID = null;
-      if (callback.error) {
-        $("hashbin-panel").hidden = false;
-        $("hashbin-status").textContent = callback.error;
-      }
+      currentCID = published.cid || null;
       persist();
       scheduler.schedule(getSource(), {}, true);
       return;
@@ -571,5 +569,8 @@ function navigateFromURL() {
 }
 window.addEventListener("popstate", navigateFromURL);
 window.addEventListener("hashchange", navigateFromURL);
+store.retireLegacyTokens().catch(() => {
+  /* Retried on the next load. */
+});
 await restore();
 setupOffline({ beforeReload: persist });

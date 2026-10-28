@@ -3,184 +3,77 @@ import { writeURL } from "../../src/url-state.js";
 import { longSource } from "../fixtures/long-source.js";
 import { readFile } from "node:fs/promises";
 import { parseProjectFile } from "../../src/project-state.js";
+import { mockHashBin } from "./hashbin-mock.js";
 const clientId = "app_8e03e133-83b4-4ee2-b3d5-39397f573879";
 const ready = (page) =>
   expect(page.locator("#render-status")).toHaveText(
     /^(?:Ready|\d+ diagnostic)/,
     { timeout: 110000 },
   );
-const sdk = `export class HashBinClient {
- constructor(options){this.options=options;}
- getTokens(){return JSON.parse(localStorage.getItem('test-hashbin-tokens')||'null');}
- async authorize({scopes,mode}){
-  if(mode!=='manual')throw Error('Expected manual OAuth mode');
-  const state=crypto.randomUUID();sessionStorage.setItem('test-hashbin-state',state);
-  const url=new URL('/oauth/authorize',this.options.baseUrl);
-  for(const [key,value] of Object.entries({client_id:this.options.clientId,redirect_uri:this.options.redirectUri,state,scope:scopes.join(' ')}))url.searchParams.set(key,value);
-  return {state,url:url.href};
- }
- async handleCallback({search}){
-  const params=new URLSearchParams(search);
-  if(params.get('state')!==sessionStorage.getItem('test-hashbin-state')||params.get('code')!=='test-code')throw Error('Invalid mock transaction');
-  localStorage.setItem('test-hashbin-tokens',JSON.stringify({accessToken:'test-only',refreshToken:'test-only',expiresAt:Date.now()+3600000}));
-  sessionStorage.removeItem('test-hashbin-state');
- }
- async authorizedFetch(path,options={}){if(path==='/api/content')globalThis.testHashBinUpload=await options.body.get('content').text();return fetch(this.options.baseUrl+path,{...options,headers:{...options.headers,Authorization:'Bearer test-only'}});}
- clearTokens(){localStorage.removeItem('test-hashbin-tokens');}
-}`;
 
-test("portable projects are quoted and confirmed as version 3 and reload with bundled inputs", async ({ page }) => {
+test("portable projects are approved as version 3 and reload with bundled inputs", async ({ page }) => {
   const document = parseProjectFile(await readFile(new URL("../fixtures/projects/v1.sheets.json", import.meta.url), "utf8")),
-    cid = Buffer.from([0, 0, 0, 0, 0, 65]).toString("base64url") + "a".repeat(85) + "A";
-  let saves = 0, savedPayload;
-  await page.route("https://hashbin.org/**", async (route) => {
-    const path = new URL(route.request().url()).pathname;
-    if (path === "/sdk/hashbin.js") return route.fulfill({ body: sdk, contentType: "application/javascript" });
-    if (path === "/api/account/settings") return route.fulfill({ json: { default_retention_months: 3 } });
-    if (path === "/api/balance") return route.fulfill({ json: { balance_cents: 100 } });
-    if (path === "/api/payments/calculate") return route.fulfill({ json: { cost_cents: 1 } });
-    if (path === "/api/content") {
-      saves++; savedPayload = await page.evaluate(() => globalThis.testHashBinUpload);
-      return route.fulfill({ json: { cid } });
-    }
-    throw Error("Unexpected project save request " + path);
-  });
-  await page.route("https://256t.us/**", (route) => {
-    expect(route.request().url()).toBe("https://256t.us/" + cid);
-    return route.fulfill({ body: savedPayload, contentType: "application/json" });
-  });
+    hashbin = await mockHashBin(page);
   await page.goto(writeURL("http://127.0.0.1:4173/", { ...document, format: "org" })); await ready(page);
-  await page.evaluate(() => localStorage.setItem("test-hashbin-tokens", JSON.stringify({ accessToken: "test-only", refreshToken: "test-only", expiresAt: Date.now() + 3600000 })));
   await page.locator("#hashbin-open").click(); await page.locator("#hashbin-save").click();
   await expect(page.locator("#hashbin-confirm")).toBeEnabled();
-  await expect(page.locator("#hashbin-message")).toContainText("Cost: $0.01"); expect(saves).toBe(0);
+  await expect(page.locator("#hashbin-message")).toContainText("approve the save on hashbin.org"); expect(hashbin.saves.length).toBe(0);
   await page.locator("#hashbin-confirm").click(); await expect(page.locator("#hashbin-status")).toHaveText("Saved to HashBin.");
-  const saved = JSON.parse(savedPayload);
+  const saved = JSON.parse(hashbin.last.payload);
   expect(saved.version).toBe(3); expect(saved.inputSnapshot).toEqual(document.inputSnapshot); expect(saved.src).toBe(document.src);
-  expect(saves).toBe(1);
+  expect(hashbin.saves.length).toBe(1);
   await page.reload(); await ready(page);
   await expect(page.locator("#profile")).toHaveValue("org-emacs-v1");
   await expect(page.locator("#project-controls")).toBeVisible();
   await expect(page.locator("#preview table:not(.org-inputs)").last()).toHaveText("1003.00");
 });
 
-test("HashBin connect restores the document, requotes edits, and saves a reloadable source link only after confirmation", async ({
+test("HashBin Publish saves only after approval, re-prepares after edits, revokes legacy tokens and saves a reloadable link", async ({
   page,
 }) => {
-  const cid =
-    Buffer.from([0, 0, 0, 0, 0, 65]).toString("base64url") +
-    "a".repeat(85) +
-    "A";
-  let quotes = 0,
-    saves = 0,
-    savedPayload;
   const errors = [];
   page.on("pageerror", (e) => errors.push(e.message));
-  await page.route("https://hashbin.org/**", async (route) => {
-    const request = route.request(),
-      url = new URL(request.url());
-    if (url.pathname === "/sdk/hashbin.js")
-      return route.fulfill({
-        contentType: "application/javascript",
-        body: sdk,
-      });
-    if (url.pathname === "/oauth/authorize") {
-      expect(url.searchParams.get("client_id")).toBe(clientId);
-      expect(url.searchParams.get("scope")).toBe("content:write balance:read");
-      const callback = new URL(url.searchParams.get("redirect_uri"));
-      expect(callback.pathname).toBe("/index.html");
-      expect(callback.search).toBe("");
-      expect(callback.hash).toBe("");
-      callback.searchParams.set("code", "test-code");
-      callback.searchParams.set("state", url.searchParams.get("state"));
-      return route.fulfill({
-        contentType: "text/html",
-        body: `<script>location.replace(${JSON.stringify(callback.href)})</script>`,
-      });
-    }
-    if (url.pathname === "/api/account/settings")
-      return route.fulfill({ json: { default_retention_months: 3 } });
-    if (url.pathname === "/api/balance")
-      return route.fulfill({ json: { balance_cents: 100 } });
-    if (url.pathname === "/api/payments/calculate") {
-      quotes++;
-      const quote = request.postDataJSON();
-      expect(quote.retention_months).toBe(3);
-      expect(quote.size_bytes).toBeGreaterThan(64);
-      return route.fulfill({ json: { cost_cents: 1 } });
-    }
-    if (url.pathname === "/api/content") {
-      saves++;
-      expect(request.method()).toBe("POST");
-      expect(request.headers()["content-type"]).toContain(
-        "multipart/form-data",
-      );
-      // WebKit's request protocol omits multipart file bytes. Inspect the actual
-      // FormData Blob recorded by the controlled SDK before transport instead.
-      savedPayload = await page.evaluate(() => globalThis.testHashBinUpload);
-      return route.fulfill({ json: { cid, url: "https://256t.us/" + cid } });
-    }
-    throw new Error("Unexpected HashBin request: " + url.pathname);
+  const hashbin = await mockHashBin(page);
+  const original = "# Publish source 日本語\n\n2+2 =>\n\n" + longSource;
+  const url = writeURL("http://127.0.0.1:4173/", {
+    src: original,
+    format: "calca",
+    view: "preview",
   });
-  await page.route("https://256t.us/" + cid, (route) =>
-    route.fulfill({ body: savedPayload, contentType: "application/json" }),
-  );
-  const original = "# OAuth source 日本語\n\n2+2 =>\n\n" + longSource;
-  await page.goto(
-    writeURL("http://127.0.0.1:4173/", {
-      src: original,
-      format: "calca",
-      view: "preview",
-    }),
-  );
+  await page.goto(url);
   await ready(page);
+  // Tokens from the earlier OAuth flow are revoked server-side on the next load.
+  await page.evaluate((id) => localStorage.setItem("hashbin:tokens:" + id, '{"refreshToken":"old"}'), clientId);
+  await page.reload();
+  await ready(page);
+  await page.waitForFunction((id) => localStorage.getItem("test-hashbin-revoked") === "yes" && !localStorage.getItem("hashbin:tokens:" + id), clientId);
   await page.locator("#hashbin-open").click();
   await expect(page.locator("#hashbin-save")).toBeEnabled();
   await page.locator("#hashbin-save").click();
-  await expect(page.locator("#hashbin-confirm")).toHaveText(
-    "Connect to HashBin",
-  );
-  expect(saves).toBe(0);
-  expect(quotes).toBe(0);
-  await page.locator("#hashbin-confirm").click();
-  await page.waitForFunction(() =>
-    Boolean(localStorage.getItem("test-hashbin-tokens")),
-  );
-  await ready(page);
-  expect(await page.evaluate(() => ace.edit("editor").getValue())).toBe(
-    original,
-  );
-  await expect(page.locator("#format")).toHaveValue("calca");
-  await expect(page.locator("#source-pane")).toBeHidden();
-  expect(new URL(page.url()).searchParams.has("code")).toBe(false);
-  expect(new URL(page.url()).searchParams.has("state")).toBe(false);
-  await page.locator("#hashbin-open").click();
-  await page.locator("#hashbin-save").click();
-  await expect(page.locator("#hashbin-message")).toContainText(
-    "Cost: $0.01 · Balance: $1.00",
-  );
-  expect(saves).toBe(0);
+  await expect(page.locator("#hashbin-confirm")).toHaveText("Review on HashBin");
+  await expect(page.locator("#hashbin-confirm")).toBeEnabled();
+  expect(hashbin.saves.length).toBe(0);
   const edited = "# Updated source 日本語\n\n3+4 =>";
   await page.evaluate(
     (source) => ace.edit("editor").setValue(source, -1),
     edited,
   );
   await ready(page);
+  // Edits made while the dialog was open are prepared again before anything is sent.
   await page.locator("#hashbin-confirm").click();
-  await expect.poll(() => quotes).toBe(2);
-  expect(saves).toBe(0);
+  expect(hashbin.saves.length).toBe(0);
   await expect(page.locator("#hashbin-confirm")).toBeEnabled();
   await page.locator("#hashbin-confirm").click();
   await expect(page.locator("#hashbin-status")).toHaveText("Saved to HashBin.");
-  expect(saves).toBe(1);
-  expect(JSON.parse(savedPayload)).toEqual({
+  expect(hashbin.saves.length).toBe(1);
+  expect(JSON.parse(hashbin.last.payload)).toEqual({
     format: "sheets-document",
     version: 1,
     type: "calca",
     src: edited,
     view: "preview",
   });
-  expect(new URL(page.url()).hash).toBe("#" + cid);
+  expect(new URL(page.url()).hash).toBe("#" + hashbin.last.cid);
   expect(new URL(page.url()).searchParams.has("compressed")).toBe(false);
   await page.reload();
   await ready(page);
@@ -188,6 +81,14 @@ test("HashBin connect restores the document, requotes edits, and saves a reloada
   await expect(page.locator("#format")).toHaveValue("calca");
   await expect(page.locator("#source-pane")).toBeHidden();
   await expect(page.locator("#preview")).toContainText("3+4 => 7");
-  expect(saves).toBe(1);
+  // A popup closed or cancelled on HashBin saves nothing and keeps the dialog usable.
+  await hashbin.mode("cancel");
+  await page.locator("#hashbin-open").click();
+  await page.locator("#hashbin-save").click();
+  await expect(page.locator("#hashbin-confirm")).toBeEnabled();
+  await page.locator("#hashbin-confirm").click();
+  await expect(page.locator("#hashbin-message")).toHaveText("The save was cancelled on HashBin.");
+  await expect(page.locator("#hashbin-confirm")).toBeEnabled();
+  expect(hashbin.saves.length).toBe(1);
   expect(errors).toEqual([]);
 });

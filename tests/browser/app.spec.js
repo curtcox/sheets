@@ -2,6 +2,7 @@ import { test, expect } from "@playwright/test";
 import { readFile } from "node:fs/promises";
 import { writeURL } from "../../src/url-state.js";
 import { ECB_URL } from "../../src/exchange-rates.js";
+import { cidFor } from "./hashbin-mock.js";
 const examples = JSON.parse(
   await readFile(new URL("../../examples/catalog.json", import.meta.url)),
 );
@@ -164,25 +165,21 @@ test("HashBin public CID, stale load protection, and save configuration", async 
   await expect(page.locator("#detected")).toContainText("Numbat");
   await page.getByRole("button", { name: "HashBin", exact: true }).click();
   await expect(page.locator("#hashbin-save")).toBeEnabled();
-  const remoteCID =
-    Buffer.from([0, 0, 0, 0, 0, 65]).toString("base64url") +
-    "a".repeat(85) +
-    "A";
+  const remoteBody = JSON.stringify({
+      format: "sheets-document",
+      version: 1,
+      type: "gfm",
+      src: "Old remote source",
+      view: "split",
+    }),
+    remoteCID = cidFor(remoteBody);
   let release;
   const gate = new Promise((resolve) => (release = resolve));
   let started = false;
   await page.route("https://256t.us/" + remoteCID, async (route) => {
     started = true;
     await gate;
-    await route.fulfill({
-      body: JSON.stringify({
-        format: "sheets-document",
-        version: 1,
-        type: "gfm",
-        src: "Old remote source",
-        view: "split",
-      }),
-    });
+    await route.fulfill({ body: remoteBody });
   });
   await page.locator("#hashbin-cid").fill(remoteCID);
   await page.locator("#hashbin-load").click();
@@ -315,20 +312,16 @@ test("Python renders pandas tables and matplotlib figures", async ({
 test("HashBin links preserve query format and view overrides", async ({
   page,
 }) => {
-  const cid =
-    Buffer.from([0, 0, 0, 0, 0, 65]).toString("base64url") +
-    "a".repeat(85) +
-    "A";
-  await page.route("https://256t.us/" + cid, (route) =>
-    route.fulfill({
-      body: JSON.stringify({
-        format: "sheets-document",
-        version: 1,
-        type: "text",
-        view: "split",
-        src: "# Saved markdown",
-      }),
+  const body = JSON.stringify({
+      format: "sheets-document",
+      version: 1,
+      type: "text",
+      view: "split",
+      src: "# Saved markdown",
     }),
+    cid = cidFor(body);
+  await page.route("https://256t.us/" + cid, (route) =>
+    route.fulfill({ body }),
   );
   await page.goto("/index.html?format=gfm&view=preview#" + cid);
   await ready(page);
@@ -356,22 +349,18 @@ test("source links work when browser storage is blocked", async ({ page }) => {
 test("preview references preserve a saved document CID through reload", async ({
   page,
 }) => {
-  const cid =
-    Buffer.from([0, 0, 0, 0, 0, 65]).toString("base64url") +
-    "a".repeat(85) +
-    "A";
   const source =
     '# Saved source\n\n[Jump to section](#section)\n\n<h2 id="section">A section</h2>';
-  await page.route("https://256t.us/" + cid, (route) =>
-    route.fulfill({
-      body: JSON.stringify({
-        format: "sheets-document",
-        version: 1,
-        type: "gfm",
-        view: "split",
-        src: source,
-      }),
+  const body = JSON.stringify({
+      format: "sheets-document",
+      version: 1,
+      type: "gfm",
+      view: "split",
+      src: source,
     }),
+    cid = cidFor(body);
+  await page.route("https://256t.us/" + cid, (route) =>
+    route.fulfill({ body }),
   );
   await page.goto("/index.html#" + cid);
   await ready(page);

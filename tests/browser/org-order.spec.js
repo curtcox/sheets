@@ -2,6 +2,7 @@ import { test, expect } from "@playwright/test";
 import { readFile } from "node:fs/promises";
 import { writeURL } from "../../src/url-state.js";
 import { HashBinDocuments } from "../../src/hashbin.js";
+import { mockHashBin } from "./hashbin-mock.js";
 import { ORG_EMACS as profile } from "../../src/compatibility-profiles.js";
 const base = "http://127.0.0.1:4173/index.html",
   source = "| 1 | 0 | 0 |\n#+TBLFM: $3=$2+1::$2=$1+10\n";
@@ -115,32 +116,8 @@ test("Emacs scheduling and remote-reference DOM match native fixtures; duplicate
 test("Org saved documents preserve the explicit mode and migrate from version 1 without changing source", async ({
   page,
 }) => {
-  const cid =
-    Buffer.from([0, 0, 0, 0, 0, 65]).toString("base64url") +
-    "a".repeat(85) +
-    "A";
-  let payload = HashBinDocuments.serialize({ src: source, type: "org" });
-  await page.route("https://256t.us/" + cid, (route) =>
-    route.fulfill({ body: payload }),
-  );
-  await page.route("https://hashbin.org/sdk/hashbin.js", (route) =>
-    route.fulfill({
-      contentType: "text/javascript",
-      body: `export class HashBinClient {
-    getTokens(){return {refreshToken:"mock",expiresAt:Date.now()+100000};}
-    async authorizedFetch(path,options={}){let data;
-      if(path==="/api/account/settings") data={default_retention_months:1};
-      else if(path==="/api/balance") data={balance_cents:100};
-      else if(path==="/api/content"){globalThis.savedOrg=await options.body.get("content").text();data={cid:${JSON.stringify(cid)}};}
-      else throw new Error("Unexpected mocked API request");
-      return new Response(JSON.stringify(data),{headers:{"Content-Type":"application/json"}});
-    }
-  }`,
-    }),
-  );
-  await page.route("https://hashbin.org/api/payments/calculate", (route) =>
-    route.fulfill({ json: { cost_cents: 1 } }),
-  );
+  const hashbin = await mockHashBin(page);
+  let cid = hashbin.put(HashBinDocuments.serialize({ src: source, type: "org" }));
   await page.goto(base + "#" + cid);
   await ready(page);
   expect(await rows(page)).toEqual([["1", "11", "1"]]);
@@ -149,11 +126,11 @@ test("Org saved documents preserve the explicit mode and migrate from version 1 
   expect(new URL(page.url()).hash).toBe("");
   await page.getByRole("button", { name: "HashBin", exact: true }).click();
   await page.locator("#hashbin-save").click();
-  await expect(page.locator("#hashbin-message")).toContainText("Cost: $0.01");
+  await expect(page.locator("#hashbin-confirm")).toBeEnabled();
   await page.locator("#hashbin-confirm").click();
   await expect(page.locator("#hashbin-status")).toHaveText("Saved to HashBin.");
-  payload = await page.evaluate(() => globalThis.savedOrg);
-  expect(JSON.parse(payload)).toMatchObject({
+  cid = hashbin.last.cid;
+  expect(JSON.parse(hashbin.last.payload)).toMatchObject({
     version: 2,
     type: "org",
     profile,

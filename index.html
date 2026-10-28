@@ -2,6 +2,11 @@
 <html lang="en">
   <head>
     <meta charset="utf-8" />
+    <!-- Scripts only from this site and pinned runtime paths; keep in step with new hosts. -->
+    <meta
+      http-equiv="Content-Security-Policy"
+      content="default-src 'self'; script-src 'self' https://hashbin.org/sdk/v0.2.0/ https://webr.r-wasm.org/v0.6.0/ 'wasm-unsafe-eval'; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob: https:; font-src 'self' data:; connect-src 'self' https://256t.us https://hashbin.org https://api.allorigins.win https://data-api.ecb.europa.eu https://webr.r-wasm.org https://cdn.jsdelivr.net; worker-src 'self' blob:; frame-src 'none'; object-src 'none'; base-uri 'self'; form-action 'none'"
+    />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta
       name="description"
@@ -213,8 +218,7 @@
       </div>
       <p id="hashbin-message" role="status"></p>
       <div class="dialog-actions">
-        <button id="hashbin-disconnect" hidden>Disconnect</button
-        ><button id="hashbin-confirm" class="primary">Save</button>
+        <button id="hashbin-confirm" class="primary">Review on HashBin</button>
       </div>
     </dialog>
   </body>

@@ -176,19 +176,20 @@ Deployment runs only after the complete test workflow succeeds.
 
 Sheets is registered with public client ID
 `app_8e03e133-83b4-4ee2-b3d5-39397f573879`. Its redirect URI is
-`https://curtcox.github.io/sheets/index.html`. Registration, redirect validation,
-and the `content:write` / `balance:read` scope request have been checked against
-HashBin's authorization endpoint. Saving is enabled through the toolbar panel.
+`https://curtcox.github.io/sheets/index.html`. HashBin Publish accepts this
+registration. Saving is enabled through the toolbar panel.
 
-Public CIDs load without sign-in. Saving uses the hosted OAuth SDK with PKCE and
-preserves source, format, and view across sign-in. The save dialog shows the
-retention period, cost, and account balance before its final Save confirmation.
-Source edited while a quote is open gets a fresh quote before uploading.
+Public CIDs load without sign-in and are verified against their CID. Saves use
+HashBin Publish through the pinned SDK (`/sdk/v0.2.0/`): hashbin.org shows the
+retention, exact price and balance and takes the approval, so Sheets never holds a
+HashBin credential on the shared `curtcox.github.io` origin. A blocked popup falls
+back to a redirect that restores source, format, view and inputs. A
+Content-Security-Policy limits scripts to this site and pinned runtime paths.
 
 The `hashbin-client-id` meta tag in `index.html` is public configuration; no client
-secret belongs in this repository. OAuth callbacks, quote handling, and document
-round-trips have automated coverage. Live account authorization and a charged
-save require the user's account and the final per-save confirmation. See the
+secret belongs in this repository. Publish saves, redirect restoration and document
+round-trips have automated coverage. A live charged save requires the user's
+account and approval on hashbin.org. See the
 [HashBin guide](docs/hashbin.md).
 
 ## Source map

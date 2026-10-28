@@ -3,6 +3,7 @@ import { readFile } from "node:fs/promises";
 import { writeURL } from "../../src/url-state.js";
 import { HashBinDocuments } from "../../src/hashbin.js";
 import { PRECEDENCE_HINT } from "../../src/formats/org/precedence-hints.js";
+import { cidFor } from "./hashbin-mock.js";
 
 const base = "http://127.0.0.1:4173/index.html";
 const ready = (page) => expect(page.locator("#render-status")).toHaveText(/^(Ready|\d+ diagnostic)/);
@@ -59,9 +60,9 @@ test("precedence hints preserve arithmetic, source, modes, sharing, reload and e
 
 test("both saved envelope versions retain opt-in hints, and errors coexist with informational annotations", async ({ page }) => {
   for (const [index, profile] of [undefined, "org-emacs-v1"].entries()) {
-    const cid = Buffer.from([0, 0, 0, 0, 0, 65]).toString("base64url") + Buffer.alloc(64, index + 1).toString("base64url");
+    const body = HashBinDocuments.serialize({ src: original, type: "org", view: "preview", profile }), cid = cidFor(body);
     await page.route("https://256t.us/" + cid, (route) => route.fulfill({
-      body: HashBinDocuments.serialize({ src: original, type: "org", view: "preview", profile }),
+      body,
       contentType: "application/json",
     }));
     await page.goto(base + "#" + cid);

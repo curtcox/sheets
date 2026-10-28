@@ -2,6 +2,7 @@ import { test, expect } from "@playwright/test";
 import { readFile } from "node:fs/promises";
 import { writeURL } from "../../src/url-state.js";
 import { HashBinDocuments } from "../../src/hashbin.js";
+import { cidFor } from "./hashbin-mock.js";
 
 const fixture = () => readFile(new URL("../fixtures/org/constants-display.org", import.meta.url), "utf8");
 const base = "http://127.0.0.1:4173/index.html";
@@ -97,9 +98,9 @@ test("source edits toggle the display and unsupported constants stay escaped wit
 test("HashBin versions retain the source option and editing a loaded option clears the saved CID", async ({ page }) => {
   const src = await fixture();
   for (const [index, profile] of [undefined, "org-emacs-v1"].entries()) {
-    const cid = Buffer.from([0, 0, 0, 0, 0, 65]).toString("base64url") + Buffer.alloc(64, index + 1).toString("base64url");
+    const body = HashBinDocuments.serialize({ src, type: "org", view: "preview", profile }), cid = cidFor(body);
     await page.route("https://256t.us/" + cid, (route) => route.fulfill({
-      body: HashBinDocuments.serialize({ src, type: "org", view: "preview", profile }),
+      body,
       contentType: "application/json",
     }));
     await page.goto(base + "#" + cid);

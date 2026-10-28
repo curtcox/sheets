@@ -36,7 +36,7 @@ original language rules; unknown or mismatched explicit profiles report an error
 An explicit profile query overrides a saved profile. A format override to another
 format drops the stored profile; an incompatible explicit profile is rejected.
 Switching a mode creates a compressed source link with the same source,
-and removes a previously loaded CID. View changes, sharing, OAuth returns, and
+and removes a previously loaded CID. View changes, sharing, HashBin Publish returns, and
 offline reloads preserve the selected profile.
 
 The supported format IDs are `gfm`, `asciimath`, `numbat`, `calcfile`, `org`, `calca`, `hurmet`, `beancount`, `quarto`, and `text`.
@@ -82,7 +82,7 @@ the file. The filename is not embedded. The default editor is
   selects its format under Auto.
 - `--base <url>` selects another absolute HTTP(S) editor address, without embedded
   credentials. It must serve a compatible Sheets app. Stale source, example,
-  CID and OAuth parameters are cleared; unrelated query parameters are preserved.
+  CID and HashBin return parameters are cleared; unrelated query parameters are preserved.
 - `--help` lists supported format/profile IDs. Values also accept `--option=value`.
   Put `--` before a filename beginning with a dash.
 
