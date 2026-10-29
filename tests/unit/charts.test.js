@@ -194,3 +194,23 @@ test("a tick count between fixed bounds divides the axis exactly", () => {
   const { svg } = chartSVG({ kind: "points", y: { min: 0, max: 100, ticks: 4 }, x: { type: "linear", values: [0, 5] }, series: [{ label: "y", values: [20, 60] }] });
   for (const label of ["0", "25", "50", "75", "100"]) assert.match(svg, new RegExp(`>${label}</text>`));
 });
+
+test("bar charts can draw a series as a line over the bars", () => {
+  const { svg, summary } = chartSVG({
+    kind: "bar",
+    x: { values: ["a", "b", "c"] },
+    series: [
+      { label: "In", values: [5, 6, 7] },
+      { label: "Out", values: [2, 3, 9] },
+      { label: "Net", line: true, values: [3, 3, -2] },
+    ],
+  });
+  assert.equal((svg.match(/<rect class="chart-bar"/g) || []).length, 6);
+  assert.match(svg, /<g class="chart-series chart-overlay chart-s3"><path class="chart-line" d="M[^"]+L[^"]+L[^"]+"\/>/);
+  assert.equal((svg.match(/chart-overlay[^]*?<\/g>/)[0].match(/chart-marker/g) || []).length, 3);
+  assert.match(summary, /^Bar chart of In, Out with a line for Net, 3 categories; values from -2 to 9\.$/);
+  // The legend shows a line swatch for the overlay and boxes for the bars.
+  const legend = /<g class="chart-legend">[^]*$/.exec(svg)[0];
+  assert.equal((legend.match(/chart-swatch/g) || []).length, 2);
+  assert.match(legend, /<g class="chart-s3"><path class="chart-line"/);
+});

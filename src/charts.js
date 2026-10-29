@@ -181,9 +181,10 @@ function legendSVG(layout, left, top, kind, classes = []) {
   return `<g class="chart-legend">${layout.items
     .map(({ index, label, shown, x, y }) => {
       const sx = left + x, sy = top + y + 7,
-        swatch = ["line", "linespoints", "steps"].includes(kind)
+        k = layout.kinds?.[index] ?? kind,
+        swatch = ["line", "linespoints", "steps"].includes(k)
           ? `<path class="chart-line" d="M${r1(sx)} ${r1(sy)}h14"/><path class="chart-marker" d="${marker(index, sx + 7, sy, 3.5)}"/>`
-          : kind === "points"
+          : k === "points"
             ? `<path class="chart-marker" d="${marker(index, sx + 7, sy, 4)}"/>`
             : `<rect class="chart-swatch" x="${r1(sx)}" y="${r1(sy - 6)}" width="14" height="12" rx="2"/>`;
       return `<g class="${classes[index] ?? series(index)}">${swatch}${text(sx + 20, sy, shown, { anchor: "start", cls: "chart-legend-text", dy: "0.35em", full: label })}</g>`;
@@ -250,16 +251,21 @@ function cartesianBody(spec) {
     y = spec.y || {},
     n = x.values.length,
     categorical = kind === "bar" || x.type === "category",
-    legendMode = spec.legend || (list.length > 1 ? "top" : "none");
+    legendMode = spec.legend || (list.length > 1 ? "top" : "none"),
+    // A vertical bar chart can draw series marked `line` as lines over the bars.
+    overlay = list.map((s) => kind === "bar" && !horizontal && !!s.line),
+    slots = [];
+  let barCount = 0;
+  for (const line of overlay) slots.push(line ? -1 : barCount++);
   // Values used for the y domain; stacking sums by position.
   let values = list.flatMap((s) => s.values);
   const stack = [];
   if (stacked) {
     for (let i = 0; i < n; i++) {
       let pos = 0, neg = 0;
-      stack.push(list.map((s) => {
+      stack.push(list.map((s, index) => {
         const v = s.values[i];
-        if (typeof v !== "number" || !Number.isFinite(v)) return null;
+        if (overlay[index] || typeof v !== "number" || !Number.isFinite(v)) return null;
         const base = v >= 0 ? pos : neg;
         if (v >= 0) pos += v;
         else neg += v;
@@ -328,6 +334,7 @@ function cartesianBody(spec) {
       if (legendMode === "bottom") bottom += legend.height + 8;
       else top += legend.height + 8;
     }
+    legend.kinds = overlay.map((line) => (line ? "linespoints" : kind));
   }
   const pw = Math.max(40, W - left - right), ph = Math.max(40, H - top - bottom);
   const vScale = (v) => {
@@ -396,20 +403,33 @@ function cartesianBody(spec) {
   const clamp = (p) => Math.min(Math.max(p, horizontal ? left : top), horizontal ? left + pw : top + ph);
   out.push('<g class="chart-marks">');
   if (kind === "bar") {
-    const group = band * 0.8, width = stacked ? group : group / Math.max(1, list.length);
+    const group = band * 0.8, width = stacked ? group : group / Math.max(1, barCount);
     for (const [s, item] of list.entries()) {
+      if (overlay[s]) continue;
       out.push(`<g class="chart-series ${series(s)}">`);
       for (let i = 0; i < n; i++) {
         const v = item.values[i];
         if (!ok(v)) continue;
         const [a, b] = stacked ? stack[i][s] : [y.log ? yTicks.min : zero, v];
         const p1 = clamp(valuePos(a)), p2 = clamp(valuePos(b)),
-          offset = catPos(i) - group / 2 + (stacked ? 0 : s * width);
+          offset = catPos(i) - group / 2 + (stacked ? 0 : slots[s] * width);
         out.push(horizontal
           ? `<rect class="chart-bar" x="${r1(Math.min(p1, p2))}" y="${r1(offset)}" width="${r1(Math.max(0.5, Math.abs(p2 - p1)))}" height="${r1(Math.max(0.5, width - 1))}">${tip(label(item, i))}</rect>`
           : `<rect class="chart-bar" x="${r1(offset)}" y="${r1(Math.min(p1, p2))}" width="${r1(Math.max(0.5, width - 1))}" height="${r1(Math.max(0.5, Math.abs(p2 - p1)))}">${tip(label(item, i))}</rect>`);
       }
       out.push("</g>");
+    }
+    for (const [s, item] of list.entries()) {
+      if (!overlay[s]) continue;
+      let d = "";
+      const marks = [];
+      for (let i = 0; i < n; i++) {
+        if (!ok(item.values[i])) continue;
+        const px = catPos(i), py = clamp(valuePos(item.values[i]));
+        d += `${d ? "L" : "M"}${r1(px)} ${r1(py)}`;
+        marks.push(`<path class="chart-marker" d="${marker(s, px, py)}">${tip(label(item, i))}</path>`);
+      }
+      out.push(`<g class="chart-series chart-overlay ${series(s)}">${d ? `<path class="chart-line" d="${d}"/>` : ""}${marks.join("")}</g>`);
     }
   } else if (kind === "area") {
     for (const [s, item] of list.entries()) {
@@ -463,7 +483,7 @@ function cartesianBody(spec) {
     : `${n} points${xLabel ? ` by ${xLabel}` : ""}`;
   return {
     svg: out.join(""),
-    summary: `${KIND_NAMES[kind]}${stacked && kind === "bar" ? " (stacked)" : ""}${horizontal ? " (horizontal)" : ""} of ${seriesNames(list)}, ${xDescription}; ${range(list.flatMap((s) => s.values), yTicks.step)}.`,
+    summary: `${KIND_NAMES[kind]}${stacked && kind === "bar" ? " (stacked)" : ""}${horizontal ? " (horizontal)" : ""} of ${seriesNames(list.filter((_, s) => !overlay[s]))}${overlay.some(Boolean) ? ` with a line for ${seriesNames(list.filter((_, s) => overlay[s]))}` : ""}, ${xDescription}; ${range(list.flatMap((s) => s.values), yTicks.step)}.`,
   };
 }
 

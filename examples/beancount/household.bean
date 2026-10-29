@@ -1,0 +1,381 @@
+option "title" "A year of household money"
+option "operating_currency" "USD"
+
+2025-01-01 open Assets:Checking USD
+2025-01-01 open Assets:Savings USD
+2025-01-01 open Liabilities:CreditCard USD
+2025-01-01 open Equity:Opening USD
+2025-01-01 open Income:Salary USD
+2025-01-01 open Income:Interest USD
+2025-01-01 open Expenses:Housing:Rent USD
+2025-01-01 open Expenses:Food:Groceries USD
+2025-01-01 open Expenses:Food:Restaurants USD
+2025-01-01 open Expenses:Utilities USD
+2025-01-01 open Expenses:Transport USD
+2025-01-01 open Expenses:Travel USD
+
+2025-01-01 * "Opening balances"
+  Assets:Checking 1800.00 USD
+  Assets:Savings 5000.00 USD
+  Equity:Opening
+
+2025-01-01 * "Acme Co" "Salary"
+  Assets:Checking 4350.00 USD
+  Income:Salary
+
+2025-01-02 * "Landlord" "Rent"
+  Expenses:Housing:Rent 1650.00 USD
+  Assets:Checking
+
+2025-01-10 * "Credit card spending"
+  Expenses:Food:Groceries 388.20 USD
+  Expenses:Food:Restaurants 62.00 USD
+  Expenses:Transport 96.00 USD
+  Liabilities:CreditCard
+
+2025-01-14 * "City Power" "Electricity"
+  Expenses:Utilities 118.40 USD
+  Assets:Checking
+
+2025-01-25 * "Pay the card in full"
+  Liabilities:CreditCard 546.20 USD
+  Assets:Checking
+
+2025-01-26 * "Move savings"
+  Assets:Savings 600.00 USD
+  Assets:Checking
+
+2025-02-01 * "Acme Co" "Salary"
+  Assets:Checking 4350.00 USD
+  Income:Salary
+
+2025-02-02 * "Landlord" "Rent"
+  Expenses:Housing:Rent 1650.00 USD
+  Assets:Checking
+
+2025-02-10 * "Credit card spending"
+  Expenses:Food:Groceries 402.75 USD
+  Expenses:Food:Restaurants 48.50 USD
+  Expenses:Transport 96.00 USD
+  Liabilities:CreditCard
+
+2025-02-14 * "City Power" "Electricity"
+  Expenses:Utilities 109.75 USD
+  Assets:Checking
+
+2025-02-25 * "Pay the card in full"
+  Liabilities:CreditCard 547.25 USD
+  Assets:Checking
+
+2025-02-26 * "Move savings"
+  Assets:Savings 600.00 USD
+  Assets:Checking
+
+2025-03-01 * "Acme Co" "Salary"
+  Assets:Checking 4350.00 USD
+  Income:Salary
+
+2025-03-02 * "Landlord" "Rent"
+  Expenses:Housing:Rent 1650.00 USD
+  Assets:Checking
+
+2025-03-10 * "Credit card spending"
+  Expenses:Food:Groceries 371.10 USD
+  Expenses:Food:Restaurants 90.25 USD
+  Expenses:Transport 96.00 USD
+  Liabilities:CreditCard
+
+2025-03-14 * "City Power" "Electricity"
+  Expenses:Utilities 96.20 USD
+  Assets:Checking
+
+2025-03-25 * "Pay the card in full"
+  Liabilities:CreditCard 557.35 USD
+  Assets:Checking
+
+2025-03-26 * "Move savings"
+  Assets:Savings 600.00 USD
+  Assets:Checking
+
+2025-03-28 * "Bank" "Interest"
+  Assets:Savings 38.40 USD
+  Income:Interest
+
+2025-04-01 * "Acme Co" "Salary"
+  Assets:Checking 4350.00 USD
+  Income:Salary
+
+2025-04-02 * "Landlord" "Rent"
+  Expenses:Housing:Rent 1650.00 USD
+  Assets:Checking
+
+2025-04-10 * "Credit card spending"
+  Expenses:Food:Groceries 415.60 USD
+  Expenses:Food:Restaurants 55.00 USD
+  Expenses:Transport 96.00 USD
+  Liabilities:CreditCard
+
+2025-04-14 * "City Power" "Electricity"
+  Expenses:Utilities 81.30 USD
+  Assets:Checking
+
+2025-04-25 * "Pay the card in full"
+  Liabilities:CreditCard 566.60 USD
+  Assets:Checking
+
+2025-04-26 * "Move savings"
+  Assets:Savings 600.00 USD
+  Assets:Checking
+
+2025-05-01 * "Acme Co" "Salary"
+  Assets:Checking 4350.00 USD
+  Income:Salary
+
+2025-05-02 * "Landlord" "Rent"
+  Expenses:Housing:Rent 1650.00 USD
+  Assets:Checking
+
+2025-05-10 * "Credit card spending"
+  Expenses:Food:Groceries 399.95 USD
+  Expenses:Food:Restaurants 71.80 USD
+  Expenses:Transport 96.00 USD
+  Liabilities:CreditCard
+
+2025-05-14 * "City Power" "Electricity"
+  Expenses:Utilities 74.65 USD
+  Assets:Checking
+
+2025-05-25 * "Pay the card in full"
+  Liabilities:CreditCard 567.75 USD
+  Assets:Checking
+
+2025-05-26 * "Move savings"
+  Assets:Savings 600.00 USD
+  Assets:Checking
+
+2025-06-01 * "Acme Co" "Salary"
+  Assets:Checking 4350.00 USD
+  Income:Salary
+
+2025-06-02 * "Landlord" "Rent"
+  Expenses:Housing:Rent 1650.00 USD
+  Assets:Checking
+
+2025-06-10 * "Credit card spending"
+  Expenses:Food:Groceries 420.30 USD
+  Expenses:Food:Restaurants 120.40 USD
+  Expenses:Transport 96.00 USD
+  Liabilities:CreditCard
+
+2025-06-14 * "City Power" "Electricity"
+  Expenses:Utilities 92.10 USD
+  Assets:Checking
+
+2025-06-25 * "Pay the card in full"
+  Liabilities:CreditCard 636.70 USD
+  Assets:Checking
+
+2025-06-26 * "Move savings"
+  Assets:Savings 600.00 USD
+  Assets:Checking
+
+2025-06-28 * "Bank" "Interest"
+  Assets:Savings 38.40 USD
+  Income:Interest
+
+2025-07-01 * "Acme Co" "Salary"
+  Assets:Checking 4560.00 USD
+  Income:Salary
+
+2025-07-02 * "Landlord" "Rent"
+  Expenses:Housing:Rent 1650.00 USD
+  Assets:Checking
+
+2025-07-10 * "Credit card spending"
+  Expenses:Food:Groceries 433.05 USD
+  Expenses:Food:Restaurants 64.30 USD
+  Expenses:Transport 96.00 USD
+  Liabilities:CreditCard
+
+2025-07-14 * "City Power" "Electricity"
+  Expenses:Utilities 128.55 USD
+  Assets:Checking
+
+2025-07-25 * "Pay the card in full"
+  Liabilities:CreditCard 593.35 USD
+  Assets:Checking
+
+2025-07-26 * "Move savings"
+  Assets:Savings 600.00 USD
+  Assets:Checking
+
+2025-08-01 * "Acme Co" "Salary"
+  Assets:Checking 4560.00 USD
+  Income:Salary
+
+2025-08-02 * "Landlord" "Rent"
+  Expenses:Housing:Rent 1650.00 USD
+  Assets:Checking
+
+2025-08-04 * "Airline" "Summer trip"
+  Expenses:Travel 1240.00 USD
+  Assets:Savings
+
+2025-08-10 * "Credit card spending"
+  Expenses:Food:Groceries 405.40 USD
+  Expenses:Food:Restaurants 58.75 USD
+  Expenses:Transport 96.00 USD
+  Liabilities:CreditCard
+
+2025-08-14 * "City Power" "Electricity"
+  Expenses:Utilities 131.90 USD
+  Assets:Checking
+
+2025-08-25 * "Pay the card in full"
+  Liabilities:CreditCard 560.15 USD
+  Assets:Checking
+
+2025-08-26 * "Move savings"
+  Assets:Savings 600.00 USD
+  Assets:Checking
+
+2025-09-01 * "Acme Co" "Salary"
+  Assets:Checking 4560.00 USD
+  Income:Salary
+
+2025-09-02 * "Landlord" "Rent"
+  Expenses:Housing:Rent 1650.00 USD
+  Assets:Checking
+
+2025-09-10 * "Credit card spending"
+  Expenses:Food:Groceries 392.85 USD
+  Expenses:Food:Restaurants 83.10 USD
+  Expenses:Transport 96.00 USD
+  Liabilities:CreditCard
+
+2025-09-14 * "City Power" "Electricity"
+  Expenses:Utilities 99.40 USD
+  Assets:Checking
+
+2025-09-25 * "Pay the card in full"
+  Liabilities:CreditCard 571.95 USD
+  Assets:Checking
+
+2025-09-26 * "Move savings"
+  Assets:Savings 600.00 USD
+  Assets:Checking
+
+2025-09-28 * "Bank" "Interest"
+  Assets:Savings 38.40 USD
+  Income:Interest
+
+2025-10-01 * "Acme Co" "Salary"
+  Assets:Checking 4560.00 USD
+  Income:Salary
+
+2025-10-02 * "Landlord" "Rent"
+  Expenses:Housing:Rent 1650.00 USD
+  Assets:Checking
+
+2025-10-10 * "Credit card spending"
+  Expenses:Food:Groceries 410.15 USD
+  Expenses:Food:Restaurants 49.90 USD
+  Expenses:Transport 96.00 USD
+  Liabilities:CreditCard
+
+2025-10-14 * "City Power" "Electricity"
+  Expenses:Utilities 84.25 USD
+  Assets:Checking
+
+2025-10-25 * "Pay the card in full"
+  Liabilities:CreditCard 556.05 USD
+  Assets:Checking
+
+2025-10-26 * "Move savings"
+  Assets:Savings 600.00 USD
+  Assets:Checking
+
+2025-11-01 * "Acme Co" "Salary"
+  Assets:Checking 4560.00 USD
+  Income:Salary
+
+2025-11-02 * "Landlord" "Rent"
+  Expenses:Housing:Rent 1650.00 USD
+  Assets:Checking
+
+2025-11-10 * "Credit card spending"
+  Expenses:Food:Groceries 441.70 USD
+  Expenses:Food:Restaurants 77.25 USD
+  Expenses:Transport 96.00 USD
+  Liabilities:CreditCard
+
+2025-11-14 * "City Power" "Electricity"
+  Expenses:Utilities 97.80 USD
+  Assets:Checking
+
+2025-11-25 * "Pay the card in full"
+  Liabilities:CreditCard 614.95 USD
+  Assets:Checking
+
+2025-11-26 * "Move savings"
+  Assets:Savings 600.00 USD
+  Assets:Checking
+
+2025-12-01 * "Acme Co" "Salary"
+  Assets:Checking 4560.00 USD
+  Income:Salary
+
+2025-12-02 * "Landlord" "Rent"
+  Expenses:Housing:Rent 1650.00 USD
+  Assets:Checking
+
+2025-12-10 * "Credit card spending"
+  Expenses:Food:Groceries 468.90 USD
+  Expenses:Food:Restaurants 142.60 USD
+  Expenses:Transport 96.00 USD
+  Liabilities:CreditCard
+
+2025-12-14 * "City Power" "Electricity"
+  Expenses:Utilities 121.35 USD
+  Assets:Checking
+
+2025-12-25 * "Pay the card in full"
+  Liabilities:CreditCard 707.50 USD
+  Assets:Checking
+
+2025-12-26 * "Move savings"
+  Assets:Savings 600.00 USD
+  Assets:Checking
+
+2025-12-28 * "Bank" "Interest"
+  Assets:Savings 38.40 USD
+  Income:Interest
+
+2026-01-01 * "Acme Co" "Salary"
+  Assets:Checking 4560.00 USD
+  Income:Salary
+
+2026-01-02 * "Landlord" "Rent"
+  Expenses:Housing:Rent 1650.00 USD
+  Assets:Checking
+
+2026-01-10 * "Credit card spending"
+  Expenses:Food:Groceries 395.25 USD
+  Expenses:Food:Restaurants 51.40 USD
+  Expenses:Transport 96.00 USD
+  Liabilities:CreditCard
+
+2026-01-14 * "City Power" "Electricity"
+  Expenses:Utilities 124.10 USD
+  Assets:Checking
+
+2026-01-25 * "Pay the card in full"
+  Liabilities:CreditCard 542.65 USD
+  Assets:Checking
+
+2026-01-26 * "Move savings"
+  Assets:Savings 600.00 USD
+  Assets:Checking
+
+2026-01-31 balance Assets:Savings 11713.60 USD
+2026-01-31 balance Liabilities:CreditCard 0 USD

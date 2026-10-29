@@ -1,0 +1,17 @@
+2025-06-01 open Assets:Cash GBP
+2025-06-01 open Assets:Card USD
+2025-06-01 open Income:Gift GBP
+2025-06-01 open Expenses:Food USD
+2025-06-01 open Expenses:Market GBP
+
+2025-06-01 * "Birthday"
+  Assets:Cash 50 GBP
+  Income:Gift
+
+2025-06-01 * "Market"
+  Expenses:Market 12.40 GBP
+  Assets:Cash
+
+2025-06-01 * "Lunch abroad"
+  Expenses:Food 9 USD
+  Assets:Card

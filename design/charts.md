@@ -1,7 +1,8 @@
 # Charts from sheet data (CHART-1 → CHART-7)
 
-Status: **in progress** (2026-10-29). CHART-1 to CHART-4 are implemented; see
-the Org guide's *Charts* section and ORG-15 to ORG-17 in the compatibility ledger.
+Status: **in progress** (2026-10-29). CHART-1 to CHART-5 are implemented; see
+the Org guide's *Charts* section, the Beancount guide's *Charts* section, and
+ORG-15 to ORG-17 and BEAN-10 in the compatibility ledger.
 
 Readers can see a document's numbers as charts that update with the source,
 preview controls and what-if tools. The author should get a useful chart from

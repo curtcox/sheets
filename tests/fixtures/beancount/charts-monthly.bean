@@ -1,0 +1,410 @@
+option "title" "Household charts"
+option "operating_currency" "USD"
+
+2024-01-01 open Assets:Bank:Checking USD
+2024-01-01 open Assets:Bank:Euro EUR
+2024-01-01 open Liabilities:Card USD
+2024-01-01 open Equity:Opening
+2024-01-01 open Income:Salary USD
+2024-01-01 open Income:Interest
+2024-01-01 open Expenses:Rent
+2024-01-01 open Expenses:Food:Groceries
+2024-01-01 open Expenses:Food:Dining
+2024-01-01 open Expenses:Utilities:Power
+2024-01-01 open Expenses:Utilities:Water
+2024-01-01 open Expenses:Transport
+2024-01-01 open Expenses:Health
+2024-01-01 open Expenses:Insurance
+2024-01-01 open Expenses:Gifts
+2024-01-01 open Expenses:Books
+2024-01-01 open Expenses:Travel
+2024-01-01 open Expenses:Phone
+2024-01-01 open Expenses:Clothing
+
+2024-01-02 * "Opening balances"
+  Assets:Bank:Checking 2500.00 USD
+  Assets:Bank:Euro 400.00 EUR
+  Equity:Opening -2500.00 USD
+  Equity:Opening -400.00 EUR
+
+2024-01-01 * "Employer" "Salary"
+  Assets:Bank:Checking 4200.00 USD
+  Income:Salary
+
+2024-01-03 * "Landlord" "Rent"
+  Expenses:Rent 1400.00 USD
+  Assets:Bank:Checking
+
+2024-01-09 * "Card purchases"
+  Expenses:Food:Groceries 412.35 USD
+  Expenses:Food:Dining 96.10 USD
+  Expenses:Utilities:Power 71.24 USD
+  Expenses:Utilities:Water 28.90 USD
+  Expenses:Transport 118.00 USD
+  Expenses:Health 45.00 USD
+  Expenses:Insurance 132.50 USD
+  Expenses:Gifts 20.00 USD
+  Expenses:Books 14.99 USD
+  Expenses:Phone 35.00 USD
+  Expenses:Clothing 8.20 USD
+  Liabilities:Card
+
+2024-01-20 * "Pay card"
+  Liabilities:Card 900.00 USD
+  Assets:Bank:Checking
+
+2024-02-01 * "Employer" "Salary"
+  Assets:Bank:Checking 4225.00 USD
+  Income:Salary
+
+2024-02-03 * "Landlord" "Rent"
+  Expenses:Rent 1400.00 USD
+  Assets:Bank:Checking
+
+2024-02-09 * "Card purchases"
+  Expenses:Food:Groceries 412.35 USD
+  Expenses:Food:Dining 96.10 USD
+  Expenses:Utilities:Power 71.24 USD
+  Expenses:Utilities:Water 28.90 USD
+  Expenses:Transport 118.00 USD
+  Expenses:Health 45.00 USD
+  Expenses:Insurance 132.50 USD
+  Expenses:Gifts 20.00 USD
+  Expenses:Books 14.99 USD
+  Expenses:Phone 35.00 USD
+  Expenses:Clothing 8.20 USD
+  Liabilities:Card
+
+2024-02-20 * "Pay card"
+  Liabilities:Card 900.00 USD
+  Assets:Bank:Checking
+
+2024-03-01 * "Employer" "Salary"
+  Assets:Bank:Checking 4250.00 USD
+  Income:Salary
+
+2024-03-03 * "Landlord" "Rent"
+  Expenses:Rent 1400.00 USD
+  Assets:Bank:Checking
+
+2024-03-09 * "Card purchases"
+  Expenses:Food:Groceries 412.35 USD
+  Expenses:Food:Dining 96.10 USD
+  Expenses:Utilities:Power 71.24 USD
+  Expenses:Utilities:Water 28.90 USD
+  Expenses:Transport 118.00 USD
+  Expenses:Health 45.00 USD
+  Expenses:Insurance 132.50 USD
+  Expenses:Gifts 20.00 USD
+  Expenses:Books 14.99 USD
+  Expenses:Phone 35.00 USD
+  Expenses:Clothing 8.20 USD
+  Liabilities:Card
+
+2024-03-20 * "Pay card"
+  Liabilities:Card 900.00 USD
+  Assets:Bank:Checking
+
+2024-03-15 * "Interest"
+  Assets:Bank:Euro 1.25 EUR
+  Income:Interest
+
+2024-04-01 * "Employer" "Salary"
+  Assets:Bank:Checking 4275.00 USD
+  Income:Salary
+
+2024-04-03 * "Landlord" "Rent"
+  Expenses:Rent 1400.00 USD
+  Assets:Bank:Checking
+
+2024-04-09 * "Card purchases"
+  Expenses:Food:Groceries 412.35 USD
+  Expenses:Food:Dining 96.10 USD
+  Expenses:Utilities:Power 71.24 USD
+  Expenses:Utilities:Water 28.90 USD
+  Expenses:Transport 118.00 USD
+  Expenses:Health 45.00 USD
+  Expenses:Insurance 132.50 USD
+  Expenses:Gifts 20.00 USD
+  Expenses:Books 14.99 USD
+  Expenses:Phone 35.00 USD
+  Expenses:Clothing 8.20 USD
+  Liabilities:Card
+
+2024-04-20 * "Pay card"
+  Liabilities:Card 900.00 USD
+  Assets:Bank:Checking
+
+2024-05-01 * "Employer" "Salary"
+  Assets:Bank:Checking 4300.00 USD
+  Income:Salary
+
+2024-05-03 * "Landlord" "Rent"
+  Expenses:Rent 1400.00 USD
+  Assets:Bank:Checking
+
+2024-05-09 * "Card purchases"
+  Expenses:Food:Groceries 412.35 USD
+  Expenses:Food:Dining 96.10 USD
+  Expenses:Utilities:Power 71.24 USD
+  Expenses:Utilities:Water 28.90 USD
+  Expenses:Transport 118.00 USD
+  Expenses:Health 45.00 USD
+  Expenses:Insurance 132.50 USD
+  Expenses:Gifts 20.00 USD
+  Expenses:Books 14.99 USD
+  Expenses:Phone 35.00 USD
+  Expenses:Clothing 8.20 USD
+  Liabilities:Card
+
+2024-05-20 * "Pay card"
+  Liabilities:Card 900.00 USD
+  Assets:Bank:Checking
+
+2024-06-01 * "Employer" "Salary"
+  Assets:Bank:Checking 4325.00 USD
+  Income:Salary
+
+2024-06-03 * "Landlord" "Rent"
+  Expenses:Rent 1400.00 USD
+  Assets:Bank:Checking
+
+2024-06-09 * "Card purchases"
+  Expenses:Food:Groceries 412.35 USD
+  Expenses:Food:Dining 96.10 USD
+  Expenses:Utilities:Power 71.24 USD
+  Expenses:Utilities:Water 28.90 USD
+  Expenses:Transport 118.00 USD
+  Expenses:Health 45.00 USD
+  Expenses:Insurance 132.50 USD
+  Expenses:Gifts 20.00 USD
+  Expenses:Books 14.99 USD
+  Expenses:Phone 35.00 USD
+  Expenses:Clothing 8.20 USD
+  Liabilities:Card
+
+2024-06-20 * "Pay card"
+  Liabilities:Card 900.00 USD
+  Assets:Bank:Checking
+
+2024-07-01 * "Employer" "Salary"
+  Assets:Bank:Checking 4350.00 USD
+  Income:Salary
+
+2024-07-03 * "Landlord" "Rent"
+  Expenses:Rent 1400.00 USD
+  Assets:Bank:Checking
+
+2024-07-09 * "Card purchases"
+  Expenses:Food:Groceries 412.35 USD
+  Expenses:Food:Dining 96.10 USD
+  Expenses:Utilities:Power 71.24 USD
+  Expenses:Utilities:Water 28.90 USD
+  Expenses:Transport 118.00 USD
+  Expenses:Health 45.00 USD
+  Expenses:Insurance 132.50 USD
+  Expenses:Gifts 20.00 USD
+  Expenses:Books 14.99 USD
+  Expenses:Phone 35.00 USD
+  Expenses:Clothing 8.20 USD
+  Liabilities:Card
+
+2024-07-20 * "Pay card"
+  Liabilities:Card 900.00 USD
+  Assets:Bank:Checking
+
+2024-08-01 * "Employer" "Salary"
+  Assets:Bank:Checking 4375.00 USD
+  Income:Salary
+
+2024-08-03 * "Landlord" "Rent"
+  Expenses:Rent 1400.00 USD
+  Assets:Bank:Checking
+
+2024-08-09 * "Card purchases"
+  Expenses:Food:Groceries 412.35 USD
+  Expenses:Food:Dining 96.10 USD
+  Expenses:Utilities:Power 71.24 USD
+  Expenses:Utilities:Water 28.90 USD
+  Expenses:Transport 118.00 USD
+  Expenses:Health 45.00 USD
+  Expenses:Insurance 132.50 USD
+  Expenses:Gifts 20.00 USD
+  Expenses:Books 14.99 USD
+  Expenses:Phone 35.00 USD
+  Expenses:Clothing 8.20 USD
+  Liabilities:Card
+
+2024-08-20 * "Pay card"
+  Liabilities:Card 900.00 USD
+  Assets:Bank:Checking
+
+2024-09-01 * "Employer" "Salary"
+  Assets:Bank:Checking 4400.00 USD
+  Income:Salary
+
+2024-09-03 * "Landlord" "Rent"
+  Expenses:Rent 1400.00 USD
+  Assets:Bank:Checking
+
+2024-09-09 * "Card purchases"
+  Expenses:Food:Groceries 412.35 USD
+  Expenses:Food:Dining 96.10 USD
+  Expenses:Utilities:Power 71.24 USD
+  Expenses:Utilities:Water 28.90 USD
+  Expenses:Transport 118.00 USD
+  Expenses:Health 45.00 USD
+  Expenses:Insurance 132.50 USD
+  Expenses:Gifts 20.00 USD
+  Expenses:Books 14.99 USD
+  Expenses:Phone 35.00 USD
+  Expenses:Clothing 8.20 USD
+  Liabilities:Card
+
+2024-09-20 * "Pay card"
+  Liabilities:Card 900.00 USD
+  Assets:Bank:Checking
+
+2024-09-15 * "Interest"
+  Assets:Bank:Euro 1.25 EUR
+  Income:Interest
+
+2024-10-01 * "Employer" "Salary"
+  Assets:Bank:Checking 4425.00 USD
+  Income:Salary
+
+2024-10-03 * "Landlord" "Rent"
+  Expenses:Rent 1400.00 USD
+  Assets:Bank:Checking
+
+2024-10-09 * "Card purchases"
+  Expenses:Food:Groceries 412.35 USD
+  Expenses:Food:Dining 96.10 USD
+  Expenses:Utilities:Power 71.24 USD
+  Expenses:Utilities:Water 28.90 USD
+  Expenses:Transport 118.00 USD
+  Expenses:Health 45.00 USD
+  Expenses:Insurance 132.50 USD
+  Expenses:Gifts 20.00 USD
+  Expenses:Books 14.99 USD
+  Expenses:Phone 35.00 USD
+  Expenses:Clothing 8.20 USD
+  Liabilities:Card
+
+2024-10-20 * "Pay card"
+  Liabilities:Card 900.00 USD
+  Assets:Bank:Checking
+
+2024-11-01 * "Employer" "Salary"
+  Assets:Bank:Checking 4450.00 USD
+  Income:Salary
+
+2024-11-03 * "Landlord" "Rent"
+  Expenses:Rent 1400.00 USD
+  Assets:Bank:Checking
+
+2024-11-09 * "Card purchases"
+  Expenses:Food:Groceries 412.35 USD
+  Expenses:Food:Dining 96.10 USD
+  Expenses:Utilities:Power 71.24 USD
+  Expenses:Utilities:Water 28.90 USD
+  Expenses:Transport 118.00 USD
+  Expenses:Health 45.00 USD
+  Expenses:Insurance 132.50 USD
+  Expenses:Gifts 20.00 USD
+  Expenses:Books 14.99 USD
+  Expenses:Phone 35.00 USD
+  Expenses:Clothing 8.20 USD
+  Liabilities:Card
+
+2024-11-20 * "Pay card"
+  Liabilities:Card 900.00 USD
+  Assets:Bank:Checking
+
+2024-12-01 * "Employer" "Salary"
+  Assets:Bank:Checking 4475.00 USD
+  Income:Salary
+
+2024-12-03 * "Landlord" "Rent"
+  Expenses:Rent 1400.00 USD
+  Assets:Bank:Checking
+
+2024-12-09 * "Card purchases"
+  Expenses:Food:Groceries 412.35 USD
+  Expenses:Food:Dining 96.10 USD
+  Expenses:Utilities:Power 71.24 USD
+  Expenses:Utilities:Water 28.90 USD
+  Expenses:Transport 118.00 USD
+  Expenses:Health 45.00 USD
+  Expenses:Insurance 132.50 USD
+  Expenses:Gifts 20.00 USD
+  Expenses:Books 14.99 USD
+  Expenses:Phone 35.00 USD
+  Expenses:Clothing 8.20 USD
+  Liabilities:Card
+
+2024-12-20 * "Pay card"
+  Liabilities:Card 900.00 USD
+  Assets:Bank:Checking
+
+2025-01-01 * "Employer" "Salary"
+  Assets:Bank:Checking 4500.00 USD
+  Income:Salary
+
+2025-01-03 * "Landlord" "Rent"
+  Expenses:Rent 1400.00 USD
+  Assets:Bank:Checking
+
+2025-01-09 * "Card purchases"
+  Expenses:Food:Groceries 412.35 USD
+  Expenses:Food:Dining 96.10 USD
+  Expenses:Utilities:Power 71.24 USD
+  Expenses:Utilities:Water 28.90 USD
+  Expenses:Transport 118.00 USD
+  Expenses:Health 45.00 USD
+  Expenses:Insurance 132.50 USD
+  Expenses:Gifts 20.00 USD
+  Expenses:Books 14.99 USD
+  Expenses:Phone 35.00 USD
+  Expenses:Clothing 8.20 USD
+  Liabilities:Card
+
+2025-01-20 * "Pay card"
+  Liabilities:Card 900.00 USD
+  Assets:Bank:Checking
+
+2025-02-01 * "Employer" "Salary"
+  Assets:Bank:Checking 4525.00 USD
+  Income:Salary
+
+2025-02-03 * "Landlord" "Rent"
+  Expenses:Rent 1400.00 USD
+  Assets:Bank:Checking
+
+2025-02-09 * "Card purchases"
+  Expenses:Food:Groceries 412.35 USD
+  Expenses:Food:Dining 96.10 USD
+  Expenses:Utilities:Power 71.24 USD
+  Expenses:Utilities:Water 28.90 USD
+  Expenses:Transport 118.00 USD
+  Expenses:Health 45.00 USD
+  Expenses:Insurance 132.50 USD
+  Expenses:Gifts 20.00 USD
+  Expenses:Books 14.99 USD
+  Expenses:Phone 35.00 USD
+  Expenses:Clothing 8.20 USD
+  Liabilities:Card
+
+2025-02-20 * "Pay card"
+  Liabilities:Card 900.00 USD
+  Assets:Bank:Checking
+
+2024-08-12 * "Trip"
+  Expenses:Travel 150.00 EUR
+  Assets:Bank:Euro
+
+2024-11-05 * "Refund"
+  Assets:Bank:Checking 30.00 USD
+  Expenses:Gifts
+
+2025-02-28 balance Assets:Bank:Euro 252.50 EUR

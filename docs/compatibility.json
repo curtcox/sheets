@@ -1363,6 +1363,32 @@
       ]
     },
     {
+      "id": "BEAN-10",
+      "format": "beancount",
+      "title": "A Charts report draws default ledger charts without chart syntax",
+      "kind": "gap",
+      "status": "resolved",
+      "priority": "P2",
+      "milestone": "CHART-5",
+      "dependsOn": [
+        "BEAN-03"
+      ],
+      "expected": "Draw net worth over time, income against expenses per period and second-level expense totals from the ledger, with chart data equal to independent beanquery sums for every valid fixture, and sensible output for empty, single-day and multi-currency ledgers.",
+      "disclosure": "The Charts tab draws three static, sanitized SVG charts: period-end Assets and Liabilities balances per currency, Income (sign flipped) and Expenses per period with a net line, and second-level Expenses accounts over the whole ledger (largest eight, then Other). Periods are daily under 62 days, Monday-to-Sunday weeks under 366 days and months otherwise. Income and expense charts use the operating_currency option or else the most-posted currency; other commodities are named as left out, because reports do not revalue (BEAN-03). There are no options to choose other charts or periods; native custom directives remain unsupported.",
+      "baselineDisclosure": "Ledger reports were tables only; there were no charts.",
+      "reproducer": {
+        "path": "tests/fixtures/beancount/charts-monthly.bean"
+      },
+      "evidence": [
+        "design/charts.md",
+        "src/formats/beancount/charts.js",
+        "scripts/beancount-expected.py",
+        "tests/fixtures/beancount/charts.json",
+        "tests/unit/beancount-charts.test.js",
+        "tests/browser/beancount-charts.spec.js"
+      ]
+    },
+    {
       "id": "SHARED-05",
       "format": "shared",
       "title": "Long source URLs use fragments to avoid server request limits",

@@ -84,7 +84,7 @@ try {
       );
     if (item.format === "beancount" && item.kind !== "error")
       await page
-        .getByRole("tab", { name: "Trial balance", exact: true })
+        .getByRole("tab", { name: item.coverTab || "Trial balance", exact: true })
         .click();
     await page.addStyleTag({
       content: `

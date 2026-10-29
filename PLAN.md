@@ -463,7 +463,10 @@ CHART-3 is done: `#+SHEETS_PLOT:` adds pie, donut and area kinds, `rows:all`,
 legend placement and sizes, and the harness confirms Emacs ignores it. CHART-4
 is done (ORG-17): `orgtbl-ascii-draw`, `orgtbl-uc-draw-grid` and
 `orgtbl-uc-draw-cont` produce Emacs's exact text in both calculation modes,
-including `#ERROR`, and every other Lisp formula stays unsupported.
+including `#ERROR`, and every other Lisp formula stays unsupported. CHART-5 is
+done (BEAN-10): a Beancount **Charts** tab draws net worth, income against
+expenses and where the money went with no syntax, and its data equals
+independent beanquery sums for every valid fixture.
 
 ### Prioritized elimination queue — refreshed 2026-10-19
 

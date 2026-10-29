@@ -1,0 +1,34 @@
+2024-03-04 open Assets:Wallet USD
+2024-03-04 open Liabilities:Loan USD
+2024-03-04 open Equity:Opening USD
+2024-03-04 open Income:Freelance USD
+2024-03-04 open Expenses:Coffee USD
+2024-03-04 open Expenses:Software USD
+
+2024-03-06 * "Opening"
+  Assets:Wallet 100 USD
+  Equity:Opening
+
+2024-03-10 * "Loan"
+  Assets:Wallet 500 USD
+  Liabilities:Loan
+
+2024-03-18 * "Client" "Invoice 1"
+  Assets:Wallet 750 USD
+  Income:Freelance
+
+2024-03-19 * "Cafe"
+  Expenses:Coffee 4.75 USD
+  Assets:Wallet
+
+2024-04-01 * "Editor licence"
+  Expenses:Software 89 USD
+  Assets:Wallet
+
+2024-04-15 * "Repay"
+  Liabilities:Loan 250 USD
+  Assets:Wallet
+
+2024-05-24 * "Cafe"
+  Expenses:Coffee 5.25 USD
+  Assets:Wallet

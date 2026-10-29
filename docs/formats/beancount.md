@@ -34,12 +34,44 @@ Use the report selector in the preview to change what you inspect:
 | Balance sheet | Asset, liability, and equity account balances |
 | Income statement | Income and expense balances |
 | Trial balance | Account balances across the ledger, separated by commodity |
+| Charts | Net worth over time, income against expenses per period, and where the money went |
 | Account journal | Transaction postings grouped by account |
 
 The reports are views of the current source, rather than a query console. A
 rendered HTML export or printout keeps only the currently selected report; the
 source download retains the entire ledger. Correct diagnostics before treating
 partial report output as a reliable balance.
+
+## Charts
+
+The **Charts** tab needs no chart syntax. Beancount has none, and these are
+the charts a ledger usually needs. They are recomputed from the source on every
+render.
+
+| Chart | What it shows |
+| --- | --- |
+| Net worth | The balance of all `Assets` and `Liabilities` accounts at the end of each period, one line per currency. Commodities such as shares are counted in their own units. |
+| Income and expenses | Bars of `Income` (with its sign flipped, so both point up) and `Expenses` per period, with a line for income minus expenses. |
+| Where the money went | Horizontal bars of second-level `Expenses` accounts, such as `Expenses:Food`, over the whole ledger. The largest eight are shown and the rest merge into *Other*. |
+
+The period depends on how much time the postings cover: daily under 62 days,
+weekly (Monday to Sunday, labelled by the Monday) under 366 days, and monthly
+otherwise. A period's balance includes every posting dated on or before its
+last day.
+
+The income and expense charts use one currency: `option "operating_currency"`
+when it is set, otherwise the currency used in the most postings. Sheets does
+not convert between commodities (BEAN-03), so a note under the charts names any
+Income or Expenses commodities that are left out. A ledger with no postings
+shows a short message instead of empty axes. Tooltips show the exact decimal
+amounts. Export and print include the charts when the Charts tab is selected.
+
+The chart data is checked independently: `scripts/beancount-expected.py`
+computes the periods itself and asks beanquery for each period-end balance,
+period sum and account total. Sheets' numbers must equal them exactly for
+every valid fixture. Fava and other Beancount tools draw similar charts, but
+Sheets does not copy their layout or options, and there is no way to choose
+other charts yet.
 
 ## Directive and posting reference
 
@@ -61,7 +93,7 @@ partial report output as a reliable balance.
 
 Supported directives are `option`, `open`, `close`, `commodity`, transactions (`*`, `!`, `txn`), `balance`, `pad`, `price`, `note`, and `event`. Transactions support tags, links, metadata, and one inferred missing posting amount. Postings can carry per-unit or total-cost lots, date/label selectors, or `@`/`@@` prices. Cost lots use the booking method selected on the account or by the file-wide `booking_method` option; the default is STRICT. Metadata and informational directives are retained; price directives are not used to revalue reports.
 
-The preview includes **Diagnostics**, **Balance sheet**, **Income statement**, **Trial balance**, and an **Account journal**, grouped by account. Balances retain native commodities. Transaction balancing uses cost or price weights; displayed holdings retain their original quantities. There is no consolidated reporting currency or automatic price valuation.
+The preview includes **Diagnostics**, **Balance sheet**, **Income statement**, **Trial balance**, [**Charts**](#charts), and an **Account journal**, grouped by account. Balances retain native commodities. Transaction balancing uses cost or price weights; displayed holdings retain their original quantities. There is no consolidated reporting currency or automatic price valuation.
 
 Diagnostics cover unbalanced transactions, failed assertions, unsupported includes/plugins, missing or closed accounts, restricted commodities, unmatched lots, and unused pads. A pad supplies the difference at its next assertion and balances the source account. A balance directive observes the start of its date, before that day's transactions.
 
@@ -195,4 +227,5 @@ These entries share the [central limitations ledger](../limitations.md). “Need
 | BEAN-07 | Resolved | Per-unit/total costs and date/label lot selectors |
 | BEAN-08 | Resolved | Explicit booking policies and ambiguous-reduction rejection |
 | BEAN-09 | Known gap | Remaining cost grammar, lot interpolation and booking bounds |
+| BEAN-10 | Resolved | A Charts report draws default ledger charts without chart syntax |
 <!-- compatibility:end -->

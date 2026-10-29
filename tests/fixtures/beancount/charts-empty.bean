@@ -1,0 +1,3 @@
+option "operating_currency" "USD"
+2025-01-01 open Assets:Bank USD
+2025-01-01 open Income:Salary USD

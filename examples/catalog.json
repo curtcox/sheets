@@ -271,6 +271,15 @@
     "path": "examples/beancount/typical.bean"
   },
   {
+    "id": "beancount-household",
+    "format": "beancount",
+    "kind": "typical",
+    "title": "A year of household money",
+    "description": "The Charts tab shows net worth, monthly income against expenses and where the money went, with no chart syntax.",
+    "path": "examples/beancount/household.bean",
+    "coverTab": "Charts"
+  },
+  {
     "id": "beancount-edge",
     "format": "beancount",
     "kind": "edge",

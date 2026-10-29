@@ -7,8 +7,8 @@ Generated links above 7,000 characters keep compressed source in the fragment,
 avoiding host request-line limits on reload; short query links remain readable.
 
 Supports GitHub Markdown, AsciiMath, Numbat, CalcFile, Org tables, a Calca-compatible
-subset, Hurmet, a Beancount core subset, and Quarto notebooks with Python and R. Includes
-39 gallery examples with rendered previews, format guides, diagnostics, responsive
+subset, Hurmet, a Beancount core subset with default ledger charts, and Quarto notebooks with Python and R. Includes
+40 gallery examples with rendered previews, format guides, diagnostics, responsive
 split views, ACE, and
 sanitized HTML/MathML/SVG output. Download source files, export the finished preview
 as standalone HTML, or print it to PDF. Beancount, Org, Numbat, and Hurmet have
@@ -84,7 +84,7 @@ Unit tests run real Numbat WASM and Hurmet, all 37 required CalcFile conformance
 cases, URL/detection/HashBin/sharing tests, and the recorded GFM corpus (672/672
 raw exact HTML matches, 601/672 production HTML; every deviation classified in
 the format guide). Browser tests render
-all 39 examples in Chromium, Firefox, and WebKit, including real Python and R, and check
+all 40 examples in Chromium, Firefox, and WebKit, including real Python and R, and check
 sharing, cancellation, XSS boundaries, mobile layouts, docs, gallery and reports.
 
 The GFM browser suite separately checks 627/672 final DOM matches, including
@@ -97,7 +97,8 @@ autolink differences beyond that corpus; see the format guide. Run
 oracle (requires CMake, a C compiler, curl, and network access).
 
 Independent fixture checks require Emacs and Python reference tools. Beancount
-reference balances and remaining cost-lot positions use decimal strings, never floats:
+reference balances, remaining cost-lot positions and Charts-tab data use decimal
+strings, never floats:
 
 ```sh
 python -m pip install beancount==3.2.0 beanquery==0.2.0
@@ -163,7 +164,7 @@ npm run gallery:covers
 node scripts/render-gallery.mjs --only=calcfile-edge --rates-fixture=tests/fixtures/exchange-rates/ecb-api-2026-10-16.csv
 ```
 
-The script starts and stops its own temporary local server, renders all 39
+The script starts and stops its own temporary local server, renders all 40
 examples through the editor, and updates `examples/covers/`. Python examples need
 jsDelivr access; R examples need webr.r-wasm.org. Covers use a 640 × 400 viewport; Beancount examples show the trial
 balance, except the error example, which shows diagnostics. Unit tests check

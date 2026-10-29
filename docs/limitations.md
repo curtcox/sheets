@@ -180,6 +180,8 @@ See the [Beancount guide](formats/beancount.md). Compatibility target: Beancount
 
 - **BEAN-08 — Explicit booking policies and ambiguous-reduction rejection** (Resolved). STRICT (the native default), STRICT_WITH_SIZE, FIFO, LIFO, HIFO, and NONE are supported file-wide and per account. Insufficient/unmatched/ambiguous reductions reject their weight-commodity group without changing its inventory; other groups may remain in partial reports. Earlier versions always reduced FIFO. Specify FIFO explicitly to retain that intended policy; unambiguous per-unit ledgers retain their balances. Native fixtures compare remaining cost positions as well as validity and balances.
 
+- **BEAN-10 — A Charts report draws default ledger charts without chart syntax** (Resolved). The Charts tab draws three static, sanitized SVG charts: period-end Assets and Liabilities balances per currency, Income (sign flipped) and Expenses per period with a net line, and second-level Expenses accounts over the whole ledger (largest eight, then Other). Periods are daily under 62 days, Monday-to-Sunday weeks under 366 days and months otherwise. Income and expense charts use the operating_currency option or else the most-posted currency; other commodities are named as left out, because reports do not revalue (BEAN-03). There are no options to choose other charts or periods; native custom directives remain unsupported.
+
 ## Quarto
 
 See the [Quarto guide](formats/quarto.md). Compatibility target: Quarto 1.10.19 control fixtures / documented browser subset / Pyodide 0.27.7 / webR 0.6.0.

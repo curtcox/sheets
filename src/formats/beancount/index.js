@@ -1,6 +1,7 @@
 import { plugin } from "../registry.js";
 import { evaluateBeancount } from "./engine.js";
 import { escapeHTML as e } from "../../util.js";
+import { ledgerChartsHTML } from "./charts.js";
 export function renderBeancount(src) {
   const result = evaluateBeancount(src);
   const reports = [
@@ -8,6 +9,7 @@ export function renderBeancount(src) {
     ["balance", "Balance sheet"],
     ["income", "Income statement"],
     ["trial", "Trial balance"],
+    ["charts", "Charts"],
     ["journal", "Account journal"],
   ];
   const balances = (predicate) =>
@@ -29,6 +31,7 @@ export function renderBeancount(src) {
     balance: balances((a) => /^(Assets|Liabilities|Equity):/.test(a)),
     income: balances((a) => /^(Income|Expenses):/.test(a)),
     trial: balances(() => true),
+    charts: ledgerChartsHTML(result).html,
     journal: `<table><thead><tr><th>Date</th><th>Account</th><th>Narration</th><th>Change</th><th>Balance</th></tr></thead><tbody>${result.journal
       .slice()
       .sort(

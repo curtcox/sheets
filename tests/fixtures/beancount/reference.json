@@ -228,6 +228,120 @@
     },
     "valid": false
   },
+  "charts-empty.bean": {
+    "balances": {},
+    "lots": {},
+    "valid": true
+  },
+  "charts-monthly.bean": {
+    "balances": {
+      "Assets:Bank:Checking": {
+        "USD": "31405"
+      },
+      "Assets:Bank:Euro": {
+        "EUR": "252.5"
+      },
+      "Equity:Opening": {
+        "EUR": "-400",
+        "USD": "-2500"
+      },
+      "Expenses:Books": {
+        "USD": "209.86"
+      },
+      "Expenses:Clothing": {
+        "USD": "114.8"
+      },
+      "Expenses:Food:Dining": {
+        "USD": "1345.4"
+      },
+      "Expenses:Food:Groceries": {
+        "USD": "5772.9"
+      },
+      "Expenses:Gifts": {
+        "USD": "250"
+      },
+      "Expenses:Health": {
+        "USD": "630"
+      },
+      "Expenses:Insurance": {
+        "USD": "1855"
+      },
+      "Expenses:Phone": {
+        "USD": "490"
+      },
+      "Expenses:Rent": {
+        "USD": "19600"
+      },
+      "Expenses:Transport": {
+        "USD": "1652"
+      },
+      "Expenses:Travel": {
+        "EUR": "150"
+      },
+      "Expenses:Utilities:Power": {
+        "USD": "997.36"
+      },
+      "Expenses:Utilities:Water": {
+        "USD": "404.6"
+      },
+      "Income:Interest": {
+        "EUR": "-2.5"
+      },
+      "Income:Salary": {
+        "USD": "-61075"
+      },
+      "Liabilities:Card": {
+        "USD": "-1151.92"
+      }
+    },
+    "lots": {},
+    "valid": true
+  },
+  "charts-single-day.bean": {
+    "balances": {
+      "Assets:Card": {
+        "USD": "-9"
+      },
+      "Assets:Cash": {
+        "GBP": "37.6"
+      },
+      "Expenses:Food": {
+        "USD": "9"
+      },
+      "Expenses:Market": {
+        "GBP": "12.4"
+      },
+      "Income:Gift": {
+        "GBP": "-50"
+      }
+    },
+    "lots": {},
+    "valid": true
+  },
+  "charts-weekly.bean": {
+    "balances": {
+      "Assets:Wallet": {
+        "USD": "1001"
+      },
+      "Equity:Opening": {
+        "USD": "-100"
+      },
+      "Expenses:Coffee": {
+        "USD": "10"
+      },
+      "Expenses:Software": {
+        "USD": "89"
+      },
+      "Income:Freelance": {
+        "USD": "-750"
+      },
+      "Liabilities:Loan": {
+        "USD": "-250"
+      }
+    },
+    "lots": {},
+    "valid": true
+  },
   "cost-tolerance-cap.bean": {
     "balances": {
       "Assets:Bank": {
