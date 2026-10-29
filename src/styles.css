@@ -397,6 +397,55 @@ li > code {
   font-weight: 600;
   padding-bottom: 8px;
 }
+.document .sheet-control {
+  margin: 10px 0;
+}
+.document .sheet-control-slider {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  column-gap: 12px;
+}
+.document .sheet-control label {
+  display: inline-flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  max-width: 100%;
+}
+.document .sheet-control input[type="range"] {
+  width: min(320px, 60vw);
+  accent-color: var(--accent);
+}
+.document .sheet-control input[type="checkbox"] {
+  accent-color: var(--accent);
+  width: 18px;
+  height: 18px;
+}
+.document .sheet-control input[type="text"] {
+  font: inherit;
+  width: 12em;
+  max-width: 100%;
+  padding: 4px 8px;
+  border: 1px solid var(--border);
+  border-radius: 4px;
+}
+.document .sheet-control input[aria-invalid="true"] {
+  border-color: #a74438;
+}
+.document .sheet-control output {
+  font-variant-numeric: tabular-nums;
+  min-width: 3em;
+}
+.document .sheet-control-error {
+  flex-basis: 100%;
+  display: block;
+  color: #a74438;
+  font-size: 0.9em;
+}
+.document .sheet-control-error:empty {
+  display: none;
+}
 .document blockquote,
 .markdown-alert,
 .callout {

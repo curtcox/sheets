@@ -1,0 +1,17 @@
+#+TITLE: What-if pricing
+#+CONSTANTS: price=25 users=400 annual=0 churn=0.03
+#+SHEETS_CONTROL: price slider 5..100 step 5 label "Monthly price ($)"
+#+SHEETS_CONTROL: users text label "Starting users"
+#+SHEETS_CONTROL: annual checkbox label "Annual plan (two months free)"
+#+SHEETS_CONTROL: churn slider 0..0.1 step 0.005 label "Monthly churn"
+
+Move the controls; the source and every result update together.
+
+| Month | Users | Revenue |
+|-------+-------+---------|
+|     1 |     0 |       0 |
+|     2 |     0 |       0 |
+|     3 |     0 |       0 |
+|-------+-------+---------|
+| Total |       |       0 |
+#+TBLFM: @2$2=$users::@3$2=@-1*(1-$churn);%.0f::@4$2=@-1*(1-$churn);%.0f::@2$3=$2*$price*if($annual,10/12,1);%.2f::@3$3=$2*$price*if($annual,10/12,1);%.2f::@4$3=$2*$price*if($annual,10/12,1);%.2f::@5$3=vsum(@I..@II);%.2f

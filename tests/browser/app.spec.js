@@ -196,10 +196,10 @@ test("gallery search and docs render through the application pipeline", async ({
   page,
 }) => {
   await page.goto("/gallery.html");
-  await expect(page.locator(".card")).toHaveCount(36);
-  await expect(page.locator(".card-cover")).toHaveCount(36);
+  await expect(page.locator(".card")).toHaveCount(37);
+  await expect(page.locator(".card-cover")).toHaveCount(37);
   await page.getByLabel("Filter by format").selectOption("org");
-  await expect(page.locator(".card")).toHaveCount(4);
+  await expect(page.locator(".card")).toHaveCount(5);
   await page.getByLabel("Search examples").fill("purchase");
   await expect(page.locator(".card")).toHaveCount(1);
   await expect(page.locator(".card-cover")).toHaveAttribute(

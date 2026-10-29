@@ -157,6 +157,14 @@
     "profile": "org-emacs-v1"
   },
   {
+    "id": "org-what-if",
+    "format": "org",
+    "kind": "typical",
+    "title": "What-if pricing",
+    "description": "Sliders, a checkbox and a text field edit constants and recalculate the model.",
+    "path": "examples/org/what-if.org"
+  },
+  {
     "id": "org-error",
     "format": "org",
     "kind": "error",

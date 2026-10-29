@@ -52,7 +52,7 @@ try {
         .sources
     : {};
   for (const item of catalog.filter((item) => !only || item.id === only)) {
-    if (!/^[a-z]+-(?:basic|typical|edge|error)$/.test(item.id))
+    if (!/^[a-z]+(?:-[a-z]+)+$/.test(item.id))
       throw new Error(`Invalid example ID: ${item.id}`);
     await page.goto(
       `${base}index.html?example=${encodeURIComponent(item.id)}&view=preview`,

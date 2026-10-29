@@ -231,7 +231,7 @@ test("opt-in offline files support new source links, vendored workers, docs and 
   await page.goto(base + "docs.html?page=formats/numbat");
   await expect(page.locator("#docs-content h1")).toHaveText("Numbat");
   await page.goto(base + "gallery.html");
-  await expect(page.locator(".card-cover")).toHaveCount(36);
+  await expect(page.locator(".card-cover")).toHaveCount(37);
   await page
     .locator(".card-cover")
     .first()

@@ -10,6 +10,7 @@ import {
 import { ORG_EMACS, validateProfile } from "../../compatibility-profiles.js";
 import { formulaPrecedenceHints } from "./precedence-hints.js";
 import { validateInputEntries } from "./inputs.js";
+import { orgControls } from "./controls.js";
 const isHline = (line) => /^\s*\|[-+:]+\|?\s*$/.test(line);
 export function parseTable(lines) {
   const rows = [],
@@ -291,6 +292,7 @@ export function recalculateOrg(src, { profile, inputs = new Map() } = {}) {
       if (profile === ORG_EMACS) break; // Only the first stored formula line is active.
     }
   }
+  const controls = orgControls(document.controlKeywords, document, lines, diagnostics);
   const output = lines.slice();
   for (const { start, end, table } of tables.slice().reverse())
     output.splice(start, end - start, ...tableSource(table));
@@ -299,6 +301,7 @@ export function recalculateOrg(src, { profile, inputs = new Map() } = {}) {
     formulaHints,
     sharedInputs,
     fileConstants: document.constantEntries,
+    controls,
     showConstants: document.showConstants,
   };
 }

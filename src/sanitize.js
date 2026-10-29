@@ -60,6 +60,18 @@ DOMPurify.addHook("uponSanitizeAttribute", (node, data) => {
     .join(";");
   if (!data.attrValue) data.keepAttr = false;
 });
+// Control ids are only lookup keys into engine descriptors. Keep them on
+// supported input types; anything else is left as ordinary sanitized markup.
+const controlTypes = new Set(["checkbox", "range", "text"]);
+DOMPurify.addHook("afterSanitizeAttributes", (node) => {
+  if (!node.hasAttribute?.("data-control")) return;
+  if (
+    node.nodeName !== "INPUT" ||
+    !controlTypes.has((node.getAttribute("type") || "text").toLowerCase())
+  )
+    node.removeAttribute("data-control");
+  else for (const name of ["name", "form", "list"]) node.removeAttribute(name);
+});
 // Final boundary for every engine, including Python HTML and generated SVG.
 export const sanitize = (html) =>
   DOMPurify.sanitize(html, {
@@ -88,4 +100,43 @@ export const sanitize = (html) =>
   });
 export function setPreview(element, html) {
   element.innerHTML = sanitize(html);
+}
+/**
+ * Like setPreview, but keeps matching nodes in place so a control the reader is
+ * using survives the re-render. `keep(input)` marks inputs whose live state stays.
+ */
+export function updatePreview(element, html, keep = () => false) {
+  const template = element.ownerDocument.createElement("template");
+  template.innerHTML = sanitize(html);
+  morphChildren(element, template.content, keep);
+}
+const sameNode = (a, b) =>
+  a.nodeType === b.nodeType &&
+  a.nodeName === b.nodeName &&
+  (a.nodeType !== 1 ||
+    (a.namespaceURI === b.namespaceURI &&
+      a.getAttribute("data-control") === b.getAttribute("data-control") &&
+      a.getAttribute("type") === b.getAttribute("type")));
+function morphChildren(target, source, keep) {
+  const next = [...source.childNodes];
+  next.forEach((node, index) => {
+    const current = target.childNodes[index];
+    if (!current) target.append(node);
+    else if (!sameNode(current, node)) current.replaceWith(node);
+    else if (node.nodeType !== 1) {
+      if (current.nodeValue !== node.nodeValue) current.nodeValue = node.nodeValue;
+    } else {
+      for (const { name } of [...current.attributes])
+        if (!node.hasAttribute(name)) current.removeAttribute(name);
+      for (const { name, value } of [...node.attributes])
+        if (current.getAttribute(name) !== value) current.setAttribute(name, value);
+      // Attributes stop driving an input once it is dirty; sync live state too.
+      if (current.nodeName === "INPUT" && !keep(current)) {
+        if (current.type === "checkbox") current.checked = node.hasAttribute("checked");
+        else current.value = node.getAttribute("value") ?? "";
+      }
+      morphChildren(current, node, keep);
+    }
+  });
+  while (target.childNodes.length > next.length) target.lastChild.remove();
 }

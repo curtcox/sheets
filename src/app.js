@@ -14,7 +14,8 @@ import {
   resolveDocument,
 } from "./compatibility-profiles.js";
 import { RenderScheduler } from "./render-scheduler.js";
-import { setPreview, sanitize } from "./sanitize.js";
+import { setPreview, updatePreview, sanitize } from "./sanitize.js";
+import { applyControlEdit, controlText, shiftControls } from "./controls.js";
 import { setupViews } from "./view-modes.js";
 import { HashBinDocuments, HashBinStore } from "./hashbin.js";
 import { HashBinPanel } from "./hashbin-panel.js";
@@ -54,7 +55,10 @@ let editor,
   currentProfile,
   currentInputSnapshot,
   projectOpenController,
-  renderController;
+  renderController,
+  currentControls = [],
+  controlGesture = null,
+  controlEditing = false;
 if (globalThis.ace) {
   ace.config.set("basePath", acePath);
   editor = ace.edit("editor");
@@ -213,7 +217,17 @@ const scheduler = new RenderScheduler({
   },
   async onResult(result) {
     currentResult = result;
-    setPreview(preview, result.html);
+    currentControls = result.controls || [];
+    // Keep a control the reader is dragging or typing in alive across renders.
+    if (preview.querySelector("[data-control]"))
+      updatePreview(
+        preview,
+        result.html,
+        (input) =>
+          input.dataset.control === controlGesture ||
+          (input === document.activeElement && input.type === "text"),
+      );
+    else setPreview(preview, result.html);
     editor?.session.setAnnotations(
       (result.diagnostics || []).map((d) => ({
         row: Math.max(0, d.line - 1),
@@ -248,7 +262,13 @@ const scheduler = new RenderScheduler({
             : detail?.length
               ? `${detail.length} diagnostic${detail.length === 1 ? "" : "s"} · ${catalog.find((f) => f.id === currentType)?.label}`
               : `Ready · ${catalog.find((f) => f.id === currentType)?.label}`;
-    if (status === "done") persist();
+    if (status === "done") {
+      // Browsers throttle history updates; a dragged slider renders many times.
+      if (controlGesture) {
+        clearTimeout(persistTimer);
+        persistTimer = setTimeout(persist, 300);
+      } else persist();
+    }
   },
 });
 const clientId = document.querySelector("meta[name=hashbin-client-id]").content;
@@ -299,7 +319,7 @@ function changed() {
   currentCID = null;
   panel.cancelLoad();
   renderController?.abort();
-  scheduler.schedule(getSource());
+  scheduler.schedule(getSource(), {}, controlEditing);
   $("source-size").textContent =
     `${getSource().length.toLocaleString()} characters`;
   clearTimeout(persistTimer);
@@ -319,6 +339,72 @@ $("profile").onchange = () => {
   updateProfileControls();
   changed();
 };
+/** Write a preview control's value into the source; `live` gestures share one undo step. */
+function writeControl(input, live) {
+  const id = input.dataset.control,
+    control = currentControls.find((item) => item.id === id),
+    error = [...preview.querySelectorAll("[data-control-error]")].find(
+      (node) => node.dataset.controlError === id,
+    );
+  if (!control) return;
+  let text, next;
+  try {
+    text = controlText(
+      control,
+      input.type === "checkbox" ? input.checked : input.value,
+    );
+    if (text !== control.edit.text)
+      next = applyControlEdit(getSource(), control.edit, text);
+  } catch (problem) {
+    input.setAttribute("aria-invalid", "true");
+    if (error) error.textContent = problem.message;
+    return;
+  }
+  input.removeAttribute("aria-invalid");
+  if (error) error.textContent = "";
+  const output = [...preview.querySelectorAll("[data-control-output]")].find(
+    (node) => node.dataset.controlOutput === id,
+  );
+  if (output) output.textContent = text;
+  const continuing = controlGesture === id;
+  controlGesture = live ? id : null;
+  if (next === undefined) return;
+  controlEditing = true;
+  try {
+    if (editor) {
+      const { Range } = ace.require("ace/range"),
+        session = editor.session,
+        { line, column, length } = control.edit;
+      if (continuing) session.mergeUndoDeltas = true;
+      else session.markUndoGroup();
+      session.replace(
+        new Range(line - 1, column, line - 1, column + length),
+        text,
+      );
+      if (!live) session.markUndoGroup();
+    } else {
+      $("source-fallback").value = next;
+      changed();
+    }
+  } finally {
+    controlEditing = false;
+  }
+  currentControls = shiftControls(currentControls, control.edit, text);
+}
+preview.addEventListener("input", (event) => {
+  const input = event.target.closest?.("input[data-control]");
+  if (input && input.type !== "text") writeControl(input, true);
+});
+preview.addEventListener("change", (event) => {
+  const input = event.target.closest?.("input[data-control]");
+  if (!input) return;
+  if (input.type === "text") writeControl(input, false);
+  else if (controlGesture === input.dataset.control) {
+    controlGesture = null;
+    editor?.session.markUndoGroup();
+    persist();
+  }
+});
 $("cancel-render").onclick = () => {
   updateDownloadOptions(false);
   scheduler.cancel();
@@ -329,6 +415,12 @@ $("cancel-render").onclick = () => {
   preview.setAttribute("aria-busy", "false");
 };
 preview.addEventListener("keydown", (event) => {
+  const field = event.target.closest?.("input[data-control][type=text]");
+  if (field && event.key === "Enter") {
+    event.preventDefault();
+    writeControl(field, false);
+    return;
+  }
   const area = event.target.closest(".org-table-scroll");
   if (
     event.target !== area ||

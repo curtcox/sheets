@@ -7,8 +7,11 @@ import { orgParserSource } from "./bindings.js";
 import { renderFileConstants } from "./constants-html.js";
 import { loadOrgInputs } from "./inputs.js";
 import { renderSharedInputs } from "./inputs-html.js";
-function nodeHTML(node) {
-  const children = () => (node.children || []).map(nodeHTML).join("");
+import { controlHTML } from "../../controls.js";
+// `context.control(line)` renders a SHEETS_CONTROL keyword at its slice-relative line.
+function nodeHTML(node, context = {}) {
+  const child = (n) => nodeHTML(n, context),
+    children = () => (node.children || []).map(child).join("");
   switch (node.type) {
     case "text": {
       const text = escapeHTML(node.value),
@@ -26,7 +29,7 @@ function nodeHTML(node) {
       const level = Math.min(node.level || 2, 6),
         title = (node.children || [])
           .filter((n) => !["todo", "tags"].includes(n.type))
-          .map(nodeHTML)
+          .map(child)
           .join("");
       // Org's HTML export shows TODO keywords and tags by default.
       return `<h${level}>${node.keyword ? `<span class="org-todo">${escapeHTML(node.keyword)}</span> ` : ""}${title}${node.tags?.length ? ` <span class="org-tags">${node.tags.map(escapeHTML).join(" ")}</span>` : ""}</h${level}>`;
@@ -58,11 +61,13 @@ function nodeHTML(node) {
         label =
           (node.children || [])
             .filter((n) => n.type === "text")
-            .map(nodeHTML)
+            .map(child)
             .join("") || escapeHTML(path);
       return `<a href="${escapeHTML(path)}">${label}</a>`;
     }
     case "keyword":
+      if (node.key?.toUpperCase() === "SHEETS_CONTROL")
+        return context.control?.(node.position.start.line) ?? "";
       return node.key?.toUpperCase() === "TITLE"
         ? `<h1>${escapeHTML(node.value)}</h1>`
         : "";
@@ -87,9 +92,17 @@ function nodeHTML(node) {
   }
 }
 export function renderOrg(src, options = {}) {
+  // Edits address the original text, whose first line may start with a BOM.
+  const bom = src.startsWith("\uFEFF") ? 1 : 0;
   src = orgParserSource(src);
   const result = recalculateOrg(src, options),
-    parts = [];
+    parts = [],
+    controls = result.controls.map((control) =>
+      bom && control.edit.line === 1 ? { ...control, edit: { ...control.edit, column: control.edit.column + bom } } : control),
+    controlLines = new Map(controls.map((control) => [control.line, controlHTML(control)])),
+    prose = (from, to) => nodeHTML(orga.parse(src.split("\n").slice(from, to).join("\n")), {
+      control: (line) => controlLines.get(from + line),
+    });
   let pos = 0,
     sharedPending = true,
     constantsPending = result.showConstants;
@@ -103,13 +116,12 @@ export function renderOrg(src, options = {}) {
     constantsPending = false;
   };
   for (const { start, end, table } of result.tables) {
-    const prose = src.split("\n").slice(pos, start).join("\n");
-    parts.push(nodeHTML(orga.parse(prose)));
+    parts.push(prose(pos, start));
     constants();
     parts.push(renderOrgTable(table));
     pos = end;
   }
-  parts.push(nodeHTML(orga.parse(src.split("\n").slice(pos).join("\n"))));
+  parts.push(prose(pos));
   constants();
   if (result.formulaHints.length)
     parts.push('<aside class="notice" aria-label="Formula hints"><strong>Formula hints</strong><ul>' +
@@ -120,6 +132,7 @@ export function renderOrg(src, options = {}) {
       parts.join("") +
       '<button data-action="copy-org">Copy recalculated source</button>',
     diagnostics: result.diagnostics,
+    controls,
     recalculatedSource: result.source,
     inputsReady: !result.sharedInputs.some((input) => input.error),
   };

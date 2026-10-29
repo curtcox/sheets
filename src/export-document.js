@@ -11,6 +11,7 @@ table{border-collapse:collapse;width:100%;margin:20px 0;font-size:.9em}td,th{bor
 .org-table-scroll td,.org-table-scroll th{white-space:nowrap}.org-table-scroll .org-table-wrap{white-space:normal}
 .org-table-scroll .org-left{text-align:left}.org-table-scroll .org-right{text-align:right}.org-table-scroll .org-center{text-align:center}
 .org-constants caption,.org-inputs caption{text-align:left;font-weight:600;padding-bottom:8px}
+.sheet-control{margin:8px 0}.sheet-control label{display:inline-flex;align-items:center;gap:8px}.sheet-control output{font-variant-numeric:tabular-nums}
 [align="center"]{text-align:center}[align="right"]{text-align:right}
 pre{background:#f5f7f3;padding:16px;white-space:pre-wrap;overflow:auto;border-radius:6px}code{font-family:ui-monospace,monospace;font-size:.9em}
 blockquote,.markdown-alert,.callout{border-left:3px solid #7cb99c;padding:4px 18px;margin:20px 0;background:#f1f7ef}
@@ -28,6 +29,10 @@ export function htmlDownload(
   clone
     .querySelectorAll('button,[role="tablist"],[hidden]')
     .forEach((element) => element.remove());
+  // Exported files have no script; controls show their values but cannot change.
+  clone
+    .querySelectorAll("input[data-control]")
+    .forEach((element) => element.setAttribute("disabled", ""));
   for (const element of clone.querySelectorAll("[href],[src]")) {
     for (const attr of ["href", "src"]) {
       const value = element.getAttribute(attr);

@@ -75,6 +75,7 @@ Without calculation marks, the ordinary header/separator rule below applies.
 | `$Qty..$UnitPrice` | Use column aliases as range endpoints |
 | `#+CONSTANTS: tax=0.10` | Define a file-wide numeric constant |
 | `#+SHEETS_CONSTANTS: table` | Show effective file constants in a preview summary (Sheets extension) |
+| `#+SHEETS_CONTROL: price slider 0..100` | Edit a file constant from a preview control (Sheets extension) |
 
 Named fields are also valid assignment targets. For example, the two names here
 refer to the row between the marker lines:
@@ -262,8 +263,61 @@ this summary does not claim to show every table's effective inputs.
 
 The option lives in the source, so sharing, HashBin saves, source downloads,
 recalculated source and file-to-link commands preserve it without a new profile.
-HTML export and printing include the visible summary. Editing inputs still
-requires editing source; input styling and cell notes remain UI-1 work.
+HTML export and printing include the visible summary. To change file constants
+from the preview, add [preview controls](#preview-controls). Editing table cells,
+input styling and cell notes remain UI-1 work.
+
+## Preview controls
+
+`#+SHEETS_CONTROL:` puts a checkbox, slider or text field in the preview for one
+file constant. Changing the control rewrites that constant in the source and
+recalculates every table, so you can try "what if?" values directly:
+
+```org
+#+TITLE: Pricing what-if
+#+CONSTANTS: price=25 annual=1 users=120
+#+SHEETS_CONTROL: price slider 5..100 step 5 label "Monthly price ($)"
+#+SHEETS_CONTROL: annual checkbox label "Bill annually"
+#+SHEETS_CONTROL: users text label "Users"
+
+| Revenue | 0 |
+#+TBLFM: @1$2=$price*$users*if($annual,12,1)
+```
+
+The preview shows revenue **36000**. Moving the slider to 40 changes the source to
+`price=40` and revenue to **57600**. The syntax is
+`#+SHEETS_CONTROL: <constant> <kind> [min..max] [step n] [label "text"]`:
+
+| Kind | Control | Writes |
+| --- | --- | --- |
+| `checkbox` | Checkbox; the constant must be `0` or `1` | `1` when checked, `0` when clear. `if($annual,…)` treats them as true and false. |
+| `slider` | Range slider; needs `min..max`, `step` defaults to `1` | The nearest step from the minimum, with as many decimals as the minimum or step (`0..0.1 step 0.005` writes `0.035`) |
+| `text` | Text field | A decimal number, such as `12.5` or `1e3`. Other text is refused with a message and nothing is written. |
+
+Without a label, a control is labelled with its constant, such as `$users`.
+Controls appear where their keywords are, in document order. Keywords and kinds
+are case-insensitive; directives inside literal source, example, export or comment
+blocks do not take effect. A document can have 64 controls.
+
+**The source is the state.** A control edits only its value in the source, so
+share links, reloads, HashBin saves, downloads and Emacs all see the current
+values. Each change is one editor undo step; a whole slider drag is a single
+step. Editing the source by hand updates the controls. Emacs ignores
+`#+SHEETS_CONTROL:` lines, so the document calculates identically there; an
+independent Emacs fixture checks this.
+
+Each control edits the effective declaration: with duplicate names, that is the
+last one, as in formulas. Table parameters (`$` rows) and named fields still
+override a file constant inside their table, so a control may not affect those
+tables. A control on an undefined, unsupported or shared (`$alias.name`)
+constant, a second control for the same constant, a slider without a range or
+with invalid bounds, and unknown options are diagnosed at the control line and
+show no control. A value outside the slider range gives a warning.
+
+HTML exports show controls disabled at their current values; exported files run
+no script. Printing shows the current values. This is a Sheets extension, not
+native Org behavior. Date pickers, controls for table cells, scenarios, sweeps
+and goal seek are planned; see the [design](https://github.com/curtcox/sheets/blob/main/design/what-if-controls.md).
 
 ## Pinned shared inputs
 
@@ -335,9 +389,10 @@ share and save those bytes and never fetch a missing replacement.
   the same layout. Very wide printed tables may need landscape or wider paper.
   `;%.2f` controls decimal places; `;$%.2f` can add a literal dollar prefix, but
   thousands grouping is unavailable.
-- Preview cells cannot be edited, marked as inputs, or given per-cell notes.
-  Put input instructions and source notes in the document. Org has no goal seek
-  or what-if tool (ORG-04); Calca's scalar solver works in its own format.
+- [Preview controls](#preview-controls) edit file constants, but preview table
+  cells cannot be edited, marked as inputs, or given per-cell notes. Put input
+  instructions and source notes in the document. Org has no goal seek (ORG-04);
+  Calca's scalar solver works in its own format.
 - Generated long source links now use fragments to avoid the host’s request-line
   limit on reload (SHARED-05). Other apps can still truncate complete links;
   download source or save to HashBin for a separate copy. Offline app files are

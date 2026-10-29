@@ -8,7 +8,7 @@ avoiding host request-line limits on reload; short query links remain readable.
 
 Supports GitHub Markdown, AsciiMath, Numbat, CalcFile, Org tables, a Calca-compatible
 subset, Hurmet, a Beancount core subset, and Quarto notebooks with Python and R. Includes
-36 gallery examples with rendered previews, format guides, diagnostics, responsive
+37 gallery examples with rendered previews, format guides, diagnostics, responsive
 split views, ACE, and
 sanitized HTML/MathML/SVG output. Download source files, export the finished preview
 as standalone HTML, or print it to PDF. Beancount, Org, Numbat, and Hurmet have
@@ -25,6 +25,8 @@ Its optional **Emacs order** mode supplies native column/field scheduling and
 duplicate-target checks; existing unprofiled links retain Legacy source order.
 Org's source option `#+SHEETS_CONSTANTS: table` shows file assumptions with their
 defining lines; omitted options retain native keyword hiding.
+`#+SHEETS_CONTROL:` adds checkbox, slider and text controls that edit file
+constants in the source for live what-if calculations; Emacs ignores them.
 `#+SHEETS_HINTS: precedence` adds optional formula-line hints for unparenthesized
 division/multiplication without changing Calc results.
 `#+SHEETS_INPUT: v1 prices <cid>` imports read-only numeric constants from a pinned
@@ -78,7 +80,7 @@ Unit tests run real Numbat WASM and Hurmet, all 37 required CalcFile conformance
 cases, URL/detection/HashBin/sharing tests, and the recorded GFM corpus (672/672
 raw exact HTML matches, 601/672 production HTML; every deviation classified in
 the format guide). Browser tests render
-all 36 examples in Chromium, Firefox, and WebKit, including real Python and R, and check
+all 37 examples in Chromium, Firefox, and WebKit, including real Python and R, and check
 sharing, cancellation, XSS boundaries, mobile layouts, docs, gallery and reports.
 
 The GFM browser suite separately checks 627/672 final DOM matches, including
@@ -112,7 +114,7 @@ Without native R, run the Python subset with `--language python`. Set
 
 CI runs these reference checks before browser tests. Generated reference outputs
 are committed and compared with the browser adapters by unit/browser tests. The
-Org check covers 27 numeric fixture documents and four rejections. It also
+Org check covers 28 numeric fixture documents and four rejections. It also
 exports five HTML fixture documents (19 tables) to compare header groups, scopes
 and alignment; it requires an Emacs build with libxml2 support.
 
@@ -155,7 +157,7 @@ npm run gallery:covers
 node scripts/render-gallery.mjs --only=calcfile-edge --rates-fixture=tests/fixtures/exchange-rates/ecb-api-2026-10-16.csv
 ```
 
-The script starts and stops its own temporary local server, renders all 36
+The script starts and stops its own temporary local server, renders all 37
 examples through the editor, and updates `examples/covers/`. Python examples need
 jsDelivr access; R examples need webr.r-wasm.org. Covers use a 640 × 400 viewport; Beancount examples show the trial
 balance, except the error example, which shows diagnostics. Unit tests check
