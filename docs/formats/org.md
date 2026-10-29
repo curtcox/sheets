@@ -425,6 +425,35 @@ informational editor annotation with the same options. Paste them into
 every fixture. Text in a plotted column is drawn as a gap and reported with its
 row.
 
+### Sheets-only options
+
+`#+SHEETS_PLOT:` sits with `#+PLOT:` in the keyword block above the table and
+refines the chart in Sheets only. Emacs ignores it, so Emacs users still get an
+ordinary org-plot chart; the harness checks that adding it changes nothing in
+Emacs.
+
+```org
+#+PLOT: title:"Where the money goes" ind:1 deps:(2) with:histograms
+#+SHEETS_PLOT: kind:donut legend:right
+| Item | Amount |
+|------+--------|
+| Rent |   1200 |
+| Food |    450 |
+| Fun  |    200 |
+```
+
+| Option | Meaning |
+| --- | --- |
+| `kind:pie`, `kind:donut` | One slice per row from the first dependent column; other columns are reported as ignored. Zero, negative and empty values are left out with a diagnostic. Beyond eight, the smallest slices merge into *Other*. A donut shows the total in the middle. |
+| `kind:area` | Stacked areas for a numeric or time x axis. On a category axis the native chart is drawn, with a warning. |
+| `rows:all` | Keep a summary row such as *Total* in the chart. |
+| `legend:none`, `top`, `right`, `bottom` | Legend placement. Overrides `set:"key …"`. |
+| `size:small`, `medium`, `wide` | Proportions of 4:3, 16:9 (the default) or 21:9. Charts always fill the preview width. |
+
+`kind` replaces the native `type`/`with` only in Sheets. Pie, donut and area
+charts have no org-plot equivalent. It applies to ordinary 2D plots; `type:radar`
+and `type:grid` keep their own charts. Unknown keys and values are diagnosed.
+
 ### Known differences from Emacs
 
 - In marked tables, org-plot's data file drops the marker column and special
@@ -432,7 +461,8 @@ row.
   reads the wrong columns. Sheets uses Org column numbers (the same ones as
   `$N` in formulas) and checks only data rows. Alignment-cookie rows likewise
   make org-plot treat a numeric x column as text; Sheets ignores them.
-- Summary rows are left out of the chart. Emacs plots them.
+- Summary rows are left out of the chart unless `#+SHEETS_PLOT: rows:all` is
+  set. Emacs plots them.
 - Headerless tables with rules make org-plot stop with an error when `ind` is
   set; Sheets skips the rules.
 

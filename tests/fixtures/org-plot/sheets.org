@@ -1,0 +1,52 @@
+#+TITLE: Sheets-only plot options
+
+Each pair of tables is identical except for #+SHEETS_PLOT:, which Emacs ignores.
+
+#+PLOT: title:"Budget" ind:1 deps:(2) with:histograms
+#+SHEETS_PLOT: kind:pie legend:right
+| Item      | Amount |
+|-----------+--------|
+| Rent      |   1200 |
+| Food      |    450 |
+| Transport |    120 |
+| Fun       |    200 |
+
+#+PLOT: title:"Budget" ind:1 deps:(2) with:histograms
+| Item      | Amount |
+|-----------+--------|
+| Rent      |   1200 |
+| Food      |    450 |
+| Transport |    120 |
+| Fun       |    200 |
+
+#+PLOT: ind:1 deps:(2 3) with:lines
+#+SHEETS_PLOT: kind:area size:wide legend:bottom
+| Month | Solar | Wind |
+|-------+-------+------|
+|     1 |    10 |   30 |
+|     2 |    25 |   28 |
+|     3 |    40 |   20 |
+
+#+PLOT: ind:1 deps:(2 3) with:lines
+| Month | Solar | Wind |
+|-------+-------+------|
+|     1 |    10 |   30 |
+|     2 |    25 |   28 |
+|     3 |    40 |   20 |
+
+#+PLOT: ind:1 deps:(2) with:histograms
+#+SHEETS_PLOT: rows:all kind:donut size:small
+| Region | Sales |
+|--------+-------|
+| North  |    40 |
+| South  |    25 |
+|--------+-------|
+| Total  |    65 |
+
+#+PLOT: ind:1 deps:(2) with:histograms
+| Region | Sales |
+|--------+-------|
+| North  |    40 |
+| South  |    25 |
+|--------+-------|
+| Total  |    65 |

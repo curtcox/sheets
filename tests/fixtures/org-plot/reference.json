@@ -1344,5 +1344,151 @@
       "setup": "# Data\n$Data <<HEREHAVESOMEDATA\n\"Axis\" \"A\" \"B\"\n\"x\" 2 8\n\"y\" 6 3\n\"z\" 9 5\n\"x\" 2 8\nHEREHAVESOMEDATA\nHeaderLines = 1\n\n# Settings for scale and offset adjustments\n# axis min max tics axisLabelXoff axisLabelYoff\n$Settings <<EOD\n\"x\" 2.0 10 5\n\"y\" 3.0 10 5\n\"z\" 5.0 10 5\n\"x\" 2.0 10 5\nEOD\n",
       "ytics": null
     }
+  ],
+  "sheets.org": [
+    {
+      "line": 7,
+      "numCols": 2,
+      "options": {
+        "plot-type": "2d",
+        "ind": 1,
+        "deps": [
+          2
+        ],
+        "with": "histograms",
+        "title": "Budget",
+        "labels": [
+          "Item",
+          "Amount"
+        ],
+        "textind": "t"
+      },
+      "plots": [
+        "using 2:xticlabel(1) with histograms title 'Amount'"
+      ],
+      "data": "\"Rent\"\t1200\n\"Food\"\t450\n\"Transport\"\t120\n\"Fun\"\t200",
+      "setup": null,
+      "ytics": null
+    },
+    {
+      "line": 15,
+      "numCols": 2,
+      "options": {
+        "plot-type": "2d",
+        "ind": 1,
+        "deps": [
+          2
+        ],
+        "with": "histograms",
+        "title": "Budget",
+        "labels": [
+          "Item",
+          "Amount"
+        ],
+        "textind": "t"
+      },
+      "plots": [
+        "using 2:xticlabel(1) with histograms title 'Amount'"
+      ],
+      "data": "\"Rent\"\t1200\n\"Food\"\t450\n\"Transport\"\t120\n\"Fun\"\t200",
+      "setup": null,
+      "ytics": null
+    },
+    {
+      "line": 24,
+      "numCols": 3,
+      "options": {
+        "plot-type": "2d",
+        "ind": 1,
+        "deps": [
+          2,
+          3
+        ],
+        "with": "lines",
+        "labels": [
+          "Month",
+          "Solar",
+          "Wind"
+        ]
+      },
+      "plots": [
+        "using 1:2 with lines title 'Solar'",
+        "using 1:3 with lines title 'Wind'"
+      ],
+      "data": "1\t10\t30\n2\t25\t28\n3\t40\t20",
+      "setup": null,
+      "ytics": null
+    },
+    {
+      "line": 31,
+      "numCols": 3,
+      "options": {
+        "plot-type": "2d",
+        "ind": 1,
+        "deps": [
+          2,
+          3
+        ],
+        "with": "lines",
+        "labels": [
+          "Month",
+          "Solar",
+          "Wind"
+        ]
+      },
+      "plots": [
+        "using 1:2 with lines title 'Solar'",
+        "using 1:3 with lines title 'Wind'"
+      ],
+      "data": "1\t10\t30\n2\t25\t28\n3\t40\t20",
+      "setup": null,
+      "ytics": null
+    },
+    {
+      "line": 39,
+      "numCols": 2,
+      "options": {
+        "plot-type": "2d",
+        "ind": 1,
+        "deps": [
+          2
+        ],
+        "with": "histograms",
+        "labels": [
+          "Region",
+          "Sales"
+        ],
+        "textind": "t"
+      },
+      "plots": [
+        "using 2:xticlabel(1) with histograms title 'Sales'"
+      ],
+      "data": "\"North\"\t40\n\"South\"\t25\n\"Total\"\t65",
+      "setup": null,
+      "ytics": null
+    },
+    {
+      "line": 47,
+      "numCols": 2,
+      "options": {
+        "plot-type": "2d",
+        "ind": 1,
+        "deps": [
+          2
+        ],
+        "with": "histograms",
+        "labels": [
+          "Region",
+          "Sales"
+        ],
+        "textind": "t"
+      },
+      "plots": [
+        "using 2:xticlabel(1) with histograms title 'Sales'"
+      ],
+      "data": "\"North\"\t40\n\"South\"\t25\n\"Total\"\t65",
+      "setup": null,
+      "ytics": null
+    }
   ]
 }

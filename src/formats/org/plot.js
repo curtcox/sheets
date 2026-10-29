@@ -471,6 +471,7 @@ export function orgPlot(table, keywords, { rows: rowOption } = {}) {
     return { line, diagnostics, inferred, excluded, note, rows, marked, file, ...extra, spec: { title: titleText, size: own.size, legend: own.legend ?? sets.legend, ...spec } };
   };
   const data = marked ? rows.map((row) => row.slice(1)) : rows;
+  if (own.kind && plot.type !== "2d") report(`kind:${own.kind} applies to ordinary 2D plots; this type:${plot.type} plot keeps its own chart.`);
   if (plot.type === "radar") {
     let radar;
     try {
@@ -599,8 +600,29 @@ export function orgPlot(table, keywords, { rows: rowOption } = {}) {
     if (x.type === "linear" && kind !== "bar") Object.assign(x, { min: xmin, max: xmax });
     else report("x-axis bounds apply only to numeric x axes; they are ignored here.");
   }
+  // #+SHEETS_PLOT: kind overrides the native style in Sheets only.
+  let stacked = !!sets.stacked && kind === "bar";
+  if (own.kind === "area") {
+    if (x.type === "category") diagnostics.push({ line, severity: "warning", message: "kind:area needs a numeric or time x axis; the native chart is drawn instead." });
+    else [kind, stacked] = ["area", true];
+  } else if (own.kind) {
+    if (series.length > 1)
+      report(`kind:${own.kind} uses only the first dependent column, ${series[0].column} (${series[0].label}); ${series.slice(1).map((s) => s.column).join(", ")} ${series.length > 2 ? "are" : "is"} ignored.`);
+    const first = series[0], names = x.type === "category" ? x.values : rows.map((_, i) => (x.text?.[i] ?? `Row ${i + 1}`));
+    const bad = first.values.map((v, i) => (v > 0 ? -1 : i)).filter((i) => i >= 0);
+    if (bad.length) {
+      const at = metaByRow.get(rows[bad[0]])?.row;
+      diagnostics.push({ line, severity: "warning", message: `Slices need positive values; ${bad.length} row${bad.length === 1 ? " is" : "s are"} left out, first ${at ? `@${at} ` : ""}(${names[bad[0]] || "unnamed"}: ${first.text[bad[0]] || "empty"}).` });
+    }
+    const keep = first.values.map((v, i) => i).filter((i) => first.values[i] > 0);
+    return finish({
+      kind: own.kind,
+      x: { type: "category", label: x.label, values: keep.map((i) => names[i]) },
+      series: [{ label: first.label, values: keep.map((i) => first.values[i]), text: keep.map((i) => first.text[i]) }],
+    }, inferred, { deps, ind, mode });
+  }
   if (sets.stacked && kind !== "bar") report('set:"style histogram rowstacked" stacks bars only; this chart is not a bar chart.');
-  return finish({ kind, x, y, series, maxSeries: limit, stacked: !!sets.stacked && kind === "bar", grid: sets.grid }, inferred, { deps, ind, mode });
+  return finish({ kind, x, y, series, maxSeries: limit, stacked, grid: sets.grid }, inferred, { deps, ind, mode });
 }
 
 /** Chart { html, file } for every plotted table, keyed by table start line, plus diagnostics. */

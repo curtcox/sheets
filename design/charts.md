@@ -1,6 +1,6 @@
 # Charts from sheet data (CHART-1 → CHART-7)
 
-Status: **in progress** (2026-10-29). CHART-1 and CHART-2 are implemented; see
+Status: **in progress** (2026-10-29). CHART-1, CHART-2 and CHART-3 are implemented; see
 the Org guide's *Charts* section and ORG-15/ORG-16 in the compatibility ledger.
 
 Readers can see a document's numbers as charts that update with the source,

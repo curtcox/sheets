@@ -82,6 +82,8 @@ test("auto chooses format signals, falls back to GFM, and manual loads cache", a
   )) {
     assert.equal(detect(await read(example.path)), example.format, example.id);
   }
+  assert.equal(detect("#+PLOT: ind:1\n| a | 1 |\n"), "org");
+  assert.equal(detect("#+SHEETS_PLOT: kind:pie\n| a | 1 |\n"), "org");
   assert.equal(detect("Just a note."), "gfm");
   assert.equal(detect("2+2"), "gfm");
   assert.equal(await loadFormat("gfm"), await loadFormat("gfm"));

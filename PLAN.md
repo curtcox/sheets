@@ -459,6 +459,8 @@ org-plot's own extraction for every fixture and pasted variant. CHART-2 is
 done: stacked bars, the `set:` subset, bounds and ticks, radar charts and grid
 heatmaps (matching org-plot's own axes, ticks and matrices) and `file:`
 placement. ORG-16 records the options that stay diagnosed (3D, scripts).
+CHART-3 is done: `#+SHEETS_PLOT:` adds pie, donut and area kinds, `rows:all`,
+legend placement and sizes, and the harness confirms Emacs ignores it.
 
 ### Prioritized elimination queue — refreshed 2026-10-19
 

@@ -506,6 +506,13 @@ li > code {
   fill-opacity: 0.3;
   stroke: none;
 }
+.chart-other {
+  --chart-color: #7d8b87;
+}
+.chart-slice {
+  stroke: #fff;
+  stroke-width: 1.5;
+}
 .chart-alt .chart-line {
   stroke-dasharray: 6 3;
 }

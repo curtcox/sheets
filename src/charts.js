@@ -32,6 +32,7 @@ export const CHART_STYLES = [
   ".chart-bar,.chart-swatch,.chart-slice{fill:var(--chart-color)}.chart-line{fill:none;stroke:var(--chart-color);stroke-width:2;stroke-linejoin:round;stroke-linecap:round}",
   ".chart-marker{fill:var(--chart-color);stroke:#fff;stroke-width:1}.chart-hit{fill:transparent}.chart-area{fill:var(--chart-color);fill-opacity:.3;stroke:none}",
   ".chart-alt .chart-line{stroke-dasharray:6 3}.chart-alt .chart-bar,.chart-alt .chart-swatch{fill-opacity:.55;stroke:var(--chart-color)}",
+  ".chart-other{--chart-color:#7d8b87}.chart-slice{stroke:#fff;stroke-width:1.5}",
   ".chart figcaption{font-size:.85em;color:#6c7c77;text-align:left;margin-top:6px}.chart-title{font-weight:600;color:#243b39}",
   "@media print{.chart-scroll{overflow:visible}.chart{break-inside:avoid}}",
 ].join("\n");
@@ -176,7 +177,7 @@ function legendLayout(labels, width, { kind, column = false } = {}) {
   }
   return { items, height: column ? y : labels.length ? y + 18 : 0, width: widest, kind };
 }
-function legendSVG(layout, left, top, kind) {
+function legendSVG(layout, left, top, kind, classes = []) {
   return `<g class="chart-legend">${layout.items
     .map(({ index, label, shown, x, y }) => {
       const sx = left + x, sy = top + y + 7,
@@ -185,7 +186,7 @@ function legendSVG(layout, left, top, kind) {
           : kind === "points"
             ? `<path class="chart-marker" d="${marker(index, sx + 7, sy, 4)}"/>`
             : `<rect class="chart-swatch" x="${r1(sx)}" y="${r1(sy - 6)}" width="14" height="12" rx="2"/>`;
-      return `<g class="${series(index)}">${swatch}${text(sx + 20, sy, shown, { anchor: "start", cls: "chart-legend-text", dy: "0.35em", full: label })}</g>`;
+      return `<g class="${classes[index] ?? series(index)}">${swatch}${text(sx + 20, sy, shown, { anchor: "start", cls: "chart-legend-text", dy: "0.35em", full: label })}</g>`;
     })
     .join("")}</g>`;
 }
@@ -466,21 +467,62 @@ function cartesianBody(spec) {
   };
 }
 
-function pieBody() {
-  return { svg: "", summary: "" };
+/** Slices of the first series, clockwise from the top; more than eight merge into Other. */
+function pieBody(spec) {
+  const { series: list, x, W, H, diagnostics, kind } = spec, item = list[0] || { values: [] };
+  let slices = x.values.map((_, i) => ({ label: x.labels[i], value: item.values[i], text: item.text?.[i], index: i }))
+    .filter((s) => typeof s.value === "number" && Number.isFinite(s.value) && s.value > 0);
+  if (slices.length > CHART_LIMITS.slices) {
+    const keep = new Set(slices.slice().sort((a, b) => b.value - a.value).slice(0, CHART_LIMITS.slices - 1).map((s) => s.index));
+    const rest = slices.filter((s) => !keep.has(s.index));
+    diagnostics.push({ severity: "info", message: `Only ${CHART_LIMITS.slices - 1} slices are drawn separately; ${rest.length} smaller ones are merged into Other.` });
+    slices = [...slices.filter((s) => keep.has(s.index)), { label: "Other", value: rest.reduce((sum, s) => sum + s.value, 0), other: true, count: rest.length }];
+  }
+  const total = slices.reduce((sum, s) => sum + s.value, 0);
+  const pct = (v) => `${formatNumber((100 * v) / total, 0.1)}%`;
+  const labels = slices.map((s) => `${s.label} (${pct(s.value)})`);
+  const classes = slices.map((s, i) => (s.other ? "chart-other" : series(i)));
+  const legend = legendBlock({ ...spec, legend: spec.legend || "right" }, labels, "bar", 14, classes);
+  const top = 14 + legend.top, bottom = 14 + legend.bottom,
+    R = Math.max(30, Math.min((W - legend.right) / 2 - 20, (H - top - bottom) / 2)),
+    cx = legend.right ? Math.min((W - legend.right) / 2, 20 + R + (W - legend.right - 2 * R - 40) / 3) : W / 2,
+    cy = top + (H - top - bottom) / 2,
+    inner = kind === "donut" ? R * 0.58 : 0;
+  const point = (angle, r) => `${r1(cx + r * Math.cos(angle))} ${r1(cy + r * Math.sin(angle))}`;
+  const out = ['<g class="chart-marks">'];
+  let angle = -Math.PI / 2;
+  slices.forEach((slice, i) => {
+    const sweep = (2 * Math.PI * slice.value) / total, end = angle + sweep, large = sweep > Math.PI ? 1 : 0;
+    // A whole circle needs two arcs.
+    const d = sweep >= 2 * Math.PI - 1e-9
+      ? `M${point(angle, R)}A${r1(R)} ${r1(R)} 0 1 1 ${point(angle + Math.PI, R)}A${r1(R)} ${r1(R)} 0 1 1 ${point(angle, R)}Z${inner ? `M${point(angle, inner)}A${r1(inner)} ${r1(inner)} 0 1 0 ${point(angle + Math.PI, inner)}A${r1(inner)} ${r1(inner)} 0 1 0 ${point(angle, inner)}Z` : ""}`
+      : inner
+        ? `M${point(angle, R)}A${r1(R)} ${r1(R)} 0 ${large} 1 ${point(end, R)}L${point(end, inner)}A${r1(inner)} ${r1(inner)} 0 ${large} 0 ${point(angle, inner)}Z`
+        : `M${r1(cx)} ${r1(cy)}L${point(angle, R)}A${r1(R)} ${r1(R)} 0 ${large} 1 ${point(end, R)}Z`;
+    const name = slice.other ? `Other (${slice.count} rows)` : slice.label;
+    out.push(`<g class="chart-series ${classes[i]}"><path class="chart-slice" fill-rule="evenodd" d="${d}">${tip(`${name}: ${slice.text ?? formatNumber(slice.value)} (${pct(slice.value)})`)}</path></g>`);
+    angle = end;
+  });
+  if (inner) out.push(text(cx, cy, formatNumber(total), { cls: "chart-axis-title", dy: "0.35em" }));
+  out.push("</g>");
+  out.push(legend.svg);
+  return {
+    svg: out.join(""),
+    summary: `${KIND_NAMES[kind]} of ${item.label || "values"}: ${slices.slice(0, 8).map((s) => `${s.label} ${pct(s.value)}`).join(", ")}; total ${formatNumber(total)}.`,
+  };
 }
 
-function legendBlock(spec, labels, kind, top) {
+function legendBlock(spec, labels, kind, top, classes) {
   const mode = spec.legend || (labels.length > 1 ? "top" : "none");
   if (mode === "none" || !labels.length) return { svg: "", top: 0, bottom: 0, right: 0 };
   if (mode === "right") {
     const layout = legendLayout(labels, 0, { column: true });
-    return { svg: legendSVG(layout, spec.W - layout.width - 16, top, kind), top: 0, bottom: 0, right: layout.width + 24 };
+    return { svg: legendSVG(layout, spec.W - layout.width - 16, top, kind, classes), top: 0, bottom: 0, right: layout.width + 24 };
   }
   const layout = legendLayout(labels, spec.W - 40);
   return mode === "bottom"
-    ? { svg: legendSVG(layout, 20, spec.H - layout.height - 4, kind), top: 0, bottom: layout.height + 8, right: 0 }
-    : { svg: legendSVG(layout, 20, 8, kind), top: layout.height + 8, bottom: 0, right: 0 };
+    ? { svg: legendSVG(layout, 20, spec.H - layout.height - 4, kind, classes), top: 0, bottom: layout.height + 8, right: 0 }
+    : { svg: legendSVG(layout, 20, 8, kind, classes), top: layout.height + 8, bottom: 0, right: 0 };
 }
 
 /** One axis per category, each scaled to its own [min, max], clockwise from the top. */

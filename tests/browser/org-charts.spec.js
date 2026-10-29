@@ -24,6 +24,9 @@ test("charts survive sanitizing unchanged and pass through standalone export", a
       { kind: "bar", stacked: true, horizontal: true, legend: "right", x: { values: ["a", "b"] }, series: [{ label: "s", values: [1, -2] }, { label: "u", values: [3, 4] }] },
       { kind: "radar", ticks: 3, axes: [{ label: "a", min: 0, max: 3 }, { label: "b", min: 1, max: 9 }, { label: "c", min: 0, max: 1 }], x: { values: ["a", "b", "c"] }, series: [{ label: "s", values: [1, 5, 0.5] }] },
       { kind: "heatmap", x: { values: ["p", "q"] }, y: { label: "Day" }, series: [{ label: "Mon", values: [1, null] }, { label: "Tue", values: [3, 9] }] },
+      { kind: "pie", x: { values: Array.from({ length: 10 }, (_, i) => `s${i}`) }, series: [{ label: "v", values: Array.from({ length: 10 }, (_, i) => i + 1) }] },
+      { kind: "donut", legend: "bottom", size: "small", x: { values: ["only"] }, series: [{ label: "v", values: [5] }] },
+      { kind: "area", stacked: true, size: "wide", x: { type: "linear", values: [1, 2, 3] }, series: [{ label: "a", values: [1, null, 3] }, { label: "b", values: [2, 2, 2] }] },
     ];
     return specs.every((spec) => {
       const { svg } = chartSVG(spec), html = chartFigure({ svg, title: "x", note: "y" });
@@ -120,4 +123,10 @@ test("radar, heatmap and file: charts render from the option fixtures", async ({
   });
   expect(order).toBeTruthy();
   await expect(page.locator('#preview a[href$="rates.svg"]')).toHaveCount(0);
+  await page.goto(writeURL(base, { src: await fixture("sheets.org"), format: "org", view: "preview" }));
+  await ready(page);
+  await expect(page.locator("#preview svg.chart-kind-pie path.chart-slice")).toHaveCount(4);
+  await expect(page.locator("#preview svg.chart-kind-donut path.chart-slice")).toHaveCount(3);
+  await expect(page.locator("#preview svg.chart-kind-area path.chart-area")).toHaveCount(2);
+  await expect(page.locator("#preview svg.chart-kind-area")).toHaveAttribute("viewBox", "0 0 840 360");
 });

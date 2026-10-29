@@ -275,3 +275,48 @@ test("a file: chart appears at its [[file:…]] link, or after its table without
   assert.ok(early.html.indexOf("<figure") < early.html.indexOf("<table"));
   assert.match(early.html, /href="a\.svg"/);
 });
+
+test("Emacs ignores #+SHEETS_PLOT:: paired tables give identical org-plot records", () => {
+  const records = reference["sheets.org"];
+  assert.equal(records.length, 6);
+  for (let i = 0; i < records.length; i += 2) {
+    const { line: _a, ...withOwn } = records[i], { line: _b, ...plain } = records[i + 1];
+    assert.deepEqual(withOwn, plain, `pair at line ${records[i].line}`);
+  }
+});
+
+test("#+SHEETS_PLOT: kinds, rows, legend and size refine only the Sheets chart", async () => {
+  const tables = await tablesOf("sheets.org"), plotAt = (line) => orgPlot(tables.get(line).table, tables.get(line).keywords);
+  const pie = plotAt(7);
+  assert.equal(pie.spec.kind, "pie");
+  assert.equal(pie.spec.legend, "right");
+  assert.deepEqual(pie.spec.x.values, ["Rent", "Food", "Transport", "Fun"]);
+  assert.deepEqual(pie.spec.series[0].values, [1200, 450, 120, 200]);
+  assert.equal(plotAt(15).spec.kind, "bar");
+  const area = plotAt(24);
+  assert.deepEqual([area.spec.kind, area.spec.stacked, area.spec.size, area.spec.legend], ["area", true, "wide", "bottom"]);
+  const donut = plotAt(39);
+  assert.deepEqual([donut.spec.kind, donut.spec.size, donut.excluded], ["donut", "small", null]);
+  assert.deepEqual(donut.spec.x.values, ["North", "South", "Total"]);
+  assert.equal(plotAt(47).excluded, 4);
+});
+
+test("pie slices need positive values, use the first column and merge beyond eight", () => {
+  const rows = Array.from({ length: 11 }, (_, i) => `| r${i} | ${i === 3 ? -5 : i === 4 ? "" : 10 + i} | 1 |`).join("\n");
+  const result = renderOrg(`#+PLOT: ind:1 deps:(2 3) with:histograms\n#+SHEETS_PLOT: kind:pie\n| k | v | w |\n|---+---+---|\n${rows}\n`);
+  const messages = result.diagnostics.map((d) => d.message);
+  assert.ok(messages.includes("kind:pie uses only the first dependent column, 2 (v); 3 is ignored."));
+  assert.ok(messages.includes("Slices need positive values; 2 rows are left out, first @5 (r3: -5)."));
+  assert.ok(messages.includes("Only 7 slices are drawn separately; 2 smaller ones are merged into Other."));
+  assert.equal((result.html.match(/class="chart-slice"/g) || []).length, 8);
+  assert.match(result.html, /<title>Other \(2 rows\): 21 \(/);
+  assert.match(result.html, /<g class="chart-other"><rect class="chart-swatch"/);
+  const unknown = renderOrg("#+SHEETS_PLOT: kind:bubble shape:round\n| a | 1 |\n| b | 2 |\n");
+  assert.deepEqual(unknown.diagnostics.slice(0, 2).map((d) => d.message), [
+    "Unsupported SHEETS_PLOT kind:bubble. Use kind:pie, kind:donut, kind:area.",
+    "Unknown SHEETS_PLOT option shape:round. Use kind:, rows:, legend: or size:.",
+  ]);
+  const area = renderOrg("#+PLOT: ind:1 deps:(2) with:histograms\n#+SHEETS_PLOT: kind:area\n| a | 1 |\n| b | 2 |\n");
+  assert.match(area.diagnostics[0].message, /kind:area needs a numeric or time x axis/);
+  assert.match(area.html, /chart-kind-bar/);
+});
