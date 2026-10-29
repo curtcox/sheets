@@ -40,15 +40,15 @@ included. Choose Numbat for dimension-checked models.
 
 | Format | Prose and math typesetting | Tables and structured data | Diagrams and plots | Executable notebook cells |
 | --- | --- | --- | --- | --- |
-| [GitHub Markdown](formats/gfm.md) | Markdown and TeX/MathML | Display-only Markdown tables with alignment | Mermaid diagrams | No; code fences display source |
-| [AsciiMath](formats/asciimath.md) | AsciiMath/MathML; explicit Formula list or Mixed prose; Auto heuristic | Display-only Markdown tables | Mermaid in mixed documents | No |
+| [GitHub Markdown](formats/gfm.md) | Markdown and TeX/MathML | Display-only Markdown tables with alignment | Mermaid diagrams, plus `xychart`, `pie` and `radar-beta` charts of numbers written in the fence | No; code fences display source |
+| [AsciiMath](formats/asciimath.md) | AsciiMath/MathML; explicit Formula list or Mixed prose; Auto heuristic | Display-only Markdown tables | Mermaid diagrams and charts in mixed documents | No |
 | [Numbat](formats/numbat.md) | Source/result rows; `#` comments | Language values; no spreadsheet UI | No Sheets plot viewer | No Python/R cells |
 | [CalcFile](formats/calcfile.md) | Plain prose, headers, result rows | Running totals and aggregates | No | No |
-| [Org tables](formats/org.md) | Basic Org headings, lists, emphasis, links | Calculated tables and range aggregates | `#+PLOT:` (org-plot) line, scatter, step and bar charts as static SVG | No Babel/Lisp execution |
+| [Org tables](formats/org.md) | Basic Org headings, lists, emphasis, links | Calculated tables and range aggregates | `#+PLOT:` (org-plot) line, scatter, step, bar, stacked, radar and heatmap charts of recalculated tables as static SVG; `#+SHEETS_PLOT:` pie, donut and area; in-cell text bars from `orgtbl-ascii-draw` | No Babel/Lisp execution |
 | [Calca](formats/calca.md) | Markdown, TeX, arrow results | Matrices; Markdown tables | Yes with Structured blocks or Scoped definitions; Legacy has the fence caveat below | No Python/R cells |
 | [Hurmet](formats/hurmet.md) | Prose and typeset math calculations | Calculation cells in tables; upstream spreadsheet tables | Upstream output; no interactive drawing UI | No Python/R cells |
-| [Beancount](formats/beancount.md) | Ledger-specific report views | Balance sheet, income statement, trial balance, journal | No | No |
-| [Quarto](formats/quarto.md) | Markdown, TeX, validated controls, nested callouts/divs, figure references, plot size/alt | Markdown tables; Python DataFrame HTML; R console tables | Mermaid, Python matplotlib SVG, R PNG plots | Python and R; OJS/Julia displayed only |
+| [Beancount](formats/beancount.md) | Ledger-specific report views | Balance sheet, income statement, trial balance, journal | Charts tab with net worth, income against expenses and spending by account, without chart syntax | No |
+| [Quarto](formats/quarto.md) | Markdown, TeX, validated controls, nested callouts/divs, figure references, plot size/alt | Markdown tables; Python DataFrame HTML; R console tables | Mermaid diagrams and charts, Python matplotlib SVG, R PNG plots | Python and R; OJS/Julia displayed only |
 | [Plain text](formats/text.md) | Escaped, preformatted source | Literal source only | No | No |
 
 In Calca's **Legacy** mode, every fenced or indented code block is also calculation input,

@@ -47,7 +47,9 @@ diagnostics from literal language, math, or diagram fences.
 Choose **Structured blocks** to calculate only indented code blocks, fences
 explicitly labelled `calca`, and standalone arrow expressions in paragraphs.
 Other fences, including unlabelled fences, display their contents without
-calculation. TeX math and Mermaid keep their usual Markdown rendering. Inline
+calculation. TeX math and Mermaid keep their usual Markdown rendering, including
+[Mermaid charts](gfm.md#charts-from-mermaid); their numbers are written in the fence
+and do not read arrow results. Inline
 code/math, links, headings, and HTML are not treated as arrow expressions.
 Backtick and tilde fences, longer delimiters, lists, and blockquotes follow the
 Markdown parser, and diagnostics retain their original source line numbers.

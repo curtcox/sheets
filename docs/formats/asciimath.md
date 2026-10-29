@@ -62,7 +62,8 @@ These checks are advisory, not a complete validator. Lone operators, one-sided d
 For example, `sqrt(9) = 3` displays the equality you wrote; Sheets does not prove
 it or fill in the answer. Use **Show TeX** when grouping looks wrong. To calculate
 with variables or units, choose Numbat or Calca instead. Mixed documents inherit
-Markdown tables, links, and Mermaid diagrams. Math renders locally and is included
+Markdown tables, links, and Mermaid diagrams, including the [Mermaid charts](gfm.md#charts-from-mermaid)
+(`xychart`, `pie` and `radar-beta`) drawn from numbers written in the fence. Math renders locally and is included
 in rendered HTML exports. See the [feature comparison and glossary](../format-comparison.md).
 
 The pinned upstream corpus contains **436 cases**. The translator matches **430** recorded TeX strings; four existing differences preserve explicit thin spaces omitted by the expectations, and two nested-matrix cases have malformed JavaScript expectation strings and different grouping. Temml rejects the arrow command produced by `>->>` and `twoheadrightarrowtail` (16 duplicated corpus cases); Sheets now reports that failure explicitly. These are tracked notation gaps, not changes made by selecting a mode. General translator/MathML coverage remains separate work.

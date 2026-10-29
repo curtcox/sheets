@@ -207,6 +207,13 @@ rendered HTML export.
 
 ## Prose features and compatibility
 
+A `mermaid` fence draws a diagram, and Mermaid's `xychart`, `pie` and
+`radar-beta` draw charts from numbers written in the fence (see
+[Mermaid charts](gfm.md#charts-from-mermaid)). A Quarto `{mermaid}` cell is
+displayed as source, without a diagram; use a plain `mermaid` fence. Use a
+Python or R cell when the chart should come from calculated data.
+
+
 Callouts and fenced divs are parsed as Markdown blocks. They can nest and contain
 executable cells, lists, tables, math and diagrams. A closing fence has at least
 three colons; its length need not match the opening fence. Generic divs accept

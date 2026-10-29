@@ -16,6 +16,14 @@
     "path": "examples/gfm/typical.md"
   },
   {
+    "id": "gfm-charts",
+    "format": "gfm",
+    "kind": "typical",
+    "title": "Charts in Markdown",
+    "description": "Mermaid bar, line, pie and radar charts drawn from numbers written in the fence.",
+    "path": "examples/gfm/charts.md"
+  },
+  {
     "id": "gfm-edge",
     "format": "gfm",
     "kind": "edge",

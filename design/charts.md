@@ -1,8 +1,10 @@
 # Charts from sheet data (CHART-1 → CHART-7)
 
-Status: **in progress** (2026-10-29). CHART-1 to CHART-5 are implemented; see
-the Org guide's *Charts* section, the Beancount guide's *Charts* section, and
-ORG-15 to ORG-17 and BEAN-10 in the compatibility ledger.
+Status: **implemented** (2026-10-29). CHART-1 to CHART-5 and CHART-7 are
+implemented; CHART-6 is deferred (see *Overrides*). See the Org guide's
+*Charts* section, the Beancount guide's *Charts* section, the GFM guide's
+*Charts from Mermaid* section, and ORG-15 to ORG-17 and BEAN-10 in the
+compatibility ledger.
 
 Readers can see a document's numbers as charts that update with the source,
 preview controls and what-if tools. The author should get a useful chart from
@@ -174,6 +176,13 @@ Assets:Checking` could then add an account-balance chart, and other forms
 could change the period or currency. Leave this out unless the defaults turn
 out to need overrides.
 
+*Decision (2026-10-29, after CHART-5): deferred.* The three default charts
+need no options on any fixture or gallery ledger, and adding overrides would
+first require accepting `custom` directives in general, which is its own
+compatibility change. `custom` lines stay diagnosed as unsupported. Revisit
+when a reader needs a chart the defaults cannot give, such as one account's
+balance.
+
 ## Shared renderer
 
 `src/charts.js` is DOM-free and takes a normalized spec:
@@ -258,7 +267,7 @@ all three engines, and share/HashBin round-trips.
 | 3 / CHART-3 | S | `#+SHEETS_PLOT:` with `kind:pie/donut/area`, `rows`, `legend` and `size`. | Emacs ignores the line (harness unchanged). Pie limits, *Other* merging and negative-value diagnostics are tested. |
 | 4 / CHART-4 | S | In-cell bars from `orgtbl-ascii-draw`, `orgtbl-uc-draw-grid` and `orgtbl-uc-draw-cont`. | Exact text equality with Emacs recalculation in both modes, including empty, non-numeric and out-of-range values. ORG-01's disclosure names these three as the only supported Lisp. |
 | 5 / CHART-5 | M | The Beancount Charts tab and its three default charts. | Chart data equals the `bean-query` reference numbers. Empty, single-day and multi-currency ledgers behave as described above. The tab appears in export and print. |
-| 6 / CHART-6 | S, optional | Accept native `custom` directives, then `custom "sheets-chart"` overrides. | Decided after CHART-5. The bean-check fixture accepts the same `custom` lines. |
+| 6 / CHART-6 | S, optional | Accept native `custom` directives, then `custom "sheets-chart"` overrides. | Deferred after CHART-5: the defaults needed no overrides. If taken up, the bean-check fixture accepts the same `custom` lines. |
 | 7 / CHART-7 | S | Document Mermaid `xychart`, `pie` and `radar` for GFM, Quarto, AsciiMath and Calca, with one gallery example. Update the format comparison's *Diagrams and plots* column for Org and Beancount. | Docs build and the drift tests pass. |
 
 CHART-1 must come first. After it, CHART-2, CHART-3, CHART-4 and CHART-5 do not

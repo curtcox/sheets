@@ -56,6 +56,15 @@ for (const format of [...new Set(examples.map((s) => s.format))])
           "Question",
         );
       }
+      if (sample.id === "gfm-charts") {
+        // Mermaid chart types render through the sanitizer like diagrams.
+        const charts = page.locator("#preview [data-mermaid] svg");
+        await expect(charts).toHaveCount(3);
+        expect(await charts.evaluateAll((nodes) => nodes.map((n) => n.getAttribute("aria-roledescription")))).toEqual(["xychart", "pie", "radar"]);
+        await expect(charts.nth(0)).toContainText("Revenue and costs by quarter");
+        await expect(charts.nth(1)).toContainText("Hosting");
+        await expect(charts.nth(2)).toContainText("Vendor B");
+      }
       if (sample.id === "numbat-basic")
         await expect(page.locator("#preview")).toContainText("60 km/h");
       if (sample.id === "quarto-basic")
@@ -196,8 +205,8 @@ test("gallery search and docs render through the application pipeline", async ({
   page,
 }) => {
   await page.goto("/gallery.html");
-  await expect(page.locator(".card")).toHaveCount(40);
-  await expect(page.locator(".card-cover")).toHaveCount(40);
+  await expect(page.locator(".card")).toHaveCount(41);
+  await expect(page.locator(".card-cover")).toHaveCount(41);
   await page.getByLabel("Filter by format").selectOption("org");
   await expect(page.locator(".card")).toHaveCount(7);
   await page.getByLabel("Search examples").fill("purchase");

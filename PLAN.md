@@ -439,7 +439,7 @@ slice. SHARED-05/06 and ORG-10/11/12/13 are resolved; the separately tracked
 raw-URL proposal SHARED-07 remains open. Cosmetic cues and solver tools
 do not gate the bounded sharing, formula and table fixes above.
 
-### Charts — in progress 2026-10-29
+### Charts — implemented 2026-10-29
 
 Readers will see sheet data as charts. Org gets native `#+PLOT:` (org-plot)
 charts drawn from recalculated tables. Omitted options are inferred, and the
@@ -466,7 +466,11 @@ is done (ORG-17): `orgtbl-ascii-draw`, `orgtbl-uc-draw-grid` and
 including `#ERROR`, and every other Lisp formula stays unsupported. CHART-5 is
 done (BEAN-10): a Beancount **Charts** tab draws net worth, income against
 expenses and where the money went with no syntax, and its data equals
-independent beanquery sums for every valid fixture.
+independent beanquery sums for every valid fixture. CHART-6 is
+deferred, because the defaults need no overrides and `custom` directives stay
+unsupported. CHART-7 is done: the GFM guide documents Mermaid `xychart`, `pie`
+and `radar-beta` for GFM, AsciiMath, Quarto and Calca, with a gallery example,
+and the format comparison lists every chart kind.
 
 ### Prioritized elimination queue — refreshed 2026-10-19
 

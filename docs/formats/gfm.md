@@ -51,7 +51,53 @@ Inline `$…$`, display `$$…$$`, and fenced `math` blocks render TeX through [
 
 Raw HTML is accepted by the Markdown parser. GFM raw-text tags (`title`, `textarea`, `style`, `xmp`, `iframe`, `noembed`, `noframes`, `script`, `plaintext`) are escaped as readable text before browser parsing. All output is then sanitized with DOMPurify before entering the page. Active scripts, event attributes, forms, embedded documents, arbitrary styles, SVG foreign objects, and animation are removed. A narrow allowlist preserves static SVG and MathML presentation properties. This applies to every format, including dataframe HTML and matplotlib SVG.
 
-## GFM conformance
+## Charts from Mermaid
+
+Mermaid 12.2.0 also draws charts. Write the numbers into the fence; Markdown
+tables are display-only, so a chart never reads values from a table or a
+calculation. [Open the chart example](../../index.html?example=gfm-charts&format=gfm).
+
+````text
+```mermaid
+xychart
+  title "Revenue by quarter"
+  x-axis [Q1, Q2, Q3, Q4]
+  y-axis "Revenue (k$)" 0 --> 250
+  bar [120, 140, 165, 190]
+  line [90, 110, 130, 170]
+```
+
+```mermaid
+pie title Where the money goes
+  "Rent" : 1200
+  "Food" : 450
+  "Fun" : 200
+```
+
+```mermaid
+radar-beta
+  title Compare two plans
+  axis speed["Speed"], range["Range"], cost["Cost"]
+  curve a["Plan A"]{4, 3, 5}
+  curve b["Plan B"]{2, 5, 3}
+  max 5
+```
+````
+
+| Chart | Start the fence with | Notes |
+| --- | --- | --- |
+| Bars and lines | `xychart` (or `xychart-beta`) | `bar` and `line` series share one category axis. Add `horizontal` after the keyword for horizontal bars. Without `y-axis "label" min --> max`, the axis starts at the smallest value rather than zero. |
+| Pie | `pie` | One slice per `"label" : value` line. Add `showData` after `pie` to print the values. |
+| Radar | `radar-beta` | The `-beta` suffix is required in this Mermaid version; plain `radar` is rejected. |
+
+These charts use Mermaid's neutral theme, not the palette of Org and Beancount
+charts. Mermaid draws them with its own layout, so tooltips, legends and
+accessible descriptions differ from Sheets' chart renderer. The same fences work
+in AsciiMath mixed documents, Quarto, and Calca's Structured blocks and Scoped
+definitions modes. Other Mermaid chart types, such as `sankey-beta` and
+`treemap-beta`, are not checked by the browser tests. For charts drawn from
+calculated values, use Org `#+PLOT:` tables or Quarto plots.
+
 
 The committed **github/cmark-gfm 0.29.0.gfm.13** specification has **672 examples**. All 90 original deviations have been reviewed and classified. These measurements describe different layers; they should not be combined into a single compatibility percentage.
 
