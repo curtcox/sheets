@@ -439,6 +439,19 @@ slice. SHARED-05/06 and ORG-10/11/12/13 are resolved; the separately tracked
 raw-URL proposal SHARED-07 remains open. Cosmetic cues and solver tools
 do not gate the bounded sharing, formula and table fixes above.
 
+### Charts — proposed 2026-10-29
+
+Readers will see sheet data as charts. Org gets native `#+PLOT:` (org-plot)
+charts drawn from recalculated tables. Omitted options are inferred, and the
+inference is shown so it can be pasted into the source. Sheets-only kinds go on
+a `#+SHEETS_PLOT:` line that Emacs ignores. Beancount gets a Charts tab that
+needs no syntax. All charts share one DOM-free, sanitized SVG renderer
+(`src/charts.js`), which WHATIF-2 sweeps will reuse. The slices are CHART-1
+(renderer and Org 2D) → CHART-2 (stacked, radar, grid, `set:` subset) →
+CHART-3 (pie, donut, area) → CHART-4 (in-cell bars) → CHART-5 (Beancount),
+plus the optional CHART-6 and documentation-only CHART-7. An Emacs batch
+org-plot harness is the reference. See `design/charts.md`.
+
 ### Prioritized elimination queue — refreshed 2026-10-19
 
 This is the broader queue retained after the field-report priorities above.

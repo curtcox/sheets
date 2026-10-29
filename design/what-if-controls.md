@@ -194,7 +194,7 @@ round-trips. Ledger entries are split or added as each slice starts.
 | 4 / CTRL-2 | M | Org **field** controls: cell and named-field targets, `text` ranges, input styling, formula-target and imported-input diagnostics, table realignment on write. | Realigned source matches Emacs `org-table-align`; ORG-04's "cannot be edited directly or marked as inputs" disclosure is resolved. |
 | 5 / CTRL-3 | M | Numbat `#:` controls for all four kinds, unit-aware sliders, warm worker. | Type and unit validation comes from the pinned interpreter; measured drag latency on gallery examples is recorded and acceptable in all three browsers. |
 | 6 / WHATIF-1 | M | `whatIf.evaluate` for Org and Numbat, watches, scenarios with apply and side-by-side comparison. | Comparison values equal those from applying each scenario and rendering; bounds and cancellation tested. |
-| 7 / WHATIF-2 | S–M | Declarative sweeps: generated table and optional SVG chart. | Each sweep row equals a separate render with that value; the point limit and deadline are enforced. |
+| 7 / WHATIF-2 | S–M | Declarative sweeps: generated table and optional SVG chart from the shared CHART-1 renderer (`design/charts.md`). | Each sweep row equals a separate render with that value; the point limit and deadline are enforced. |
 | 8 / WHATIF-3 | M | Goal seek dialog and solver. | Answers plugged back into Emacs or the pinned Numbat meet the target within tolerance; no-root, several-root, discontinuous, error and budget cases each show their diagnostic; Apply is one undo step. |
 
 Slices 2 and 5 do not depend on each other and can proceed in parallel with
