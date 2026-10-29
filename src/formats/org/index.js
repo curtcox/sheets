@@ -58,6 +58,9 @@ function nodeHTML(node, context = {}) {
     case "verbatim":
       return `<code>${escapeHTML(node.value || "")}</code>`;
     case "link": {
+      // A plot's file: link shows the chart there instead of after its table.
+      const chart = node.path?.protocol === "file" && context.fileChart?.(node.path.value);
+      if (chart) return chart;
       const path = node.path?.value || node.url || "",
         label =
           (node.children || [])
@@ -92,6 +95,17 @@ function nodeHTML(node, context = {}) {
       return node.children ? children() : escapeHTML(node.value || "");
   }
 }
+// Paths of [[file:…]] links outside literal blocks, which can host plots.
+function linkedFiles(root) {
+  const files = new Set(), stack = [root];
+  while (stack.length) {
+    const node = stack.pop();
+    if (node.type === "block" && ["SRC", "EXAMPLE", "EXPORT", "COMMENT"].includes(node.name?.toUpperCase())) continue;
+    if (node.type === "link" && node.path?.protocol === "file") files.add(node.path.value);
+    stack.push(...(node.children || []));
+  }
+  return files;
+}
 export function renderOrg(src, options = {}) {
   // Edits address the original text, whose first line may start with a BOM.
   const bom = src.startsWith("\uFEFF") ? 1 : 0;
@@ -103,8 +117,18 @@ export function renderOrg(src, options = {}) {
     controlLines = new Map(controls.map((control) => [control.line, controlHTML(control)])),
     prose = (from, to) => nodeHTML(orga.parse(src.split("\n").slice(from, to).join("\n")), {
       control: (line) => controlLines.get(from + line),
+      fileChart(name) {
+        const chart = fileCharts.get(name);
+        if (!chart || chart.placed) return undefined;
+        chart.placed = true;
+        return chart.html;
+      },
     });
-  const plots = orgCharts(src.split("\n"), result.tables);
+  const plots = orgCharts(src.split("\n"), result.tables),
+    linked = linkedFiles(orga.parse(src)),
+    fileCharts = new Map();
+  for (const chart of plots.charts.values())
+    if (chart.file && linked.has(chart.file) && !fileCharts.has(chart.file)) fileCharts.set(chart.file, chart);
   let pos = 0,
     sharedPending = true,
     constantsPending = result.showConstants;
@@ -120,7 +144,8 @@ export function renderOrg(src, options = {}) {
   for (const { start, end, table } of result.tables) {
     parts.push(prose(pos, start));
     constants();
-    parts.push(renderOrgTable(table), plots.charts.get(start) ?? "");
+    const chart = plots.charts.get(start);
+    parts.push(renderOrgTable(table), chart && fileCharts.get(chart.file) !== chart ? chart.html : "");
     pos = end;
   }
   parts.push(prose(pos));

@@ -279,6 +279,145 @@ export function sheetsOptions(lines, diagnostics) {
   return options;
 }
 
+// org--plot/values-stats, org--plot/sensible-tick-num and their helpers, ported
+// exactly (including Emacs's round-half-even), so radar axes match org-plot.
+export function stringToNumber(text) {
+  const match = /^[ \t\n]*([-+]?(?:\d+\.?\d*|\.\d+)(?:e[-+]?\d+)?)/i.exec(text ?? "");
+  return match ? Number(match[1]) : 0;
+}
+const roundEven = (v) => {
+  const r = Math.round(v);
+  return Math.abs(v % 1) === 0.5 && r % 2 ? r - 1 : r;
+};
+export function valuesStats(nums, hardMin, hardMax) {
+  const minimum = hardMin ?? Math.min(...nums), maximum = hardMax ?? Math.max(...nums), range = maximum - minimum,
+    rangeFactor = 10 ** (range === 0 ? 0 : Math.ceil(1 - Math.log10(range))),
+    niceMin = range === 0 ? nums[0] : Math.floor(minimum * rangeFactor) / rangeFactor,
+    niceMax = range === 0 ? nums[0] : Math.ceil(maximum * rangeFactor) / rangeFactor;
+  return { min: minimum, max: maximum, range, rangeFactor, niceMin, niceMax, niceRange: niceMax - niceMin };
+}
+function primeFactors(value) {
+  if (!(value >= 1)) throw new Error("org-plot does not finish choosing ticks when a radar axis has no range; set ticks:");
+  const factors = [];
+  for (let i = 2; value !== 1; i++)
+    while (value % i === 0) {
+      factors.unshift(i);
+      value /= i;
+    }
+  return factors;
+}
+function frequencies(values) {
+  const groups = new Map();
+  for (const v of values) groups.set(v, (groups.get(v) || 0) + 1);
+  return [...groups].map(([k, n]) => [k, n / values.length]);
+}
+function union(a, b) {
+  if (!a.length) return b;
+  if (!b.length) return a;
+  if (a.length < b.length) [a, b] = [b, a];
+  return [...b.filter((k) => !a.includes(k)), ...a];
+}
+function mergeAlists(a, b, ...rest) {
+  if (b === undefined) throw new Error("Wrong number of arguments: org--plot/merge-alists, 3");
+  if (rest.length) b = mergeAlists(b, ...rest);
+  const lookup = (k, alist) => alist.find(([key]) => key === k)?.[1] || 0;
+  return union(a.map(([k]) => k), b.map(([k]) => k)).map((k) => [k, lookup(k, a) + lookup(k, b)]);
+}
+function nicePick(freqs) {
+  if (freqs.length === 1) return [freqs[0][0]];
+  if (freqs.length === 2) return 3 <= freqs[0][1] / freqs[1][1] ? [freqs[0][0], freqs[0][0]] : [freqs[0][0], freqs[1][0]];
+  if (!freqs.length) throw wrongType("number-or-marker-p", null);
+  const total = freqs.reduce((sum, [, v]) => sum + v, 0), n = freqs.map(([k, v]) => [k, v / total]);
+  const pick = [n[0][0]], product = () => pick.reduce((a, b) => a * b, 1);
+  const r12 = n[0][1] / n[1][1], r13 = r12 * (n[1][1] / n[2][1]);
+  if (r12 > 4) pick.unshift(n[0][0]);
+  if (r12 < n[1][0] && product() * n[1][0] < 30) pick.unshift(n[1][0]);
+  if (r13 < n[2][0] && product() * n[2][0] < 30) pick.unshift(n[2][0]);
+  return pick;
+}
+export function sensibleTickNum(rows, hardMin, hardMax) {
+  const ranges = rows.map((row) => {
+    const stats = valuesStats(row.slice(1).map(stringToNumber), hardMin, hardMax),
+      value = roundEven(stats.rangeFactor * stats.niceRange);
+    return value % 10 === 0 ? value / 10 : value;
+  });
+  const weighted = mergeAlists(...ranges.map((value) => frequencies(primeFactors(value)))).sort((a, b) => b[1] - a[1]);
+  return nicePick(weighted).reduce((a, b) => a * b, 1);
+}
+/** org--plot/radar's data: one axis per row with its bounds, and the tick count. */
+export function radarAxes(rows, params) {
+  const hardMin = typeof params.ymin === "number" ? params.ymin : undefined,
+    hardMax = typeof params.ymax === "number" ? params.ymax : undefined;
+  if (rows.includes(HLINE)) throw wrongType("listp", sym("hline"));
+  const ticks = params.ticks ?? sensibleTickNum(rows, hardMin, hardMax);
+  return {
+    ticks: ticks === 0 ? 2 : ticks,
+    axes: rows.map((row) => {
+      const stats = valuesStats(row.slice(1).map(stringToNumber));
+      return { label: row[0], min: hardMin ?? stats.niceMin, max: hardMax ?? stats.niceMax };
+    }),
+  };
+}
+/** org-plot/gnuplot-to-grid-data: the matrix and its y labels. */
+export function gridData(rows, params) {
+  if (typeof params.ind !== "number") throw wrongType("number-or-marker-p", params.ind);
+  if (rows.includes(HLINE)) throw wrongType("listp", sym("hline"));
+  const ind = params.ind - 1, width = rows[0]?.length ?? 0;
+  let deps = "deps" in params ? (params.deps || []).map((d) => d - 1) : Array.from({ length: width }, (_, c) => width - 1 - c);
+  const ylabels = ind >= 0 ? rows.map((row, i) => [i + 1, row[ind]]) : null;
+  let matrix = rows;
+  if (deps.length || ind >= 0) {
+    deps = deps.filter((d) => d !== ind);
+    matrix = rows.map((row) => row.filter((_, c) => deps.includes(c)));
+  }
+  return { matrix, ylabels };
+}
+export function gridDump(matrix) {
+  const f = (v) => v.toFixed(6), out = [];
+  for (let col = 0; col < (matrix[0]?.length ?? 0); col++) {
+    let back = "", front = "";
+    for (let row = 0; row < matrix.length; row++) {
+      const v = stringToNumber(matrix[row][col]), edge = (x) => `${f(x)}  ${f(row + 0.5)}  ${f(v)}\n${f(x)}  ${f(row + 1.5)}  ${f(v)}\n`;
+      back += edge(col);
+      front += edge(col + 1);
+    }
+    out.push(back, "\n", front, "\n");
+  }
+  return out.join("");
+}
+
+/**
+ * gnuplot set: commands Sheets applies. Applied in script order, so the last
+ * one wins, as in gnuplot. Returns spec overrides; others are reported.
+ */
+export function plotSets(sets, report) {
+  const out = {};
+  for (const value of (sets || []).slice()) {
+    const text = lispText(value).trim();
+    let m;
+    if ((m = /^(?:no)?key\b(.*)$/.exec(text))) {
+      const words = m[1];
+      out.legend = text.startsWith("nokey") || /\boff\b/.test(words) ? "none"
+        : /\bbottom\b/.test(words) ? "bottom" : /\btop\b/.test(words) ? "top" : /\b(?:left|right)\b/.test(words) ? "right" : "top";
+    } else if (/^grid\b/.test(text)) out.grid = true;
+    else if ((m = /^log(?:scale)?\b\s*(\w*)/.exec(text))) {
+      const axes = m[1] || "xy";
+      if (axes.includes("y")) out.log = true;
+      if (axes.includes("x")) report(`set:"${text}": a logarithmic x axis is not supported; x stays linear.`);
+    } else if ((m = /^([xy])label\s+(?:(['"])(.*?)\2|(\S.*))$/.exec(text))) out[`${m[1]}label`] = m[3] ?? m[4];
+    else if ((m = /^title\s+(?:(['"])(.*?)\1|(\S.*))$/.exec(text))) out.title = m[2] ?? m[3];
+    else if ((m = /^([xy])range\s*\[\s*([^:\]]*?)\s*:\s*([^\]]*?)\s*\]$/.exec(text))) {
+      const bound = (v) => (v === "" || v === "*" ? undefined : Number.isFinite(Number(v)) ? Number(v) : NaN);
+      const [lo, hi] = [bound(m[2]), bound(m[3])];
+      if (Number.isNaN(lo) || Number.isNaN(hi)) report(`set:"${text}": only numeric ranges are applied.`);
+      else out[`${m[1]}range`] = [lo, hi];
+    } else if (/^style\s+hist\w*\s+rowstack/.test(text)) out.stacked = true;
+    else if (/^style\s+hist\w*\s+cluster/.test(text)) out.stacked = false;
+    else report(`set:"${text}" is not applied; Sheets draws its own ${/^style\b/.test(text) ? "style" : "axes and legend"}.`);
+  }
+  return out;
+}
+
 /**
  * Build a chart for one table, or return { error } with a reason. `keywords`
  * comes from plotKeywords. Returns { spec, note, inferred, excluded, line }.
@@ -286,18 +425,23 @@ export function sheetsOptions(lines, diagnostics) {
 export function orgPlot(table, keywords, { rows: rowOption } = {}) {
   const diagnostics = [];
   const line = (keywords.native[0] || keywords.sheets[0]).line;
+  const fail = (error) => ({ line, diagnostics, error });
   const own = sheetsOptions(keywords.sheets, diagnostics);
   let plot;
   try {
     plot = emulateOrgPlot(table, keywords.native);
   } catch (error) {
-    return { line, diagnostics, error: `org-plot cannot use these options (${error.message}); nothing is drawn.` };
+    return fail(`org-plot cannot use these options (${error.message}); nothing is drawn.`);
   }
   const { params, explicit, numCols } = plot;
-  if (plot.type !== "2d")
-    return { line, diagnostics, error: `type:${plot.type} is not supported yet; nothing is drawn.` };
+  if (!["2d", "radar", "grid"].includes(plot.type)) return fail(`type:${plot.type} is not supported; nothing is drawn.`);
   for (const key of ["script", "line", "map", "timefmt"])
-    if (explicit.has(key)) return { line, diagnostics, error: `${key}: is not supported; nothing is drawn.` };
+    if (explicit.has(key)) return fail(`${key}: is not supported; nothing is drawn.`);
+  const reported = new Set(), report = (message) => {
+    if (!reported.has(message)) diagnostics.push({ line, severity: "info", message });
+    reported.add(message);
+  };
+  const sets = plotSets(params.set, report);
   const { rows: cleaned, column: marked } = dataRows(plot.rows);
   const first = marked ? 2 : 1;
   // Summary rows: a final one-row group after a rule, labelled like a total.
@@ -313,14 +457,49 @@ export function orgPlot(table, keywords, { rows: rowOption } = {}) {
       rows = cleaned.slice(0, -1);
     }
   }
-  const inferred = [], labels = params.labels || [];
+  const labels = params.labels || [];
+  const titleText = sets.title ?? (params.title === undefined || params.title === null ? "" : lispText(params.title));
+  const finish = (spec, inferred = [], extra = {}) => {
+    const noteParts = [];
+    if (inferred.length) noteParts.push(`Inferred: ${inferred.join(" ")}`);
+    if (excluded) noteParts.push(`summary row @${excluded} excluded`);
+    const note = noteParts.length ? `${noteParts.join("; ")}.`.replace(/^s/, "S") : "";
+    if (inferred.length && keywords.native.length)
+      diagnostics.push({ line: keywords.native[0].line, severity: "info", message: `Inferred plot options: ${inferred.join(" ")}. Add them to #+PLOT: so Emacs plots the same data.` });
+    if (excluded) diagnostics.push({ line, severity: "info", message: `Summary row @${excluded} is not plotted. Add rows:all to #+SHEETS_PLOT: to include it.` });
+    const file = params.file === undefined || params.file === null ? undefined : lispText(params.file);
+    return { line, diagnostics, inferred, excluded, note, rows, marked, file, ...extra, spec: { title: titleText, size: own.size, legend: own.legend ?? sets.legend, ...spec } };
+  };
+  const data = marked ? rows.map((row) => row.slice(1)) : rows;
+  if (plot.type === "radar") {
+    let radar;
+    try {
+      radar = radarAxes(data, params);
+    } catch (error) {
+      return fail(`org-plot cannot draw this radar chart (${error.message}); nothing is drawn.`);
+    }
+    if (data.length < 3) diagnostics.push({ line, severity: "warning", message: "A radar chart needs at least three rows, one per axis." });
+    const names = marked ? labels.slice(1) : labels;
+    return finish({
+      kind: "radar",
+      ticks: radar.ticks,
+      axes: radar.axes,
+      x: { type: "category", values: data.map((row) => row[0]) },
+      series: (data[0] || []).slice(1).map((_, i) => ({
+        label: lispText(names[i + 1] ?? String(i + 2)),
+        values: data.map((row) => cellNumber(row[i + 1] ?? "")),
+        text: data.map((row) => row[i + 1] ?? ""),
+      })),
+    }, [], { radar });
+  }
+  const inferred = [];
   const columnCells = (c) => rows.map((row) => row[c - 1] ?? "");
   // ind
   let ind = params.ind;
   if (explicit.has("ind")) {
     if (!Number.isInteger(ind) || ind < 0 || ind > numCols)
-      return { line, diagnostics, error: `ind:${lispText(ind)} is not a column of this table; nothing is drawn.` };
-    if (marked && ind === 1) return { line, diagnostics, error: "ind:1 is the marker column; use ind:2 or later." };
+      return fail(`ind:${lispText(ind)} is not a column of this table; nothing is drawn.`);
+    if (marked && ind === 1) return fail("ind:1 is the marker column; use ind:2 or later.");
   } else {
     const cells = columnCells(first), filled = cells.filter((c) => c !== "");
     const values = cells.map(cellNumber);
@@ -330,8 +509,40 @@ export function orgPlot(table, keywords, { rows: rowOption } = {}) {
     ind = first <= numCols && (text || times || increasing) ? first : 0;
     inferred.push(`ind:${ind}`);
   }
-  // x mode
   const xCells = ind ? columnCells(ind) : [];
+  // deps
+  let deps;
+  const limit = explicit.has("deps") ? CHART_LIMITS.depsSeries : CHART_LIMITS.series;
+  if (explicit.has("deps")) {
+    const listed = params.deps || [];
+    const bad = listed.find((d) => !Number.isInteger(d) || d < 1 || d > numCols);
+    if (bad !== undefined) return fail(`deps: names ${lispText(bad)}, which is not a column of this table; nothing is drawn.`);
+    deps = [...new Set(listed)].filter((d) => d !== ind && !(marked && d === 1)).sort((a, b) => a - b);
+  } else {
+    deps = [];
+    for (let c = first; c <= numCols; c++) if (c !== ind && numericColumn(columnCells(c))) deps.push(c);
+    if (deps.length) inferred.push(`deps:(${deps.slice(0, limit).join(" ")})`);
+  }
+  if (plot.type === "grid") {
+    if (!deps.length) return fail("There are no numeric columns to plot.");
+    const cells = rows.length * deps.length;
+    if (cells > CHART_LIMITS.heatmapCells) return fail(`Heatmaps draw at most ${CHART_LIMITS.heatmapCells.toLocaleString("en-US")} cells; this one has ${cells.toLocaleString("en-US")}.`);
+    for (const col of deps) {
+      const at = columnCells(col).findIndex((c) => c !== "" && cellNumber(c) === null);
+      if (at >= 0) diagnostics.push({ line, severity: "warning", message: `Column ${col} has text such as "${columnCells(col)[at]}"; org-plot reads it as 0, Sheets leaves the cell blank.` });
+    }
+    return finish({
+      kind: "heatmap",
+      x: { type: "category", values: deps.map((c) => lispText(labels[c - 1] ?? String(c))), label: sets.xlabel },
+      y: { label: sets.ylabel ?? (ind ? lispText(labels[ind - 1] ?? "") : "") },
+      series: rows.map((row, i) => ({
+        label: ind ? row[ind - 1] : String(i + 1),
+        values: deps.map((c) => cellNumber(row[c - 1] ?? "")),
+        text: deps.map((c) => row[c - 1] ?? ""),
+      })),
+    }, inferred, { deps, ind });
+  }
+  // x mode
   const withName = stringName(params.with);
   let mode = "row";
   if (ind) {
@@ -339,30 +550,17 @@ export function orgPlot(table, keywords, { rows: rowOption } = {}) {
     else if (withName === "hist" || !xCells.every(isOrgNumber)) mode = "category";
     else mode = "linear";
   }
-  // deps
-  let deps;
-  const limit = explicit.has("deps") ? CHART_LIMITS.depsSeries : CHART_LIMITS.series;
-  if (explicit.has("deps")) {
-    const listed = params.deps || [];
-    const bad = listed.find((d) => !Number.isInteger(d) || d < 1 || d > numCols);
-    if (bad !== undefined) return { line, diagnostics, error: `deps: names ${lispText(bad)}, which is not a column of this table; nothing is drawn.` };
-    deps = [...new Set(listed)].filter((d) => d !== ind && !(marked && d === 1)).sort((a, b) => a - b);
-  } else {
-    deps = [];
-    for (let c = first; c <= numCols; c++) if (c !== ind && numericColumn(columnCells(c))) deps.push(c);
-    if (deps.length) inferred.push(`deps:(${deps.slice(0, limit).join(" ")})`);
-  }
   if (deps.length > limit) {
     diagnostics.push({ line, severity: "info", message: `Only the first ${limit} of ${deps.length} numeric columns are plotted.` });
     deps = deps.slice(0, limit);
     if (!explicit.has("deps")) inferred[inferred.length - 1] = `deps:(${deps.join(" ")})`;
   }
-  if (!deps.length) return { line, diagnostics, error: "There are no numeric columns to plot." };
+  if (!deps.length) return fail("There are no numeric columns to plot.");
   // with
   let kind;
   if (explicit.has("with")) {
     kind = chartKind(params.with);
-    if (!kind) return { line, diagnostics, error: `with:${lispText(params.with)} is not supported; use lines, points, linespoints, steps, histograms, boxes or impulses.` };
+    if (!kind) return fail(`with:${lispText(params.with)} is not supported; use lines, points, linespoints, steps, histograms, boxes or impulses.`);
   } else {
     const name = rows.length < 2 ? "points" : mode === "category" ? "histograms" : "lines";
     inferred.push(`with:${name}`);
@@ -387,30 +585,25 @@ export function orgPlot(table, keywords, { rows: rowOption } = {}) {
         ? { type: "linear", values: xCells.map(cellNumber), text: xCells }
         : { type: "category", values: xCells };
   if (ind) x.label = lispText(labels[ind - 1] ?? "");
-  const title = params.title === undefined || params.title === null ? "" : lispText(params.title);
-  const noteParts = [];
-  if (inferred.length) noteParts.push(`Inferred: ${inferred.join(" ")}`);
-  if (excluded) noteParts.push(`summary row @${excluded} excluded`);
-  const note = noteParts.length ? `${noteParts.join("; ")}.`.replace(/^s/, "S") : "";
-  if (inferred.length && keywords.native.length)
-    diagnostics.push({ line: keywords.native[0].line, severity: "info", message: `Inferred plot options: ${inferred.join(" ")}. Add them to #+PLOT: so Emacs plots the same data.` });
-  if (excluded) diagnostics.push({ line, severity: "info", message: `Summary row @${excluded} is not plotted. Add rows:all to #+SHEETS_PLOT: to include it.` });
-  return {
-    line,
-    diagnostics,
-    inferred,
-    excluded,
-    note,
-    deps,
-    ind,
-    mode,
-    rows,
-    marked,
-    spec: { kind, title, x, series, maxSeries: limit, size: own.size, legend: own.legend },
-  };
+  if (sets.xlabel !== undefined) x.label = sets.xlabel;
+  // Axis bounds: set yrange/xrange first, then org-plot's min/max keys.
+  const y = { label: sets.ylabel, log: sets.log };
+  const number = (key) => (explicit.has(key) && typeof params[key] === "number" ? params[key] : undefined);
+  [y.min, y.max] = sets.yrange ?? [number("ymin"), number("ymax")];
+  if (explicit.has("ticks")) {
+    if (Number.isInteger(params.ticks) && params.ticks > 0) y.ticks = params.ticks;
+    else report(`ticks:${lispText(params.ticks)} is not a positive whole number; Sheets chooses the ticks.`);
+  }
+  const [xmin, xmax] = sets.xrange ?? [number("xmin"), number("xmax")];
+  if (xmin !== undefined || xmax !== undefined) {
+    if (x.type === "linear" && kind !== "bar") Object.assign(x, { min: xmin, max: xmax });
+    else report("x-axis bounds apply only to numeric x axes; they are ignored here.");
+  }
+  if (sets.stacked && kind !== "bar") report('set:"style histogram rowstacked" stacks bars only; this chart is not a bar chart.');
+  return finish({ kind, x, y, series, maxSeries: limit, stacked: !!sets.stacked && kind === "bar", grid: sets.grid }, inferred, { deps, ind, mode });
 }
 
-/** Chart HTML for every plotted table, keyed by table start line, plus diagnostics. */
+/** Chart { html, file } for every plotted table, keyed by table start line, plus diagnostics. */
 export function orgCharts(lines, tables) {
   const charts = new Map(), diagnostics = [];
   let count = 0;
@@ -428,12 +621,12 @@ export function orgCharts(lines, tables) {
     diagnostics.push(...plot.diagnostics);
     if (plot.error) {
       diagnostics.push({ line: plot.line, message: plot.error });
-      charts.set(start, `<p class="notice chart-unavailable">Chart not drawn: ${escapeHTML(plot.error)}</p>`);
+      charts.set(start, { html: `<p class="notice chart-unavailable">Chart not drawn: ${escapeHTML(plot.error)}</p>` });
       continue;
     }
     const chart = chartSVG(plot.spec);
     diagnostics.push(...chart.diagnostics.map((d) => ({ line: plot.line, ...d })));
-    charts.set(start, chartFigure({ svg: chart.svg, title: plot.spec.title, note: plot.note }));
+    charts.set(start, { html: chartFigure({ svg: chart.svg, title: plot.spec.title, note: plot.note }), file: plot.file });
   }
   return { charts, diagnostics };
 }

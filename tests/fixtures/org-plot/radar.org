@@ -1,0 +1,30 @@
+#+TITLE: org-plot radar charts
+
+The first table is the Org manual's radar example.
+
+#+PLOT: title:"An evaluation of plaintext document formats" transpose:yes type:radar min:0 max:4
+| Format            | Fine-tuned-control | Initial Effort | Syntax simplicity | Editor Support | Integrations | Ease-of-referencing | Versatility |
+|-------------------+--------------------+----------------+-------------------+----------------+--------------+---------------------+-------------|
+| Word              |                  2 |              4 |                 4 |              2 |            3 |                   2 |           2 |
+| LaTeX             |                  4 |              1 |                 1 |              3 |            2 |                   4 |           3 |
+| Org Mode          |                  4 |              2 |               3.5 |              1 |            4 |                   4 |           4 |
+| Markdown          |                  1 |              3 |                 3 |              4 |            3 |                   3 |           1 |
+| Markdown + Pandoc |                2.5 |              3 |                 3 |              4 |            3 |                   3 |           3 |
+
+Without bounds, each axis gets its own rounded range and org-plot picks the
+tick count from the ranges.
+
+#+PLOT: type:radar
+| Skill   | Ana | Ben |
+|---------+-----+-----|
+| Speed   |  12 |  30 |
+| Power   | 120 |  95 |
+| Range   | 3.5 | 1.2 |
+| Stamina |  70 |  40 |
+
+#+PLOT: type:radar ticks:5 max:10
+| Axis | A | B |
+|------+---+---|
+| x    | 2 | 8 |
+| y    | 6 | 3 |
+| z    | 9 | 5 |

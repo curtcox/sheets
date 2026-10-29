@@ -4,6 +4,7 @@ import { readFile } from "node:fs/promises";
 import {
   CHART_LIMITS,
   CHART_PALETTE,
+  CHART_RAMP,
   CHART_STYLES,
   chartFigure,
   chartSVG,
@@ -149,4 +150,47 @@ test("app and export styles define the same palette and mark classes", async () 
   }
   for (const selector of [".chart-bar", ".chart-line", ".chart-marker", ".chart-hit", ".chart-area", ".chart-grid line", ".chart-axis line", ".chart-alt .chart-line", ".chart-scroll", ".chart-svg"])
     assert.ok(css.includes(selector) && CHART_STYLES.includes(selector), selector);
+});
+
+test("stacked and horizontal bars stack by sign and swap axes", () => {
+  const stacked = bars({ stacked: true, series: [{ label: "a", values: [2, 3] }, { label: "b", values: [-1, 4] }] });
+  assert.match(stacked.summary, /^Bar chart \(stacked\)/);
+  const horizontal = chartSVG({ kind: "bar", horizontal: true, x: { values: ["Rent", "Food"] }, series: [{ label: "Spent", values: [1200, 300] }] });
+  assert.match(horizontal.summary, /\(horizontal\)/);
+  const [rent, food] = [...horizontal.svg.matchAll(/<rect class="chart-bar" x="[\d.]+" y="[\d.]+" width="([\d.]+)"/g)].map((m) => Number(m[1]));
+  assert.ok(rent > 3 * food);
+});
+
+test("radar and heatmap charts label every axis, cell and color step", () => {
+  const radar = chartSVG({
+    kind: "radar",
+    ticks: 4,
+    axes: [{ label: "a", min: 0, max: 4 }, { label: "b", min: 0, max: 4 }, { label: "c", min: 0, max: 4 }],
+    x: { values: ["a", "b", "c"] },
+    series: [{ label: "One", values: [1, 2, 3] }, { label: "Two", values: [4, 3, 2] }],
+  });
+  assert.equal((radar.svg.match(/<path class="chart-marker"/g) || []).length, 6);
+  assert.equal((radar.svg.match(/<g class="chart-grid"><path/g) || []).length, 1);
+  assert.match(radar.svg, /<title>Two · a: 4<\/title>/);
+  assert.match(radar.summary, /^Radar chart of One, Two over 3 axes \(a 0 to 4/);
+  const heat = chartSVG({ kind: "heatmap", x: { values: ["9am", "noon"] }, series: [{ label: "Mon", values: [1, null] }, { label: "Tue", values: [5, 9] }] });
+  assert.equal((heat.svg.match(/<rect class="chart-cell/g) || []).length, 4);
+  assert.match(heat.svg, /class="chart-cell chart-q1"/);
+  assert.match(heat.svg, /class="chart-cell chart-q9"/);
+  assert.match(heat.svg, /class="chart-cell chart-cell-empty"/);
+  assert.match(heat.svg, /<title>Tue · noon: 9<\/title>/);
+  assert.equal((heat.svg.match(/<rect class="chart-q\d"/g) || []).length, 9);
+  for (let i = 1; i < CHART_RAMP.length; i++) assert.ok(luminance(CHART_RAMP[i]) < luminance(CHART_RAMP[i - 1]), CHART_RAMP[i]);
+});
+
+test("set grid adds vertical lines at the x ticks", () => {
+  const plain = chartSVG({ kind: "line", x: { type: "linear", values: [0, 10] }, series: [{ label: "a", values: [1, 2] }] }).svg;
+  const grid = chartSVG({ kind: "line", grid: true, x: { type: "linear", values: [0, 10] }, series: [{ label: "a", values: [1, 2] }] }).svg;
+  const count = (svg) => (svg.match(/<g class="chart-grid">(.*?)<\/g>/)[1].match(/<line/g) || []).length;
+  assert.ok(count(grid) > count(plain));
+});
+
+test("a tick count between fixed bounds divides the axis exactly", () => {
+  const { svg } = chartSVG({ kind: "points", y: { min: 0, max: 100, ticks: 4 }, x: { type: "linear", values: [0, 5] }, series: [{ label: "y", values: [20, 60] }] });
+  for (const label of ["0", "25", "50", "75", "100"]) assert.match(svg, new RegExp(`>${label}</text>`));
 });

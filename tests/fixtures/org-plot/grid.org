@@ -1,0 +1,21 @@
+#+TITLE: org-plot grid (heatmap) charts
+
+#+PLOT: type:grid ind:1 deps:(2 3 4 5) title:"Visits by day and hour"
+| Day | 9am | 12pm | 3pm | 6pm |
+|-----+-----+------+-----+-----|
+| Mon |   4 |   12 |   7 |   2 |
+| Tue |   6 |   15 |   9 |   3 |
+| Wed |   3 |   10 |  11 |   8 |
+
+#+PLOT: type:grid ind:1
+| City   | Jan | Feb | Mar |
+|--------+-----+-----+-----|
+| Oslo   |  -4 |  -3 |   1 |
+| Rome   |   8 |   9 |  12 |
+| Cairo  |  14 |  16 |  19 |
+
+A grid without ind keeps every column, as org-plot does.
+
+#+PLOT: type:grid ind:0
+| 1 | 2 | 3 |
+| 4 | 5 | 6 |

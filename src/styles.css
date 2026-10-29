@@ -401,6 +401,15 @@ li > code {
   --chart-6: #aa1861;
   --chart-7: #aa9118;
   --chart-8: #e029e0;
+  --chart-q1: #f0f5fb;
+  --chart-q2: #d9e6f4;
+  --chart-q3: #bcd3eb;
+  --chart-q4: #98bbdf;
+  --chart-q5: #72a0d0;
+  --chart-q6: #4f84bf;
+  --chart-q7: #3569a7;
+  --chart-q8: #22508b;
+  --chart-q9: #133868;
   --chart-text: #4f625e;
   --chart-grid: #e3e9e4;
   --chart-axis: #8a9894;
@@ -426,6 +435,34 @@ li > code {
 .chart-s6 { --chart-color: var(--chart-6); }
 .chart-s7 { --chart-color: var(--chart-7); }
 .chart-s8 { --chart-color: var(--chart-8); }
+.chart-q1 { fill: var(--chart-q1); }
+.chart-q2 { fill: var(--chart-q2); }
+.chart-q3 { fill: var(--chart-q3); }
+.chart-q4 { fill: var(--chart-q4); }
+.chart-q5 { fill: var(--chart-q5); }
+.chart-q6 { fill: var(--chart-q6); }
+.chart-q7 { fill: var(--chart-q7); }
+.chart-q8 { fill: var(--chart-q8); }
+.chart-q9 { fill: var(--chart-q9); }
+.chart-grid path {
+  fill: none;
+  stroke: var(--chart-grid);
+  stroke-width: 1;
+}
+.chart-cell-empty {
+  fill: #fff;
+  stroke: var(--chart-grid);
+}
+.chart-cell-text {
+  fill: #243b39;
+  font-size: 11px;
+}
+.chart-cell-text-light {
+  fill: #fff;
+}
+.chart-kind-radar .chart-area {
+  fill-opacity: 0.15;
+}
 .chart-tick,
 .chart-legend-text {
   fill: var(--chart-text);

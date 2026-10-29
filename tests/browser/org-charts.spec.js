@@ -21,6 +21,9 @@ test("charts survive sanitizing unchanged and pass through standalone export", a
       { kind: "bar", title: "T", x: { values: ["a", "b"] }, series: [{ label: "s", values: [1, -2] }, { label: "u", values: [3, 4] }] },
       { kind: "linespoints", x: { type: "time", values: [Date.UTC(2024, 0, 1), Date.UTC(2024, 3, 1)] }, series: Array.from({ length: 10 }, (_, i) => ({ label: `s${i}`, values: [i, i + 1] })) },
       { kind: "steps", y: { log: true }, x: { type: "linear", values: [1, 2, 3] }, series: [{ label: "s", values: [1, 10, 100] }] },
+      { kind: "bar", stacked: true, horizontal: true, legend: "right", x: { values: ["a", "b"] }, series: [{ label: "s", values: [1, -2] }, { label: "u", values: [3, 4] }] },
+      { kind: "radar", ticks: 3, axes: [{ label: "a", min: 0, max: 3 }, { label: "b", min: 1, max: 9 }, { label: "c", min: 0, max: 1 }], x: { values: ["a", "b", "c"] }, series: [{ label: "s", values: [1, 5, 0.5] }] },
+      { kind: "heatmap", x: { values: ["p", "q"] }, y: { label: "Day" }, series: [{ label: "Mon", values: [1, null] }, { label: "Tue", values: [3, 9] }] },
     ];
     return specs.every((spec) => {
       const { svg } = chartSVG(spec), html = chartFigure({ svg, title: "x", note: "y" });
@@ -95,4 +98,26 @@ test("inference is reported in the caption and as an editor annotation", async (
   await expect(page.locator("#preview figure.chart figcaption .chart-note").first()).toHaveText("Inferred: ind:1 deps:(2 3 4) with:histograms; summary row @4 excluded.");
   const annotation = await page.evaluate(() => ace.edit("editor").session.getAnnotations().find((a) => a.row === 3 && /Inferred/.test(a.text)));
   expect(annotation).toMatchObject({ type: "info", text: "Inferred plot options: ind:1 deps:(2 3 4) with:histograms. Add them to #+PLOT: so Emacs plots the same data." });
+});
+
+test("radar, heatmap and file: charts render from the option fixtures", async ({ page }) => {
+  await page.goto(writeURL(base, { src: await fixture("radar.org"), format: "org", view: "preview" }));
+  await ready(page);
+  await expect(page.locator("#preview figure.chart svg.chart-kind-radar")).toHaveCount(3);
+  await expect(page.locator("#preview svg.chart-kind-radar").first().locator(".chart-series")).toHaveCount(5);
+  await page.goto(writeURL(base, { src: await fixture("grid.org"), format: "org", view: "preview" }));
+  await ready(page);
+  await expect(page.locator("#preview svg.chart-kind-heatmap").first().locator("rect.chart-cell")).toHaveCount(12);
+  const dark = await page.locator("#preview svg.chart-kind-heatmap rect.chart-q9").first().evaluate((node) => getComputedStyle(node).fill);
+  expect(dark).toBe("rgb(19, 56, 104)");
+  await page.goto(writeURL(base, { src: await fixture("options.org"), format: "org", view: "preview" }));
+  await ready(page);
+  // The Rates chart sits where the document links rates.svg, after the paragraph.
+  const order = await page.evaluate(() => {
+    const figure = document.querySelector('#preview .chart-scroll[aria-label="Chart: Rates"]').closest("figure"),
+      paragraph = [...document.querySelectorAll("#preview p")].find((p) => p.textContent.includes("links its file"));
+    return paragraph.compareDocumentPosition(figure) & Node.DOCUMENT_POSITION_FOLLOWING;
+  });
+  expect(order).toBeTruthy();
+  await expect(page.locator('#preview a[href$="rates.svg"]')).toHaveCount(0);
 });

@@ -8,7 +8,11 @@ import {
   dataRows,
   dumpTSV,
   emulateOrgPlot,
+  gridData,
+  gridDump,
   lispJSON,
+  plotSets,
+  radarAxes,
   orgPlot,
   pastedOrgPlots,
   plotKeywords,
@@ -27,6 +31,9 @@ async function tablesOf(name, src) {
   for (const { start, table } of recalculateOrg(src).tables) byLine.set(start + 1, { table, keywords: plotKeywords(lines, start) });
   return byLine;
 }
+// $Settings lines from org-plot's radar setup file: "axis" min max ticks.
+const radarSettings = ({ setup }) =>
+  [...setup.split("$Settings <<EOD\n")[1].matchAll(/^"(.*)" (\S+) (\S+) (\S+)$/gm)].map((m) => [m[1], Number(m[2]), Number(m[3]), Number(m[4])]);
 const emacsMode = ({ options }) =>
   options.timeind ? "time" : options.textind || options.with === "histograms" ? "category" : options.ind === 0 ? "row" : "linear";
 const emacsColumns = ({ plots }) => plots.map((line) => Number(/^using (?:\d+:)?(\d+)/.exec(line)[1]));
@@ -54,16 +61,25 @@ test("org-plot emulation matches Emacs options, plot lines and data dumps for ev
       const options = Object.fromEntries(Object.entries(plot.params).map(([key, value]) => [key, lispJSON(value)]));
       assert.deepEqual(options, record.options, where);
       assert.equal(plot.numCols, record.numCols, where);
-      if (plot.type === "2d") assert.deepEqual(plot.plots.map((p) => p.line), record.plots, where);
-      const dump = dataRows(plot.rows);
-      assert.equal(dumpTSV(dump.rows, dump.column), record.data, where);
+      if (plot.type === "2d") {
+        assert.deepEqual(plot.plots.map((p) => p.line), record.plots, where);
+        const dump = dataRows(plot.rows);
+        assert.equal(dumpTSV(dump.rows, dump.column), record.data, where);
+      } else if (plot.type === "grid") {
+        const grid = gridData(plot.rows, plot.params);
+        assert.equal(gridDump(grid.matrix), record.data, where);
+        assert.equal(grid.ylabels?.map(([n, label]) => `"${label}" ${n}`).join(", ") ?? null, record.ytics, where);
+      } else if (plot.type === "radar") {
+        const { axes, ticks } = radarAxes(plot.rows, plot.params);
+        assert.deepEqual([...axes, axes[0]].map((a) => [a.label, a.min, a.max, ticks]), radarSettings(record), where);
+      }
     }
   }
 });
 
 test("Sheets reads the same columns, x mode and style as org-plot when options are explicit", async () => {
   let compared = 0;
-  for (const name of ["explicit.org", "quirks.org", "marked.org"]) {
+  for (const name of ["explicit.org", "quirks.org", "marked.org", "options.org"]) {
     const tables = await tablesOf(name);
     for (const record of reference[name]) {
       const where = `${name}:${record.line}`, { table, keywords } = tables.get(record.line);
@@ -104,7 +120,7 @@ test("Sheets reads the same columns, x mode and style as org-plot when options a
       compared++;
     }
   }
-  assert.ok(compared >= 13);
+  assert.ok(compared >= 20);
 });
 
 test("pasting the inferred options makes Emacs plot the same data", async () => {
@@ -191,4 +207,71 @@ test("documents draw at most 32 charts", () => {
   assert.equal((result.html.match(/<figure/g) || []).length, 32);
   assert.equal(result.diagnostics.length, 1);
   assert.match(result.diagnostics[0].message, /at most 32 charts/);
+});
+
+test("radar and grid charts use org-plot's own axes, ticks and matrix", async () => {
+  for (const name of ["radar.org", "grid.org"]) {
+    const tables = await tablesOf(name);
+    for (const record of reference[name]) {
+      const where = `${name}:${record.line}`, { table, keywords } = tables.get(record.line), plot = orgPlot(table, keywords);
+      assert.ok(!plot.error, `${where}: ${plot.error}`);
+      if (name === "radar.org") {
+        assert.equal(plot.spec.kind, "radar");
+        assert.deepEqual([...plot.spec.axes, plot.spec.axes[0]].map((a) => [a.label, a.min, a.max, plot.spec.ticks]), radarSettings(record), where);
+        assert.deepEqual(plot.spec.series.map((s) => s.label), record.options.labels.slice(1), where);
+      } else {
+        assert.equal(plot.spec.kind, "heatmap");
+        // Front-edge values of each column block are the matrix, column by column.
+        const blocks = record.data.trim().split("\n\n"), matrix = [];
+        for (let col = 0; col * 2 + 1 < blocks.length; col++)
+          blocks[col * 2 + 1].split("\n").filter((_, i) => i % 2 === 0).forEach((line, row) => ((matrix[row] ||= [])[col] = Number(line.split(/\s+/)[2])));
+        assert.deepEqual(plot.spec.series.map((s) => s.values), matrix, where);
+        if (record.ytics) assert.deepEqual(plot.spec.series.map((s) => s.label), [...record.ytics.matchAll(/"([^"]*)"/g)].map((m) => m[1]), where);
+      }
+    }
+  }
+});
+
+test("set: options apply in script order and unsupported ones are reported", () => {
+  const notes = [];
+  const sets = plotSets(["key off", "grid", "logscale y", "yrange [*:10]", "xlabel 'Quarter'", "title \"T\"", "style histogram rowstacked", "border 3", "key bottom right"], (m) => notes.push(m));
+  assert.deepEqual(sets, { legend: "bottom", grid: true, log: true, yrange: [undefined, 10], xlabel: "Quarter", title: "T", stacked: true });
+  assert.deepEqual(notes, ['set:"border 3" is not applied; Sheets draws its own axes and legend.']);
+});
+
+test("set:, bounds and ticks reach the chart spec", async () => {
+  const tables = await tablesOf("options.org");
+  const spec = (line) => orgPlot(tables.get(line).table, tables.get(line).keywords);
+  const stacked = spec(5);
+  assert.equal(stacked.spec.stacked, true);
+  assert.equal(stacked.spec.legend, "bottom");
+  assert.equal(stacked.spec.x.label, "Quarter");
+  assert.equal(stacked.spec.y.label, "Revenue ($)");
+  assert.equal(stacked.spec.title, "Stacked");
+  assert.deepEqual(stacked.diagnostics.map((d) => d.message), ['set:"style fill solid" is not applied; Sheets draws its own style.']);
+  const log = spec(12);
+  assert.equal(log.spec.y.log, true);
+  assert.equal(log.spec.grid, true);
+  assert.equal(log.spec.legend, "none");
+  const ranged = spec(20);
+  assert.equal(ranged.spec.title, "From set");
+  assert.deepEqual([ranged.spec.y.min, ranged.spec.y.max, ranged.spec.x.min, ranged.spec.x.max], [0, 50, 0, 10]);
+  const bounded = spec(27);
+  assert.deepEqual([bounded.spec.y.min, bounded.spec.y.max, bounded.spec.y.ticks, bounded.spec.x.min, bounded.spec.x.max], [0, 100, 4, -5, 15]);
+  assert.deepEqual([spec(34).spec.y.min, spec(34).spec.y.max], [undefined, 10]);
+  assert.equal(spec(41).file, "rates.svg");
+});
+
+test("a file: chart appears at its [[file:…]] link, or after its table without one", async () => {
+  const { html } = renderOrg(await source("options.org"));
+  const link = html.indexOf("where the document links its file:"), rates = html.indexOf("Chart: Rates");
+  assert.ok(rates > link, "the Rates chart follows the link paragraph");
+  assert.doesNotMatch(html, /href="rates\.svg"/);
+  // The unlinked file: chart stays after its own table.
+  assert.match(html, /<\/table><\/div><figure class="chart">(?:(?!<table).)*$/s);
+  // A link before its table still receives the chart, and only once.
+  const early = renderOrg('[[file:a.svg]]\n\n#+PLOT: ind:1 deps:(2) with:lines file:"a.svg"\n| 1 | 2 |\n| 2 | 3 |\n\n[[file:a.svg]]\n');
+  assert.equal((early.html.match(/<figure/g) || []).length, 1);
+  assert.ok(early.html.indexOf("<figure") < early.html.indexOf("<table"));
+  assert.match(early.html, /href="a\.svg"/);
 });

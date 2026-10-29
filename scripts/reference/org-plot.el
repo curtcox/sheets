@@ -22,7 +22,7 @@
 
 (defun sheets-plot--json (value)
   "Lisp VALUE as JSON-ready data. Symbols become their names."
-  (cond ((null value) :json-null)
+  (cond ((null value) nil)
         ((eq value t) "t")
         ((or (stringp value) (numberp value)) value)
         ((symbolp value) (symbol-name value))
@@ -44,7 +44,9 @@
                (setup (and (string-match "load \"\\([^\"\n]+\\)\"" script)
                            (match-string 1 script)))
                (plot (and (string-match "^s?plot \\(\\(?:.\\|\n\\)*\\)\\'" script)
-                          (match-string 1 script))))
+                          (match-string 1 script)))
+               (ytics (and (string-match "^set ytics (\\(.*\\))$" script)
+                           (match-string 1 script))))
           `((line . ,line)
             (numCols . ,(car sheets-plot--params))
             (options
@@ -64,8 +66,9 @@
                                       "\\`'[^']*' " "" (string-trim part)))
                                    (split-string plot ",\\\\\n" t)))
                         []))
-            (data . ,(if file (sheets-plot--read file) :json-null))
-            (setup . ,(if setup (sheets-plot--read setup) :json-null)))))
+            (data . ,(if file (sheets-plot--read file) nil))
+            (setup . ,(if setup (sheets-plot--read setup) nil))
+            (ytics . ,(or ytics nil)))))
     (error `((line . ,line) (error . ,(error-message-string err))))))
 
 (let ((output (getenv "SHEETS_ORG_OUTPUT"))

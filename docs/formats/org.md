@@ -376,12 +376,30 @@ org-plot (Org 9.8.7) does, including its quirks:
 | `with:lines`, `points`, `linespoints`, `steps` | Lines, a scatter chart, lines with markers, or steps. |
 | `with:histograms`, `boxes`, `impulses` | Bars. `histograms` always uses categories. |
 | `title:"…"`, `labels:("…" …)` | The chart title and series names. |
+| `set:"style histogram rowstacked"` | Stacked bars; negative values stack below zero. |
+| `set:"xlabel '…'"`, `"ylabel '…'"`, `"title '…'"` | Axis titles and the chart title. A `set:` title replaces `title:`, as in gnuplot. |
+| `set:"yrange [0:50]"`, `"xrange [a:b]"` | Axis bounds; leave a side empty or `*` to choose it automatically. `xrange` needs a numeric x axis. |
+| `set:"logscale y"`, `"grid"`, `"key off"` | A logarithmic y axis, vertical grid lines as well as horizontal ones, and no legend. |
+| `set:"key bottom …"`, `"key top …"`, `"key left/right …"` | The legend below, above or right of the plot. Sheets always puts it outside the plot. |
+| `min:`/`ymin:`, `max:`/`ymax:`, `xmin:`, `xmax:` | Axis bounds. `set:` ranges take precedence. |
+| `ticks:N` | About N y-axis ticks, or exactly N equal divisions when both bounds are set. |
+| `type:radar` | A radar chart with one axis per row and one series per column, using org-plot's own axis bounds and tick count. |
+| `type:grid` | A heatmap of the matrix org-plot extracts, with the `ind` column as row labels and a color scale. |
+| `file:"name.svg"` | When the document links `[[file:name.svg]]`, the chart appears at that link instead of after the table. |
 
-`type:3d`, `type:radar`, `type:grid`, `script:`, `line:`, `map:` and `timefmt:`
-are diagnosed and draw nothing. `set:`, axis bounds (`min:`, `max:`, `xmin:`,
-`xmax:`) and `ticks:` are read but not applied yet. Sheets does not run gnuplot,
-and its charts are not meant to match gnuplot's pixels: ticks, colors, legends,
-sizes and number formatting are Sheets' own.
+The last `set:` of each kind wins, in the order gnuplot would run them. Other
+`set:` commands, such as `style fill solid` or `border 3`, get an informational
+annotation and are not applied. org-plot itself uses `min:`, `max:` and `ticks:`
+only for radar charts, so for other charts Emacs ignores the bounds Sheets
+applies. Radar axes use org-plot's per-row rounded bounds and its prime-factor
+tick choice exactly; a radar row whose values are all equal makes org-plot loop
+forever, so Sheets asks for `ticks:` instead. In grids, org-plot reads text cells
+as 0; Sheets leaves them blank and says so.
+
+`type:3d`, `script:`, `line:`, `map:` and `timefmt:` are diagnosed and draw
+nothing. Sheets does not run gnuplot, and its charts are not meant to match
+gnuplot's pixels: ticks, colors, legends, sizes and number formatting are Sheets'
+own.
 
 ### Options Sheets infers
 
@@ -663,5 +681,5 @@ These entries share the [central limitations ledger](../limitations.md). “Need
 | ORG-13 | Resolved | File constants have an optional preview summary |
 | ORG-14 | Resolved | Pinned numeric Org inputs load through versioned CID declarations |
 | ORG-15 | Resolved | #+PLOT: tables draw sanitized SVG charts that follow recalculation |
-| ORG-16 | Known gap | Some org-plot types and gnuplot options are not drawn |
+| ORG-16 | Known gap | 3D plots, gnuplot scripts and custom time formats are not drawn |
 <!-- compatibility:end -->

@@ -455,8 +455,10 @@ org-plot harness is the reference. See `design/charts.md`.
 Progress: CHART-1 is done (ORG-15). `src/charts.js` draws line, scatter, step
 and bar charts; `#+PLOT:` is parsed as org-plot parses it, inference is shown
 in captions and annotations, and `scripts/reference/org-plot.el` records
-org-plot's own extraction for every fixture and pasted variant. ORG-16 tracks
-the org-plot options CHART-2 still has to draw.
+org-plot's own extraction for every fixture and pasted variant. CHART-2 is
+done: stacked bars, the `set:` subset, bounds and ticks, radar charts and grid
+heatmaps (matching org-plot's own axes, ticks and matrices) and `file:`
+placement. ORG-16 records the options that stay diagnosed (3D, scripts).
 
 ### Prioritized elimination queue — refreshed 2026-10-19
 
