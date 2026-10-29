@@ -1,0 +1,30 @@
+#+TITLE: In-cell bars
+#+CONSTANTS: top=100 cells=6
+
+Bars from orgtbl-ascii-draw and the Unicode variants, with empty, text,
+partly numeric and out-of-range values.
+
+| Item | Value | Ascii | Grid | Cont |
+|------+-------+-------+------+------|
+| a    |     0 |       |      |      |
+| b    |    33 |       |      |      |
+| c    |   100 |       |      |      |
+| d    |   150 |       |      |      |
+| e    |    -5 |       |      |      |
+| f    |       |       |      |      |
+| g    |   abc |       |      |      |
+| h    |    7x |       |      |      |
+| i    |  12.5 |       |      |      |
+| j    |  2.5e1 |      |      |      |
+#+TBLFM: $3='(orgtbl-ascii-draw $2 0 100 12)::$4='(orgtbl-uc-draw-grid $2 0 100 8)::$5='(orgtbl-uc-draw-cont $2 0 $top $cells)
+
+Field bounds with ;N, the default width, fractional widths, reversed bounds,
+custom characters and absolute references.
+
+| Value | Min | Max | N bar | Default | Wide | Reversed | Custom | Absolute |
+|-------+-----+-----+-------+---------+------+----------+--------+----------|
+|     5 |   0 |  10 |       |         |      |          |        |          |
+|     3 |   2 |   4 |       |         |      |          |        |          |
+|       |   0 |  10 |       |         |      |          |        |          |
+|  -1.5 |  -3 |   0 |       |         |      |          |        |          |
+#+TBLFM: $4='(orgtbl-ascii-draw $1 $2 $3 10);N::$5='(orgtbl-ascii-draw $1 0 10)::$6='(orgtbl-uc-draw-cont $1 0 10 2.5)::$7='(orgtbl-ascii-draw $1 10 0 5)::$8='(orgtbl-ascii-draw $1 0 10 4 "-=#")::$9='(orgtbl-uc-draw-grid @2$1 0 10. 3)

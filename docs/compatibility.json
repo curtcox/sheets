@@ -461,7 +461,7 @@
       "milestone": "ORG-1",
       "dependsOn": [],
       "expected": "Verify each behavior against Emacs numeric fixture oracle; documented Calc subset; separate deliberate policy from unsupported upstream capabilities.",
-      "disclosure": "This is a JavaScript spreadsheet subset, not Emacs Org, Babel, or the complete Emacs Calc language. Emacs Lisp formulas are explicitly unsupported.",
+      "disclosure": "This is a JavaScript spreadsheet subset, not Emacs Org, Babel, or the complete Emacs Calc language. Emacs Lisp formulas are explicitly unsupported, except the in-cell bar functions orgtbl-ascii-draw, orgtbl-uc-draw-grid and orgtbl-uc-draw-cont (ORG-17).",
       "baselineDisclosure": "This is a JavaScript spreadsheet subset, not Emacs Org, Babel, or the complete Emacs Calc language. Emacs Lisp formulas are explicitly unsupported.",
       "reproducer": null,
       "evidence": []
@@ -1632,6 +1632,32 @@
       },
       "evidence": [
         "design/charts.md"
+      ]
+    },
+    {
+      "id": "ORG-17",
+      "format": "org",
+      "title": "In-cell bars from orgtbl-ascii-draw and its Unicode variants",
+      "kind": "gap",
+      "status": "resolved",
+      "priority": "P3",
+      "milestone": "CHART-4",
+      "dependsOn": [
+        "ORG-01"
+      ],
+      "expected": "Evaluate exactly the three drawing functions orgtbl-ascii-plot inserts, with literal or field arguments, and produce the same text as Emacs recalculation in both calculation modes, including empty, non-numeric, out-of-range and failing values.",
+      "disclosure": "The Lisp formulas '(orgtbl-ascii-draw VALUE MIN MAX WIDTH CHARACTERS), '(orgtbl-uc-draw-grid VALUE MIN MAX WIDTH) and '(orgtbl-uc-draw-cont VALUE MIN MAX WIDTH) draw text bars as Emacs does. Arguments may be literal numbers, literal strings, field references, column names and file constants (substituted as literal text, so controls move the bars). Field arguments are strings unless ;N is given, values are read like Elisp string-to-number, out-of-range values give too small or too large, rounding is half to even, and failing calls write #ERROR with a warning explaining why. All other Lisp, ;L, duration modes and printf formats on these calls stay unsupported. Bars longer than 1,000 characters are not drawn.",
+      "baselineDisclosure": "Every Emacs Lisp formula, including orgtbl-ascii-draw, gave an unsupported diagnostic and left its cell unchanged.",
+      "reproducer": {
+        "path": "tests/fixtures/org/draw.org"
+      },
+      "evidence": [
+        "design/charts.md",
+        "src/formats/org/draw.js",
+        "tests/fixtures/org/draw.org",
+        "tests/fixtures/org/draw-errors.org",
+        "tests/fixtures/org/reference.json",
+        "tests/unit/org-draw.test.js"
       ]
     }
   ]

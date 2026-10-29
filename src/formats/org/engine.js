@@ -11,6 +11,7 @@ import { ORG_EMACS, validateProfile } from "../../compatibility-profiles.js";
 import { formulaPrecedenceHints } from "./precedence-hints.js";
 import { validateInputEntries } from "./inputs.js";
 import { orgControls } from "./controls.js";
+import { evaluateDraw, isLispFormula, lispModes, parseDraw, LispError } from "./draw.js";
 const isHline = (line) => /^\s*\|[-+:]+\|?\s*$/.test(line);
 export function parseTable(lines) {
   const rows = [],
@@ -102,9 +103,11 @@ export function recalculateTable(
       field = target.startsWith("@") || !!namedField,
       targets = [];
     try {
-      if (/^\s*'/.test(expression))
-        throw new Error("Emacs Lisp formulas are unsupported.");
-      const modes = parseModes(modeText, bindings.format);
+      const lisp = isLispFormula(expression);
+      if (lisp) parseDraw(expression);
+      const modes = lisp
+        ? lispModes(modeText, bindings.format)
+        : parseModes(modeText, bindings.format);
       if (named && !namedField)
         throw new Error(
           `Unknown named field target ${target}; use a numeric column target for a named column.`,
@@ -147,13 +150,45 @@ export function recalculateTable(
         targets,
         expression: expression.trim(),
         modes,
+        lisp,
       });
     } catch (error) {
       diagnostics.push({ line, message: error.message });
     }
   }
+  // Lisp field arguments: column names and named fields read the current
+  // row's field text; file constants are substituted as literal text.
+  const lispReference = (ref, row, col) => {
+    const name = /^\$([A-Za-z][A-Za-z0-9_]*)$/.exec(ref)?.[1];
+    if (name) {
+      const column = bindings.column(name),
+        named = bindings.fields.get(name);
+      if (column) return { field: cell(table, row, column) };
+      if (named) return { field: cell(table, named.row, named.col) };
+      return { constant: bindings.value(name) };
+    }
+    const [r, c] = address(ref, row, col, table);
+    return { field: cell(table, r, c) };
+  };
   const apply = (assignment, row, col) => {
     const { target, expression, modes } = assignment;
+    if (assignment.lisp) {
+      try {
+        table.rows[row - 1][col - 1] = evaluateDraw(
+          expression,
+          (ref) => lispReference(ref, row, col),
+          modes,
+        );
+      } catch (error) {
+        if (error instanceof LispError) table.rows[row - 1][col - 1] = "#ERROR";
+        diagnostics.push({
+          line,
+          ...(error instanceof LispError && { severity: "warning" }),
+          message: `${target}, row ${row}: ${error instanceof LispError ? `Emacs writes #ERROR because ${error.message}.` : error.message}`,
+        });
+      }
+      return;
+    }
     try {
       table.rows[row - 1][col - 1] = formatCalc(
         calculate(expression, row, col, modes),

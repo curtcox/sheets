@@ -1,0 +1,8 @@
+#+TITLE: In-cell bar errors
+
+Emacs writes #ERROR when an in-cell bar call fails.
+
+| Value | Min | Max | Equal | String bounds | String width | One char | Arity |
+|-------+-----+-----+-------+---------------+--------------+----------+-------|
+|     5 |   0 |  10 |       |               |              |          |       |
+#+TBLFM: $4='(orgtbl-ascii-draw $1 5 5)::$5='(orgtbl-ascii-draw $1 $2 $3)::$6='(orgtbl-ascii-draw $1 0 10 $3)::$7='(orgtbl-ascii-draw $1 0 10 3 "x")::$8='(orgtbl-uc-draw-cont $1 0 10 3 "ab")

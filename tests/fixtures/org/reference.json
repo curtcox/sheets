@@ -475,6 +475,162 @@
       "1260.00"
     ]
   ],
+  "draw-errors.org": [
+    [
+      "Value",
+      "Min",
+      "Max",
+      "Equal",
+      "String bounds",
+      "String width",
+      "One char",
+      "Arity"
+    ],
+    [
+      "5",
+      "0",
+      "10",
+      "#ERROR",
+      "#ERROR",
+      "#ERROR",
+      "#ERROR",
+      "#ERROR"
+    ]
+  ],
+  "draw.org": [
+    [
+      "Item",
+      "Value",
+      "Ascii",
+      "Grid",
+      "Cont"
+    ],
+    [
+      "a",
+      "0",
+      "",
+      "",
+      ""
+    ],
+    [
+      "b",
+      "33",
+      "WWWW",
+      "▉▉▌",
+      "██"
+    ],
+    [
+      "c",
+      "100",
+      "WWWWWWWWWWWW",
+      "▉▉▉▉▉▉▉▉",
+      "██████"
+    ],
+    [
+      "d",
+      "150",
+      "too large",
+      "too large",
+      "too large"
+    ],
+    [
+      "e",
+      "-5",
+      "too small",
+      "too small",
+      "too small"
+    ],
+    [
+      "f",
+      "",
+      "",
+      "",
+      ""
+    ],
+    [
+      "g",
+      "abc",
+      "",
+      "",
+      ""
+    ],
+    [
+      "h",
+      "7x",
+      "V",
+      "▌",
+      "▍"
+    ],
+    [
+      "i",
+      "12.5",
+      "W!",
+      "▉",
+      "▊"
+    ],
+    [
+      "j",
+      "2.5e1",
+      "WWW",
+      "▉▉",
+      "█▌"
+    ],
+    [
+      "Value",
+      "Min",
+      "Max",
+      "N bar",
+      "Default",
+      "Wide",
+      "Reversed",
+      "Custom",
+      "Absolute"
+    ],
+    [
+      "5",
+      "0",
+      "10",
+      "WWWWW",
+      "WWWWWW",
+      "█▌",
+      "WW!",
+      "##-",
+      "▉▍"
+    ],
+    [
+      "3",
+      "2",
+      "4",
+      "WWWWW",
+      "WWWl",
+      "▉",
+      "WWW!",
+      "#-",
+      "▉▍"
+    ],
+    [
+      "",
+      "0",
+      "10",
+      "",
+      "",
+      "",
+      "WWWWW",
+      "-",
+      "▉▍"
+    ],
+    [
+      "-1.5",
+      "-3",
+      "0",
+      "WWWWW",
+      "too small",
+      "too small",
+      "too large",
+      "too small",
+      "▉▍"
+    ]
+  ],
   "edge.org": [
     [
       "Day",

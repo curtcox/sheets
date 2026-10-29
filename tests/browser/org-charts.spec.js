@@ -130,3 +130,31 @@ test("radar, heatmap and file: charts render from the option fixtures", async ({
   await expect(page.locator("#preview svg.chart-kind-area path.chart-area")).toHaveCount(2);
   await expect(page.locator("#preview svg.chart-kind-area")).toHaveAttribute("viewBox", "0 0 840 360");
 });
+
+test("in-cell bars match Emacs text, follow a control and explain #ERROR", async ({ page }) => {
+  const src = [
+    "#+CONSTANTS: top=100",
+    '#+SHEETS_CONTROL: top slider 50..200 step 50 label "Scale"',
+    "| Item | Value | Bar | Smooth |",
+    "|------+-------+-----+--------|",
+    "| a    |    50 |     |        |",
+    "| b    |   100 |     |        |",
+    "#+TBLFM: $3='(orgtbl-ascii-draw $2 0 $top 4)::$4='(orgtbl-uc-draw-cont $2 0 $top 4)",
+    "",
+    "| 5 |  |",
+    "#+TBLFM: $2='(orgtbl-ascii-draw $1 5 5)",
+  ].join("\n");
+  await page.goto(writeURL(base, { src, format: "org", view: "split" }));
+  await ready(page);
+  const row = (n) => page.locator("#preview table").first().locator("tbody tr").nth(n).locator("td");
+  await expect(row(0).nth(2)).toHaveText("WW");
+  await expect(row(0).nth(3)).toHaveText("██");
+  await expect(row(1).nth(2)).toHaveText("WWWW");
+  const top = page.locator('#preview input[data-control="org-constant:top"]');
+  await top.focus();
+  await page.keyboard.press("ArrowRight");
+  await expect(row(0).nth(2)).toHaveText("W;");
+  await expect(row(1).nth(3)).toHaveText("██▋");
+  await expect(page.locator("#preview table").nth(1)).toContainText("#ERROR");
+  await expect(page.locator("#render-status")).toHaveText(/^1 diagnostic/);
+});

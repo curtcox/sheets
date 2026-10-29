@@ -470,6 +470,47 @@ Limits: 32 charts per document, 8 inferred or 12 listed series, and 2,000
 points per chart. Beyond a limit the chart is truncated or skipped with a
 diagnostic.
 
+### In-cell bars
+
+Org's `orgtbl-ascii-plot` command (`C-c " a`) adds a column of text bars with
+an Emacs Lisp formula. Sheets evaluates exactly the three drawing functions it
+and the Org manual use, and produces the same text as Emacs:
+
+```org
+#+CONSTANTS: top=100
+| Item | Value | Bar |
+|------+-------+-----|
+| a    |    33 |     |
+| b    |    80 |     |
+#+TBLFM: $3='(orgtbl-ascii-draw $2 0 $top 12)
+```
+
+| Call | Bar |
+| --- | --- |
+| `'(orgtbl-ascii-draw VALUE MIN MAX WIDTH CHARACTERS)` | ASCII shades, `WWWWc` style. `WIDTH` defaults to 12 and `CHARACTERS` to `" .:;c!lhVHW"`. |
+| `'(orgtbl-uc-draw-grid VALUE MIN MAX WIDTH)` | Unicode block elements with a grid effect. |
+| `'(orgtbl-uc-draw-cont VALUE MIN MAX WIDTH)` | Solid Unicode block elements. |
+
+Arguments may be literal numbers, literal strings and field references such as
+`$2`, `@2$1` and column names. A file constant such as `$top` is substituted as
+literal text, as Org does, so preview controls move the bars. As in Emacs:
+
+- Field references arrive as strings unless the formula ends with `;N`. The
+  value accepts a string, so `$2` works, but a field used as `MIN`, `MAX` or
+  `WIDTH` needs `;N`.
+- The value is read like Elisp `string-to-number`: an empty or text field
+  draws as 0, and `7x` draws as 7.
+- Values beyond the range give `too small` or `too large`. Bars round half to
+  even and trailing blanks are trimmed when the table is aligned.
+- Emacs writes `#ERROR` when the call fails, for example when `MIN` equals
+  `MAX`, a bound is a string or the arguments are wrong. Sheets writes the
+  same text and adds a warning that says why.
+
+Every other Lisp formula stays unsupported, as do `;L`, duration modes and
+printf formats on these calls. Bars longer than 1,000 characters are not drawn.
+The reference check recalculates `tests/fixtures/org/draw.org` and
+`draw-errors.org` in Emacs, and both calculation modes must match it exactly.
+
 ## Pinned shared inputs
 
 Use `#+SHEETS_INPUT: v1 prices <cid>` to read numeric file constants from another
@@ -675,7 +716,7 @@ Supported references include `$3`, `@2$3`, relative `@-1`, boundaries `@<`, `@>`
 
 **Copy recalculated source** copies updated, aligned tables and the original surrounding source. Auto detects `#+TBLFM:`, Org keywords, and table hlines. Headings, simple lists, emphasis, and links are rendered through the Org AST.
 
-Emacs Lisp formulas produce an explicit unsupported diagnostic. This is a core subset: cross-file/ID remote tables, dynamic remote indirection, target ranges, iteration modes, inherited property/external constants, expression-valued or string bindings, Calc symbolic/complex/unit/date/duration results, and exact Emacs display-width alignment are not implemented. Emacs order supplies supported column/field priority and duplicate-target checks; Legacy keeps its original source-order contract. Neither mode supplies a full dependency solver or repeated convergence. Reference checks compare supported numeric tables against `emacs --batch`; the Lisp error example is excluded from that comparison.
+Emacs Lisp formulas produce an explicit unsupported diagnostic, except the three [in-cell bar](#in-cell-bars) functions. This is a core subset: cross-file/ID remote tables, dynamic remote indirection, target ranges, iteration modes, inherited property/external constants, expression-valued or string bindings, Calc symbolic/complex/unit/date/duration results, and exact Emacs display-width alignment are not implemented. Emacs order supplies supported column/field priority and duplicate-target checks; Legacy keeps its original source-order contract. Neither mode supplies a full dependency solver or repeated convergence. Reference checks compare supported numeric tables against `emacs --batch`; the Lisp error example is excluded from that comparison, while the in-cell bar fixtures are included.
 
 The source editor highlights headings, table separators and numbers, keywords, and formula references. Source blocks remain distinct from surrounding Org prose. Highlighting is a lexical aid; rendering diagnostics report evaluation errors.
 
@@ -712,4 +753,5 @@ These entries share the [central limitations ledger](../limitations.md). “Need
 | ORG-14 | Resolved | Pinned numeric Org inputs load through versioned CID declarations |
 | ORG-15 | Resolved | #+PLOT: tables draw sanitized SVG charts that follow recalculation |
 | ORG-16 | Known gap | 3D plots, gnuplot scripts and custom time formats are not drawn |
+| ORG-17 | Resolved | In-cell bars from orgtbl-ascii-draw and its Unicode variants |
 <!-- compatibility:end -->

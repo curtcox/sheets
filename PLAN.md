@@ -460,7 +460,10 @@ done: stacked bars, the `set:` subset, bounds and ticks, radar charts and grid
 heatmaps (matching org-plot's own axes, ticks and matrices) and `file:`
 placement. ORG-16 records the options that stay diagnosed (3D, scripts).
 CHART-3 is done: `#+SHEETS_PLOT:` adds pie, donut and area kinds, `rows:all`,
-legend placement and sizes, and the harness confirms Emacs ignores it.
+legend placement and sizes, and the harness confirms Emacs ignores it. CHART-4
+is done (ORG-17): `orgtbl-ascii-draw`, `orgtbl-uc-draw-grid` and
+`orgtbl-uc-draw-cont` produce Emacs's exact text in both calculation modes,
+including `#ERROR`, and every other Lisp formula stays unsupported.
 
 ### Prioritized elimination queue — refreshed 2026-10-19
 

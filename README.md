@@ -30,6 +30,7 @@ constants in the source for live what-if calculations; Emacs ignores them.
 Org's own `#+PLOT:` lines draw static SVG charts from recalculated tables, read
 the way org-plot reads them. Omitted options are inferred and shown so they can
 be pasted back for Emacs; an Emacs batch harness checks the extracted data.
+In-cell text bars from `orgtbl-ascii-draw` and its Unicode variants match Emacs.
 `#+SHEETS_HINTS: precedence` adds optional formula-line hints for unparenthesized
 division/multiplication without changing Calc results.
 `#+SHEETS_INPUT: v1 prices <cid>` imports read-only numeric constants from a pinned
@@ -117,7 +118,7 @@ Without native R, run the Python subset with `--language python`. Set
 
 CI runs these reference checks before browser tests. Generated reference outputs
 are committed and compared with the browser adapters by unit/browser tests. The
-Org check covers 28 numeric fixture documents and four rejections. It also
+Org check covers 30 numeric fixture documents, including in-cell bars, and four rejections. It also
 exports five HTML fixture documents (19 tables) to compare header groups, scopes
 and alignment; it requires an Emacs build with libxml2 support. It also runs
 org-plot itself, without gnuplot, on the chart fixtures and on copies with
