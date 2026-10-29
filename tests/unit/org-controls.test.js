@@ -1,7 +1,8 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
 import { readFile } from "node:fs/promises";
-import { renderOrg } from "../../src/formats/org/index.js";
+import { renderOrg, renderOrgWithInputs } from "../../src/formats/org/index.js";
+import { loadOrgInputs } from "../../src/formats/org/inputs.js";
 import { recalculateOrg } from "../../src/formats/org/engine.js";
 import {
   applyControlEdit,
@@ -171,4 +172,54 @@ test("control values are ordinary source, so links and saved documents keep the 
   const saved = HashBinDocuments.parse(HashBinDocuments.serialize({ src, type: "org", view: "preview" }));
   assert.equal(saved.src, src);
   assert.equal(control(renderOrg(saved.src), "price").value, "80");
+});
+
+test("gallery what-if models answer the questions their prose poses", async () => {
+  const example = (name) => readFile(new URL(`../../examples/org/${name}.org`, import.meta.url), "utf8");
+  // Move controls exactly as the preview does, then read labelled result rows.
+  const scenario = async (src, values = {}) => {
+    let controls = renderOrg(src).controls;
+    for (const [name, value] of Object.entries(values)) {
+      const item = controls.find((entry) => entry.id === `org-constant:${name}`),
+        text = controlText(item, value);
+      src = applyControlEdit(src, item.edit, text);
+      controls = shiftControls(controls, item.edit, text);
+    }
+    const result = recalculateOrg(src, { inputs: await loadOrgInputs(src) });
+    assert.deepEqual(result.diagnostics, []);
+    return (label, column = 1) => Number(rows(result).find((row) => row[0] === label)[column]);
+  };
+  for (const name of ["what-if", "mortgage", "hire"]) {
+    const kinds = renderOrg(await example(name)).controls.map(({ kind }) => kind);
+    assert.deepEqual(new Set(kinds), new Set(["slider", "checkbox", "text"]), name);
+  }
+
+  const billing = await example("what-if"), lead = "Annual minus monthly";
+  assert.ok((await scenario(billing, { churn: "3" }))(lead) < 0);
+  assert.ok((await scenario(billing, { churn: "3.5" }))(lead) > 0);
+  assert.ok((await scenario(billing, { free: false }))(lead) > 0);
+  assert.equal((await scenario(billing, { users: "800" }))("Annual, paid up front"), 2 * (await scenario(billing))("Annual, paid up front"));
+
+  const house = await example("mortgage"), base = await scenario(house), pmi = "Mortgage insurance (under 20% down)";
+  assert.ok(base(pmi) > 0);
+  assert.equal((await scenario(house, { down: "20" }))(pmi), 0);
+  const shorter = await scenario(house, { years: "15" });
+  assert.ok(Math.abs(shorter("Monthly payment") - base("Monthly payment") - 970) < 5);
+  assert.ok(shorter("Total interest") < base("Total interest") / 2);
+  const quote = await scenario(house, { escrow: false });
+  assert.equal(quote("Property tax") + quote("Home insurance"), 0);
+  assert.equal(base("0", 2), base("Principal and interest"));
+
+  const hire = await example("hire");
+  assert.match((await renderOrgWithInputs(hire)).html, /Shared inputs/);
+  const ratio = async (values) => {
+    const at = await scenario(hire, values);
+    return at("Total", 1) / at("Total", 2);
+  };
+  assert.ok((await ratio({ start: "11" })) > (await ratio({ start: "1" })));
+  assert.ok((await ratio({ agency: false })) < (await ratio({})));
+  const even = (await scenario(hire))("Break-even contractor rate ($ an hour)"),
+    year = await scenario(hire, { hourly: String(even) });
+  // The rate is rounded to cents: within half a cent over 30 hours for 46 weeks.
+  assert.ok(Math.abs(year("Contractor at this rate and these hours") - year("Employee pay, benefits and tax")) <= 30 * 46 * 0.005);
 });

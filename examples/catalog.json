@@ -160,9 +160,25 @@
     "id": "org-what-if",
     "format": "org",
     "kind": "typical",
-    "title": "What-if pricing",
-    "description": "Sliders, a checkbox and a text field edit constants and recalculate the model.",
+    "title": "Monthly or annual billing?",
+    "description": "Slide churn and price to find where a discounted annual plan beats monthly billing.",
     "path": "examples/org/what-if.org"
+  },
+  {
+    "id": "org-mortgage",
+    "format": "org",
+    "kind": "typical",
+    "title": "How much house can I afford?",
+    "description": "Price, down payment, rate and term controls drive the payment, income needed and a rate-change table.",
+    "path": "examples/org/mortgage.org"
+  },
+  {
+    "id": "org-hire",
+    "format": "org",
+    "kind": "typical",
+    "title": "Hire or contract?",
+    "description": "Local controls over salary, hours and start month, priced with finance's pinned shared rates.",
+    "path": "examples/org/hire.org"
   },
   {
     "id": "org-error",

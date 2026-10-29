@@ -1,0 +1,60 @@
+#+TITLE: How much house can I afford?
+#+SHEETS_CONSTANTS: table
+#+CONSTANTS: price=450000 down=10 rate=6.5 years=30 escrow=1
+#+CONSTANTS: taxrate=0.011 insurance=1800 pmi=0.006 share=0.28
+
+Enter a price and a rate quote, then read the monthly payment and the income a
+lender usually wants to see.
+
+#+SHEETS_CONTROL: price text label "Home price ($)"
+#+SHEETS_CONTROL: down slider 3..50 label "Down payment (%)"
+#+SHEETS_CONTROL: rate slider 3..9 step 0.125 label "Interest rate (% a year)"
+#+SHEETS_CONTROL: years slider 10..30 step 5 label "Loan term (years)"
+#+SHEETS_CONTROL: escrow checkbox label "Include property tax and home insurance"
+
+#+NAME: payment
+| Item                                | Amount |
+|-------------------------------------+--------|
+| Loan amount                         |      0 |
+| Principal and interest              |      0 |
+| Mortgage insurance (under 20% down) |      0 |
+| Property tax                        |      0 |
+| Home insurance                      |      0 |
+|-------------------------------------+--------|
+| Monthly payment                     |      0 |
+| Yearly income needed                |      0 |
+| Cash needed for the down payment    |      0 |
+#+TBLFM: @2$2=$price*(1-$down/100);%.0f::@3$2=@2$2*($rate/1200)/(1-(1+$rate/1200)^(-12*$years));%.2f::@4$2=if($down<20,@2$2*$pmi/12,0);%.2f::@5$2=if($escrow,$price*$taxrate/12,0);%.2f::@6$2=if($escrow,$insurance/12,0);%.2f::@7$2=vsum(@3..@6);%.2f::@8$2=@7$2*12/$share;%.0f::@9$2=$price*$down/100;%.0f
+
+* Over the life of the loan
+
+| Item           | Amount |
+|----------------+--------|
+| Payments       |      0 |
+| Total interest |      0 |
+#+TBLFM: @2$2=12*$years;%.0f::@3$2=@2$2*remote(payment,@3$2)-remote(payment,@2$2);%.0f
+
+* If the rate moves
+
+A rate quote can change before you lock it. Each row reprices the same loan.
+
+| Change (points) | Rate | Principal and interest | Difference |
+|-----------------+------+------------------------+------------|
+|              -1 |    0 |                      0 |          0 |
+|            -0.5 |    0 |                      0 |          0 |
+|               0 |    0 |                      0 |          0 |
+|             0.5 |    0 |                      0 |          0 |
+|               1 |    0 |                      0 |          0 |
+#+TBLFM: $2=$rate+$1;%.3f::$3=$price*(1-$down/100)*($2/1200)/(1-(1+$2/1200)^(-12*$years));%.2f::$4=$3-remote(payment,@3$2);%.2f
+
+* What to try
+
+- Move the down payment to 20%: mortgage insurance disappears.
+- Choose a 15-year term: the payment rises by about $970 a month, and the total
+  interest falls by more than half.
+- Clear the checkbox to see the payment without property tax and home
+  insurance, the way many rate quotes show it.
+
+The tax rate, insurance premium, mortgage-insurance rate and the 28% payment share
+are fixed assumptions in the second =#+CONSTANTS:= line, listed under *File
+constants*. Edit them there for your area and lender.

@@ -1,0 +1,48 @@
+#+TITLE: Hire or contract?
+#+SHEETS_INPUT: v1 finance AAAAAAAyIytDT05TVEFOVFM6IGxvYWQ9MC4zIGxhcHRvcD0yNTAwIHdlZWtzPTQ2IGZlZT0wLjI
+#+CONSTANTS: salary=140000 start=7 hourly=95 hours=30 agency=1
+
+Should the team hire an engineer or bring in a contractor this fiscal year? Both
+are priced with finance's shared rates.
+
+#+SHEETS_CONTROL: salary text label "Employee salary ($ a year)"
+#+SHEETS_CONTROL: agency checkbox label "Hire through a recruiter"
+#+SHEETS_CONTROL: hourly text label "Contractor rate ($ an hour)"
+#+SHEETS_CONTROL: hours slider 10..40 step 5 label "Contractor hours a week"
+#+SHEETS_CONTROL: start slider 1..12 label "Start in fiscal month"
+
+* Cost this fiscal year
+
+| Item                     | Employee | Contractor |
+|--------------------------+----------+------------|
+| Months on the team       |        0 |          0 |
+| Pay                      |        0 |          0 |
+| Benefits and payroll tax |        0 |          0 |
+| Laptop and setup         |        0 |          0 |
+| Recruiter fee            |        0 |          0 |
+|--------------------------+----------+------------|
+| Total                    |        0 |          0 |
+#+TBLFM: @2$2=13-$start::@2$3=13-$start::@3$2=$salary*@2$2/12;%.0f::@3$3=$hourly*$hours*$finance.weeks*@2$3/12;%.0f::@4$2=@3$2*$finance.load;%.0f::@4$3=0::@5$2=$finance.laptop::@5$3=0::@6$2=if($agency,$salary*$finance.fee,0);%.0f::@6$3=0::@7$2=vsum(@3..@6);%.0f::@7$3=vsum(@3..@6);%.0f
+
+* A full year
+
+| Measure                                 | Amount |
+|-----------------------------------------+--------|
+| Employee pay, benefits and tax          |      0 |
+| Contractor at this rate and these hours |      0 |
+| Break-even contractor rate ($ an hour)  |      0 |
+#+TBLFM: @2$2=$salary*(1+$finance.load);%.0f::@3$2=$hourly*$hours*$finance.weeks;%.0f::@4$2=@2$2/($hours*$finance.weeks);%.2f
+
+* What to try
+
+Move the start month: pay shrinks for both, but the recruiter fee and setup do
+not, so a late start favors the contractor. The break-even rate is the hourly
+rate at which a contractor working these hours costs the same as an employee for
+a full year, before one-time costs.
+
+Finance's rates for benefits and payroll tax, equipment, working weeks and the
+recruiter fee come from a pinned shared input, so every team's model uses the
+same numbers. They show under *Shared inputs* and cannot be given controls here.
+This example's inline CID holds load=0.3, laptop=2500, weeks=46 and fee=0.2, so
+it works offline; a real model would paste the CID of finance's saved
+assumptions document.

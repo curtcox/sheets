@@ -1,17 +1,49 @@
-#+TITLE: What-if pricing
-#+CONSTANTS: price=25 users=400 annual=0 churn=0.03
+#+TITLE: Monthly or annual billing?
+#+CONSTANTS: price=25 users=400 churn=3 free=1
+
+Does an annual plan with two months free earn more than monthly billing? Slide
+the churn and read the last row of the comparison.
+
 #+SHEETS_CONTROL: price slider 5..100 step 5 label "Monthly price ($)"
-#+SHEETS_CONTROL: users text label "Starting users"
-#+SHEETS_CONTROL: annual checkbox label "Annual plan (two months free)"
-#+SHEETS_CONTROL: churn slider 0..0.1 step 0.005 label "Monthly churn"
+#+SHEETS_CONTROL: users text label "Customers at launch"
+#+SHEETS_CONTROL: churn slider 0..10 step 0.5 label "Monthly churn (%)"
+#+SHEETS_CONTROL: free checkbox label "Annual plan gets two months free"
 
-Move the controls; the source and every result update together.
+* Monthly plan
 
-| Month | Users | Revenue |
-|-------+-------+---------|
-|     1 |     0 |       0 |
-|     2 |     0 |       0 |
-|     3 |     0 |       0 |
-|-------+-------+---------|
-| Total |       |       0 |
-#+TBLFM: @2$2=$users::@3$2=@-1*(1-$churn);%.0f::@4$2=@-1*(1-$churn);%.0f::@2$3=$2*$price*if($annual,10/12,1);%.2f::@3$3=$2*$price*if($annual,10/12,1);%.2f::@4$3=$2*$price*if($annual,10/12,1);%.2f::@5$3=vsum(@I..@II);%.2f
+#+NAME: monthly
+| ! | Month | Customers | Revenue |
+|---+-------+-----------+---------|
+| # |     1 |         0 |       0 |
+| # |     2 |         0 |       0 |
+| # |     3 |         0 |       0 |
+| # |     4 |         0 |       0 |
+| # |     5 |         0 |       0 |
+| # |     6 |         0 |       0 |
+| # |     7 |         0 |       0 |
+| # |     8 |         0 |       0 |
+| # |     9 |         0 |       0 |
+| # |    10 |         0 |       0 |
+| # |    11 |         0 |       0 |
+| # |    12 |         0 |       0 |
+|---+-------+-----------+---------|
+|   |  Year |           |       0 |
+#+TBLFM: $3=$users*(1-$churn/100)^($Month-1);%.0f::$4=$Customers*$price;%.2f::@>$4=vsum(@I..@II);%.2f
+
+* Which plan earns more in year one?
+
+| Plan                  | Year-one revenue |
+|-----------------------+------------------|
+| Monthly billing       |                0 |
+| Annual, paid up front |                0 |
+| Annual minus monthly  |                0 |
+#+TBLFM: @2$2=remote(monthly,@>$4);%.2f::@3$2=$users*$price*if($free,10,12);%.2f::@4$2=@3$2-@2$2;%.2f
+
+* What to try
+
+Annual customers pay once, up front, and stay all year. Monthly customers pay as
+they go, and some leave every month. With two months free, monthly billing earns
+more in year one at 3% monthly churn, and the annual plan earns more at 3.5%.
+Below the crossover the discount costs more than churn does. Clear the checkbox
+to see what the discount gives away, and change the price or launch customers to
+put dollars on the answer.

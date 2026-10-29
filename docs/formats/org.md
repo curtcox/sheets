@@ -314,6 +314,18 @@ constant, a second control for the same constant, a slider without a range or
 with invalid bounds, and unknown options are diagnosed at the control line and
 show no control. A value outside the slider range gives a warning.
 
+Three gallery models use every control kind to answer a question:
+[Monthly or annual billing?](../../index.html?example=org-what-if&format=org)
+finds the churn rate at which a discounted annual plan wins,
+[How much house can I afford?](../../index.html?example=org-mortgage&format=org)
+combines controls with fixed assumptions shown by `#+SHEETS_CONSTANTS: table`
+and a rate-change table, and
+[Hire or contract?](../../index.html?example=org-hire&format=org) puts local
+controls beside read-only [pinned shared inputs](#pinned-shared-inputs). In both
+Sheets calculation modes, their tables matched Emacs 31.1 with Org 9.8.7 when
+written; the last was checked with its shared values substituted as file constants,
+because Emacs has no `$finance.load`.
+
 HTML exports show controls disabled at their current values; exported files run
 no script. Printing shows the current values. This is a Sheets extension, not
 native Org behavior. Date pickers, controls for table cells, scenarios, sweeps
