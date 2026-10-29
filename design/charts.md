@@ -1,6 +1,7 @@
 # Charts from sheet data (CHART-1 → CHART-7)
 
-Status: **proposed** (2026-10-29). Nothing here is implemented yet.
+Status: **in progress** (2026-10-29). CHART-1 is implemented; see the Org
+guide's *Charts* section and ORG-15/ORG-16 in the compatibility ledger.
 
 Readers can see a document's numbers as charts that update with the source,
 preview controls and what-if tools. The author should get a useful chart from
@@ -53,12 +54,13 @@ options to override a default.
 | Q2      |   140 |   110 |   250 |
 |---------+-------+-------+-------|
 | Total   |   260 |   200 |   460 |
-#+TBLFM: $4=$2+$3::@>$2..@>$4=vsum(@I..@II)
+#+TBLFM: $4=$2+$3::@>$2=vsum(@I..@II)::@>$3=vsum(@I..@II)
 ```
 
 Sheets draws grouped bars for North, South and Total by quarter, excluding the
 summary row. The caption reads *Inferred: ind:1 deps:(2 3 4) with:histograms;
-summary row 5 excluded.*
+summary row @4 excluded.* Rows are named as in Org formulas, where `@N` counts
+non-rule rows.
 
 ### Native options (org-plot)
 

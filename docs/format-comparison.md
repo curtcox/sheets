@@ -44,7 +44,7 @@ included. Choose Numbat for dimension-checked models.
 | [AsciiMath](formats/asciimath.md) | AsciiMath/MathML; explicit Formula list or Mixed prose; Auto heuristic | Display-only Markdown tables | Mermaid in mixed documents | No |
 | [Numbat](formats/numbat.md) | Source/result rows; `#` comments | Language values; no spreadsheet UI | No Sheets plot viewer | No Python/R cells |
 | [CalcFile](formats/calcfile.md) | Plain prose, headers, result rows | Running totals and aggregates | No | No |
-| [Org tables](formats/org.md) | Basic Org headings, lists, emphasis, links | Calculated tables and range aggregates | No | No Babel/Lisp execution |
+| [Org tables](formats/org.md) | Basic Org headings, lists, emphasis, links | Calculated tables and range aggregates | `#+PLOT:` (org-plot) line, scatter, step and bar charts as static SVG | No Babel/Lisp execution |
 | [Calca](formats/calca.md) | Markdown, TeX, arrow results | Matrices; Markdown tables | Yes with Structured blocks or Scoped definitions; Legacy has the fence caveat below | No Python/R cells |
 | [Hurmet](formats/hurmet.md) | Prose and typeset math calculations | Calculation cells in tables; upstream spreadsheet tables | Upstream output; no interactive drawing UI | No Python/R cells |
 | [Beancount](formats/beancount.md) | Ledger-specific report views | Balance sheet, income statement, trial balance, journal | No | No |
@@ -114,7 +114,7 @@ or notebook cells. External image URLs still need their server. See
 | Matrix | A rectangular mathematical value used in an expression. A matrix is different from a document table with editable cell formulas. |
 | Diagram | A structured drawing specified as text, such as a Mermaid flowchart. This is different from a plot generated from numerical data. |
 | Mermaid | The diagram language supported in `mermaid` code fences by the shared Markdown renderer. Sheets turns its source into a sanitized static SVG drawing. |
-| Plot | A data or function graphic produced by code. Quarto captures matplotlib SVG and R graphics as PNG; the exported result is static. |
+| Plot | A data or function graphic produced by code or drawn from table data. Quarto captures matplotlib SVG and R graphics as PNG. Org draws `#+PLOT:` tables with Sheets' own SVG renderer. Every result is static. |
 | Executable notebook cell | A fenced block that runs code and inserts its output. In Quarto, use `{python}` or `{r}`; an ordinary `python` fence only displays code. |
 | Cell state | Variables and definitions kept between cells during one render. Quarto shares state within Python or R, never between the two languages, and resets it on the next render. |
 | Hidden setup cell | A cell that executes and supplies state but contributes no preview source or output. Quarto include:false controls visibility; eval:false prevents execution. |

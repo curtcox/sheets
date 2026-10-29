@@ -38,6 +38,7 @@ lender usually wants to see.
 
 A rate quote can change before you lock it. Each row reprices the same loan.
 
+#+PLOT: title:"Principal and interest by rate" ind:2 deps:(3) with:linespoints
 | Change (points) | Rate | Principal and interest | Difference |
 |-----------------+------+------------------------+------------|
 |              -1 |    0 |                      0 |          0 |

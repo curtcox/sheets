@@ -439,7 +439,7 @@ slice. SHARED-05/06 and ORG-10/11/12/13 are resolved; the separately tracked
 raw-URL proposal SHARED-07 remains open. Cosmetic cues and solver tools
 do not gate the bounded sharing, formula and table fixes above.
 
-### Charts — proposed 2026-10-29
+### Charts — in progress 2026-10-29
 
 Readers will see sheet data as charts. Org gets native `#+PLOT:` (org-plot)
 charts drawn from recalculated tables. Omitted options are inferred, and the
@@ -451,6 +451,12 @@ needs no syntax. All charts share one DOM-free, sanitized SVG renderer
 CHART-3 (pie, donut, area) → CHART-4 (in-cell bars) → CHART-5 (Beancount),
 plus the optional CHART-6 and documentation-only CHART-7. An Emacs batch
 org-plot harness is the reference. See `design/charts.md`.
+
+Progress: CHART-1 is done (ORG-15). `src/charts.js` draws line, scatter, step
+and bar charts; `#+PLOT:` is parsed as org-plot parses it, inference is shown
+in captions and annotations, and `scripts/reference/org-plot.el` records
+org-plot's own extraction for every fixture and pasted variant. ORG-16 tracks
+the org-plot options CHART-2 still has to draw.
 
 ### Prioritized elimination queue — refreshed 2026-10-19
 

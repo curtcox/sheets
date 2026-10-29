@@ -3,7 +3,7 @@ import { escapeHTML } from "../../util.js";
 const cookie = /^<[lrc]?\d*>$/;
 // The first digit divides the decimal prefix from its suffix. Keeping digits
 // out of the prefix avoids quadratic backtracking on long invalid field text.
-const numberLike =
+export const numberLike =
   /^(?:[<>]?[-+^.]*[0-9][-+^.0-9eEdDx()%:]*|[<>]?[-+]?0[xX][0-9a-fA-F.]+|[<>]?[-+]?[0-9]+#[0-9a-zA-Z.]+|nan|[-+u]?inf)$/;
 const marker = new Set(["", "/", "#", "!", "$", "*", "_", "^"]);
 

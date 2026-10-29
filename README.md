@@ -27,6 +27,9 @@ Org's source option `#+SHEETS_CONSTANTS: table` shows file assumptions with thei
 defining lines; omitted options retain native keyword hiding.
 `#+SHEETS_CONTROL:` adds checkbox, slider and text controls that edit file
 constants in the source for live what-if calculations; Emacs ignores them.
+Org's own `#+PLOT:` lines draw static SVG charts from recalculated tables, read
+the way org-plot reads them. Omitted options are inferred and shown so they can
+be pasted back for Emacs; an Emacs batch harness checks the extracted data.
 `#+SHEETS_HINTS: precedence` adds optional formula-line hints for unparenthesized
 division/multiplication without changing Calc results.
 `#+SHEETS_INPUT: v1 prices <cid>` imports read-only numeric constants from a pinned
@@ -116,7 +119,9 @@ CI runs these reference checks before browser tests. Generated reference outputs
 are committed and compared with the browser adapters by unit/browser tests. The
 Org check covers 28 numeric fixture documents and four rejections. It also
 exports five HTML fixture documents (19 tables) to compare header groups, scopes
-and alignment; it requires an Emacs build with libxml2 support.
+and alignment; it requires an Emacs build with libxml2 support. It also runs
+org-plot itself, without gnuplot, on the chart fixtures and on copies with
+Sheets' inferred options pasted in, recording options, plot lines and data.
 
 ## Offline access
 

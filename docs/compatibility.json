@@ -1576,6 +1576,59 @@
         "tests/unit/projects.test.js",
         "tests/browser/projects.spec.js"
       ]
+    },
+    {
+      "id": "ORG-15",
+      "format": "org",
+      "title": "#+PLOT: tables draw sanitized SVG charts that follow recalculation",
+      "kind": "gap",
+      "status": "resolved",
+      "priority": "P2",
+      "milestone": "CHART-1",
+      "dependsOn": [],
+      "expected": "Parse #+PLOT: lines as org-plot does, including its quirks, and draw 2D charts from recalculated tables. Infer omitted options visibly, so pasting them makes Emacs plot the same data, and match an independent Emacs org-plot extraction harness.",
+      "disclosure": "Tables with #+PLOT: lines draw static, sanitized SVG charts after the table. Option collection matches org-plot (Org 9.8.7): every contiguous keyword line above the table is scanned, keys match as substrings in org-plot's order (xmin: also sets ymin), set: and line: accumulate, a header row supplies labels, and transpose is supported. ind, deps, labels, title and with:lines/points/linespoints/steps/histograms/boxes/impulses are drawn as line, scatter, step and bar charts on category, numeric, row-number and Org-timestamp axes; plain ISO dates are categories, as in Emacs. Omitted ind/deps/with are inferred from the data, named in the chart caption and given as an informational annotation that can be pasted into #+PLOT:. A final one-row summary group such as Total is left out and named in the caption. Charts redraw from recalculated values, including CTRL-1 controls, and appear in standalone exports and print. Pixel parity with gnuplot is not a goal. Known differences: org-plot's data file drops the marker column and special rows of marked tables while its column numbers and x-type check still count them; Sheets uses Org column numbers and checks only data rows. Limits are 32 charts per document, 8 inferred or 12 listed series and 2,000 points per chart.",
+      "baselineDisclosure": "Org documents had no charts; #+PLOT: lines were ignored like other unknown keywords.",
+      "reproducer": {
+        "path": "tests/fixtures/org-plot/explicit.org"
+      },
+      "evidence": [
+        "design/charts.md",
+        "src/charts.js",
+        "src/formats/org/plot.js",
+        "scripts/reference/org-plot.el",
+        "scripts/org-plot-pasted.mjs",
+        "scripts/org-expected.sh",
+        "tests/fixtures/org-plot/reference.json",
+        "tests/fixtures/org-plot/explicit.org",
+        "tests/fixtures/org-plot/inferred.org",
+        "tests/fixtures/org-plot/marked.org",
+        "tests/fixtures/org-plot/quirks.org",
+        "tests/unit/org-plot.test.js",
+        "tests/unit/charts.test.js",
+        "tests/browser/org-charts.spec.js"
+      ]
+    },
+    {
+      "id": "ORG-16",
+      "format": "org",
+      "title": "Some org-plot types and gnuplot options are not drawn",
+      "kind": "gap",
+      "status": "open",
+      "priority": "P3",
+      "milestone": "CHART-2",
+      "dependsOn": [
+        "ORG-15"
+      ],
+      "expected": "Draw stacked histograms, the documented set: subset, axis bounds and ticks, type:radar, type:grid and file: placement with the same extracted data as org-plot, and diagnose the rest.",
+      "disclosure": "type:3d, type:radar and type:grid, script:, line:, map: and timefmt: are diagnosed and draw nothing. set: options, axis bounds (min/max/xmin/xmax), ticks: and file: are not yet applied; gnuplot itself is never run.",
+      "baselineDisclosure": "Org documents had no charts; #+PLOT: lines were ignored like other unknown keywords.",
+      "reproducer": {
+        "path": "tests/fixtures/org-plot/quirks.org"
+      },
+      "evidence": [
+        "design/charts.md"
+      ]
     }
   ]
 }

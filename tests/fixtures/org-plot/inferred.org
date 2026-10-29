@@ -1,0 +1,75 @@
+#+TITLE: Bare plot lines that rely on Sheets inference
+
+#+NAME: revenue
+#+PLOT: title:"Revenue by quarter"
+| Quarter | North | South | Total |
+|---------+-------+-------+-------|
+| Q1      |   120 |    90 |   210 |
+| Q2      |   140 |   110 |   250 |
+|---------+-------+-------+-------|
+| Total   |   260 |   200 |   460 |
+#+TBLFM: $4=$2+$3::@>$2=vsum(@I..@II)::@>$3=vsum(@I..@II)
+
+Numeric, strictly increasing first column: lines.
+
+#+PLOT: title:"Savings"
+| Year | Saved | Spent | Note    |
+|------+-------+-------+---------|
+| 2021 |  1200 |   800 | first   |
+| 2022 |  1500 |   900 | raise   |
+| 2023 |  1700 |  1300 | car     |
+| 2024 |  2100 |  1250 | steady  |
+
+A numeric first column that is not increasing is plotted as a series.
+
+#+PLOT: title:"Readings"
+| A | B |
+|---+---|
+| 5 | 2 |
+| 3 | 4 |
+| 9 | 1 |
+
+#+PLOT: title:"Balance"
+| Date             | Balance |
+|------------------+---------|
+| <2024-01-01 Mon> |    1000 |
+| <2024-02-01 Thu> |    1250 |
+| <2024-05-01 Wed> |    1600 |
+
+One row is drawn as points.
+
+#+PLOT: title:"Single"
+| Item | Amount |
+|------+--------|
+| Only |     42 |
+
+An explicit with: keeps its value; ind and deps are still inferred.
+
+#+PLOT: with:linespoints
+| Step | Error |
+|------+-------|
+|    1 |  0.50 |
+|    2 |  0.25 |
+|    3 | 0.125 |
+
+A text cell in an explicitly named dependent column becomes a gap.
+
+#+PLOT: deps:(2)
+| Month | Sales |
+|-------+-------|
+| Jan   |    10 |
+| Feb   |    n/a |
+| Mar   |    14 |
+
+#+PLOT: title:"Wide"
+| k | c1 | c2 | c3 | c4 | c5 | c6 | c7 | c8 | c9 | c10 |
+|---+----+----+----+----+----+----+----+----+----+-----|
+| a |  1 |  2 |  3 |  4 |  5 |  6 |  7 |  8 |  9 |  10 |
+| b |  2 |  3 |  4 |  5 |  6 |  7 |  8 |  9 | 10 |  11 |
+
+A table without a header plots every numeric column.
+
+#+PLOT: title:"Headerless"
+| 1 | 10 |
+| 2 | 20 |
+| 3 | 15 |

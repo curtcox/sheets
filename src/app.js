@@ -421,7 +421,7 @@ preview.addEventListener("keydown", (event) => {
     writeControl(field, false);
     return;
   }
-  const area = event.target.closest(".org-table-scroll");
+  const area = event.target.closest(".org-table-scroll, .chart-scroll");
   if (
     event.target !== area ||
     !["ArrowLeft", "ArrowRight"].includes(event.key) ||

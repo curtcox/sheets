@@ -144,6 +144,10 @@ test("opt-in offline files support new source links, vendored workers, docs and 
     if (format === "gfm")
       await expect(page.locator("[data-mermaid] svg")).toBeVisible();
   }
+  // Charts are drawn by an app module, so they work from offline files too.
+  await page.goto(base + "?example=org-what-if&view=preview");
+  await ready(page);
+  await expect(page.locator("#preview figure.chart svg .chart-bar")).toHaveCount(3);
   for (const profile of [ASCIIMATH_FORMULAS, ASCIIMATH_PROSE]) {
     await page.goto(
       writeURL(base, { src: "sqrt(9)", format: "asciimath", profile }),

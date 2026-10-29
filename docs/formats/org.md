@@ -331,6 +331,97 @@ no script. Printing shows the current values. This is a Sheets extension, not
 native Org behavior. Date pickers, controls for table cells, scenarios, sweeps
 and goal seek are planned; see the [design](https://github.com/curtcox/sheets/blob/main/design/what-if-controls.md).
 
+## Charts
+
+Put Org's own `#+PLOT:` line (org-plot) directly above a table and Sheets draws
+a chart under it:
+
+```org
+#+PLOT: title:"Revenue by quarter"
+| Quarter | North | South |
+|---------+-------+-------|
+| Q1      |   120 |    90 |
+| Q2      |   140 |   110 |
+```
+
+The preview shows grouped bars for North and South by quarter. Charts are
+redrawn from the recalculated table every time it changes, so formulas, source
+edits and [preview controls](#preview-controls) move them too. Each bar and
+point has a tooltip with its table text. Charts are static SVG: they print,
+appear in HTML exports and work offline, and they have no hover crosshair or
+legend toggling.
+
+### What org-plot options mean
+
+Options you write mean what they mean in Emacs. Sheets reads them the way
+org-plot (Org 9.8.7) does, including its quirks:
+
+- Every contiguous `#+` line directly above the table is scanned, so several
+  `#+PLOT:` lines merge and `#+NAME:` or `#+CAPTION:` lines can sit between
+  them. For a repeated key, the topmost line wins. `#+PLOT:` needs a space after
+  the colon; Emacs ignores `#+PLOT:ind:1`, and so does Sheets, with a warning.
+- Keys are matched as substrings in org-plot's own order. `xmin:0` therefore
+  also sets `ymin`, and `timeind:t` is read as `ind:t`, which Emacs rejects.
+- A header row (a rule after the first row) supplies series names. `labels:`
+  overrides them. `transpose:yes` swaps rows and columns first.
+- When every value in the `ind` column is an Org timestamp such as
+  `<2024-01-15 Mon>`, the x axis is time. When any value is not a number, it is
+  categories. Plain dates such as `2024-01-15` are therefore categories, as
+  they are in Emacs.
+
+| Option | Sheets draws |
+| --- | --- |
+| `ind:N` | Column N on the x axis. `ind:0` uses row numbers. |
+| `deps:(N …)` | Those columns as series, in column order. |
+| `with:lines`, `points`, `linespoints`, `steps` | Lines, a scatter chart, lines with markers, or steps. |
+| `with:histograms`, `boxes`, `impulses` | Bars. `histograms` always uses categories. |
+| `title:"…"`, `labels:("…" …)` | The chart title and series names. |
+
+`type:3d`, `type:radar`, `type:grid`, `script:`, `line:`, `map:` and `timefmt:`
+are diagnosed and draw nothing. `set:`, axis bounds (`min:`, `max:`, `xmin:`,
+`xmax:`) and `ticks:` are read but not applied yet. Sheets does not run gnuplot,
+and its charts are not meant to match gnuplot's pixels: ticks, colors, legends,
+sizes and number formatting are Sheets' own.
+
+### Options Sheets infers
+
+org-plot's defaults (`ind:0`, `with:lines` and every column) rarely suit a
+labelled table. When `ind`, `deps` or `with` is missing, Sheets infers it from
+the data instead:
+
+1. **Rows.** Rules, the header, alignment-cookie rows and, in marked tables, the
+   marker column and `!`, `^`, `_`, `$` and `/` rows are not data. A final
+   single row after a rule whose first value is text such as *Total*, or text
+   under a column of numbers, is a summary row and is left out.
+2. **`ind`.** Column 1 (2 in a marked table) when it is all text, all timestamps
+   or strictly increasing numbers; otherwise row numbers (`ind:0`).
+3. **`deps`.** The right-aligned columns: those where at least half the
+   non-empty cells are numbers. The first eight are plotted.
+4. **`with`.** Bars for categories, lines for numbers and time, and points for
+   a single row.
+
+The caption names what was inferred, such as *Inferred: ind:1 deps:(2 3)
+with:histograms; summary row @4 excluded.* The `#+PLOT:` line also gets an
+informational editor annotation with the same options. Paste them into
+`#+PLOT:` and Emacs plots the same data; an Emacs batch harness checks this for
+every fixture. Text in a plotted column is drawn as a gap and reported with its
+row.
+
+### Known differences from Emacs
+
+- In marked tables, org-plot's data file drops the marker column and special
+  rows, but its column numbers and x-type check still count them, so Emacs
+  reads the wrong columns. Sheets uses Org column numbers (the same ones as
+  `$N` in formulas) and checks only data rows. Alignment-cookie rows likewise
+  make org-plot treat a numeric x column as text; Sheets ignores them.
+- Summary rows are left out of the chart. Emacs plots them.
+- Headerless tables with rules make org-plot stop with an error when `ind` is
+  set; Sheets skips the rules.
+
+Limits: 32 charts per document, 8 inferred or 12 listed series, and 2,000
+points per chart. Beyond a limit the chart is truncated or skipped with a
+diagnostic.
+
 ## Pinned shared inputs
 
 Use `#+SHEETS_INPUT: v1 prices <cid>` to read numeric file constants from another
@@ -571,4 +662,6 @@ These entries share the [central limitations ledger](../limitations.md). “Need
 | ORG-12 | Resolved | Table header groups and numeric-column alignment match native HTML fixtures |
 | ORG-13 | Resolved | File constants have an optional preview summary |
 | ORG-14 | Resolved | Pinned numeric Org inputs load through versioned CID declarations |
+| ORG-15 | Resolved | #+PLOT: tables draw sanitized SVG charts that follow recalculation |
+| ORG-16 | Known gap | Some org-plot types and gnuplot options are not drawn |
 <!-- compatibility:end -->

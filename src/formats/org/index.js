@@ -8,6 +8,7 @@ import { renderFileConstants } from "./constants-html.js";
 import { loadOrgInputs } from "./inputs.js";
 import { renderSharedInputs } from "./inputs-html.js";
 import { controlHTML } from "../../controls.js";
+import { orgCharts } from "./plot.js";
 // `context.control(line)` renders a SHEETS_CONTROL keyword at its slice-relative line.
 function nodeHTML(node, context = {}) {
   const child = (n) => nodeHTML(n, context),
@@ -103,6 +104,7 @@ export function renderOrg(src, options = {}) {
     prose = (from, to) => nodeHTML(orga.parse(src.split("\n").slice(from, to).join("\n")), {
       control: (line) => controlLines.get(from + line),
     });
+  const plots = orgCharts(src.split("\n"), result.tables);
   let pos = 0,
     sharedPending = true,
     constantsPending = result.showConstants;
@@ -118,7 +120,7 @@ export function renderOrg(src, options = {}) {
   for (const { start, end, table } of result.tables) {
     parts.push(prose(pos, start));
     constants();
-    parts.push(renderOrgTable(table));
+    parts.push(renderOrgTable(table), plots.charts.get(start) ?? "");
     pos = end;
   }
   parts.push(prose(pos));
@@ -131,7 +133,7 @@ export function renderOrg(src, options = {}) {
     html:
       parts.join("") +
       '<button data-action="copy-org">Copy recalculated source</button>',
-    diagnostics: result.diagnostics,
+    diagnostics: [...result.diagnostics, ...plots.diagnostics],
     controls,
     recalculatedSource: result.source,
     inputsReady: !result.sharedInputs.some((input) => input.error),

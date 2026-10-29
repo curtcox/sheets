@@ -391,6 +391,102 @@ li > code {
 .document .org-table-scroll .org-center {
   text-align: center;
 }
+/* Charts (src/charts.js). The palette matches CHART_PALETTE and CHART_STYLES. */
+:root {
+  --chart-1: #1f5fa8;
+  --chart-2: #bc724e;
+  --chart-3: #385a16;
+  --chart-4: #6629e0;
+  --chart-5: #2ea1b8;
+  --chart-6: #aa1861;
+  --chart-7: #aa9118;
+  --chart-8: #e029e0;
+  --chart-text: #4f625e;
+  --chart-grid: #e3e9e4;
+  --chart-axis: #8a9894;
+}
+.chart {
+  margin: 24px 0;
+}
+.chart-scroll {
+  max-width: 100%;
+  overflow-x: auto;
+}
+.chart-svg {
+  display: block;
+  width: 100%;
+  min-width: 480px;
+  height: auto;
+}
+.chart-s1 { --chart-color: var(--chart-1); }
+.chart-s2 { --chart-color: var(--chart-2); }
+.chart-s3 { --chart-color: var(--chart-3); }
+.chart-s4 { --chart-color: var(--chart-4); }
+.chart-s5 { --chart-color: var(--chart-5); }
+.chart-s6 { --chart-color: var(--chart-6); }
+.chart-s7 { --chart-color: var(--chart-7); }
+.chart-s8 { --chart-color: var(--chart-8); }
+.chart-tick,
+.chart-legend-text {
+  fill: var(--chart-text);
+  font-size: 12px;
+}
+.chart-axis-title {
+  fill: #243b39;
+  font-size: 12px;
+  font-weight: 600;
+}
+.chart-grid line {
+  stroke: var(--chart-grid);
+  stroke-width: 1;
+}
+.chart-axis line {
+  stroke: var(--chart-axis);
+  stroke-width: 1;
+}
+.chart-bar,
+.chart-swatch,
+.chart-slice {
+  fill: var(--chart-color);
+}
+.chart-line {
+  fill: none;
+  stroke: var(--chart-color);
+  stroke-width: 2;
+  stroke-linejoin: round;
+  stroke-linecap: round;
+}
+.chart-marker {
+  fill: var(--chart-color);
+  stroke: #fff;
+  stroke-width: 1;
+}
+.chart-hit {
+  fill: transparent;
+}
+.chart-area {
+  fill: var(--chart-color);
+  fill-opacity: 0.3;
+  stroke: none;
+}
+.chart-alt .chart-line {
+  stroke-dasharray: 6 3;
+}
+.chart-alt .chart-bar,
+.chart-alt .chart-swatch {
+  fill-opacity: 0.55;
+  stroke: var(--chart-color);
+}
+.chart figcaption {
+  font-size: 12px;
+  color: var(--muted);
+  text-align: left;
+  margin-top: 6px;
+}
+.chart-title {
+  font-weight: 600;
+  color: #243b39;
+}
 .document .org-constants caption,
 .document .org-inputs caption {
   text-align: left;
@@ -1035,7 +1131,8 @@ dialog label {
     padding: 0;
     font-size: 11pt;
   }
-  .org-table-scroll {
+  .org-table-scroll,
+  .chart-scroll {
     overflow: visible;
   }
   #preview pre,

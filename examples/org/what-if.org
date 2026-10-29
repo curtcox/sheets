@@ -32,6 +32,7 @@ the churn and read the last row of the comparison.
 
 * Which plan earns more in year one?
 
+#+PLOT: title:"Year-one revenue" ind:1 deps:(2) with:histograms
 | Plan                  | Year-one revenue |
 |-----------------------+------------------|
 | Monthly billing       |                0 |

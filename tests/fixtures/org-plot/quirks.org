@@ -1,0 +1,43 @@
+#+TITLE: org-plot option-parsing quirks
+
+Keys are matched as substrings in org-plot's own order, so xmin also sets ymin
+and timeind is read as ind.
+
+#+PLOT: ind:1 deps:(2) with:lines xmin:5 ymax:20
+| a | b |
+|---+---|
+| 1 | 4 |
+| 2 | 9 |
+
+#+plot: ind:1 deps:(2) with:points title:Lowercase
+| a | b |
+|---+---|
+| 1 | 4 |
+| 2 | 9 |
+
+#+PLOT: timeind:t deps:(2)
+| a | b |
+|---+---|
+| 1 | 4 |
+| 2 | 9 |
+
+#+PLOT: ind: deps:(2)
+| a | b |
+|---+---|
+| 1 | 4 |
+| 2 | 9 |
+
+#+PLOT: type:3d
+| 1 | 2 |
+| 3 | 4 |
+
+#+PLOT: ind:1 deps:(2 3) with:lines line:"set style data lines"
+| a | b | c |
+|---+---+---|
+| 1 | 4 | 2 |
+| 2 | 9 | 3 |
+
+#+PLOT:ind:1
+| a | b |
+|---+---|
+| 1 | 4 |

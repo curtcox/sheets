@@ -1,0 +1,94 @@
+#+TITLE: org-plot options written out in full
+
+Every table below names ind, deps and with, so no Sheets inference applies.
+
+#+NAME: revenue
+#+PLOT: title:"Revenue by quarter" ind:1 deps:(2 3 4) with:histograms
+| Quarter | North | South | Total |
+|---------+-------+-------+-------|
+| Q1      |   120 |    90 |   210 |
+| Q2      |   140 |   110 |   250 |
+|---------+-------+-------+-------|
+| Total   |   260 |   200 |   460 |
+#+TBLFM: $4=$2+$3::@>$2=vsum(@I..@II)::@>$3=vsum(@I..@II)
+
+#+PLOT: title:"Growth" ind:1 deps:(2) with:lines
+| Year | Users |
+|------+-------|
+| 2021 |   100 |
+| 2022 |   150 |
+| 2023 |   240 |
+| 2024 |   390 |
+
+#+PLOT: ind:1 deps:(2 3) with:linespoints
+| x | sin | cos |
+|---+-----+-----|
+| 0 |   0 |   1 |
+| 1 | 0.8 | 0.5 |
+| 2 | 0.9 | -0.4 |
+| 3 | 0.1 | -1 |
+
+#+PLOT: ind:1 deps:(2) with:steps title:"Tiered price"
+| Units | Price |
+|-------+-------|
+|     0 |    10 |
+|    10 |     8 |
+|    50 |     6 |
+|   100 |     5 |
+
+#+PLOT: ind:1 deps:(2) with:points
+| Height | Weight |
+|--------+--------|
+|    160 |     55 |
+|    175 |     72 |
+|    168 |     61 |
+|    182 |     85 |
+
+#+PLOT: ind:1 deps:(2) with:lines title:"Balance"
+| Date             | Balance |
+|------------------+---------|
+| <2024-01-01 Mon> |    1000 |
+| <2024-02-01 Thu> |    1250 |
+| [2024-03-15 Fri 09:30] |    1100 |
+| <2024-05-01 Wed> |    1600 |
+
+#+PLOT: ind:1 deps:(2) with:lines
+| Day        | Visits |
+|------------+--------|
+| 2024-01-01 |     12 |
+| 2024-01-02 |     18 |
+| 2024-01-03 |     15 |
+
+#+PLOT: ind:0 deps:(1 2) with:points
+| 3 | 9 |
+| 1 | 4 |
+| 2 | 7 |
+
+#+PLOT: transpose:yes ind:1 deps:(2 3) with:histograms
+| Metric | Jan | Feb | Mar |
+|--------+-----+-----+-----|
+| Cost   |  10 |  12 |   9 |
+| Profit |   4 |   6 |   8 |
+
+#+PLOT: ind:1 deps:(2 3) with:lines labels:("x" "Low estimate" "High estimate")
+| n | lo | hi |
+|---+----+----|
+| 1 |  2 |  5 |
+| 2 |  3 |  7 |
+| 3 |  5 | 11 |
+
+#+NAME: merged
+#+PLOT: title:"Topmost title wins" set:"grid" xmin:0
+#+CAPTION: Keyword lines between PLOT lines are scanned too.
+#+PLOT: title:"Nearest title" ind:1 deps:(3) with:impulses set:"key off"
+| Item | Count | Share |
+|------+-------+-------|
+| a    |     5 |  0.25 |
+| b    |    15 |  0.75 |
+
+#+PLOT: ind:1 deps:(2) with:boxes
+| Bin | Count |
+|-----+-------|
+|   1 |     3 |
+|   2 |     8 |
+|   3 |     5 |
