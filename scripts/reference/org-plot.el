@@ -69,7 +69,11 @@
             (data . ,(if file (sheets-plot--read file) nil))
             (setup . ,(if setup (sheets-plot--read setup) nil))
             (ytics . ,(or ytics nil)))))
-    (error `((line . ,line) (error . ,(error-message-string err))))))
+    ;; Emacs 29 appends the file being loaded to end-of-file errors; later versions do not.
+    (error `((line . ,line)
+             (error . ,(if (eq (car err) 'end-of-file)
+                           (get 'end-of-file 'error-message)
+                         (error-message-string err)))))))
 
 (let ((output (getenv "SHEETS_ORG_OUTPUT"))
       (files (append (directory-files "tests/fixtures/org-plot" t "\\.org\\'")

@@ -115,6 +115,11 @@ python -m pip install -r tests/fixtures/quarto/reference-requirements.txt
 python scripts/quarto-reference.py --check
 ```
 
+The Org fixtures were recorded with Org **9.8.7** (bundled with Emacs 31.1).
+`org-expected.sh` stops on another Org version; with an older Emacs, unpack
+<https://elpa.gnu.org/packages/org-9.8.7.tar.lz> and set `SHEETS_ORG_LISP` to
+its directory, as CI does.
+
 Without native R, run the Python subset with `--language python`. Set
 `SHEETS_QUARTO_BIN` when the pinned Quarto executable is outside PATH.
 

@@ -24,7 +24,7 @@ jobs:
       - name: Install reference engines
         run: |
           sudo apt-get update
-          sudo apt-get install -y --no-install-recommends emacs-nox r-base r-cran-knitr r-cran-rmarkdown
+          sudo apt-get install -y --no-install-recommends emacs-nox lzip r-base r-cran-knitr r-cran-rmarkdown
           python -m pip install beancount==3.2.0 beanquery==0.2.0
           python -m pip install -r tests/fixtures/quarto/reference-requirements.txt
       - uses: quarto-dev/quarto-actions/setup@91dabb203fce7f899d10ef8e482d94b00f397cbc
@@ -32,6 +32,12 @@ jobs:
           version: "1.10.19"
       - name: Check notebook controls against Quarto Jupyter and knitr
         run: python scripts/quarto-reference.py --check
+      - name: Install the Org release the fixtures were recorded with
+        run: |
+          curl -sSfLo "$RUNNER_TEMP/org.tar.lz" https://elpa.gnu.org/packages/org-9.8.7.tar.lz
+          echo "1a5d1efa34ff2bc110d6263aa4a86d5fe56668dfafc27082337f594d0e8151ec  $RUNNER_TEMP/org.tar.lz" | sha256sum -c
+          tar --lzip -xf "$RUNNER_TEMP/org.tar.lz" -C "$RUNNER_TEMP"
+          echo "SHEETS_ORG_LISP=$RUNNER_TEMP/org-9.8.7" >> "$GITHUB_ENV"
       - name: Check Org fixtures against Emacs
         run: bash scripts/org-expected.sh --check
       - name: Check Beancount fixtures against bean-check and bean-query
