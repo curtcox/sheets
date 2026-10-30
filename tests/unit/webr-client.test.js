@@ -1,6 +1,6 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
-import { runR } from "../../src/webr-client.js";
+import { guardWorker, runR } from "../../src/webr-client.js";
 const deferred = () => {
   let resolve;
   const promise = new Promise((r) => (resolve = r));
@@ -10,11 +10,14 @@ function runtime({
   init = async () => {},
   capture = async () => ({ output: [], images: [] }),
 } = {}) {
-  const log = { created: 0, closed: 0, purged: 0, sources: [] };
+  const log = { created: 0, closed: 0, purged: 0, sources: [], sandboxes: [] };
   class WebR {
     constructor(options) {
       log.created++;
       assert.ok(options.baseUrl.endsWith("/src/workers/"));
+      // The controller receives the sandbox in place of the Worker it constructs.
+      this.worker = new globalThis.Worker(options.baseUrl + "webr-worker.js");
+      assert.ok(this.worker.postMessage);
       this.Shelter = class {
         async captureR(source) {
           log.sources.push(source);
@@ -33,6 +36,18 @@ function runtime({
   return {
     log,
     loadRuntime: async () => ({ WebR, ChannelType: { PostMessage: 1 } }),
+    start: async (name) => {
+      assert.equal(name, "webr-worker.js");
+      const sandbox = {
+        terminated: false,
+        postMessage() {},
+        terminate() {
+          this.terminated = true;
+        },
+      };
+      log.sandboxes.push(sandbox);
+      return sandbox;
+    },
   };
 }
 test("R controller closes successful and failing interpreters and continues after cell errors", async () => {
@@ -52,6 +67,8 @@ test("R controller closes successful and failing interpreters and continues afte
   );
   assert.equal(mock.log.closed, 1);
   assert.equal(mock.log.purged, 3);
+  assert.ok(mock.log.sandboxes[0].terminated);
+  assert.equal(globalThis.Worker, undefined);
   const failure = runtime({
     init: async () => {
       throw new Error("startup failed");
@@ -70,12 +87,14 @@ test("R abort before or during CDN import cannot start a late interpreter", asyn
   const result = runR([{ source: "x" }], {
     signal: controller.signal,
     loadRuntime: () => loaded.promise,
+    start: mock.start,
   });
   controller.abort();
   await assert.rejects(result, { name: "AbortError" });
   loaded.resolve(await mock.loadRuntime());
   await new Promise((r) => setTimeout(r, 0));
   assert.equal(mock.log.created, 0);
+  assert.ok(mock.log.sandboxes.every((sandbox) => sandbox.terminated));
   assert.throws(
     () =>
       runR([], { signal: controller.signal, loadRuntime: mock.loadRuntime }),
@@ -120,4 +139,43 @@ test("R deadline closes a busy interpreter and ignores a late result", async () 
   captured.resolve({ output: [{ type: "stdout", data: "stale" }], images: [] });
   await new Promise((r) => setTimeout(r, 0));
   assert.equal(mock.log.closed, 1);
+});
+test("R sandbox passes webR's own messages but drops requests to act on this origin", () => {
+  const sandbox = {
+    posted: [],
+    postMessage(data) {
+      this.posted.push(data);
+    },
+    terminate() {
+      this.terminated = true;
+    },
+  };
+  const worker = guardWorker(sandbox),
+    received = [];
+  worker.onmessage = ({ data }) => received.push(data);
+  const send = (data) => sandbox.onmessage({ data });
+  send({ type: "response", data: { uuid: "1" } });
+  send({ type: "system", data: { type: "console.log", data: "hi" } });
+  send({ type: "system", data: { type: "setTimeoutWasm", data: {} } });
+  for (const type of [
+    "proxyWorker",
+    "postMessageWorker",
+    "terminateWorker",
+    "proxyWebSocket",
+    "sendWebSocket",
+    "closeWebSocket",
+    "unknown",
+  ])
+    send({
+      type: "system",
+      data: { type, data: { url: "https://example.invalid/w.js" } },
+    });
+  assert.deepEqual(
+    received.map((data) => data.data?.type || data.type),
+    ["response", "console.log", "setTimeoutWasm"],
+  );
+  worker.postMessage({ type: "init" });
+  worker.terminate();
+  assert.deepEqual(sandbox.posted, [{ type: "init" }]);
+  assert.ok(sandbox.terminated);
 });

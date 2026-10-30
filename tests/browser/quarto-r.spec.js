@@ -137,24 +137,6 @@ test("R deadlines and cancellation close the interpreter and keep the editor res
 }) => {
   await page.goto("/");
   await ready(page);
-  if (browserName === "firefox") {
-    // Firefox can retain a debugger target for a terminated, loading worker.
-    // Observe the native terminate() call as well, rather than that stale list.
-    await page.evaluate(() => {
-      const NativeWorker = Worker;
-      globalThis.rActiveWorkers = new Set();
-      globalThis.Worker = class extends NativeWorker {
-        constructor(...args) {
-          super(...args);
-          globalThis.rActiveWorkers.add(this);
-        }
-        terminate() {
-          globalThis.rActiveWorkers.delete(this);
-          return super.terminate();
-        }
-      };
-    });
-  }
   const cdp =
     browserName === "chromium" ? await browser.newBrowserCDPSession() : null;
   const workers = async () =>
@@ -163,7 +145,9 @@ test("R deadlines and cancellation close the interpreter and keep the editor res
           (t) => t.type === "worker",
         )
       : browserName === "firefox"
-        ? page.evaluate(() => [...globalThis.rActiveWorkers].map(() => null))
+        ? // Firefox can retain a debugger target for a terminated, loading worker.
+          // R runs in a sandbox host frame; removing the frame ends its worker.
+          page.locator('iframe[title="Code sandbox host"]').all()
         : page.workers();
   await expect.poll(async () => (await workers()).length).toBe(0);
   const message = await page.evaluate(async () => {

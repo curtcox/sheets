@@ -1,6 +1,5 @@
-// Same-origin bootstrap for webR's own (classic) worker. The controller creates
-// this worker synchronously, so closing it also cancels a pending CDN download.
-// With webR's cross-origin worker loader, close() is a no-op until its XHR ends.
+// Classic worker source for webR in a HashBin SDK sandbox (webr-client.js). Closing
+// the controller removes the sandbox frame, which also cancels a pending CDN download.
 const runtime = "https://webr.r-wasm.org/v0.6.0/";
 importScripts(runtime + "webr-worker.js");
 const receive = self.onmessage;

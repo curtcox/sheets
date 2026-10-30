@@ -54,7 +54,7 @@ export async function mockHashBin(page) {
     saves.push({ cid, payload: text });
     return cid;
   });
-  await page.route("https://hashbin.org/sdk/v0.3.0/hashbin.js", (route) =>
+  await page.route("https://hashbin.org/sdk/v0.4.0/hashbin.js", (route) =>
     route.fulfill({ body: sdk, contentType: "text/javascript" }),
   );
   await page.route("https://256t.us/**", (route) => {

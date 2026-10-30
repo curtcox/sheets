@@ -1,8 +1,8 @@
-import { pythonCell } from "./python-cell.js";
+// Classic worker source for a HashBin SDK sandbox: python-client.js prepends `pythonCell`.
 const base = "https://cdn.jsdelivr.net/pyodide/v0.27.7/full/";
 self.onmessage = async ({ data: { cells } }) => {
   try {
-    const { loadPyodide } = await import(base + "pyodide.mjs");
+    importScripts(base + "pyodide.js");
     const py = await loadPyodide({ indexURL: base });
     await py.runPythonAsync(pythonCell);
     const outputs = [];

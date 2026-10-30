@@ -175,7 +175,10 @@ test("R backend preserves typed warnings and uses inch-sized graphics while halt
       },
       { source: "never" },
     ],
-    { loadRuntime: async () => ({ WebR, ChannelType: { PostMessage: 1 } }) },
+    {
+      loadRuntime: async () => ({ WebR, ChannelType: { PostMessage: 1 } }),
+      start: async () => ({ terminate() {} }),
+    },
   );
   assert.equal(captured.length, 1);
   assert.deepEqual(captured[0].options.captureGraphics, {

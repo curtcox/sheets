@@ -2,6 +2,7 @@
 import { validateProfile } from "./compatibility-profiles.js";
 import { decode64, cidLength, isCID, verifyCIDBytes } from "./cid.js";
 import { validateProjectDocument } from "./project-state.js";
+import { loadHashBinSDK } from "./sandbox.js";
 const HashBinDocuments = {
   MAX_BYTES: 5 * 1024 * 1024,
   bytes(value) {
@@ -131,8 +132,6 @@ async function verifyCID(cid, bytes) {
     throw new Error("HashBin content does not match its CID.");
   }
 }
-/** Pinned so a later SDK change cannot reach this app; upgrade deliberately. */
-const HASHBIN_SDK_URL = "https://hashbin.org/sdk/v0.3.0/hashbin.js";
 
 /** Saves go through HashBin Publish, so this origin never holds a HashBin credential. */
 class HashBinStore {
@@ -142,7 +141,7 @@ class HashBinStore {
     storage,
     transactionStorage,
     fetchSource = (...args) => fetch(...args),
-    loadSDK = () => import(HASHBIN_SDK_URL),
+    loadSDK = loadHashBinSDK,
     timeout = 20000,
     timers = globalThis,
   } = {}) {

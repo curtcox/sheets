@@ -1,6 +1,6 @@
 import { plugin } from "../registry.js";
 import { parseQuarto } from "./parse.js";
-import { runWorker } from "../../worker-client.js";
+import { runPython } from "../../python-client.js";
 import { runR } from "../../webr-client.js";
 import { escapeHTML as e } from "../../util.js";
 import { cellOptions } from "./cell-options.js";
@@ -29,12 +29,7 @@ export async function renderQuarto(
       [
         "python",
         executePython ||
-          ((cells) =>
-            runWorker(
-              new URL("../../workers/pyodide.worker.js", import.meta.url),
-              { cells },
-              { signal, timeout: 90000 },
-            )),
+          ((cells) => runPython(cells, { signal, timeout: 90000 })),
       ],
       ["r", executeR || ((cells) => runR(cells, { signal, timeout: 90000 }))],
     ].map(async ([language, execute]) => {

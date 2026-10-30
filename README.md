@@ -50,7 +50,8 @@ npm run dev
 
 Open <http://127.0.0.1:4173/>. Any static server can serve the repository directly.
 Vendored libraries and WASM are committed. Python and R download their pinned
-Pyodide/webR runtimes on demand. HashBin's OAuth SDK is loaded only for sign-in.
+Pyodide/webR runtimes on demand and run in HashBin SDK sandboxes (opaque-origin
+frames), away from this origin's storage. The HashBin SDK loads only for these and for saves.
 
 ## Create a link from a file
 
@@ -189,7 +190,7 @@ Sheets is registered with public client ID
 registration. Saving is enabled through the toolbar panel.
 
 Public CIDs load without sign-in and are verified against their CID. Saves use
-HashBin Publish through the pinned SDK (`/sdk/v0.3.0/`): hashbin.org shows the
+HashBin Publish through the pinned SDK (`/sdk/v0.4.0/`): hashbin.org shows the
 retention, exact price and balance and takes the approval, so Sheets never holds a
 HashBin credential on the shared `curtcox.github.io` origin. A blocked popup falls
 back to a redirect that restores source, format, view and inputs. A

@@ -129,22 +129,19 @@ test("both real notebook backends stop before a later infinite cell when error:f
   await page.goto("/");
   await ready(page);
   const outputs = await page.evaluate(async () => {
-    const [{ runWorker }, { runR }] = await Promise.all([
-      import("./src/worker-client.js"),
+    const [{ runPython }, { runR }] = await Promise.all([
+      import("./src/python-client.js"),
       import("./src/webr-client.js"),
     ]);
     return Promise.all([
-      runWorker(
-        new URL("./src/workers/pyodide.worker.js", location.href),
-        {
-          cells: [
-            {
-              source: 'raise ValueError("EXPECTED_STOP")',
-              execution: { error: false },
-            },
-            { source: "while True: pass" },
-          ],
-        },
+      runPython(
+        [
+          {
+            source: 'raise ValueError("EXPECTED_STOP")',
+            execution: { error: false },
+          },
+          { source: "while True: pass" },
+        ],
         { timeout: 75000 },
       ),
       runR(

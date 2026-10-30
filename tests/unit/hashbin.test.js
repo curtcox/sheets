@@ -149,8 +149,8 @@ test("saves go through HashBin Publish with the pinned SDK and verify the CID", 
   await assert.rejects(store.publish(payload, snapshot), /invalid CID/);
   await assert.rejects(new HashBinStore().init(), /registered client ID/);
   assert.match(
-    readFileSync(new URL("../../src/hashbin.js", import.meta.url), "utf8"),
-    /hashbin\.org\/sdk\/v0\.3\.0\/hashbin\.js/,
+    readFileSync(new URL("../../src/sandbox.js", import.meta.url), "utf8"),
+    /hashbin\.org\/sdk\/v0\.4\.0\/hashbin\.js/,
   );
 });
 test("redirect saves restore the document after approval or cancellation", async () => {

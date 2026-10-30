@@ -38,7 +38,7 @@ reusing downloaded text.
 
 Choose **HashBin → Save to HashBin**, then **Review on HashBin**. HashBin Publish opens on hashbin.org, where you sign in if needed and see the size, retention, exact price and your balance. Nothing is charged until you approve there. Sheets never holds a HashBin credential: every app under `curtcox.github.io` shares this origin's storage, so tokens kept here could be read by the others.
 
-If the popup is blocked, documents up to 512 KiB go through a redirect that returns to `index.html` with the source, format, view, profile and project inputs restored, also after a cancelled save. The SDK is pinned to `https://hashbin.org/sdk/v0.3.0/hashbin.js`, and returned CIDs are verified against the saved bytes. Tokens left by the earlier OAuth flow are revoked on the next load. If you edit while the dialog is open, it prepares the new snapshot before anything is sent. Failed or timed-out requests show a message. Editing during a load prevents its older result from replacing your document.
+If the popup is blocked, documents up to 512 KiB go through a redirect that returns to `index.html` with the source, format, view, profile and project inputs restored, also after a cancelled save. The SDK is pinned to `https://hashbin.org/sdk/v0.4.0/hashbin.js`, and returned CIDs are verified against the saved bytes. Tokens left by the earlier OAuth flow are revoked on the next load. If you edit while the dialog is open, it prepares the new snapshot before anything is sent. Failed or timed-out requests show a message. Editing during a load prevents its older result from replacing your document.
 
 ## Operator setup
 

@@ -2,11 +2,16 @@
 export function runWorker(
   url,
   payload,
-  { signal, timeout = 20_000, WorkerClass = globalThis.Worker } = {},
+  {
+    signal,
+    timeout = 20_000,
+    WorkerClass = globalThis.Worker,
+    createWorker = () => new WorkerClass(url, { type: "module" }),
+  } = {},
 ) {
   signal?.throwIfAborted();
   return new Promise((resolve, reject) => {
-    const worker = new WorkerClass(url, { type: "module" });
+    const worker = createWorker();
     let timer;
     const finish = (fn, value) => {
       clearTimeout(timer);

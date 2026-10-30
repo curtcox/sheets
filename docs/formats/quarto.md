@@ -307,7 +307,7 @@ These supported forms follow the [Quarto callout](https://quarto.org/docs/author
 [execution-option](https://quarto.org/docs/computations/execution-options.html)
 guides and [Pandoc fenced div syntax](https://pandoc.org/MANUAL.html#extension-fenced_divs).
 
-Each language has a **90-second deadline**, including runtime and package loading. Cancel or edit to terminate the worker. The initial download needs a network connection; subsequent loads benefit from the browser cache. Auto recognizes executable fences and Quarto-specific YAML keys. Code in a shared document runs inside disposable workers without access to the editor DOM or its storage. Python and R execution require a connection and are not included in the optional offline download.
+Each language has a **90-second deadline**, including runtime and package loading. Cancel or edit to terminate the worker. The initial download needs a network connection; subsequent loads benefit from the browser cache. Auto recognizes executable fences and Quarto-specific YAML keys. Code in a shared document runs in disposable workers inside HashBin SDK sandboxes, frames with an opaque origin, so it cannot reach the editor DOM or this site's storage, cookies or service worker. Starting a sandbox loads the pinned SDK from hashbin.org. Python and R execution require a connection and are not included in the optional offline download.
 
 If a later cell reports a missing name, check whether the defining cell was skipped
 or failed, and whether the name belongs to the other language. A first run can take

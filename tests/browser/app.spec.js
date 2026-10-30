@@ -262,13 +262,9 @@ test("Python cancellation and deadline terminate worker execution", async ({
   await page.goto("/");
   await ready(page);
   const error = await page.evaluate(async () => {
-    const { runWorker } = await import("./src/worker-client.js");
+    const { runPython } = await import("./src/python-client.js");
     try {
-      await runWorker(
-        new URL("./src/workers/pyodide.worker.js", location.href),
-        { cells: [{ source: "while True: pass" }] },
-        { timeout: 5000 },
-      );
+      await runPython([{ source: "while True: pass" }], { timeout: 5000 });
       return null;
     } catch (error) {
       return error.message;

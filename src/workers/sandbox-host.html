@@ -1,0 +1,10 @@
+<!doctype html>
+<meta charset="utf-8" />
+<!-- webR's dynamic linking needs 'unsafe-eval'. Its sandbox inherits this page's policy, so
+     eval is allowed here, where no document content renders, and stays blocked in the app. -->
+<meta
+  http-equiv="Content-Security-Policy"
+  content="default-src 'none'; script-src 'self' 'sha256-IMEqdP+AkCKdxhM3X7mQM4pV/chykJXPvdtndD+XeH8=' https://hashbin.org/sdk/v0.4.0/ https://webr.r-wasm.org/v0.6.0/ 'wasm-unsafe-eval' 'unsafe-eval'; worker-src blob:; connect-src https://webr.r-wasm.org; base-uri 'none'; form-action 'none'"
+/>
+<title>Sheets code sandbox host</title>
+<script type="module" src="sandbox-host.js"></script>
