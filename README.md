@@ -253,3 +253,7 @@ CI runs this check. It checks the reviewed file's SHA-256 first.
 `npm test` preserves current translations and rejects unclassified discrepancies;
 the fixture records six existing reference differences and retains upstream's
 Apache-2.0 license. Diagnostic warnings leave permissive translated output intact.
+
+## Canonical HashBin address
+
+The production app is [https://sheets.hashbin.page/](https://sheets.hashbin.page/). The GitHub Pages copy is kept for moving old drafts through **Move saved work** or **Download backup**. Transfers copy only this app's documents and public settings, keep the old copy, and never copy HashBin credentials or Python filesystem permissions. Deployment is managed by [HashBin's first-party deployment tool](https://github.com/curtcox/hashbin.org/blob/main/scripts/deploy-owned-apps.mjs).

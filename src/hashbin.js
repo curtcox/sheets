@@ -18,7 +18,7 @@ const HashBinDocuments = {
       const url = new URL(text);
       if (
         url.protocol !== "https:" ||
-        !["hashbin.org", "256t.us", "curtcox.github.io"].includes(url.hostname)
+        !["hashbin.org", "256t.us", "curtcox.github.io", "sheets.hashbin.page"].includes(url.hostname)
       )
         return null;
       const candidate = url.hash.slice(1) || url.pathname.split("/").pop();
