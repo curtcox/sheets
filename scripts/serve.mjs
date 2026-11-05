@@ -24,13 +24,8 @@ export function createStaticServer(root = process.cwd()) {
       const pathname = decodeURIComponent(
         new URL(req.url, "http://localhost").pathname,
       );
-      if (pathname === "/offline-assets.json") {
-        res.writeHead(200, {
-          "Content-Type": "application/json",
-          "Cache-Control": "no-store",
-        });
-        res.end(JSON.stringify(await offlineManifest(root)));
-        return;
+      if (pathname === "/offline-assets.js") {
+        await offlineManifest(root);
       }
       let file = path.resolve(root, "." + pathname);
       if (!file.startsWith(root + path.sep) && file !== root)

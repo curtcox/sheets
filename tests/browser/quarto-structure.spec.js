@@ -1,3 +1,4 @@
+import{openMore}from"./ui.js";
 import { test, expect } from "@playwright/test";
 import { readFile } from "node:fs/promises";
 import { writeURL } from "../../src/url-state.js";
@@ -42,7 +43,7 @@ test("Quarto nested callouts and forward figures survive sharing, reload and exp
   expect(await page.evaluate(() => ace.edit("editor").getValue())).toBe(source);
   await page.getByRole("button", { name: "Share", exact: true }).click();
   const fresh = await context.newPage();
-  await fresh.goto(await page.locator("#share-url").inputValue());
+  await fresh.goto(await page.locator("#share-link").inputValue());
   await ready(fresh);
   await fresh.reload();
   await ready(fresh);
@@ -56,7 +57,7 @@ test("Quarto nested callouts and forward figures survive sharing, reload and exp
   expect(html).toContain('id="fig-icon"');
   expect(html).toContain('href="#fig-panel"');
   expect(html).toContain("<figcaption>A panel caption.</figcaption>");
-  await fresh.locator("#download-menu summary").click();
+  await openMore(fresh);await fresh.locator("#download-menu summary").click();
   const download = fresh.waitForEvent("download");
   await fresh.locator("#download-source").click();
   expect(await readFile(await (await download).path(), "utf8")).toBe(source);

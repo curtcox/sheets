@@ -1,3 +1,4 @@
+import{openMore}from"./ui.js";
 import { test, expect } from "@playwright/test";
 import { readFile } from "node:fs/promises";
 import { readURL, writeURL } from "../../src/url-state.js";
@@ -18,7 +19,7 @@ test("decimal ledger quantities survive reports, exports and shared links; tiny 
   await expect(page.locator("#report-trial")).toContainText(
     "9007199254740993.0000000002",
   );
-  await page.locator("#download-menu summary").click();
+  await openMore(page);await page.locator("#download-menu summary").click();
   const pending = page.waitForEvent("download");
   await page.locator("#download-html").click();
   const exported = await pending;
@@ -33,7 +34,7 @@ test("decimal ledger quantities survive reports, exports and shared links; tiny 
     "0.0000000001 USD",
   );
   await page.getByRole("button", { name: "Share", exact: true }).click();
-  const shared = await page.locator("#share-url").inputValue();
+  const shared = await page.locator("#share-link").inputValue();
   expect(readURL(shared)).toMatchObject({ src: source, format: "beancount" });
   await page.goto(shared);
   await expect(page.locator("#render-status")).toHaveText(/^Ready/);

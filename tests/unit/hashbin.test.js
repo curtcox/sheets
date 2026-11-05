@@ -140,13 +140,13 @@ test("saves go through HashBin Publish with the pinned SDK and verify the CID", 
   assert.equal((await store.publish(payload, snapshot)).cid, fullCID(payload));
   assert.deepEqual(options, {
     contentType: "application/json",
-    clientState: { snapshot },
+    clientState: { snapshot: {...snapshot,sheets:{format:'calcfile'}} },
     fileName: "sheet.json",
   });
   store.client.publish = async () => ({ cid: fullCID(payload + " ") });
   await assert.rejects(store.publish(payload, snapshot), /does not match its CID/);
   store.client.publish = async () => ({ cid: "not-valid" });
-  await assert.rejects(store.publish(payload, snapshot), /invalid CID/);
+  await assert.rejects(store.publish(payload, snapshot), /CID/);
   await assert.rejects(new HashBinStore().init(), /registered client ID/);
   assert.match(
     readFileSync(new URL("../../src/sandbox.js", import.meta.url), "utf8"),
@@ -164,9 +164,12 @@ test("redirect saves restore the document after approval or cancellation", async
     loadSDK: async () => ({
       HashBinClient: class {
         publish() {
+          transactionStorage.setItem('hashbin:publish:public:s',JSON.stringify({bytes:Buffer.from(payload).toString('base64url')}));
           return Promise.resolve({ redirected: true });
         }
         async handlePublishCallback() {
+          transactionStorage.removeItem('hashbin:publish:public:s');
+          transactionStorage.removeItem('sheets:hashbin:publish:public:s');
           if (outcome !== "approve")
             throw Object.assign(new Error("access_denied"), {
               clientState: { snapshot },

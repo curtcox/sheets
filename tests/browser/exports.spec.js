@@ -1,3 +1,4 @@
+import{openMore}from"./ui.js";
 import { test, expect } from "@playwright/test";
 import { readFile } from "node:fs/promises";
 import { writeURL } from "../../src/url-state.js";
@@ -8,7 +9,7 @@ const ready = (page) =>
 const setSource = (page, source) =>
   page.evaluate((source) => ace.edit("editor").setValue(source, -1), source);
 async function download(page, selector) {
-  await page.locator("#download-menu summary").click();
+  await openMore(page);await page.locator("#download-menu summary").click();
   const pending = page.waitForEvent("download");
   await page.locator(selector).click();
   const file = await pending;
@@ -123,14 +124,14 @@ test("download menu fits mobile and print shows the full preview from source vie
     }),
   );
   await ready(page);
-  await page.locator("#download-menu summary").click();
+  await openMore(page);await page.locator("#download-menu summary").click();
   const menu = await page.locator(".download-options").boundingBox();
   expect(menu.x).toBeGreaterThanOrEqual(0);
   expect(menu.x + menu.width).toBeLessThanOrEqual(390);
   await page.keyboard.press("Escape");
   await expect(page.locator("#download-menu")).not.toHaveAttribute("open", "");
   await expect(page.locator("#download-menu summary")).toBeFocused();
-  await page.locator("#download-menu summary").click();
+  await openMore(page);await page.locator("#download-menu summary").click();
   await page.locator("#print-preview").click();
   expect(await page.evaluate(() => globalThis.printCalls)).toBe(1);
   await page.emulateMedia({ media: "print" });

@@ -1,3 +1,4 @@
+import{openMore}from"./ui.js";
 import { test, expect } from "@playwright/test";
 import { readFile } from "node:fs/promises";
 import { writeURL } from "../../src/url-state.js";
@@ -32,14 +33,14 @@ test("scoped gallery definitions, shared links and migration retain their delibe
   const source = await page.evaluate(() => ace.edit("editor").getValue());
   await page.getByRole("button", { name: "Share", exact: true }).click();
   const fresh = await context.newPage();
-  await fresh.goto(await page.locator("#share-url").inputValue());
+  await fresh.goto(await page.locator("#share-link").inputValue());
   await ready(fresh);
   await expect(fresh.locator("#profile")).toHaveValue(CALCA_SCOPES);
   await expect(fresh.locator("#preview")).toContainText("price => price");
   expect(await fresh.evaluate(() => ace.edit("editor").getValue())).toBe(
     source,
   );
-  await fresh.locator("#download-menu summary").click();
+  await openMore(fresh);await fresh.locator("#download-menu summary").click();
   const download = fresh.waitForEvent("download");
   await fresh.locator("#download-source").click();
   expect(await readFile(await (await download).path(), "utf8")).toBe(source);
@@ -120,16 +121,16 @@ test("Calca profile migration preserves source, sharing, exports, view and forma
   expect(await page.evaluate(() => ace.edit("editor").getValue())).toBe(source);
   expect(await page.evaluate(() => globalThis.unsafeProfile)).toBeUndefined();
   await expect(page.locator("#preview [onerror]")).toHaveCount(0);
-  await page.locator("#download-menu summary").click();
+  await openMore(page);await page.locator("#download-menu summary").click();
   const download = page.waitForEvent("download");
   await page.locator("#download-source").click();
   expect(await readFile(await (await download).path(), "utf8")).toBe(source);
   await expect(page.locator("#profile-help")).toContainText(
     "Source files contain text only",
   );
-  await page.getByRole("button", { name: "Preview", exact: true }).click();
+  await openMore(page);await page.getByRole("button", { name: "Preview", exact: true }).click();
   await page.getByRole("button", { name: "Share", exact: true }).click();
-  const shared = await page.locator("#share-url").inputValue();
+  const shared = await page.locator("#share-link").inputValue();
   expect(new URL(shared).searchParams.get("profile")).toBe(profile);
   const fresh = await context.newPage();
   await fresh.goto(shared);
@@ -172,7 +173,7 @@ for (const profile of [CALCA_BLOCKS, CALCA_SCOPES]) {
     await expect(page.locator("#profile")).toHaveValue("");
     await page.goto(writeURL(base, { src: source, format: "calca", profile }));
     await ready(page);
-    await page.getByRole("button", { name: "HashBin", exact: true }).click();
+    await page.locator("#more-toggle").click();
     await page.locator("#hashbin-save").click();
     await expect(page.locator("#hashbin-confirm")).toBeEnabled();
     await page.locator("#hashbin-confirm").click();
@@ -199,7 +200,7 @@ for (const profile of [CALCA_BLOCKS, CALCA_SCOPES]) {
     expect(new URL(page.url()).searchParams.has("profile")).toBe(false);
     await page.goto(base);
     await ready(page);
-    await page.getByRole("button", { name: "HashBin", exact: true }).click();
+    await page.locator("#more-toggle").click();
     await page
       .locator("#hashbin-cid")
       .fill(
@@ -238,7 +239,7 @@ test("redirect saves keep the Calca profile and exact source after approval or c
     );
     await ready(page);
     await hashbin.mode(outcome);
-    await page.getByRole("button", { name: "HashBin", exact: true }).click();
+    await page.locator("#more-toggle").click();
     await page.locator("#hashbin-save").click();
     await expect(page.locator("#hashbin-confirm")).toBeEnabled();
     await Promise.all([

@@ -1,42 +1,9 @@
-import { watchOfflineUpdates } from "./offline.js";
+import{watchOfflineUpdates}from'./offline.js';
+import{mountGallery}from'../vendor/fragment-kit-v0.3.4/src/index.js';
+import{catalog}from'./gallery-catalog.js';
 watchOfflineUpdates();
-import { getExamples } from "./examples.js";
-import { catalog } from "./formats/registry.js";
-import { escapeHTML as e } from "./util.js";
-const search = document.getElementById("search"),
-  filter = document.getElementById("filter"),
-  cards = document.getElementById("cards"),
-  status = document.getElementById("gallery-status");
-for (const f of catalog.filter((f) => f.id !== "text")) {
-  const option = document.createElement("option");
-  option.value = f.id;
-  option.textContent = f.label;
-  filter.append(option);
-}
-try {
-  const examples = await getExamples();
-  function update() {
-    const query = search.value.toLowerCase(),
-      visible = examples.filter(
-        (item) =>
-          (filter.value === "all" || filter.value === item.format) &&
-          `${item.title} ${item.description} ${item.format} ${item.kind}`
-            .toLowerCase()
-            .includes(query),
-      );
-    cards.innerHTML = visible
-      .map(
-        (item) =>
-          `<section class="card"><img class="card-cover" src="examples/covers/${encodeURIComponent(item.id)}.png" alt="" width="640" height="400" loading="lazy" decoding="async"><div class="card-content"><span class="tag">${e(catalog.find((f) => f.id === item.format)?.label)}</span><h2>${e(item.title)}</h2><p>${e(item.description)}</p><a href="index.html?example=${encodeURIComponent(item.id)}">Load in editor <span aria-hidden="true">↗</span></a></div></section>`,
-      )
-      .join("");
-    status.textContent = visible.length
-      ? `${visible.length} example${visible.length === 1 ? "" : "s"}`
-      : "No examples match your search.";
-  }
-  search.oninput = update;
-  filter.onchange = update;
-  update();
-} catch (error) {
-  status.textContent = error.message;
-}
+const container=document.getElementById('gallery');
+mountGallery({container,catalog:catalog.map(example=>({...example,cover:'gallery/covers/'+example.id+'.png'})),urlState:{build:doc=>({href:'index.html?example='+encodeURIComponent(catalog.find(example=>example.document===doc).id)})}});
+container.querySelector('input').id='search';container.querySelector('select').id='filter';container.querySelector('select').setAttribute('aria-label','Filter by format');container.querySelector('[role=status]').id='gallery-status';container.querySelector('.fk-gallery-grid').id='cards';
+const decorate=()=>{for(const card of container.querySelectorAll('.fk-gallery-card')){card.classList.add('card');card.querySelector('img')?.classList.add('card-cover');const link=card.querySelector('a');link.textContent='Load in editor ↗';link.setAttribute('aria-label','Load in editor');}};
+new MutationObserver(decorate).observe(container.querySelector('#cards'),{childList:true});decorate();

@@ -15,7 +15,7 @@ test("portable projects are approved as version 3 and reload with bundled inputs
   const document = parseProjectFile(await readFile(new URL("../fixtures/projects/v1.sheets.json", import.meta.url), "utf8")),
     hashbin = await mockHashBin(page);
   await page.goto(writeURL("http://127.0.0.1:4173/", { ...document, format: "org" })); await ready(page);
-  await page.locator("#hashbin-open").click(); await page.locator("#hashbin-save").click();
+  await page.locator("#more-toggle").click(); await page.locator("#hashbin-save").click();
   await expect(page.locator("#hashbin-confirm")).toBeEnabled();
   await expect(page.locator("#hashbin-message")).toContainText("approve the save on hashbin.org"); expect(hashbin.saves.length).toBe(0);
   await page.locator("#hashbin-confirm").click(); await expect(page.locator("#hashbin-status")).toHaveText("Saved to HashBin.");
@@ -47,7 +47,7 @@ test("HashBin Publish saves only after approval, re-prepares after edits, revoke
   await page.reload();
   await ready(page);
   await page.waitForFunction((id) => localStorage.getItem("test-hashbin-revoked") === "yes" && !localStorage.getItem("hashbin:tokens:" + id), clientId);
-  await page.locator("#hashbin-open").click();
+  await page.locator("#more-toggle").click();
   await expect(page.locator("#hashbin-save")).toBeEnabled();
   await page.locator("#hashbin-save").click();
   await expect(page.locator("#hashbin-confirm")).toHaveText("Review on HashBin");
@@ -72,6 +72,7 @@ test("HashBin Publish saves only after approval, re-prepares after edits, revoke
     type: "calca",
     src: edited,
     view: "preview",
+    sheets:{format:"calca"},
   });
   expect(new URL(page.url()).hash).toBe("#" + hashbin.last.cid);
   expect(new URL(page.url()).searchParams.has("compressed")).toBe(false);
@@ -83,7 +84,7 @@ test("HashBin Publish saves only after approval, re-prepares after edits, revoke
   await expect(page.locator("#preview")).toContainText("3+4 => 7");
   // A popup closed or cancelled on HashBin saves nothing and keeps the dialog usable.
   await hashbin.mode("cancel");
-  await page.locator("#hashbin-open").click();
+  await page.locator("#more-toggle").click();
   await page.locator("#hashbin-save").click();
   await expect(page.locator("#hashbin-confirm")).toBeEnabled();
   await page.locator("#hashbin-confirm").click();

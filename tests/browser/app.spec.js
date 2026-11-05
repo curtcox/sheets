@@ -1,3 +1,4 @@
+import{openMore}from"./ui.js";
 import { test, expect } from "@playwright/test";
 import { readFile } from "node:fs/promises";
 import { writeURL } from "../../src/url-state.js";
@@ -93,7 +94,7 @@ test("editing updates URL, reload restores, view and manual format share across 
   await page.locator("#format").selectOption("calca");
   await ready(page);
   await expect(page.locator("#preview")).toContainText("=> 4");
-  await page.getByRole("button", { name: "Preview", exact: true }).click();
+  await openMore(page);await openMore(page);await page.getByRole("button", { name: "Preview", exact: true }).click();
   await expect(page.locator("#source-pane")).toBeHidden();
   const link = page.url();
   expect(new URL(link).searchParams.get("view")).toBe("preview");
@@ -105,32 +106,17 @@ test("editing updates URL, reload restores, view and manual format share across 
   await ready(another);
   await expect(another.locator("#format")).toHaveValue("calca");
   await expect(another.locator("#source-pane")).toBeHidden();
-  await another.getByRole("button", { name: "Source", exact: true }).click();
+  await openMore(another);await openMore(another);await another.getByRole("button", { name: "Source", exact: true }).click();
   await expect(another.locator("#preview-pane")).toBeHidden();
   await another.keyboard.press("Control+Alt+2");
   await expect(another.locator("#preview-pane")).toBeVisible();
 });
-test("narrow layout stacks panes, resizes, and supports source and preview modes", async ({
-  page,
-}) => {
-  await page.setViewportSize({ width: 390, height: 844 });
-  await page.goto("/");
-  await ready(page);
-  const source = await page.locator("#source-pane").boundingBox(),
-    preview = await page.locator("#preview-pane").boundingBox();
-  expect(preview.y).toBeGreaterThan(source.y + source.height);
-  await page.locator("#divider").focus();
-  await page.keyboard.press("ArrowDown");
-  await expect(page.locator("#divider")).toHaveAttribute("aria-valuenow", "55");
-  await page.getByRole("button", { name: "Preview", exact: true }).click();
-  await expect(page.locator("#source-pane")).toBeHidden();
-  expect(
-    await page.evaluate(
-      () => document.documentElement.scrollWidth <= innerWidth,
-    ),
-  ).toBe(true);
-  await page.getByRole("button", { name: "Source", exact: true }).click();
-  await expect(page.locator("#preview-pane")).toBeHidden();
+test("narrow layout uses full-size Code and Preview tabs",async({page})=>{
+ await page.setViewportSize({width:390,height:844});await page.goto('/');await ready(page);
+ await expect(page.locator('#source-pane')).toBeVisible();await expect(page.locator('#preview-pane')).toBeHidden();
+ await page.getByRole('tab',{name:'Preview',exact:true}).click();await expect(page.locator('#source-pane')).toBeHidden();await expect(page.locator('#preview-pane')).toBeVisible();
+ expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth)).toBe(true);
+ await page.getByRole('tab',{name:'Code',exact:true}).click();await expect(page.locator('#source-pane')).toBeVisible();await expect(page.locator('#preview-pane')).toBeHidden();
 });
 test("unsafe HTML, MathML, SVG, and engine output stay inert", async ({
   page,
@@ -172,7 +158,7 @@ test("HashBin public CID, stale load protection, and save configuration", async 
   await ready(page);
   await expect(page.locator("#format")).toHaveValue("auto");
   await expect(page.locator("#detected")).toContainText("Numbat");
-  await page.getByRole("button", { name: "HashBin", exact: true }).click();
+  await page.locator("#more-toggle").click();
   await expect(page.locator("#hashbin-save")).toBeEnabled();
   const remoteBody = JSON.stringify({
       format: "sheets-document",
@@ -213,7 +199,7 @@ test("gallery search and docs render through the application pipeline", async ({
   await expect(page.locator(".card")).toHaveCount(1);
   await expect(page.locator(".card-cover")).toHaveAttribute(
     "src",
-    "examples/covers/org-typical.png",
+    /gallery\/covers\/org-typical.png$/,
   );
   await expect
     .poll(() =>
@@ -236,15 +222,16 @@ test("share dialog captures a snapshot and shows an unavailable shortening servi
   await page.goto("/?example=calcfile-basic");
   await ready(page);
   await page.getByRole("button", { name: "Share" }).click();
-  const link = await page.locator("#share-url").inputValue();
+  const link = await page.locator("#share-link").inputValue();
   expect(new URL(link).searchParams.get("format")).toBe("calcfile");
   expect(new URL(link).searchParams.get("compressed")).toBeTruthy();
+  await page.route("https://is.gd/**",route=>route.fulfill({status:503,body:"unavailable"}));
   await page.route("https://api.allorigins.win/**", (route) =>
     route.fulfill({ status: 503, body: "unavailable" }),
   );
-  await page.locator("#shorten-link").click();
-  await expect(page.locator("#share-status")).toContainText("HTTP 503");
-  expect(await page.locator("#share-url").inputValue()).toBe(link);
+  await page.getByRole("button",{name:"Shorten link",exact:true}).click();
+  await expect(page.locator("#share-dialog [role=status]")).toContainText("HTTP 503");
+  expect(await page.locator("#share-link").inputValue()).toBe(link);
 });
 test("Beancount reports switch without losing the document", async ({
   page,

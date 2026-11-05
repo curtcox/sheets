@@ -1,168 +1,30 @@
-const base = new URL("../", import.meta.url);
-const workerURL = new URL("sw.js", base);
-const prefix = `sheets-offline:${base.pathname}:`;
-export function watchOfflineUpdates(beforeReload = () => {}) {
-  if (!("serviceWorker" in navigator)) return;
-  let reloading = false;
-  navigator.serviceWorker.addEventListener("controllerchange", () => {
-    if (
-      reloading ||
-      !navigator.serviceWorker.controller?.scriptURL.startsWith(workerURL.href)
-    )
-      return;
-    reloading = true;
-    beforeReload();
-    location.reload();
-  });
+// Sheets keeps offline downloads opt-in; the kit owns verification and atomic updates.
+import{OfflineClient}from'../vendor/fragment-kit-v0.3.4/src/index.js';
+const base=new URL('../',import.meta.url),workerURL=new URL('sw.js',base);
+let watching=false;
+export function watchOfflineUpdates(beforeReload=()=>{}){
+ if(watching||!('serviceWorker'in navigator))return;watching=true;let reloading=false;
+ navigator.serviceWorker.addEventListener('controllerchange',()=>{if(reloading||!navigator.serviceWorker.controller?.scriptURL.startsWith(workerURL.href))return;reloading=true;beforeReload();location.reload();});
 }
-function workerStatus(worker) {
-  return new Promise((resolve, reject) => {
-    const channel = new MessageChannel();
-    const timer = setTimeout(() => {
-      channel.port1.close();
-      reject(
-        new Error("Offline storage did not respond. Retry while connected."),
-      );
-    }, 5000);
-    channel.port1.onmessage = (event) => {
-      clearTimeout(timer);
-      channel.port1.close();
-      resolve(event.data);
-    };
-    worker.postMessage({ type: "STATUS" }, [channel.port2]);
-  });
-}
-export async function setupOffline({ beforeReload } = {}) {
-  watchOfflineUpdates(beforeReload);
-  const dialog = document.getElementById("offline-dialog"),
-    open = document.getElementById("offline-open"),
-    status = document.getElementById("offline-status"),
-    enable = document.getElementById("offline-enable"),
-    remove = document.getElementById("offline-remove"),
-    update = document.getElementById("offline-update");
-  open.onclick = () => {
-    document.getElementById("download-menu").open = false;
-    dialog.showModal();
-    refresh().catch((error) => (status.textContent = error.message));
-  };
-  document.getElementById("offline-close").onclick = () => dialog.close();
-  let registration,
-    rebuilding = false;
-  async function refresh() {
-    update.hidden = !registration?.waiting;
-    remove.hidden = !registration;
-    remove.disabled = Boolean(registration?.installing);
-    enable.disabled = Boolean(registration?.installing);
-    const ready =
-      registration?.active && (await workerStatus(registration.active)).ready;
-    open.textContent = ready ? "Offline access ✓" : "Offline access…";
-    enable.textContent = ready ? "Check for updates" : "Download offline files";
-    status.textContent = registration?.waiting
-      ? "Updated offline files are ready. Reload to use them."
-      : registration?.installing
-        ? "Downloading offline files…"
-        : ready
-          ? "Offline files are ready in this browser."
-          : "Download the app for offline use in this browser.";
-  }
-  function watch(worker) {
-    if (!worker) return;
-    worker.addEventListener("statechange", async () => {
-      if (worker.state === "redundant") {
-        await refresh().catch(() => {});
-        enable.disabled = false;
-        status.textContent =
-          "Offline download failed. Check your connection or browser storage, then retry.";
-      } else if (
-        worker.state === "installed" &&
-        rebuilding &&
-        registration.waiting
-      ) {
-        rebuilding = false;
-        registration.waiting.postMessage({ type: "ACTIVATE" });
-      } else if (["installed", "activated"].includes(worker.state))
-        await refresh().catch((error) => (status.textContent = error.message));
-    });
-  }
-  function observe() {
-    watch(registration.installing);
-    registration.addEventListener("updatefound", () => {
-      watch(registration.installing);
-      refresh().catch(() => {});
-    });
-  }
-  if (!isSecureContext || !("serviceWorker" in navigator)) {
-    status.textContent =
-      "Offline storage needs HTTPS and service worker support.";
-    return;
-  }
-  navigator.serviceWorker.addEventListener("message", (event) => {
-    if (
-      event.data?.channel !== "sheets-offline" ||
-      event.source?.scriptURL?.split("?")[0] !== workerURL.href
-    )
-      return;
-    if (event.data.type === "progress")
-      status.textContent = `Downloading offline files… ${event.data.complete} / ${event.data.total}`;
-    if (event.data.type === "error")
-      status.textContent =
-        "Offline download failed. Check your connection or browser storage, then retry.";
-  });
-  enable.onclick = async () => {
-    enable.disabled = true;
-    status.textContent = "Preparing offline files…";
-    try {
-      const missing =
-        registration?.active &&
-        !(await workerStatus(registration.active)).ready;
-      if (missing || !registration?.active) {
-        const url = new URL(workerURL);
-        // A new script URL forces reinstall even when Chromium keeps the prior
-        // registration alive for the current page after its files were evicted.
-        if (registration)
-          url.searchParams.set("restore", Date.now().toString());
-        rebuilding = Boolean(missing);
-        registration = await navigator.serviceWorker.register(url, {
-          scope: base.href,
-          updateViaCache: "none",
-        });
-        observe();
-      } else await registration.update();
-      await refresh();
-    } catch (error) {
-      enable.disabled = false;
-      status.textContent = `Offline files could not be downloaded. ${error.message}`;
-    }
-  };
-  update.onclick = () =>
-    registration?.waiting?.postMessage({ type: "ACTIVATE" });
-  remove.onclick = async () => {
-    remove.disabled = true;
-    try {
-      await registration?.unregister();
-      await Promise.all(
-        (await caches.keys())
-          .filter((name) => name.startsWith(prefix))
-          .map((name) => caches.delete(name)),
-      );
-      registration = null;
-      await refresh();
-      status.textContent = "Offline files removed from this browser.";
-    } catch (error) {
-      status.textContent = `Offline files could not be removed. ${error.message}`;
-    } finally {
-      remove.disabled = false;
-    }
-  };
-  try {
-    const existing = await navigator.serviceWorker.getRegistration(base.href);
-    if (existing?.scope === base.href) {
-      registration = existing;
-      observe();
-    }
-    await refresh();
-  } catch {
-    status.textContent = "Offline storage is unavailable in this browser.";
-    enable.disabled = true;
-  }
+export async function setupOffline({beforeReload,container,status}={}){
+ watchOfflineUpdates(beforeReload);
+ if(!container)return;
+ const make=(id,label)=>{const button=document.createElement('button');button.id=id;button.textContent=label;container.append(button);return button;};
+ const note=document.createElement('p');note.textContent='Download the editor, examples and vendored engines for offline use. Python, R and external services require a connection.';container.append(note);
+ const enable=make('offline-enable','Download offline files'),repair=make('offline-repair','Repair offline copy'),update=make('offline-update','Update and reload'),remove=make('offline-remove','Remove offline files');
+ let client;
+ const refresh=result=>{status.textContent=result.ready?'Available offline':'Offline files incomplete';enable.textContent=result.ready?'Check for updates':'Download offline files';repair.hidden=false;remove.hidden=false;};
+ client=new OfflineClient({url:workerURL.href,onStatus:refresh,onUpdate:()=>{update.hidden=false;status.textContent='Offline update ready';}});
+ update.hidden=true;repair.hidden=true;remove.hidden=true;status.textContent='Offline files not downloaded';
+ if(!('serviceWorker'in navigator)){enable.disabled=true;status.textContent='Offline storage is unavailable in this browser.';return;}
+ enable.onclick=async()=>{enable.disabled=true;try{if(client.registration?.active){if(!(await client.status()).ready)await client.repair();else await client.registration.update();}else await client.init();}catch(error){status.textContent=error.message;}finally{enable.disabled=false;}};
+ repair.onclick=()=>client.repair().catch(error=>{status.textContent=error.message;});
+ update.onclick=()=>{beforeReload?.();client.activateUpdate();};
+ remove.onclick=async()=>{remove.disabled=true;try{await client.registration?.unregister();await Promise.all((await caches.keys()).filter(name=>name.startsWith('sheets-offline-')||name.startsWith('sheets-offline:'+base.pathname+':')).map(name=>caches.delete(name)));client.registration=null;repair.hidden=remove.hidden=update.hidden=true;enable.textContent='Download offline files';status.textContent='Offline files removed from this browser.';}catch(error){status.textContent=error.message;}finally{remove.disabled=false;}};
+ document.getElementById('offline-open').onclick=async()=>{document.getElementById('download-menu').open=false;if(client.registration?.active)await client.status();enable.focus();};
+ try{
+  const registration=await navigator.serviceWorker.getRegistration(base);
+  if(registration?.scope===base.href){client.registration=registration;const observe=event=>{if(registration.waiting)client.onUpdate();else if(event?.target?.state==='redundant')status.textContent='Offline update failed verification. Installed copy kept.';};observe();registration.addEventListener('updatefound',()=>registration.installing?.addEventListener('statechange',observe));await client.status();}
+ }catch(error){status.textContent=error.message;}
+ return client;
 }

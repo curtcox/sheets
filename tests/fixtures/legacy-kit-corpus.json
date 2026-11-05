@@ -1,0 +1,58 @@
+{
+  "repo": "sheets",
+  "commit": "1ff1ad3e81d172804490bd4024389b6521dac6ef",
+  "example": {
+    "id": "gfm-basic",
+    "source": "# A small, useful note\n\nWriting is thinking, with a place to put the numbers.\n\n- [x] Make a plan\n- [ ] Test the idea\n\n| Item | Cost |\n| --- | ---: |\n| Notebook | 4 |\n| Pencil | 1 |\n\nA circle has area $A = \\pi r^2$.\n",
+    "raw": "{\"format\":\"sheets-document\",\"version\":1,\"type\":\"gfm\",\"src\":\"# A small, useful note\\n\\nWriting is thinking, with a place to put the numbers.\\n\\n- [x] Make a plan\\n- [ ] Test the idea\\n\\n| Item | Cost |\\n| --- | ---: |\\n| Notebook | 4 |\\n| Pencil | 1 |\\n\\nA circle has area $A = \\\\pi r^2$.\\n\",\"view\":\"preview\"}",
+    "expected": {
+      "src": "# A small, useful note\n\nWriting is thinking, with a place to put the numbers.\n\n- [x] Make a plan\n- [ ] Test the idea\n\n| Item | Cost |\n| --- | ---: |\n| Notebook | 4 |\n| Pencil | 1 |\n\nA circle has area $A = \\pi r^2$.\n",
+      "type": "gfm",
+      "view": "preview"
+    }
+  },
+  "cases": [
+    {
+      "label": "source fragment",
+      "href": "https://curtcox.github.io/sheets/#%23%20A%20small%2C%20useful%20note%0A%0AWriting%20is%20thinking%2C%20with%20a%20place%20to%20put%20the%20numbers.%0A%0A-%20%5Bx%5D%20Make%20a%20plan%0A-%20%5B%20%5D%20Test%20the%20idea%0A%0A%7C%20Item%20%7C%20Cost%20%7C%0A%7C%20---%20%7C%20---%3A%20%7C%0A%7C%20Notebook%20%7C%204%20%7C%0A%7C%20Pencil%20%7C%201%20%7C%0A%0AA%20circle%20has%20area%20%24A%20%3D%20%5Cpi%20r%5E2%24.%0A",
+      "kind": "source",
+      "src": "# A small, useful note\n\nWriting is thinking, with a place to put the numbers.\n\n- [x] Make a plan\n- [ ] Test the idea\n\n| Item | Cost |\n| --- | ---: |\n| Notebook | 4 |\n| Pencil | 1 |\n\nA circle has area $A = \\pi r^2$.\n"
+    },
+    {
+      "label": "compressed query",
+      "href": "https://curtcox.github.io/sheets/?compressed=MQAggiDOC2CGA28A0ICukCmAzV8QDsB7AFwwCgyB1AJwEtjb8BzEWyEYgC0YGtGmUAd3qcQsEAAd4sAMYYOhSamIdO8-KmgAjDNUgA6CgFoQAbQAeAXRABZWD3nipsfGROmQ1gCoZIKrvK0ACYYsBQAPiAAkqTQIJEAwoR+8WSRRhnxIBlGAFypkQByJBhahIQ8WQAsBSAAChj4MrR4kQCMqWQQzdQy8PKcsOyw1KEgACQQALwgADoStCDUAHoATOOGQA",
+      "kind": "source",
+      "src": "# A small, useful note\n\nWriting is thinking, with a place to put the numbers.\n\n- [x] Make a plan\n- [ ] Test the idea\n\n| Item | Cost |\n| --- | ---: |\n| Notebook | 4 |\n| Pencil | 1 |\n\nA circle has area $A = \\pi r^2$.\n"
+    },
+    {
+      "label": "document query",
+      "href": "https://curtcox.github.io/sheets/?doc=N4IgZg9gTgtghgFxALhAZwBYFMsLQWgBMIBjAVxiwDskAaEANyyjQEsIqUBGehATwAOWFCADmYGCHpooJEQGIABAEFFaeABsNtRWTRYwZDYqoQEWADpUrAdSisErKqMWs0ihBicBrJ6J0A7g4YinCKAhpwJFgeEOFkCB7YJhQARsxoAHRWVviKANoAHgC6igCycN4xYRFw1lR5+YqlACpYaImeMayEWHA5VAA+igCS5jCKwwDCEB2TVsP4S5OKS-jI80OKAHJmWKkQEN4rACybwwAK1CSsxsNcm1aqN7IaMRhw7nBQfYoAJKoALyKCwWASsRRQAB6ACY-tlOPQGKwsAERAIfsjUSAAL5AA",
+      "kind": "source",
+      "raw": "{\"format\":\"sheets-document\",\"version\":1,\"type\":\"gfm\",\"src\":\"# A small, useful note\\n\\nWriting is thinking, with a place to put the numbers.\\n\\n- [x] Make a plan\\n- [ ] Test the idea\\n\\n| Item | Cost |\\n| --- | ---: |\\n| Notebook | 4 |\\n| Pencil | 1 |\\n\\nA circle has area $A = \\\\pi r^2$.\\n\",\"view\":\"preview\"}"
+    },
+    {
+      "label": "document fragment",
+      "href": "https://curtcox.github.io/sheets/#%7B%22format%22%3A%22sheets-document%22%2C%22version%22%3A1%2C%22type%22%3A%22gfm%22%2C%22src%22%3A%22%23%20A%20small%2C%20useful%20note%5Cn%5CnWriting%20is%20thinking%2C%20with%20a%20place%20to%20put%20the%20numbers.%5Cn%5Cn-%20%5Bx%5D%20Make%20a%20plan%5Cn-%20%5B%20%5D%20Test%20the%20idea%5Cn%5Cn%7C%20Item%20%7C%20Cost%20%7C%5Cn%7C%20---%20%7C%20---%3A%20%7C%5Cn%7C%20Notebook%20%7C%204%20%7C%5Cn%7C%20Pencil%20%7C%201%20%7C%5Cn%5CnA%20circle%20has%20area%20%24A%20%3D%20%5C%5Cpi%20r%5E2%24.%5Cn%22%2C%22view%22%3A%22preview%22%7D",
+      "kind": "source",
+      "raw": "{\"format\":\"sheets-document\",\"version\":1,\"type\":\"gfm\",\"src\":\"# A small, useful note\\n\\nWriting is thinking, with a place to put the numbers.\\n\\n- [x] Make a plan\\n- [ ] Test the idea\\n\\n| Item | Cost |\\n| --- | ---: |\\n| Notebook | 4 |\\n| Pencil | 1 |\\n\\nA circle has area $A = \\\\pi r^2$.\\n\",\"view\":\"preview\"}"
+    },
+    {
+      "label": "example",
+      "href": "https://curtcox.github.io/sheets/?example=gfm-basic",
+      "kind": "example",
+      "id": "gfm-basic"
+    },
+    {
+      "label": "CID",
+      "href": "https://curtcox.github.io/sheets/#AAAAAADX9KGEyLY9quPiQsnZy8N3ry2v-Kadr7fMvN2rfiHLCWBKe0CZyDttWMobKrLNR4Sd00V2pzXP_6FtR-dNHx-Irg",
+      "kind": "cid",
+      "cid": "AAAAAADX9KGEyLY9quPiQsnZy8N3ry2v-Kadr7fMvN2rfiHLCWBKe0CZyDttWMobKrLNR4Sd00V2pzXP_6FtR-dNHx-Irg"
+    },
+    {
+      "label": "source fragment overflow",
+      "href": "https://curtcox.github.io/sheets/?format=gfm&view=preview#src=MQAggiDOC2CGA28A0ICukCmAzV8QDsB7AFwwCgyB1AJwEtjb8BzEWyEYgC0YGtGmUAd3qcQsEAAd4sAMYYOhSamIdO8-KmgAjDNUgA6CgFoQAbQAeAXRABZWD3nipsfGROmQ1gCoZIKrvK0ACYYsBQAPiAAkqTQIJEAwoR+8WSRRhnxIBlGAFypkQByJBhahIQ8WQAsBSAAChj4MrR4kQCMqWQQzdQy8PKcsOyw1KEgACQQALwgADoStCDUAHoATOOGQA",
+      "kind": "source",
+      "src": "# A small, useful note\n\nWriting is thinking, with a place to put the numbers.\n\n- [x] Make a plan\n- [ ] Test the idea\n\n| Item | Cost |\n| --- | ---: |\n| Notebook | 4 |\n| Pencil | 1 |\n\nA circle has area $A = \\pi r^2$.\n"
+    }
+  ]
+}

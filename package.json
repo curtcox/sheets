@@ -11,7 +11,9 @@
     "test": "node --test tests/unit/*.test.js",
     "test:browser": "playwright test",
     "test:conformance": "node scripts/conformance.mjs",
-    "vendor": "node scripts/vendor/libraries.mjs"
+    "vendor": "node scripts/vendor/libraries.mjs",
+    "gallery:kit": "node scripts/gallery-catalog.mjs && node scripts/render-kit-gallery.mjs",
+    "offline": "node scripts/update-offline.mjs"
   },
   "devDependencies": {
     "@playwright/test": "1.64.1",

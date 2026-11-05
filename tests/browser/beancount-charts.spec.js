@@ -1,3 +1,4 @@
+import{openMore}from"./ui.js";
 import { test, expect } from "@playwright/test";
 import { readFile } from "node:fs/promises";
 import { writeURL } from "../../src/url-state.js";
@@ -28,7 +29,7 @@ test("the Charts tab draws the default ledger charts, sanitized and exported", a
   });
   expect(unchanged).toBe(true);
   // The selected tab is what export captures.
-  await page.locator("#download-menu summary").click();
+  await openMore(page);await page.locator("#download-menu summary").click();
   const pending = page.waitForEvent("download");
   await page.locator("#download-html").click();
   const html = await readFile(await (await pending).path(), "utf8"), saved = await context.newPage();

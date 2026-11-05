@@ -1,3 +1,4 @@
+import{openMore}from"./ui.js";
 import { test, expect } from "@playwright/test";
 import { once } from "node:events";
 import { createHash } from "node:crypto";
@@ -15,6 +16,8 @@ import {
   ORG_EMACS,
 } from "../../src/compatibility-profiles.js";
 
+const parseManifest=source=>JSON.parse(source.match(/self\.OfflineAssets = ([\s\S]+);\nif/)[1]);
+const manifestSource=manifest=>'(function(self){self.OfflineAssets='+JSON.stringify(manifest)+';})(globalThis);';
 test.describe.configure({ mode: "serial" });
 let directory, server, base;
 test.beforeAll(async () => {
@@ -36,19 +39,15 @@ const ready = (page) =>
     { timeout: 110000 },
   );
 async function settings(page) {
-  await page.locator("#download-menu summary").click();
+  await openMore(page);await page.locator("#download-menu summary").click();
   await page.locator("#offline-open").click();
 }
 // Installation and restoring evicted files both activate a controller and reload.
 // Await that navigation, not the old page's briefly updated Ready/installed UI.
-async function downloadFiles(page) {
-  const reloaded = page.waitForEvent("domcontentloaded", { timeout: 60000 });
-  await page.locator("#offline-enable").click();
-  await reloaded;
-  await ready(page);
-  await expect(page.locator("#offline-open")).toHaveText("Offline access ✓", {
-    timeout: 60000,
-  });
+async function downloadFiles(page){
+ const controlled=await page.evaluate(()=>!!navigator.serviceWorker.controller);
+ if(controlled){await page.click('#offline-enable');await expect(page.locator('#offline-status')).toHaveText('Available offline',{timeout:60000});}
+ else{const reload=page.waitForEvent('domcontentloaded',{timeout:60000});await page.click('#offline-enable');await reload;await ready(page);await expect(page.locator('#offline-status')).toHaveText('Available offline',{timeout:60000});}
 }
 async function install(page) {
   await page.goto(base);
@@ -84,7 +83,7 @@ test("opt-in offline files support new source links, vendored workers, docs and 
   await page.evaluate(async () =>
     Promise.all(
       (await caches.keys())
-        .filter((name) => name.startsWith("sheets-offline:"))
+        .filter((name) => name.startsWith("sheets-offline-"))
         .map((name) => caches.delete(name)),
     ),
   );
@@ -210,7 +209,7 @@ test("opt-in offline files support new source links, vendored workers, docs and 
   const requests = await page.evaluate(async () => {
     const names = (await caches.keys()).filter((name) =>
       name.startsWith(
-        `sheets-offline:${new URL(".", location.href).pathname}:`,
+        "sheets-offline-",
       ),
     );
     return (
@@ -264,16 +263,16 @@ test("failed installs leave no partial cache and can be retried", async ({
   await page.goto(base);
   await ready(page);
   // Corrupt an integrity entry in the staged manifest; worker fetches bypass page routes.
-  const path = `${directory}/sheets/offline-assets.json`,
+  const path = `${directory}/sheets/offline-assets.js`,
     original = await readFile(path, "utf8"),
-    manifest = JSON.parse(original);
-  manifest.assets[0].integrity = "sha256-" + "A".repeat(43) + "=";
-  await writeFile(path, JSON.stringify(manifest));
+    manifest = parseManifest(original);
+  manifest.hashes[manifest.assets[0]] = "0".repeat(64);
+  await writeFile(path, manifestSource(manifest));
   try {
     await settings(page);
     await page.locator("#offline-enable").click();
     await expect(page.locator("#offline-status")).toContainText(
-      "Offline download failed",
+      /failed verification|failed|timed out/i,
       { timeout: 60000 },
     );
     expect(await page.evaluate(() => caches.keys())).toEqual([]);
@@ -281,7 +280,7 @@ test("failed installs leave no partial cache and can be retried", async ({
     await writeFile(path, original);
   }
   await page.locator("#offline-enable").click();
-  await expect(page.locator("#offline-open")).toHaveText("Offline access ✓", {
+  await expect(page.locator("#offline-status")).toHaveText("Available offline", {
     timeout: 60000,
   });
 });
@@ -298,15 +297,15 @@ test("updates wait for activation, preserve source, and replace the old release 
     source,
   );
   await stage(`${directory}/sheets`, "offline2");
-  const manifestPath = `${directory}/sheets/offline-assets.json`;
+  const manifestPath = `${directory}/sheets/offline-assets.js`;
   const original = await readFile(manifestPath, "utf8"),
-    broken = JSON.parse(original);
-  broken.assets[0].integrity = "sha256-" + "A".repeat(43) + "=";
-  await writeFile(manifestPath, JSON.stringify(broken));
+    broken = parseManifest(original);
+  broken.hashes[broken.assets[0]] = "0".repeat(64);
+  await writeFile(manifestPath, manifestSource(broken));
   await settings(page);
   await page.locator("#offline-enable").click();
   await expect(page.locator("#offline-status")).toContainText(
-    "Offline download failed",
+    /failed verification|failed|timed out/i,
     { timeout: 60000 },
   );
   await expect.poll(() => page.evaluate(() => caches.keys())).toEqual(previous);

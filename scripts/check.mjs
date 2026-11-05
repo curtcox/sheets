@@ -21,3 +21,11 @@ for (const file of files) {
   }
 }
 if (!process.exitCode) console.log(`Syntax checked ${files.length} scripts.`);
+
+if(!process.exitCode){
+ const{verifyManifest}=await import('../vendor/fragment-kit-v0.3.4/tools/vendor-sync.mjs');
+ const{offlineManifest}=await import('./offline-assets.mjs');
+ const{renderGallery}=await import('../vendor/fragment-kit-v0.3.4/tools/render-gallery.mjs');
+ await verifyManifest('vendor/fragment-kit-v0.3.4');await offlineManifest('.',true);await renderGallery('gallery.config.mjs',true);
+ const catalog=spawnSync(process.execPath,['scripts/gallery-catalog.mjs','--check'],{stdio:'inherit'});if(catalog.status)process.exitCode=1;
+}
