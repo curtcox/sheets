@@ -1,3 +1,4 @@
+import{openMore}from"./ui.js";
 import { test, expect } from "@playwright/test";
 import { readFile } from "node:fs/promises";
 import { writeURL } from "../../src/url-state.js";
@@ -76,7 +77,7 @@ test("controls recalculate live, write exact source, undo per gesture and surviv
     await expect(price).toHaveValue("35");
     await expect(page.getByLabel("Bill annually")).not.toBeChecked();
 
-    await page.locator("#download-menu summary").click();
+    await openMore(page);await page.locator("#download-menu summary").click();
     const pending = page.waitForEvent("download");
     await page.locator("#download-html").click();
     const html = await readFile(await (await pending).path(), "utf8"), saved = await context.newPage();

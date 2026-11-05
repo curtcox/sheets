@@ -1,3 +1,4 @@
+import{openMore}from"./ui.js";
 import { test, expect } from "@playwright/test";
 import { readFile } from "node:fs/promises";
 import { writeURL } from "../../src/url-state.js";
@@ -33,11 +34,11 @@ test("constants summary shares exact source and survives reload, recalculated co
     expect(copied).toContain("#+SHEETS_CONSTANTS: table");
     expect(copied).toContain("27.00");
     expect(await source(page)).toBe(src);
-    await page.locator("#download-menu summary").click();
+    await openMore(page);await page.locator("#download-menu summary").click();
     let pending = page.waitForEvent("download");
     await page.locator("#download-source").click();
     expect(await readFile(await (await pending).path(), "utf8")).toBe(src);
-    await page.locator("#download-menu summary").click();
+    await openMore(page);await page.locator("#download-menu summary").click();
     pending = page.waitForEvent("download");
     await page.locator("#download-html").click();
     const html = await readFile(await (await pending).path(), "utf8"), saved = await context.newPage();
@@ -57,7 +58,7 @@ test("constants summary shares exact source and survives reload, recalculated co
     await page.emulateMedia({ media: "screen" });
     await page.getByRole("button", { name: "Share", exact: true }).click();
     const fresh = await context.newPage();
-    await fresh.goto(await page.locator("#share-url").inputValue());
+    await fresh.goto(await page.locator("#share-link").inputValue());
     await ready(fresh);
     await fresh.reload();
     await ready(fresh);

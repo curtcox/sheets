@@ -10,7 +10,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>Gallery · Sheets</title>
     <link rel="icon" href="src/icon.svg" />
-    <link rel="stylesheet" href="src/styles.css" />
+    <link rel="stylesheet" href="src/styles.css" /><link rel="stylesheet" href="vendor/fragment-kit-v0.3.4/src/ui/kit.css" /><link rel="stylesheet" href="src/gallery-kit.css" />
     <script type="module" src="src/gallery.js"></script>
   </head>
   <body>
@@ -32,18 +32,7 @@
         From a back-of-the-envelope calculation to a reproducible notebook. Pick
         a sheet, make it yours, and share what you discover.
       </p>
-      <div class="gallery-controls">
-        <input
-          id="search"
-          type="search"
-          aria-label="Search examples"
-          placeholder="Search examples…"
-        /><select id="filter" aria-label="Filter by format">
-          <option value="all">All formats</option>
-        </select>
-      </div>
-      <p id="gallery-status" role="status" class="subtle">Loading examples…</p>
-      <div id="cards" class="cards"></div>
+      <div id="gallery"></div>
     </main>
     <footer class="page-footer">
       Every example is a plain text document. Your changes live in the link.

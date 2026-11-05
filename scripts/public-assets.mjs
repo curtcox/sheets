@@ -9,5 +9,8 @@ export const publicAssets = [
   "examples",
   ".nojekyll",
   "sw.js",
+  "fragment-kit.config.json",
+  "manifest.webmanifest",
+  "gallery",
 ];
-export const served = [...publicAssets, "offline-assets.json"];
+export const served = [...publicAssets, "offline-assets.js"];

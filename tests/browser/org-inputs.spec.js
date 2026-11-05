@@ -1,3 +1,4 @@
+import{openMore}from"./ui.js";
 import { test, expect } from "@playwright/test";
 import { createHash } from "node:crypto";
 import { readFile } from "node:fs/promises";
@@ -38,24 +39,24 @@ test("verified CID constants work in both modes, with visible provenance, sharin
     await page.getByRole("button", { name: "Share", exact: true }).click();
     const fresh = await context.newPage();
     await fresh.route("https://256t.us/" + cid, (route) => route.fulfill({ body: payload, contentType: "application/json" }));
-    await fresh.goto(await page.locator("#share-url").inputValue());
+    await fresh.goto(await page.locator("#share-link").inputValue());
     await ready(fresh); await fresh.reload(); await ready(fresh);
     expect(await value(fresh)).toBe(source);
     await expect(fresh.locator("#profile")).toHaveValue(profile || "");
     await expect(fresh.locator("#preview table:not(.org-inputs)")).toHaveText("1003.00");
     await fresh.setViewportSize({ width: 390, height: 844 });
     expect(await fresh.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
-    await fresh.locator("#download-menu summary").click();
+    await openMore(fresh);await fresh.locator("#download-menu summary").click();
     let pending = fresh.waitForEvent("download"); await fresh.locator("#download-source").click();
     expect(await readFile(await (await pending).path(), "utf8")).toBe(source);
-    await fresh.locator("#download-menu summary").click();
+    await openMore(fresh);await fresh.locator("#download-menu summary").click();
     pending = fresh.waitForEvent("download"); await fresh.locator("#download-html").click();
     const html = await readFile(await (await pending).path(), "utf8"), saved = await context.newPage();
     await saved.setContent(html); await saved.emulateMedia({ media: "print" });
     await expect(saved.locator(".org-shared-inputs")).toContainText(cid);
     await expect(saved.locator("table:not(.org-inputs)")).toHaveText("1003.00");
     await expect(saved.locator("script,button")).toHaveCount(0);
-    await saved.close(); await fresh.close(); await page.locator("#share-close").click();
+    await saved.close(); await fresh.close(); await page.locator("#share-dialog .fk-close").click();
   }
 });
 

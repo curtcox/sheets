@@ -19,7 +19,8 @@ import { applyControlEdit, controlText, shiftControls } from "./controls.js";
 import { setupViews } from "./view-modes.js";
 import { HashBinDocuments, HashBinStore } from "./hashbin.js";
 import { HashBinPanel } from "./hashbin-panel.js";
-import { ShareClient } from "./share-links.js";
+import {config,urlState,type,toDocument} from './fragment-config.js';
+import {LocalDrafts,createStorage,createShell,mountMobileTabs,createShareDialog,createQrDialog} from '../vendor/fragment-kit-v0.3.4/src/index.js';
 import { loadExample } from "./examples.js";
 import { setupOffline } from "./offline.js";
 import { acePath } from "./ace-path.js";
@@ -29,6 +30,19 @@ import { parseProjectFile } from "./project-state.js";
 import { verifyInputSnapshot, SNAPSHOT_LIMITS } from "./input-snapshot.js";
 import { htmlDownload, downloadFile } from "./export-document.js";
 import { optionalStorage } from "./util.js";
+const byId=id=>document.getElementById(id);
+const oldHeader=document.querySelector('.site-header'),brand=oldHeader.querySelector('.brand'),shareButton=byId('share');
+const shell=createShell({config});shell.header.querySelector('.fk-brand').replaceChildren(...brand.childNodes);
+shell.header.querySelector('.fk-more').id='more-toggle';
+const renderButton=document.createElement('button');renderButton.id='render-now';renderButton.textContent='Render';
+const qrButton=document.createElement('button');qrButton.id='qr';qrButton.textContent='QR';
+shareButton.textContent='Share';shell.toolbar.append(renderButton,shareButton,qrButton,document.querySelector('.format-control'));
+shell.drawer.body.append(document.querySelector('.view-toggle'),byId('download-menu'),byId('hashbin-panel'));
+oldHeader.remove();document.querySelector('.toolbar').remove();
+for(const id of ['hashbin-cid','hashbin-load','hashbin-save','hashbin-status','hashbin-dialog','share-dialog','offline-dialog'])byId(id)?.remove();
+byId('hashbin-panel').hidden=false;byId('hashbin-panel-close').remove();
+const drafts=new LocalDrafts({storage:createStorage({prefix:config.storagePrefix}),key:'draft',serialize:value=>JSON.stringify(toDocument(value)),parse:text=>type.normalize(JSON.parse(text))});
+let autoRun=true,mobileTabs,qrSave=false;
 const elements = new Map(
   [...document.querySelectorAll("[id]")].map((element) => [
     element.id,
@@ -78,6 +92,7 @@ if (globalThis.ace) {
   $("editor").hidden = true;
   $("source-fallback").style.display = "block";
 }
+document.body.append($('project-file'));
 const getSource = () =>
   editor ? editor.getValue() : $("source-fallback").value;
 const setSource = (src) => {
@@ -89,9 +104,11 @@ const setSource = (src) => {
 const view = setupViews({
   workspace: $("workspace"),
   divider: $("divider"),
-  onChange: () => persist(),
+  onChange: () => {if(!setting)saveDraft(true);persist();},
   onResize: () => editor?.resize(),
 });
+function applyView(mode,notify=true){view.setView(mode,notify);mobileTabs?.select(mode==='preview'?1:0);}
+for(const button of document.querySelectorAll('button[data-view]')){const action=button.onclick;button.onclick=event=>{shell.drawer.dialog.close();const result=action(event);mobileTabs?.select(button.dataset.view==='preview'?1:0);return result;};}
 const selectedType = (src = getSource()) =>
   format.value === "auto"
     ? profiles.find((item) => item.id === currentProfile)?.format || detect(src)
@@ -145,6 +162,7 @@ const snapshot = () => ({
   ...(currentProfile ? { profile: currentProfile } : {}),
   ...(currentInputSnapshot ? { inputSnapshot: currentInputSnapshot } : {}),
 });
+function saveDraft(edit=false){drafts.attempt(snapshot(),edit);}
 const fingerprint = () => JSON.stringify(snapshot());
 function updateDownloadOptions(ready = false) {
   const extension =
@@ -164,7 +182,7 @@ function persist() {
   $("source-size").textContent = `${getSource().length.toLocaleString()} characters`;
   let url;
   try {
-    url = writeURL(location.href, { ...snapshot(), cid: currentCID });
+    url = writeURL(location.href, { ...snapshot(), cid: currentCID, run:autoRun });
     if (currentInputSnapshot) readURL(url);
   } catch (error) {
     $("url-notice").textContent = `Current edits cannot be shared: ${error.message} Download source before reloading.`;
@@ -280,46 +298,42 @@ const store = new HashBinStore({
 });
 const panel = new HashBinPanel({
   store,
+  container: $('hashbin-panel'),
   getSnapshot: snapshot,
   getFingerprint: fingerprint,
   onLoad(doc, cid, overrides = {}) {
     const resolved = resolveDocument(doc, overrides);
-    sourceRevision++;
+    sourceRevision++;drafts.opened();
     currentCID = cid;
     setSource(doc.src);
     format.value = resolved.format;
     currentProfile = resolved.profile;
     currentInputSnapshot = resolved.inputSnapshot;
-    view.setView(resolved.view, false);
+    applyView(resolved.view, false);
     updateProfileControls();
     persist();
-    scheduler.schedule(getSource(), {}, true);
+    if(autoRun)scheduler.schedule(getSource(), {}, true);
   },
   onSaved(cid) {
     currentCID = cid;
     persist();
+    if(qrSave){qrSave=false;panel.dialog.close();qr.open(HashBinDocuments.link(location.href,cid));}
   },
 });
-$("hashbin-save").disabled = !clientId;
+panel.dialog.addEventListener('close',()=>{qrSave=false;});
+for(const element of $('hashbin-panel').querySelectorAll('[id]'))elements.set(element.id,element);
+$("hashbin-save").disabled = false;
 $("hashbin-config").textContent = clientId
   ? "Public documents load without signing in."
   : "Saving needs a registered HashBin client ID. Public CIDs can still be loaded.";
-$("hashbin-open").onclick = () => {
-  $("hashbin-panel").hidden = !$("hashbin-panel").hidden;
-  editor?.resize();
-};
-$("hashbin-panel-close").onclick = () => {
-  $("hashbin-panel").hidden = true;
-  editor?.resize();
-};
 function changed() {
   if (setting) return;
-  sourceRevision++;
+  saveDraft(true);sourceRevision++;
   projectOpenController?.abort();
   currentCID = null;
   panel.cancelLoad();
   renderController?.abort();
-  scheduler.schedule(getSource(), {}, controlEditing);
+  if(autoRun)scheduler.schedule(getSource(), {}, controlEditing);else{scheduler.cancel();$('render-status').textContent='Edited — press Render.';}
   $("source-size").textContent =
     `${getSource().length.toLocaleString()} characters`;
   clearTimeout(persistTimer);
@@ -508,8 +522,8 @@ $("project-file").onchange = async () => {
     history.pushState(null, "", url);
     currentInputSnapshot = doc.inputSnapshot;
     currentCID = null; currentProfile = doc.profile; format.value = "org";
-    setSource(doc.src); view.setView(doc.view, false);
-    updateProfileControls(); persist(); scheduler.schedule(getSource(), {}, true);
+    setSource(doc.src); applyView(doc.view, false);
+    updateProfileControls(); persist(); if(autoRun)scheduler.schedule(getSource(), {}, true);
     $("project-status").textContent = "Project snapshot opened. Back restores the previous document.";
     $("download-menu").open = false;
   } catch (error) {
@@ -541,45 +555,24 @@ document.addEventListener("click", (event) => {
     $("download-menu").open = false;
 });
 $("download-menu").addEventListener("keydown", (event) => {
-  if (event.key === "Escape") {
-    $("download-menu").open = false;
+  if (event.key === "Escape" && $("download-menu").open) {
+    event.preventDefault();event.stopPropagation();$("download-menu").open = false;
     $("download-menu").querySelector("summary").focus();
   }
 });
-const share = new ShareClient();
-$("share").onclick = () => {
-  if (!persist()) return;
-  $("share-url").value = location.href;
-  $("share-status").textContent = "";
-  $("share-dialog").showModal();
-};
-$("share-close").onclick = () => $("share-dialog").close();
-$("share-dialog").addEventListener("close", () => {
-  share.cancel();
-  $("shorten-link").disabled = false;
-});
-$("copy-link").onclick = async () => {
-  try {
-    await navigator.clipboard.writeText($("share-url").value);
-    $("share-status").textContent = "Link copied.";
-  } catch {
-    $("share-url").select();
-    $("share-status").textContent =
-      "Press Ctrl+C or ⌘C to copy the selected link.";
-  }
-};
-$("shorten-link").onclick = async () => {
-  $("shorten-link").disabled = true;
-  $("share-status").textContent = "Shortening…";
-  const url = $("share-url").value,
-    result = await share.shorten({ long: url, fallback: url });
-  if (result) {
-    $("share-url").value = result.url;
-    $("share-status").textContent =
-      result.error?.message || "Short link ready.";
-  }
-  $("shorten-link").disabled = false;
-};
+for(const id of ['download-source','download-project','open-project','download-html','print-preview']){const button=$(id),action=button.onclick;button.onclick=event=>{shell.drawer.dialog.close();return action(event);};}
+const share=createShareDialog({urlState,getSnapshot:snapshot,onSave:()=>panel.openSave()});
+shareButton.onclick=()=>{share.open();byId('share-run').checked=autoRun;byId('share-run').dispatchEvent(new Event('change'));};
+const qr=createQrDialog({config,urlState,onLoad:outcome=>openLinked(outcome.kind==='cid'?HashBinDocuments.link(location.href,outcome.cid):outcome.href),onSave:()=>{qrSave=true;qr.dialog.close();return panel.openSave();}});
+qrButton.onclick=()=>qr.open(urlState.build(snapshot(),{run:autoRun}).href);
+renderButton.onclick=()=>scheduler.schedule(getSource(),{},true);
+mobileTabs=mountMobileTabs({container:document.querySelector('.fk-toolbar'),panels:[{label:'Code',panel:$('source-pane')},{label:'Preview',panel:$('preview-pane')}],onChange:()=>editor?.resize()});
+drafts.mount(shell.drawer.body,async doc=>{
+ const checked=type.normalize(doc),state=checked.sheets,revision=sourceRevision;if(state.inputSnapshot)await verifyInputSnapshot(state.inputSnapshot,checked.src);if(revision!==sourceRevision)throw Error('Document changed while checking this draft. Resume it again.');panel.cancelLoad();scheduler.cancel();renderController?.abort();sourceRevision++;
+ currentCID=null;currentProfile=state.profile;currentInputSnapshot=state.inputSnapshot;format.value=state.format;setSource(checked.src);setting=true;applyView(state.view,false);setting=false;
+ updateProfileControls();persist();if(autoRun)scheduler.schedule(getSource(),{},true);
+},doc=>doc.src);
+function openLinked(href){panel.cancelLoad();scheduler.cancel();renderController?.abort();const incoming=new URL(href),local=new URL(location.href);local.search=incoming.search;local.hash=incoming.hash;history.pushState(null,'',local);return restore();}
 $("commit").textContent = $("commit").textContent.startsWith("__")
   ? "local"
   : $("commit").textContent;
@@ -589,13 +582,13 @@ async function restore() {
   projectOpenController?.abort();
   navigationURL = location.href;
   updateDownloadOptions(false);
-  const revision = ++sourceRevision;
+  const revision = ++sourceRevision;drafts.opened();autoRun=new URL(location.href).searchParams.get('run')!=='0';
   try {
     // A redirect save returns here; its snapshot restores the document either way.
     const published = await store.published(location.hash);
     if (revision !== sourceRevision) return;
     if (published) {
-      $("hashbin-panel").hidden = false;
+      $("hashbin-panel").hidden = false;shell.drawer.open();
       $("hashbin-status").textContent = published.error || "Saved to HashBin.";
       history.replaceState(null, "", location.pathname + location.search);
     }
@@ -605,18 +598,18 @@ async function restore() {
       format.value = doc.format || doc.type || "auto";
       currentProfile = validateProfile(doc.profile, format.value);
       currentInputSnapshot = doc.inputSnapshot;
-      view.setView(doc.view, false);
+      applyView(doc.view, false);
       updateProfileControls();
       currentCID = published.cid || null;
       persist();
-      scheduler.schedule(getSource(), {}, true);
+      if(autoRun)scheduler.schedule(getSource(), {}, true);
       return;
     }
     const state = readURL(location.href);
     format.value = state.format;
     currentProfile = state.profile;
     currentInputSnapshot = state.inputSnapshot;
-    view.setView(state.view, false);
+    applyView(state.view, false);
     if (state.kind === "hashbin") {
       await panel.load(state.cid, readOverrides(location.href));
       return;
@@ -636,23 +629,17 @@ async function restore() {
     updateProfileControls();
     currentCID = null;
     persist();
-    scheduler.schedule(getSource(), {}, true);
+    if(autoRun)scheduler.schedule(getSource(), {}, true);
   } catch (error) {
     if (revision === sourceRevision) {
-      $("render-status").textContent = error.message;
+      $("render-status").textContent = error.message;$("hashbin-status").textContent=error.message;
       preview.textContent = error.message;
     }
   }
 }
 // Document anchors (footnotes and Quarto figures) do not reload interpreters.
 function navigateFromURL() {
-  if (
-    location.hash &&
-    !location.hash.startsWith("#src=") &&
-    !location.hash.startsWith("#project=") &&
-    !HashBinDocuments.cid(location.hash)
-  )
-    return;
+  if(location.hash&&preview.querySelector('a[href="'+CSS.escape(location.hash)+'"]')&&!location.hash.startsWith('#src=')&&!location.hash.startsWith('#project=')&&!HashBinDocuments.cid(location.hash))return;
   if (navigationURL === location.href) return;
   panel.cancelLoad();
   scheduler.cancel();
@@ -665,4 +652,6 @@ store.retireLegacyTokens().catch(() => {
   /* Retried on the next load. */
 });
 await restore();
-setupOffline({ beforeReload: persist });
+document.body.dataset.ready='true';
+globalThis.SheetsOnline={editor,getSource,snapshot,setSource:src=>{setSource(src);changed();},openURL:openLinked,panel};
+setupOffline({beforeReload:persist,container:shell.drawer.body,status:shell.offlineStatus});

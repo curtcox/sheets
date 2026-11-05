@@ -76,3 +76,24 @@ cached currency rates may work with a stale-rate notice. Browser storage can be
 cleared or evicted. **Offline access** also lets you check for updates, apply a
 completed update, or remove the offline download. Updates wait until you choose
 **Use update and reload**, preserving current editor source first.
+
+
+## Shared controls and recovery
+
+Render, Share and QR are the primary actions. More contains HashBin, saved-work
+recovery, downloads, view options and offline controls. On a phone, Code and
+Preview tabs switch between full-size panels. Existing format, view, compatibility
+profiles and bundled Org inputs still travel with each link.
+
+Opening a link loads that document immediately. Earlier edited work stays in
+this browser under More → Resume saved work; it is never substituted for a link.
+Share snapshots the current document. Run on open can be disabled for a manual
+Render. QR accepts camera frames or an image file, offers SVG/PNG downloads and
+can use a verified HashBin CID when a source link is too large to scan.
+
+Offline files remain an explicit download. More → Download → Offline access
+opens the offline actions; Download offline files installs one verified release.
+Updates wait for Update and reload, preserving the full current document in its
+link. Repair checks corrupted or evicted assets. Removing offline files affects
+only Sheets caches. Python, R, exchange rates and external services still need
+a connection.

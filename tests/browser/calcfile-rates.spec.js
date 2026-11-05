@@ -59,7 +59,7 @@ test("CalcFile fetches only for conversions, preserves source/sharing and reuses
   await page.getByRole("button", { name: "Share", exact: true }).click();
   const fresh = await context.newPage();
   await fresh.clock.setFixedTime(new Date(now));
-  await fresh.goto(await page.locator("#share-url").inputValue());
+  await fresh.goto(await page.locator("#share-link").inputValue());
   await ready(fresh);
   await expect(fresh.locator('.result-line[data-line="2"] output')).toHaveText(
     "112.53 USD",

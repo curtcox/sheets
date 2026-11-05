@@ -1,3 +1,4 @@
+import{openMore}from"./ui.js";
 import { test, expect } from "@playwright/test";
 import { once } from "node:events";
 import { readFile } from "node:fs/promises";
@@ -78,7 +79,7 @@ test("long documents reload and reopen from a shared link under a real request-l
   await expect(page.locator("#profile")).toHaveValue(state.profile);
   await expect(page.locator("#source-pane")).toBeHidden();
   await page.getByRole("button", { name: "Share", exact: true }).click();
-  const shared = await page.locator("#share-url").inputValue();
+  const shared = await page.locator("#share-link").inputValue();
   expect(readURL(shared)).toEqual({ ...state, kind: "source" });
   const fresh = await context.newPage();
   await fresh.goto(shared);
@@ -86,7 +87,7 @@ test("long documents reload and reopen from a shared link under a real request-l
   expect(await fresh.evaluate(() => ace.edit("editor").getValue())).toBe(
     longSource,
   );
-  await fresh.locator("#download-menu summary").click();
+  await openMore(fresh);await fresh.locator("#download-menu summary").click();
   const download = fresh.waitForEvent("download");
   await fresh.locator("#download-source").click();
   expect(await readFile(await (await download).path(), "utf8")).toBe(longSource);

@@ -3,3 +3,5 @@ _site/
 test-results/
 playwright-report/
 .DS_Store
+
+test-results-native/

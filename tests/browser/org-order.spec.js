@@ -1,3 +1,4 @@
+import{openMore}from"./ui.js";
 import { test, expect } from "@playwright/test";
 import { readFile } from "node:fs/promises";
 import { writeURL } from "../../src/url-state.js";
@@ -50,13 +51,13 @@ test("Emacs mode migration preserves exact source, copy, exports, views and shar
     return htmlDownload(document.querySelector("#preview")).blob.text();
   });
   expect(exported).toContain('<td class="org-right">12</td>');
-  await page.locator("#download-menu summary").click();
+  await openMore(page);await page.locator("#download-menu summary").click();
   const download = page.waitForEvent("download");
   await page.locator("#download-source").click();
   expect(await readFile(await (await download).path(), "utf8")).toBe(source);
-  await page.getByRole("button", { name: "Preview", exact: true }).click();
+  await openMore(page);await page.getByRole("button", { name: "Preview", exact: true }).click();
   await page.getByRole("button", { name: "Share", exact: true }).click();
-  const shared = await page.locator("#share-url").inputValue();
+  const shared = await page.locator("#share-link").inputValue();
   expect(new URL(shared).searchParams.get("profile")).toBe(profile);
   const fresh = await context.newPage();
   await fresh.goto(shared);
@@ -124,7 +125,7 @@ test("Org saved documents preserve the explicit mode and migrate from version 1 
   await page.locator("#profile").selectOption(profile);
   await ready(page);
   expect(new URL(page.url()).hash).toBe("");
-  await page.getByRole("button", { name: "HashBin", exact: true }).click();
+  await page.locator("#more-toggle").click();
   await page.locator("#hashbin-save").click();
   await expect(page.locator("#hashbin-confirm")).toBeEnabled();
   await page.locator("#hashbin-confirm").click();
