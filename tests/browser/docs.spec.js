@@ -20,6 +20,7 @@ test("documentation examples open their source with the required context and lim
   for (const id of [
     "index",
     "url-format",
+    "insert-content",
     "hashbin",
     "format-comparison",
     "function-comparison",
@@ -28,6 +29,9 @@ test("documentation examples open their source with the required context and lim
   ]) {
     await page.goto(`/docs.html?page=${id}`);
     await expect(page.locator("#docs-content h1")).toBeVisible();
+    await expect(page.locator('#docs-nav a[aria-current="page"]')).toHaveAttribute(
+      "href", `docs.html?page=${id}`,
+    );
     const blocks = await page
       .locator("#docs-content pre > code")
       .evaluateAll((codes) =>
