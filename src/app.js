@@ -368,7 +368,10 @@ function changed() {
 if (editor) editor.session.on("change", changed);
 else $("source-fallback").addEventListener("input", changed);
 format.onchange = () => {
-  if (currentAttachments && !["org", "gfm"].includes(selectedType())) { format.value = currentType; $("render-status").textContent = "Pictures require Org or Markdown. Remove included pictures before switching formats."; return; }
+  if (currentAttachments && !["org", "gfm"].includes(selectedType())) {
+    if (snapshot().attachments.length) { format.value = currentType; $("render-status").textContent = "Pictures require Org or Markdown. Remove included pictures before switching formats."; return; }
+    currentAttachments = undefined;
+  }
   currentProfile = undefined;
   updateProfileControls();
   changed();

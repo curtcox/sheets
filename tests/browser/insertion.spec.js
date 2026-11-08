@@ -96,4 +96,8 @@ test('pasted screenshot is bundled, undo/redo keeps bytes, mobile insertion fits
   await expect(page.locator('#preview')).toContainText('Offline edit.');
   await expect.poll(()=>page.locator('#preview img').evaluate(img=>img.naturalWidth)).toBeGreaterThan(0);
   await page.context().setOffline(false);
+  await page.evaluate(()=>SheetsOnline.setSource('All pictures removed.'));
+  await page.locator('#format').selectOption('text');
+  await expect(page.locator('#format')).toHaveValue('text');
+  await expect(page.locator('#preview')).toContainText('All pictures removed.');
 });
