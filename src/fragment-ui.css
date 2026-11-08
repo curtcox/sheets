@@ -9,3 +9,8 @@
 .fk-brand svg rect{fill:#176f61}.fk-brand svg path{fill:none;stroke:white;stroke-width:1.7}
 
 @media(max-width:767px){.fk-dialog{max-height:100dvh;height:100dvh}}
+
+.fk-dialog .view-toggle{display:none}.fk-compact .fk-toolbar .fk-tabs{order:0;flex-basis:auto}.fk-compact .statusbar .footer-meta{display:none}
+#workspace[data-fk-view="single"]{grid-template-columns:1fr!important;grid-template-rows:1fr!important}
+
+@media(max-width:767px){#workspace[data-fk-view="split"]{grid-template-columns:repeat(2,minmax(0,1fr))!important;grid-template-rows:minmax(0,1fr)!important}#workspace[data-fk-view="split"]>.fk-view-panel{grid-row:1;height:100%;grid-column:auto}}

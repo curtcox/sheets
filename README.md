@@ -273,3 +273,9 @@ The original vendor LZ pin remains a compatibility-test reference and is exclude
 from staged production assets. Kit tools and tests are also excluded. Original
 real-engine gallery screenshots feed the shared cover producer. After changing
 public assets, run npm run gallery:kit and npm run offline, then npm run check.
+
+## Prepared interface update
+
+This branch prepares Fragment Kit v0.3.5 for compact controls, readable dialogs,
+and single-pane or split workspace views. On phones, status details are in More.
+Shared release publication and site deployment are still pending.

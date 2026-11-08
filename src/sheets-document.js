@@ -1,5 +1,5 @@
 // Consumer-owned Sheets v1/v2/v3 schemas; the shared kit owns transport.
-import {bytes} from '../vendor/fragment-kit-v0.3.4/src/core/bytes.js';
+import {bytes} from '../vendor/fragment-kit-v0.3.5/src/core/bytes.js';
 import {validateProfile} from './compatibility-profiles.js';
 import {validateProjectDocument} from './project-state.js';
 export const sheetsDocument={MAX_BYTES:5*1024*1024,bytes,

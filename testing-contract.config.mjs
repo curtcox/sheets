@@ -9,7 +9,7 @@ test.afterEach(async({page},info)=>{
  if(info.title.startsWith('atomic install')&&info.status!==info.expectedStatus)console.log('Sheets offline diagnostics: '+JSON.stringify(await page.evaluate(async()=>{const reg=await navigator.serviceWorker.getRegistration();return{url:location.pathname,scope:reg?.scope,controller:navigator.serviceWorker.controller?.scriptURL,status:document.getElementById('offline-status')?.textContent,ready:document.body.dataset.ready};})));
 });
 export default{
- ready:'body[data-ready="true"]',editor:'#editor',status:'#hashbin-status',draftKey:'sheets:draft',more:'#more-toggle',share:'#share',qr:'#qr',tabs:['Code','Preview'],example:'gfm-basic',cachePrefix:'sheets-offline-',offlineAsset:'src/fragment-ui.css',kitURL:'./vendor/fragment-kit-v0.3.4/src/index.js',
+ ready:'body[data-ready="true"]',editor:'#editor',status:'#hashbin-status',draftKey:'sheets:draft',more:'#more-toggle',share:'#share',qr:'#qr',tabs:['Code','Preview'],example:'gfm-basic',cachePrefix:'sheets-offline-',offlineAsset:'src/fragment-ui.css',kitURL:'./vendor/fragment-kit-v0.3.5/src/index.js',
  isWrittenURL:href=>{const url=new URL(href);return url.hash.length>1||url.searchParams.has('compressed');},
  getSource:page=>page.evaluate(()=>SheetsOnline.getSource()),getDocument:page=>page.evaluate(()=>SheetsOnline.snapshot()),edit:(page,src)=>page.evaluate(src=>SheetsOnline.editor.setValue(src,-1),src),
  openMore:async page=>{if(!await page.locator('#fk-more-drawer').isVisible())await page.click('#more-toggle');},

@@ -1,4 +1,4 @@
-import * as kit from '../vendor/fragment-kit-v0.3.4/src/index.js';
+import * as kit from '../vendor/fragment-kit-v0.3.5/src/index.js';
 import settings from '../fragment-kit.config.json' with {type:'json'};
 import {profiles,validateProfile} from './compatibility-profiles.js';
 import {parseProjectFile,serializeProjectFile,validateProjectDocument} from './project-state.js';
@@ -67,4 +67,4 @@ export function writeURL(input,{src='',format='auto',view='split',cid=null,profi
 export function readOverrides(input){const url=new URL(input),state=readURL(url);return Object.fromEntries(['format','view','profile'].filter(key=>url.searchParams.has(key)).map(key=>[key,state[key]]));}
 export const HashBinDocuments={...core.documents,MAX_BYTES:config.maxBytes,serialize:value=>sheetsDocument.serialize(value.sheets?fromDocument(value):value),parse:text=>fromDocument(core.documents.parse(text)),...Object.fromEntries(['bytes','encode64','decode64','cidLength','isCID'].map(key=>[key,kit[key]])),cid:value=>kit.cid(value,config.allowedHosts),link(input,cid){const url=new URL(input);for(const key of ['example','doc','compressed','src','raw','url','code','state','error','error_description'])url.searchParams.delete(key);url.hash='';if(!kit.isCID(cid))throw Error('HashBin returned an invalid CID.');url.hash=cid;return url.href;}};
 export function publishTransactions(storage,clientId=config.hashbinClientId){if(!storage)return;const current=kit.createStorage({prefix:config.storagePrefix,storage}),owned=key=>key.startsWith('hashbin:publish:'+clientId+':');return{getItem(key){const value=current.getItem(key);if(value!=null||!owned(key))return value;try{return storage.getItem(key);}catch{return null;}},setItem:(key,value)=>current.setItem(key,value),removeItem(key){current.removeItem(key);if(owned(key))try{storage.removeItem(key);}catch{}}};}
-export{ShareClient}from'../vendor/fragment-kit-v0.3.4/src/index.js';
+export{ShareClient}from'../vendor/fragment-kit-v0.3.5/src/index.js';

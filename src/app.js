@@ -20,7 +20,7 @@ import { setupViews } from "./view-modes.js";
 import { HashBinDocuments, HashBinStore } from "./hashbin.js";
 import { HashBinPanel } from "./hashbin-panel.js";
 import {config,urlState,type,toDocument} from './fragment-config.js';
-import {LocalDrafts,createStorage,createShell,mountMobileTabs,createShareDialog,createQrDialog} from '../vendor/fragment-kit-v0.3.4/src/index.js';
+import {LocalDrafts,createStorage,compactShell,createShell,mountMobileTabs,createShareDialog,createQrDialog} from '../vendor/fragment-kit-v0.3.5/src/index.js';
 import { loadExample } from "./examples.js";
 import { setupOffline } from "./offline.js";
 import { acePath } from "./ace-path.js";
@@ -34,15 +34,16 @@ const byId=id=>document.getElementById(id);
 const oldHeader=document.querySelector('.site-header'),brand=oldHeader.querySelector('.brand'),shareButton=byId('share');
 const shell=createShell({config});shell.header.querySelector('.fk-brand').replaceChildren(...brand.childNodes);
 shell.header.querySelector('.fk-more').id='more-toggle';
-const renderButton=document.createElement('button');renderButton.id='render-now';renderButton.textContent='Render';
+const renderButton=document.createElement('button');renderButton.id='render-now';renderButton.textContent='Render once';renderButton.hidden=true;shell.drawer.body.append(renderButton);
 const qrButton=document.createElement('button');qrButton.id='qr';qrButton.textContent='QR';
-shareButton.textContent='Share';shell.toolbar.append(renderButton,shareButton,qrButton,document.querySelector('.format-control'));
-shell.drawer.body.append(document.querySelector('.view-toggle'),byId('download-menu'),byId('hashbin-panel'));
+shareButton.textContent='Share';shell.toolbar.append(shareButton,qrButton,document.querySelector('.format-control'));
+shell.drawer.body.append(document.querySelector('.view-toggle'),byId('download-menu'),byId('hashbin-panel'));document.querySelector('.view-toggle').hidden=true;
 oldHeader.remove();document.querySelector('.toolbar').remove();
+byId('render-status').setAttribute('data-fk-primary-status','');compactShell({header:shell.header,status:document.querySelector('.statusbar')});
 for(const id of ['hashbin-cid','hashbin-load','hashbin-save','hashbin-status','hashbin-dialog','share-dialog','offline-dialog'])byId(id)?.remove();
 byId('hashbin-panel').hidden=false;byId('hashbin-panel-close').remove();
 const drafts=new LocalDrafts({storage:createStorage({prefix:config.storagePrefix}),key:'draft',serialize:value=>JSON.stringify(toDocument(value)),parse:text=>type.normalize(JSON.parse(text))});
-let autoRun=true,mobileTabs,qrSave=false;
+let autoRun=true,mobileTabs,qrSave=false,workspaceReady=false;
 const elements = new Map(
   [...document.querySelectorAll("[id]")].map((element) => [
     element.id,
@@ -104,11 +105,11 @@ const setSource = (src) => {
 const view = setupViews({
   workspace: $("workspace"),
   divider: $("divider"),
-  onChange: () => {if(!setting)saveDraft(true);persist();},
+  onChange: mode => {mobileTabs?.select(mode==='split'?'split':mode==='preview'?1:0);if(!setting)saveDraft(true);persist();},
   onResize: () => editor?.resize(),
 });
-function applyView(mode,notify=true){view.setView(mode,notify);mobileTabs?.select(mode==='preview'?1:0);}
-for(const button of document.querySelectorAll('button[data-view]')){const action=button.onclick;button.onclick=event=>{shell.drawer.dialog.close();const result=action(event);mobileTabs?.select(button.dataset.view==='preview'?1:0);return result;};}
+function applyView(mode,notify=true){view.setView(mode,notify);mobileTabs?.select(mode==='split'?'split':mode==='preview'?1:0);}
+for(const button of document.querySelectorAll('button[data-view]')){const action=button.onclick;button.onclick=event=>{shell.drawer.dialog.close();const result=action(event);mobileTabs?.select(button.dataset.view==='split'?'split':button.dataset.view==='preview'?1:0);return result;};}
 const selectedType = (src = getSource()) =>
   format.value === "auto"
     ? profiles.find((item) => item.id === currentProfile)?.format || detect(src)
@@ -566,7 +567,8 @@ shareButton.onclick=()=>{share.open();byId('share-run').checked=autoRun;byId('sh
 const qr=createQrDialog({config,urlState,onLoad:outcome=>openLinked(outcome.kind==='cid'?HashBinDocuments.link(location.href,outcome.cid):outcome.href),onSave:()=>{qrSave=true;qr.dialog.close();return panel.openSave();}});
 qrButton.onclick=()=>qr.open(urlState.build(snapshot(),{run:autoRun}).href);
 renderButton.onclick=()=>scheduler.schedule(getSource(),{},true);
-mobileTabs=mountMobileTabs({container:document.querySelector('.fk-toolbar'),panels:[{label:'Code',panel:$('source-pane')},{label:'Preview',panel:$('preview-pane')}],onChange:()=>editor?.resize()});
+mobileTabs=mountMobileTabs({desktop:true,container:document.querySelector('.fk-toolbar'),panels:[{label:'Code',panel:$('source-pane')},{label:'Preview',panel:$('preview-pane')}],onChange:index=>{const next=index===-1?'split':index===1?'preview':'source';if(next!==view.getView())view.setView(next,workspaceReady);editor?.resize();}});
+mobileTabs.select(view.getView()==='split'?'split':view.getView()==='preview'?1:0);
 drafts.mount(shell.drawer.body,async doc=>{
  const checked=type.normalize(doc),state=checked.sheets,revision=sourceRevision;if(state.inputSnapshot)await verifyInputSnapshot(state.inputSnapshot,checked.src);if(revision!==sourceRevision)throw Error('Document changed while checking this draft. Resume it again.');panel.cancelLoad();scheduler.cancel();renderController?.abort();sourceRevision++;
  currentCID=null;currentProfile=state.profile;currentInputSnapshot=state.inputSnapshot;format.value=state.format;setSource(checked.src);setting=true;applyView(state.view,false);setting=false;
@@ -582,7 +584,7 @@ async function restore() {
   projectOpenController?.abort();
   navigationURL = location.href;
   updateDownloadOptions(false);
-  const revision = ++sourceRevision;drafts.opened();autoRun=new URL(location.href).searchParams.get('run')!=='0';
+  const revision = ++sourceRevision;drafts.opened();autoRun=new URL(location.href).searchParams.get('run')!=='0';renderButton.hidden=autoRun;
   try {
     // A redirect save returns here; its snapshot restores the document either way.
     const published = await store.published(location.hash);
@@ -609,7 +611,7 @@ async function restore() {
     format.value = state.format;
     currentProfile = state.profile;
     currentInputSnapshot = state.inputSnapshot;
-    applyView(state.view, false);
+    applyView(state.kind==='empty'&&!new URL(location.href).searchParams.has('view')&&matchMedia('(max-width:767px)').matches?'source':state.view, false);
     if (state.kind === "hashbin") {
       await panel.load(state.cid, readOverrides(location.href));
       return;
@@ -652,6 +654,6 @@ store.retireLegacyTokens().catch(() => {
   /* Retried on the next load. */
 });
 await restore();
-document.body.dataset.ready='true';
+workspaceReady=true;document.body.dataset.ready='true';
 globalThis.SheetsOnline={editor,getSource,snapshot,setSource:src=>{setSource(src);changed();},openURL:openLinked,panel};
 setupOffline({beforeReload:persist,container:shell.drawer.body,status:shell.offlineStatus});

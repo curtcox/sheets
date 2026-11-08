@@ -94,7 +94,7 @@ test("editing updates URL, reload restores, view and manual format share across 
   await page.locator("#format").selectOption("calca");
   await ready(page);
   await expect(page.locator("#preview")).toContainText("=> 4");
-  await openMore(page);await openMore(page);await page.getByRole("button", { name: "Preview", exact: true }).click();
+  await page.getByRole("tab", { name: "Preview", exact: true }).click();
   await expect(page.locator("#source-pane")).toBeHidden();
   const link = page.url();
   expect(new URL(link).searchParams.get("view")).toBe("preview");
@@ -106,7 +106,7 @@ test("editing updates URL, reload restores, view and manual format share across 
   await ready(another);
   await expect(another.locator("#format")).toHaveValue("calca");
   await expect(another.locator("#source-pane")).toBeHidden();
-  await openMore(another);await openMore(another);await another.getByRole("button", { name: "Source", exact: true }).click();
+  await another.getByRole("tab", { name: "Code", exact: true }).click();
   await expect(another.locator("#preview-pane")).toBeHidden();
   await another.keyboard.press("Control+Alt+2");
   await expect(another.locator("#preview-pane")).toBeVisible();
