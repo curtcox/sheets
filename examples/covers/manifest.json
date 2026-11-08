@@ -44,6 +44,11 @@
     "beancount-household": "38006c0a4f94ed9a6f2950a457205a2aba162edd5c621646225c7132ca2d9555",
     "gfm-charts": "2ac24910304a29a602328bd21d1537922c04c3158d005c3ba31a15064e57ce5e",
     "org-csv-budget": "91563bebb1c7e6bad37cdc862088d32251904d55d08fb609339256b1b6caec46",
-    "gfm-csv-report": "d82d6d57d0ce3f6966daca805ea9b3040a6e276478073de3a36475ebc8fb944e"
+    "gfm-csv-report": "d82d6d57d0ce3f6966daca805ea9b3040a6e276478073de3a36475ebc8fb944e",
+    "gfm-csv-presentations": "93f3f173310cdf77a932ff6cd000ec3cfcb8c9bbca41ee730696e28566966552",
+    "gfm-spreadsheet-excerpt": "da713974bfacaff75d704dce57194d3da6cab4788ad7ece9c492ac5e74025a3b",
+    "gfm-hashbin-picture": "cd626e7763e65f139b3a11c3425ea87b80829179cc69cadfbe894e72f846943f",
+    "org-outside-chart": "a0245e28168b03dee78a2cf0fdb7eee0eacbd267fef91b3b167a6a72be747c06",
+    "gfm-bundled-report": "6971e52fe3c63209b7f50a96f78d4d43000bd0fd222e90ce66577de72f53112f"
   }
 }

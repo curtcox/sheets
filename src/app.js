@@ -29,6 +29,8 @@ import { sourceTitle, sourceDownload, projectDownload } from "./downloads.js";
 import { parseProjectFile } from "./project-state.js";
 import { verifyInputSnapshot, SNAPSHOT_LIMITS } from "./input-snapshot.js";
 import { htmlDownload, downloadFile } from "./export-document.js";
+import { verifyAttachments, validateAttachments } from "./attachments.js";
+import { resolvePictures, resolveHostedPictures } from "./pictures.js";
 import { setupInsertion } from "./insert-content.js";
 import { optionalStorage } from "./util.js";
 const byId=id=>document.getElementById(id);
@@ -70,6 +72,7 @@ let editor,
   currentType = "gfm",
   currentProfile,
   currentInputSnapshot,
+  currentAttachments,
   projectOpenController,
   renderController,
   currentControls = [],
@@ -163,6 +166,7 @@ const snapshot = () => ({
   view: view.getView(),
   ...(currentProfile ? { profile: currentProfile } : {}),
   ...(currentInputSnapshot ? { inputSnapshot: currentInputSnapshot } : {}),
+  ...(currentAttachments ? { attachments: currentAttachments.filter(entry => getSource().includes("sheets-asset:" + entry.id)) } : {}),
 });
 function saveDraft(edit=false){drafts.attempt(snapshot(),edit);}
 const fingerprint = () => JSON.stringify(snapshot());
@@ -172,9 +176,9 @@ function updateDownloadOptions(ready = false) {
   $("download-source").textContent = `Source (${extension})`;
   $("download-html").disabled = !ready;
   $("print-preview").disabled = !ready;
-  $("download-project").hidden = selectedType() !== "org";
-  $("project-download-help").hidden = selectedType() !== "org";
-  $("download-project").disabled = !ready || !currentResult?.inputsReady || !currentResult?.inputPayloads;
+  $("download-project").hidden = selectedType() !== "org" && !currentAttachments;
+  $("project-download-help").hidden = selectedType() !== "org" && !currentAttachments;
+  $("download-project").disabled = !ready || (selectedType() === "org" && (!currentResult?.inputsReady || !currentResult?.inputPayloads));
   preview.querySelectorAll("[data-action=copy-org]").forEach((button) => {
     button.disabled = !ready;
   });
@@ -185,7 +189,7 @@ function persist() {
   let url;
   try {
     url = writeURL(location.href, { ...snapshot(), cid: currentCID, run:autoRun });
-    if (currentInputSnapshot) readURL(url);
+    if (currentInputSnapshot || currentAttachments) readURL(url);
   } catch (error) {
     $("url-notice").textContent = `Current edits cannot be shared: ${error.message} Download source before reloading.`;
     $("share").disabled = true;
@@ -194,7 +198,7 @@ function persist() {
   $("share").disabled = false;
   history.replaceState(null, "", url);
   navigationURL = url;
-  const backup = currentInputSnapshot ? "Portable project" : "Source";
+  const backup = currentInputSnapshot || currentAttachments ? "Portable project" : "Source";
   $("url-notice").textContent =
     url.split("#", 1)[0].length > SOURCE_FRAGMENT_THRESHOLD
       ? `Long address · remove extra query parameters; use Download → ${backup} for a separate copy.`
@@ -212,6 +216,7 @@ const scheduler = new RenderScheduler({
     const combined = AbortSignal.any([signal, renderController.signal]);
     const profile = currentProfile;
     const inputSnapshot = currentInputSnapshot;
+    const attachments = snapshot().attachments;
     currentType = selectedType(src);
     validateProfile(profile, currentType);
     updateProfileControls();
@@ -226,14 +231,12 @@ const scheduler = new RenderScheduler({
       combined.throwIfAborted();
       editor.session.setMode(mode);
     }
-    return {
-      ...(await plugin.render(src, {
+    const result = await plugin.render(src, {
         signal: combined,
         profile,
         inputSnapshot,
-      })),
-      signal: combined,
-    };
+      });
+    return { ...result, html: await resolvePictures(result.html, attachments, combined), signal: combined };
   },
   async onResult(result) {
     currentResult = result;
@@ -248,6 +251,8 @@ const scheduler = new RenderScheduler({
           (input === document.activeElement && input.type === "text"),
       );
     else setPreview(preview, result.html);
+    await resolveHostedPictures(preview, result.signal);
+    result.signal.throwIfAborted();
     editor?.session.setAnnotations(
       (result.diagnostics || []).map((d) => ({
         row: Math.max(0, d.line - 1),
@@ -294,7 +299,17 @@ const scheduler = new RenderScheduler({
 setupInsertion({
   container: shell.toolbar, sourcePane: $('source-pane'), getFormat: selectedType, fingerprint,
   capture: () => editor ? editor.getSelectionRange().clone() : { start: $('source-fallback').selectionStart, end: $('source-fallback').selectionEnd },
-  insert(text, position) {
+  insert(text, position, additions = []) {
+    const attachments = additions.length ? [...(currentAttachments || []), ...additions.filter(entry => !currentAttachments?.some(item => item.id === entry.id))] : currentAttachments;
+    const source = getSource();
+    const start = editor ? editor.session.doc.positionToIndex(position.start) : position.start;
+    const end = editor ? editor.session.doc.positionToIndex(position.end) : position.end;
+    const next = source.slice(0,start) + text + source.slice(end);
+    const included = attachments?.filter(entry => next.includes("sheets-asset:" + entry.id));
+    if (included) validateAttachments(included);
+    readURL(writeURL(location.href, { ...snapshot(), cid: null, format: selectedType(), src: next, attachments: included }));
+    currentAttachments = attachments;
+    if (additions.length && format.value === "auto") format.value = selectedType();
     if (editor) { editor.session.markUndoGroup(); editor.session.replace(position, text); editor.session.markUndoGroup(); editor.focus(); }
     else { $('source-fallback').setRangeText(text, position.start, position.end, 'end'); changed(); }
   },
@@ -319,6 +334,7 @@ const panel = new HashBinPanel({
     format.value = resolved.format;
     currentProfile = resolved.profile;
     currentInputSnapshot = resolved.inputSnapshot;
+    currentAttachments = resolved.attachments;
     applyView(resolved.view, false);
     updateProfileControls();
     persist();
@@ -352,6 +368,7 @@ function changed() {
 if (editor) editor.session.on("change", changed);
 else $("source-fallback").addEventListener("input", changed);
 format.onchange = () => {
+  if (currentAttachments && !["org", "gfm"].includes(selectedType())) { format.value = currentType; $("render-status").textContent = "Pictures require Org or Markdown. Remove included pictures before switching formats."; return; }
   currentProfile = undefined;
   updateProfileControls();
   changed();
@@ -522,16 +539,18 @@ $("project-file").onchange = async () => {
     const bytes = await file.slice(0, SNAPSHOT_LIMITS.document + 1).arrayBuffer();
     controller.signal.throwIfAborted();
     const doc = parseProjectFile(new TextDecoder("utf-8", { fatal: true, ignoreBOM: true }).decode(bytes));
-    await verifyInputSnapshot(doc.inputSnapshot, doc.src, controller.signal);
+    if (doc.inputSnapshot) await verifyInputSnapshot(doc.inputSnapshot, doc.src, controller.signal);
+    await verifyAttachments(doc.attachments, controller.signal);
     controller.signal.throwIfAborted();
     if (before !== fingerprint()) throw new Error("Document changed while opening the snapshot; choose the file again.");
-    const url = writeURL(location.href, { ...doc, format: "org" });
+    const url = writeURL(location.href, { ...doc, format: doc.type });
     readURL(url); // Reject a file that cannot survive the editor's URL round-trip.
     panel.cancelLoad(); scheduler.cancel(); renderController?.abort();
     sourceRevision++;
     history.pushState(null, "", url);
     currentInputSnapshot = doc.inputSnapshot;
-    currentCID = null; currentProfile = doc.profile; format.value = "org";
+    currentAttachments = doc.attachments;
+    currentCID = null; currentProfile = doc.profile; format.value = doc.type;
     setSource(doc.src); applyView(doc.view, false);
     updateProfileControls(); persist(); if(autoRun)scheduler.schedule(getSource(), {}, true);
     $("project-status").textContent = "Project snapshot opened. Back restores the previous document.";
@@ -579,8 +598,8 @@ renderButton.onclick=()=>scheduler.schedule(getSource(),{},true);
 mobileTabs=mountMobileTabs({desktop:true,container:document.querySelector('.fk-toolbar'),panels:[{label:'Code',panel:$('source-pane')},{label:'Preview',panel:$('preview-pane')}],onChange:index=>{const next=index===-1?'split':index===1?'preview':'source';if(next!==view.getView())view.setView(next,workspaceReady);editor?.resize();}});
 mobileTabs.select(view.getView()==='split'?'split':view.getView()==='preview'?1:0);
 drafts.mount(shell.drawer.body,async doc=>{
- const checked=type.normalize(doc),state=checked.sheets,revision=sourceRevision;if(state.inputSnapshot)await verifyInputSnapshot(state.inputSnapshot,checked.src);if(revision!==sourceRevision)throw Error('Document changed while checking this draft. Resume it again.');panel.cancelLoad();scheduler.cancel();renderController?.abort();sourceRevision++;
- currentCID=null;currentProfile=state.profile;currentInputSnapshot=state.inputSnapshot;format.value=state.format;setSource(checked.src);setting=true;applyView(state.view,false);setting=false;
+ const checked=type.normalize(doc),state=checked.sheets,revision=sourceRevision;if(state.inputSnapshot)await verifyInputSnapshot(state.inputSnapshot,checked.src);await verifyAttachments(state.attachments);if(revision!==sourceRevision)throw Error('Document changed while checking this draft. Resume it again.');panel.cancelLoad();scheduler.cancel();renderController?.abort();sourceRevision++;
+ currentCID=null;currentProfile=state.profile;currentInputSnapshot=state.inputSnapshot;currentAttachments=state.attachments;format.value=state.format;setSource(checked.src);setting=true;applyView(state.view,false);setting=false;
  updateProfileControls();persist();if(autoRun)scheduler.schedule(getSource(),{},true);
 },doc=>doc.src);
 function openLinked(href){panel.cancelLoad();scheduler.cancel();renderController?.abort();const incoming=new URL(href),local=new URL(location.href);local.search=incoming.search;local.hash=incoming.hash;history.pushState(null,'',local);return restore();}
@@ -609,6 +628,7 @@ async function restore() {
       format.value = doc.format || doc.type || "auto";
       currentProfile = validateProfile(doc.profile, format.value);
       currentInputSnapshot = doc.inputSnapshot;
+      currentAttachments = doc.attachments;
       applyView(doc.view, false);
       updateProfileControls();
       currentCID = published.cid || null;
@@ -620,6 +640,7 @@ async function restore() {
     format.value = state.format;
     currentProfile = state.profile;
     currentInputSnapshot = state.inputSnapshot;
+    currentAttachments = state.attachments;
     applyView(state.kind==='empty'&&!new URL(location.href).searchParams.has('view')&&matchMedia('(max-width:767px)').matches?'source':state.view, false);
     if (state.kind === "hashbin") {
       await panel.load(state.cid, readOverrides(location.href));
@@ -629,6 +650,7 @@ async function restore() {
       const example = await loadExample(state.example);
       if (revision !== sourceRevision) return;
       setSource(example.src);
+      currentAttachments = example.attachments;
       if (state.format === "auto" && !state.profile)
         format.value = example.format;
       if (!state.profile)

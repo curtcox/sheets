@@ -16,6 +16,7 @@ import {
   ORG_EMACS,
 } from "../../src/compatibility-profiles.js";
 
+const exampleCount = JSON.parse(await readFile(new URL("../../examples/catalog.json", import.meta.url), "utf8")).length;
 const parseManifest=source=>JSON.parse(source.match(/self\.OfflineAssets = ([\s\S]+);\nif/)[1]);
 const manifestSource=manifest=>'(function(self){self.OfflineAssets='+JSON.stringify(manifest)+';})(globalThis);';
 test.describe.configure({ mode: "serial" });
@@ -234,7 +235,7 @@ test("opt-in offline files support new source links, vendored workers, docs and 
   await page.goto(base + "docs.html?page=formats/numbat");
   await expect(page.locator("#docs-content h1")).toHaveText("Numbat");
   await page.goto(base + "gallery.html");
-  await expect(page.locator(".card-cover")).toHaveCount(41);
+  await expect(page.locator(".card-cover")).toHaveCount(exampleCount);
   await page
     .locator(".card-cover")
     .first()

@@ -976,3 +976,13 @@ Next: **LEDGER-1**.
   `tests/fixtures/gfm-conformance.json`; the committed CalcFile corpus; and actual
   vendored Numbat/Hurmet engines. These are starting oracles, not substitutes for
   adding cases for newly supported behavior.
+
+## Outside tables and pictures — 2026-11-08
+
+CSV-first insertion now previews UTF-8 comma/semicolon/tab data, HTML clipboard
+tables and spreadsheet cell text, with editable Org/Markdown or picture output.
+Linked HTTPS pictures, verified HashBin/256t image CIDs, local/clipboard/drop images,
+resizing, descriptions and captions are supported. Version-2 projects and version-4
+saved envelopes preserve content-addressed attachments separately from numeric
+inputs. Seven gallery examples cover CSV, clipboard, linked and bundled pictures.
+See `design/external-content.md` and `docs/insert-content.md`.

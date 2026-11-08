@@ -1,9 +1,9 @@
 {
   "dependencies": {
-    "src/fragment-config.js": "021a2947443aee02397d8df4f59c044ef441b05b3f382ecf7b5f7dabc7cd125c",
-    "src/sheets-document.js": "54c494523cb35e4e14cdcf35e59b89155bddd87ba23dd4207448d5540de00f1b",
+    "src/fragment-config.js": "eb3c3f70d621b48711649a178472815044d29e74efec52b46f8a250105b9d568",
+    "src/sheets-document.js": "95f159a53a6dd74e0846a0c940ed6e5039f4c0ca9158112c693b258a02e61ae7",
     "scripts/render-gallery.mjs": "25adf5f39c3d4b80a900dcc2067290f51a1da50ba361e4c5b36a1e08e1dc766f",
-    "examples/catalog.json": "55b3605e5ae6da6baade54ea81b55b8756e351a8dfe29e77773a873a54206d30",
+    "examples/catalog.json": "d762151fd6de393c630d0a84970aa84af29ff26d4ff7cb0a2b28d37994cb069d",
     "examples/gfm/basic.md": "819a01622ca86c3f10b64f4cf6a30883d7ef51db5598c572684f882ed1fc827d",
     "examples/covers/gfm-basic.png": "7d04af63ce75f35c2211150412702e0018a270c32afdd41f68c89c4d95b5a849",
     "examples/gfm/typical.md": "0d361e1e055ad206f5f4ec736124332fa8804f12775d7e098cf7a14d4bbd05fd",
@@ -89,9 +89,19 @@
     "examples/org/csv-budget.org": "91563bebb1c7e6bad37cdc862088d32251904d55d08fb609339256b1b6caec46",
     "examples/covers/org-csv-budget.png": "cf8a9add636c2dfdb39205adacdc51b84977826487c302113bcfe8dba9dc431e",
     "examples/gfm/csv-report.md": "d82d6d57d0ce3f6966daca805ea9b3040a6e276478073de3a36475ebc8fb944e",
-    "examples/covers/gfm-csv-report.png": "35e9e1a1f85c6278eae0f756086fe8f4e0beba18af477c462c0e79ba7f135ae6"
+    "examples/covers/gfm-csv-report.png": "35e9e1a1f85c6278eae0f756086fe8f4e0beba18af477c462c0e79ba7f135ae6",
+    "examples/gfm/csv-presentations.sheets.json": "93f3f173310cdf77a932ff6cd000ec3cfcb8c9bbca41ee730696e28566966552",
+    "examples/covers/gfm-csv-presentations.png": "f93ff5e89048447b3d0fe74b0c376f9dc191efd8cf8c45e0b3d6dd39292e865e",
+    "examples/gfm/spreadsheet-excerpt.md": "da713974bfacaff75d704dce57194d3da6cab4788ad7ece9c492ac5e74025a3b",
+    "examples/covers/gfm-spreadsheet-excerpt.png": "2290b2a103d618967c53e16d577b5056153127146e1810618cf9cfb6b271c806",
+    "examples/gfm/hashbin-picture.md": "cd626e7763e65f139b3a11c3425ea87b80829179cc69cadfbe894e72f846943f",
+    "examples/covers/gfm-hashbin-picture.png": "13ad77b96a6ec2894fbd50a28102d553c06a6000cbfe40f2fe5f8cf54a835058",
+    "examples/org/outside-chart.sheets.json": "a0245e28168b03dee78a2cf0fdb7eee0eacbd267fef91b3b167a6a72be747c06",
+    "examples/covers/org-outside-chart.png": "ab1eb78f993deb2163692b9838cd950d1a75c64a69b56893a485f18e492d2572",
+    "examples/gfm/bundled-report.sheets.json": "6971e52fe3c63209b7f50a96f78d4d43000bd0fd222e90ce66577de72f53112f",
+    "examples/covers/gfm-bundled-report.png": "8baa4b0910c4343d7b28753eff29fed524d5b56f478f9472d2db52f8f0c3a9da"
   },
-  "renderer": "826973b61c89cfac33917d2cae585ab4a8d6a79d1ad280a289489b2e5b7bc5e5",
+  "renderer": "5fab6c6133f105578d10ef9e620e860ef84e8aed2373edc3772ca3ba8a7026f1",
   "examples": {
     "gfm-basic": {
       "document": "9c15058715367a15e659599c7d9e2c0047ea9ff3b34abdb57e31f91804f2d40f",
@@ -264,6 +274,26 @@
     "gfm-csv-report": {
       "document": "3476fcab33a36d571d2ac086f23ff61431cd9877818908c14251cb312b43e0c0",
       "cover": "35e9e1a1f85c6278eae0f756086fe8f4e0beba18af477c462c0e79ba7f135ae6"
+    },
+    "gfm-csv-presentations": {
+      "document": "524fbc5629ffbd04755edb5490d9ad28b8a58ca2e66f08b23f428285229cf9f3",
+      "cover": "f93ff5e89048447b3d0fe74b0c376f9dc191efd8cf8c45e0b3d6dd39292e865e"
+    },
+    "gfm-spreadsheet-excerpt": {
+      "document": "c62eae004ea589a15334f5471000863873c2780fdb776dd0afd0857fd2bcf381",
+      "cover": "2290b2a103d618967c53e16d577b5056153127146e1810618cf9cfb6b271c806"
+    },
+    "gfm-hashbin-picture": {
+      "document": "53e8489d9c799e50c724736ad648e4f6f937cf10f8c7c4845e641bb73c9da127",
+      "cover": "13ad77b96a6ec2894fbd50a28102d553c06a6000cbfe40f2fe5f8cf54a835058"
+    },
+    "org-outside-chart": {
+      "document": "7da07bfc0401084468c2d28c70fa146cbc9b0548bb390f5c99b49fd7e768f047",
+      "cover": "ab1eb78f993deb2163692b9838cd950d1a75c64a69b56893a485f18e492d2572"
+    },
+    "gfm-bundled-report": {
+      "document": "ebd0b223537f59bfe18af5ed3d2f605920ae3d339572f21ecf412d95903e5a66",
+      "cover": "8baa4b0910c4343d7b28753eff29fed524d5b56f478f9472d2db52f8f0c3a9da"
     }
   }
 }

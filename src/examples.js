@@ -1,3 +1,4 @@
+import { parseProjectFile } from "./project-state.js";
 let catalogPromise;
 export function getExamples(fetchSource = fetch) {
   return (catalogPromise ??= fetchSource(
@@ -21,5 +22,6 @@ export async function loadExample(id, fetchSource = fetch) {
     new URL("../" + example.path, import.meta.url),
   );
   if (!response.ok) throw new Error("The example source could not be loaded.");
-  return { ...example, src: await response.text() };
+  const text = await response.text();
+  return { ...example, ...(example.path.endsWith(".sheets.json") ? parseProjectFile(text) : { src: text }) };
 }

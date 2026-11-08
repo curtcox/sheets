@@ -3,7 +3,7 @@ import {bytes} from '../vendor/fragment-kit-v0.3.5/src/core/bytes.js';
 import {validateProfile} from './compatibility-profiles.js';
 import {validateProjectDocument} from './project-state.js';
 export const sheetsDocument={MAX_BYTES:5*1024*1024,bytes,
-  serialize({ src, type, view = "split", profile, inputSnapshot }) {
+  serialize({ src, type, view = "split", profile, inputSnapshot, attachments }) {
     if (
       typeof src !== "string" ||
       ![
@@ -21,15 +21,16 @@ export const sheetsDocument={MAX_BYTES:5*1024*1024,bytes,
     )
       throw new Error("Choose a format before saving.");
     validateProfile(profile, type);
-    const project = inputSnapshot === undefined ? undefined : validateProjectDocument({ src, type, view, profile, inputSnapshot });
+    const project = inputSnapshot === undefined && attachments === undefined ? undefined : validateProjectDocument({ src, type, view, profile, inputSnapshot, attachments });
     const payload = JSON.stringify({
       format: "sheets-document",
-      version: project ? 3 : profile ? 2 : 1,
+      version: attachments !== undefined ? 4 : project ? 3 : profile ? 2 : 1,
       type,
       src,
       view,
       ...(profile ? { profile } : {}),
-      ...(project ? { inputSnapshot: project.inputSnapshot } : {}),
+      ...(project?.inputSnapshot ? { inputSnapshot: project.inputSnapshot } : {}),
+      ...(project?.attachments ? { attachments: project.attachments } : {}),
     });
     if (this.bytes(payload).length > this.MAX_BYTES)
       throw new Error("Source exceeds the 5 MiB HashBin limit.");
@@ -46,11 +47,13 @@ export const sheetsDocument={MAX_BYTES:5*1024*1024,bytes,
     }
     if (doc?.format !== "sheets-document")
       return { src: text, type: null, view: "split" };
-    if (![1, 2, 3].includes(doc.version))
+    if (![1, 2, 3, 4].includes(doc.version))
       throw new Error("Unsupported saved document version.");
     if (typeof doc.src !== "string")
       throw new Error("Saved document has no source.");
-    if (doc.version === 3) return validateProjectDocument(doc);
+    if (doc.version === 3 && doc.attachments !== undefined) throw Error("Version 3 cannot contain pictures.");
+    if (doc.version === 4 && !Array.isArray(doc.attachments)) throw Error("Saved document version 4 requires an attachment collection.");
+    if ([3, 4].includes(doc.version)) return validateProjectDocument(doc);
     const type = [
       "gfm",
       "asciimath",

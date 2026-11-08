@@ -44,7 +44,7 @@ for (const format of [...new Set(examples.map((s) => s.format))])
       await ready(page);
       await expect(page.locator("#format")).toHaveValue(format);
       expect(new URL(page.url()).searchParams.has("example")).toBe(false);
-      expect(new URL(page.url()).searchParams.has("compressed")).toBe(true);
+      expect(sample.path.endsWith(".sheets.json") ? new URL(page.url()).hash.startsWith("#project=") : new URL(page.url()).searchParams.has("compressed")).toBe(true);
       await expect(page.locator("#preview")).not.toBeEmpty();
       if (sample.kind === "error" && format !== "gfm")
         await expect(page.locator("#render-status")).toContainText(
@@ -191,10 +191,10 @@ test("gallery search and docs render through the application pipeline", async ({
   page,
 }) => {
   await page.goto("/gallery.html");
-  await expect(page.locator(".card")).toHaveCount(41);
-  await expect(page.locator(".card-cover")).toHaveCount(41);
+  await expect(page.locator(".card")).toHaveCount(examples.length);
+  await expect(page.locator(".card-cover")).toHaveCount(examples.length);
   await page.getByLabel("Filter by format").selectOption("org");
-  await expect(page.locator(".card")).toHaveCount(7);
+  await expect(page.locator(".card")).toHaveCount(examples.filter(example => example.format === "org").length);
   await page.getByLabel("Search examples").fill("purchase");
   await expect(page.locator(".card")).toHaveCount(1);
   await expect(page.locator(".card-cover")).toHaveAttribute(

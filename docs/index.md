@@ -42,6 +42,13 @@ definitions or surrounding document. Examples of errors keep their intentional
 errors. Use [Limitations and compatibility](limitations.md) for the known gaps
 collected from all format guides.
 
+## Insert outside content
+
+Use **Insert** to bring CSV, copied spreadsheet cells, screenshots and hosted pictures
+into Org or Markdown. Choose editable tables or pictures, and keep pictures linked
+or include their bytes. HashBin/256t image CIDs are supported. See
+[Outside tables and pictures](insert-content.md) for workflows, examples and limits.
+
 ## Save and share
 
 **Share** copies a complete source link. No account or server storage is required. Above 7,000 characters, generated links put source in the fragment so reloading does not send the long source to the server. Browser and messaging limits still vary; the notice recommends **Download → Source** or [HashBin](hashbin.md) for a separate copy. The app does not truncate your source. See [Sharing links](url-format.md).

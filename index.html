@@ -5,7 +5,7 @@
     <!-- Scripts only from this site and pinned runtime paths; keep in step with new hosts. -->
     <meta
       http-equiv="Content-Security-Policy"
-      content="default-src 'self'; script-src 'self' 'sha256-IMEqdP+AkCKdxhM3X7mQM4pV/chykJXPvdtndD+XeH8=' https://hashbin.org/sdk/v0.4.0/ https://cdn.jsdelivr.net/pyodide/v0.27.7/full/ https://webr.r-wasm.org/v0.6.0/ 'wasm-unsafe-eval'; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob: https:; font-src 'self' data:; connect-src 'self' https://256t.us https://hashbin.org https://api.allorigins.win https://is.gd https://data-api.ecb.europa.eu https://webr.r-wasm.org https://cdn.jsdelivr.net; worker-src 'self' blob:; media-src blob:; frame-src 'self'; object-src 'none'; base-uri 'self'; form-action 'none'"
+      content="default-src 'self'; script-src 'self' 'sha256-IMEqdP+AkCKdxhM3X7mQM4pV/chykJXPvdtndD+XeH8=' https://hashbin.org/sdk/v0.4.0/ https://cdn.jsdelivr.net/pyodide/v0.27.7/full/ https://webr.r-wasm.org/v0.6.0/ 'wasm-unsafe-eval'; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob: https:; font-src 'self' data:; connect-src 'self' https: https://256t.us https://hashbin.org https://api.allorigins.win https://is.gd https://data-api.ecb.europa.eu https://webr.r-wasm.org https://cdn.jsdelivr.net; worker-src 'self' blob:; media-src blob:; frame-src 'self'; object-src 'none'; base-uri 'self'; form-action 'none'"
     />
     <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
     <meta
@@ -74,7 +74,7 @@
             <button id="download-html" disabled>Rendered HTML</button>
             <button id="print-preview" disabled>Print / PDF</button>
             <button id="offline-open">Offline access…</button>
-            <p id="project-download-help" class="subtle" hidden>Portable projects include Org source, calculation mode and input bytes.</p>
+            <p id="project-download-help" class="subtle" hidden>Portable projects include source, calculation mode, bundled inputs and pictures. Plain source downloads contain picture references only.</p>
             <p class="subtle">
               Rendered exports become available when the preview is ready.
             </p>
