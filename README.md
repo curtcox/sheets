@@ -274,8 +274,9 @@ from staged production assets. Kit tools and tests are also excluded. Original
 real-engine gallery screenshots feed the shared cover producer. After changing
 public assets, run npm run gallery:kit and npm run offline, then npm run check.
 
-## Prepared interface update
+## Compact interface
 
-This branch prepares Fragment Kit v0.3.5 for compact controls, readable dialogs,
-and single-pane or split workspace views. On phones, status details are in More.
-Shared release publication and site deployment are still pending.
+This app uses released Fragment Kit v0.3.5 for compact controls, readable dialogs,
+and individual-pane or split workspace views. On phones, primary feedback stays
+visible while status details are available in More.
+Current deployment evidence is recorded in the [shared rollout status](https://github.com/curtcox/Tools-for-pages-with-state-in-URL-fragments/blob/main/todo/rollout-status.md).
