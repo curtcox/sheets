@@ -53,7 +53,9 @@ test('HTML clipboard tables stay inert and clipboard pictures open the insertion
   await page.goto('/?format=gfm'); await ready(page);
   await page.evaluate(() => {
     const data = new DataTransfer(); data.setData('text/html','<table><tr><td>001</td><td><img src="https://invalid.invalid/x" onerror="window.pwned=true">safe<script>window.pwned=true</script></td></tr></table>');
-    document.querySelector('#source-pane').dispatchEvent(new ClipboardEvent('paste',{clipboardData:data,bubbles:true,cancelable:true}));
+    const event = new Event('paste',{bubbles:true,cancelable:true});
+    Object.defineProperty(event,'clipboardData',{value:data});
+    document.querySelector('#source-pane').dispatchEvent(event);
   });
   await expect(page.locator('#insert-preview')).toContainText('001'); await expect(page.locator('#insert-preview')).toContainText('safe');
   expect(await page.evaluate(()=>window.pwned)).toBeUndefined(); await page.locator('#insert-confirm').click();
@@ -81,7 +83,9 @@ test('pasted screenshot is bundled, undo/redo keeps bytes, mobile insertion fits
   await page.evaluate(entry=>{
     const bytes=Uint8Array.from(atob(entry.data.replace(/-/g,'+').replace(/_/g,'/')),c=>c.charCodeAt(0));
     const data=new DataTransfer(); data.items.add(new File([bytes],'chart.png',{type:'image/png'}));
-    document.querySelector('#source-pane').dispatchEvent(new ClipboardEvent('paste',{clipboardData:data,bubbles:true,cancelable:true}));
+    const event = new Event('paste',{bubbles:true,cancelable:true});
+    Object.defineProperty(event,'clipboardData',{value:data});
+    document.querySelector('#source-pane').dispatchEvent(event);
   },entry);
   await expect(page.locator('#insert-kind')).toHaveValue('picture');
   expect(await page.locator('#insert-dialog').evaluate(el=>el.getBoundingClientRect().right<=innerWidth)).toBe(true);
