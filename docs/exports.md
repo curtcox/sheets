@@ -66,7 +66,14 @@ Word, Markdown or text export.
 
 ## Google Docs setup
 
-A website owner needs a Google Cloud project with the **Drive API** enabled, an
+The public Sheets client is configured for `https://sheets.hashbin.page`,
+`https://curtcox.github.io` and local testing at `http://127.0.0.1:4173`. The Google
+project is currently in **Testing**: only approved test accounts can use direct
+creation, and Google displays the project name **Hashbin** during consent. The
+owner’s account completed a live conversion on 2026-11-08. Download/import is
+available to everyone without Google sign-in in Sheets.
+
+For another deployment, a website owner needs a Google Cloud project with the **Drive API** enabled, an
 OAuth consent screen and an **OAuth client ID → Web application**. Add the exact
 Sheets origin under authorized JavaScript origins (production is
 `https://sheets.hashbin.page`; local testing is `http://127.0.0.1:4173`). Configure
@@ -77,7 +84,8 @@ Configure the public client ID in `index.html` as
 `<meta name="google-client-id" content="YOUR_ID.apps.googleusercontent.com">`
 so visitors can export directly, or enter it in the export dialog for a one-time
 check. Choose **Create Google Doc**.
-No client secret belongs in this static app. Tokens stay in memory and are not
+The token request excludes previously granted scopes from other clients in the
+same Google project. No client secret belongs in this static app. Tokens stay in memory and are not
 written to URLs, source, drafts or HashBin. Signing in does not upload anything
 until you choose that action. If an upload is interrupted or fails ambiguously,
 check Drive before retrying: the document might already exist. The app does not

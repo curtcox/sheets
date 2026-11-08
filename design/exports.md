@@ -74,14 +74,34 @@ The original export implementation passed this gate in GitHub Actions run
 42525405946. The check is retained in `scripts/export-reference.py`.
 
 Google upload uses `multipart/related` and Drive's conversion MIME type, with
-`drive.file` consent and no persisted tokens. Live creation/import verification
-still needs the owner's OAuth web client. Pages handoff uses the current v1 Pages
+`drive.file` consent and no persisted tokens. On 2026-11-08, the owner approved a
+dedicated browser client in the existing Hashbin project and enabled Drive API.
+The public ID is configured in `index.html`; no client secret is used or stored.
+The token request sets `include_granted_scopes: false` to keep the returned token
+limited to the requested file scope even if other clients in the project have
+prior grants ([Google API reference](https://developers.google.com/identity/oauth2/web/reference/js-reference#TokenClientConfig)).
+Authorized origins are `https://sheets.hashbin.page`, `https://curtcox.github.io`
+and `http://127.0.0.1:4173`. The project remains in Testing with the owner as a
+test user; public OAuth release still requires completing project branding and
+reviewing its publication settings. This setup does not make the canonical
+Cloudflare host deploy itself.
+
+A real local export, after the owner approved Google’s limited file consent,
+created a native Google Doc and opened successfully in Editing mode, saved
+privately to Drive. Visual inspection verified the heading, prose and editable
+2-row table with totals 24 and 60. This verifies the basic import path, not every
+math/media/layout case. Pages handoff uses the current v1 Pages
 envelope and Fragment Kit compression; its full payload, URL and 5 MiB envelope
 limits are checked. A live browser check at `pages.hashbin.page` accepted the
 exported `index.html`, kept automatic execution off on open, and rendered the
-verification table with total 24 after Run. HashBin publication of sample exports needs a signed-in
-session and the normal quoted save flow. Neither a generated CID nor a source URL
-alone proves that a file was uploaded.
+verification table with total 24 after Run.
+
+After the owner approved the quoted $0.02 save and one-month retention, HashBin
+reported both sample exports uploaded. The remote bytes exactly matched the
+local artifacts (Word 9,886 bytes; Excel 8,499 bytes). Retention ends 2026-12-08:
+
+- [Word example](https://hashbin.org/info.html?cid=AAAAACaeAw_XtnIpLacMwMQW_hDAWd5xVWmyxPPmC-NEnMn7JcnHvE6WgfRjWidSOFA4a5ejviBd6HhfTs_TX5FioLgh7A)
+- [Excel example with working formulas](https://hashbin.org/info.html?cid=AAAAACEzbmpTauvHGMVixY0Xx58e5CAw7cBnaAeu555J9nTZUtNOaK-uXWvb3qdpkYSsm4dMi-vE1jTc4IiXiU6GrDgFMQ)
 
 Physical-phone memory/performance, full Word/Google layout inspection and broader
 Hurmet formula coverage remain release

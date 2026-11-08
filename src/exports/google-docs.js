@@ -35,6 +35,7 @@ export function googleToken(clientId, { signal } = {}) {
     const client = google.accounts.oauth2.initTokenClient({
       client_id: clientId,
       scope: GOOGLE_SCOPE,
+      include_granted_scopes: false,
       callback: (response) =>
         response.error ||
         !response.access_token ||

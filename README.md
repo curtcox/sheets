@@ -303,8 +303,9 @@ retain included pictures; plain source files contain references only. See
 plain text, RTF, Excel/ODS workbooks and a Pages Online handoff. Excel's first
 release includes a bounded Org formula translator with editable inputs; other
 calculation engines require an explicit values-only choice. Google Docs supports
-Word download/import and OAuth Drive conversion when a web client is configured.
-Live Google creation still requires owner setup and verification. See
+Word download/import and OAuth Drive conversion. The deployed public client is
+configured; live creation was verified with the owner’s approved Google test
+account. The Google project remains in testing mode. See
 [export support and setup](docs/exports.md) and [backend decisions](design/exports.md).
 
 Rebuild export libraries with `node scripts/vendor/exports.mjs`, then

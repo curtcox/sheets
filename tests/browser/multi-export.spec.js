@@ -96,7 +96,7 @@ test("Google upload converts DOCX and returns a document link without persisting
   await page.route("https://accounts.google.com/gsi/client", (route) =>
     route.fulfill({
       contentType: "application/javascript",
-      body: 'window.google={accounts:{oauth2:{initTokenClient:o=>({requestAccessToken:()=>o.callback({access_token:"export-test-token"})})}}}',
+      body: 'window.google={accounts:{oauth2:{initTokenClient:o=>(window.testOAuthConfig={clientId:o.client_id,scope:o.scope,includeGrantedScopes:o.include_granted_scopes},{requestAccessToken:()=>o.callback({access_token:"export-test-token"})})}}}',
     }),
   );
   await page.route(
@@ -113,14 +113,17 @@ test("Google upload converts DOCX and returns a document link without persisting
   );
   await open(page);
   await page.locator("#export-target").selectOption("google");
-  await page
-    .locator("#export-google-client")
-    .fill("123.apps.googleusercontent.com");
+  await expect(page.locator("#export-google-settings")).toBeHidden();
   await page.locator("#export-go").click();
   await expect(page.locator("#export-result a")).toHaveAttribute(
     "href",
     "https://docs.google.com/document/d/export-doc/edit",
   );
+  expect(await page.evaluate(() => window.testOAuthConfig)).toEqual({
+    clientId: await page.locator('meta[name="google-client-id"]').getAttribute("content"),
+    scope: "https://www.googleapis.com/auth/drive.file",
+    includeGrantedScopes: false,
+  });
   expect(page.url()).not.toContain("export-test-token");
 });
 test("mobile export dialog fits and cancellation discards conversions after an edit", async ({
