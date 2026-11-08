@@ -29,6 +29,7 @@ import { sourceTitle, sourceDownload, projectDownload } from "./downloads.js";
 import { parseProjectFile } from "./project-state.js";
 import { verifyInputSnapshot, SNAPSHOT_LIMITS } from "./input-snapshot.js";
 import { htmlDownload, downloadFile } from "./export-document.js";
+import { setupInsertion } from "./insert-content.js";
 import { optionalStorage } from "./util.js";
 const byId=id=>document.getElementById(id);
 const oldHeader=document.querySelector('.site-header'),brand=oldHeader.querySelector('.brand'),shareButton=byId('share');
@@ -288,6 +289,14 @@ const scheduler = new RenderScheduler({
         persistTimer = setTimeout(persist, 300);
       } else persist();
     }
+  },
+});
+setupInsertion({
+  container: shell.toolbar, sourcePane: $('source-pane'), getFormat: selectedType, fingerprint,
+  capture: () => editor ? editor.getSelectionRange().clone() : { start: $('source-fallback').selectionStart, end: $('source-fallback').selectionEnd },
+  insert(text, position) {
+    if (editor) { editor.session.markUndoGroup(); editor.session.replace(position, text); editor.session.markUndoGroup(); editor.focus(); }
+    else { $('source-fallback').setRangeText(text, position.start, position.end, 'end'); changed(); }
   },
 });
 const clientId = document.querySelector("meta[name=hashbin-client-id]").content;

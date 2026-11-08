@@ -280,3 +280,13 @@ This app uses released Fragment Kit v0.3.5 for compact controls, readable dialog
 and individual-pane or split workspace views. On phones, primary feedback stays
 visible while status details are available in More.
 Current deployment evidence is recorded in the [shared rollout status](https://github.com/curtcox/Tools-for-pages-with-state-in-URL-fragments/blob/main/todo/rollout-status.md).
+
+## Insert outside tables
+
+Choose **Insert** to load a UTF-8 CSV/TSV file or paste delimited rows. Preview
+values, choose comma/semicolon/tab and select whether the first row is a header,
+then insert an editable Org or Markdown table at the source selection. Copied
+multiline tab-separated spreadsheet cells also open this preview on paste.
+Numbers, dates and identifiers stay as text; formulas and live connections are
+not imported. Org joins multiline cells with spaces. Markdown supplies an empty
+header when needed. Limits are 512 KiB, 1,000 rows, 100 columns and 20,000 cells.

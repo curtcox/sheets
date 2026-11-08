@@ -670,5 +670,37 @@ export const catalog=[
       "src": "---\ntitle: Errors stay with their cells\nformat: html\n---\n\n```{python}\n1 / 0\n```\n\n```{python}\nprint(\"The next cell still runs\")\n```\n",
       "format": "quarto"
     }
+  },
+  {
+    "id": "org-csv-budget",
+    "format": "org",
+    "kind": "typical",
+    "title": "CSV budget to working table",
+    "description": "Import CSV values, then add a deliberate Org calculation.",
+    "path": "examples/org/csv-budget.org",
+    "tags": [
+      "org",
+      "typical"
+    ],
+    "document": {
+      "src": "#+TITLE: CSV budget to working table\n\n* Imported budget\n\nThese values came from CSV. The total formula was added deliberately in Sheets.\n\n| Item       | Quantity | Unit cost | Total |\n|------------+----------+-----------+-------|\n| Notebooks  |       12 |         4 |     0 |\n| Pencils    |       24 |         1 |     0 |\n| Folders    |        8 |         3 |     0 |\n#+TBLFM: $4=$2*$3\n\n* Try it\n\nChoose *Insert*, paste the CSV below, and inspect the preview. Choose comma as\nthe separator and keep the first row as a header. Insert the editable table.\nThen add a TBLFM line yourself to calculate with the imported values.\n\n#+BEGIN_EXAMPLE\nItem,Quantity,Unit cost\nNotebooks,12,4\nPencils,24,1\nFolders,8,3\n#+END_EXAMPLE\n\nInsertion preserves values. It does not import spreadsheet formulas or connections.\n",
+      "format": "org"
+    }
+  },
+  {
+    "id": "gfm-csv-report",
+    "format": "gfm",
+    "kind": "typical",
+    "title": "CSV table in a report",
+    "description": "Preserve quoted commas, leading zeros and decimal text when importing CSV.",
+    "path": "examples/gfm/csv-report.md",
+    "tags": [
+      "gfm",
+      "typical"
+    ],
+    "document": {
+      "src": "# CSV table in a report\n\nImported values stay as written, including leading zeros, commas and decimal places.\n\n| ID | Department | Budget |\n| --- | --- | --- |\n| 001 | Research, development | 1200.00 |\n| 002 | Operations | 950.50 |\n\n## Try it\n\nChoose **Insert**, paste this CSV, and review the table before inserting:\n\n```csv\nID,Department,Budget\n001,\"Research, development\",1200.00\n002,Operations,950.50\n```\n\nYou can also choose a `.csv` or `.tsv` file. For copied spreadsheet cells, choose\nthe Tab separator. Turn off **First row is a header** for data without headings.\nMarkdown requires a header row, so Sheets supplies an empty one in that case.\n",
+      "format": "gfm"
+    }
   }
 ];

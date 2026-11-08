@@ -334,5 +334,21 @@
     "title": "Errors stay with their cells",
     "description": "Python errors appear in the preview and editor diagnostics.",
     "path": "examples/quarto/error.qmd"
+  },
+  {
+    "id": "org-csv-budget",
+    "format": "org",
+    "kind": "typical",
+    "title": "CSV budget to working table",
+    "description": "Import CSV values, then add a deliberate Org calculation.",
+    "path": "examples/org/csv-budget.org"
+  },
+  {
+    "id": "gfm-csv-report",
+    "format": "gfm",
+    "kind": "typical",
+    "title": "CSV table in a report",
+    "description": "Preserve quoted commas, leading zeros and decimal text when importing CSV.",
+    "path": "examples/gfm/csv-report.md"
   }
 ]

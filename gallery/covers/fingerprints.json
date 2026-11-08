@@ -3,7 +3,7 @@
     "src/fragment-config.js": "021a2947443aee02397d8df4f59c044ef441b05b3f382ecf7b5f7dabc7cd125c",
     "src/sheets-document.js": "54c494523cb35e4e14cdcf35e59b89155bddd87ba23dd4207448d5540de00f1b",
     "scripts/render-gallery.mjs": "25adf5f39c3d4b80a900dcc2067290f51a1da50ba361e4c5b36a1e08e1dc766f",
-    "examples/catalog.json": "eecc14a4139c847b91ff0803c023f3f3f1dacfa3461852139efb4058b6797927",
+    "examples/catalog.json": "55b3605e5ae6da6baade54ea81b55b8756e351a8dfe29e77773a873a54206d30",
     "examples/gfm/basic.md": "819a01622ca86c3f10b64f4cf6a30883d7ef51db5598c572684f882ed1fc827d",
     "examples/covers/gfm-basic.png": "7d04af63ce75f35c2211150412702e0018a270c32afdd41f68c89c4d95b5a849",
     "examples/gfm/typical.md": "0d361e1e055ad206f5f4ec736124332fa8804f12775d7e098cf7a14d4bbd05fd",
@@ -85,7 +85,11 @@
     "examples/quarto/edge.qmd": "eb84eddf18683d25652ea7da0376e8a6fe3480d63494bf4b70c6823b648243d3",
     "examples/covers/quarto-edge.png": "3111a38ac55b305da6c250f9e9490a6c64b3659383c7a80927038d14008cff2a",
     "examples/quarto/error.qmd": "990383c13658dc8106ce0e659b2cd99939056f6a01a0741d613f932943b64bca",
-    "examples/covers/quarto-error.png": "8b0795e91ea7090057dc55f24887d734a154ba9650188b9c0427da38dfaf74b9"
+    "examples/covers/quarto-error.png": "8b0795e91ea7090057dc55f24887d734a154ba9650188b9c0427da38dfaf74b9",
+    "examples/org/csv-budget.org": "91563bebb1c7e6bad37cdc862088d32251904d55d08fb609339256b1b6caec46",
+    "examples/covers/org-csv-budget.png": "cf8a9add636c2dfdb39205adacdc51b84977826487c302113bcfe8dba9dc431e",
+    "examples/gfm/csv-report.md": "d82d6d57d0ce3f6966daca805ea9b3040a6e276478073de3a36475ebc8fb944e",
+    "examples/covers/gfm-csv-report.png": "35e9e1a1f85c6278eae0f756086fe8f4e0beba18af477c462c0e79ba7f135ae6"
   },
   "renderer": "826973b61c89cfac33917d2cae585ab4a8d6a79d1ad280a289489b2e5b7bc5e5",
   "examples": {
@@ -252,6 +256,14 @@
     "quarto-error": {
       "document": "aa0907b9fd9527fee154798a987d7bbb54a59d3b18257b0812a388379b8c3402",
       "cover": "8b0795e91ea7090057dc55f24887d734a154ba9650188b9c0427da38dfaf74b9"
+    },
+    "org-csv-budget": {
+      "document": "3c91d38521af5b5e791d9cbc3a3aa013a9e72d77fd642d53831db6046f077f5b",
+      "cover": "cf8a9add636c2dfdb39205adacdc51b84977826487c302113bcfe8dba9dc431e"
+    },
+    "gfm-csv-report": {
+      "document": "3476fcab33a36d571d2ac086f23ff61431cd9877818908c14251cb312b43e0c0",
+      "cover": "35e9e1a1f85c6278eae0f756086fe8f4e0beba18af477c462c0e79ba7f135ae6"
     }
   }
 }
