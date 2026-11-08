@@ -1,3 +1,4 @@
+import { setupExports } from './exports/ui.js';
 import { catalog, detect, loadFormat } from "./formats/registry.js";
 import {
   readURL,
@@ -170,7 +171,9 @@ const snapshot = () => ({
 });
 function saveDraft(edit=false){drafts.attempt(snapshot(),edit);}
 const fingerprint = () => JSON.stringify(snapshot());
+let exportUI;
 function updateDownloadOptions(ready = false) {
+  exportUI?.update(ready);
   const extension =
     catalog.find((item) => item.id === selectedType())?.extensions[0] || ".txt";
   $("download-source").textContent = `Source (${extension})`;
@@ -296,6 +299,7 @@ const scheduler = new RenderScheduler({
     }
   },
 });
+exportUI = setupExports({button: $('export-open'), getState: snapshot, getResult: () => currentResult, getRevision: () => scheduler.revision, preview, closeDrawer: () => shell.drawer.dialog.close()});
 setupInsertion({
   container: shell.toolbar, sourcePane: $('source-pane'), getFormat: selectedType, fingerprint,
   capture: () => editor ? editor.getSelectionRange().clone() : { start: $('source-fallback').selectionStart, end: $('source-fallback').selectionEnd },

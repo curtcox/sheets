@@ -992,7 +992,16 @@ See `design/external-content.md` and `docs/insert-content.md`.
 
 ## Multi-format exports — 2026-11-08
 
-Status: planned; research and delivery gates below are not implemented features.
+Status: initial implementation delivered on 2026-11-08. The export dialog,
+immutable snapshots, permissive Word/Markdown/workbook backends, evaluated text,
+HTML, RTF, XLSX/ODS with supported working Org formulas, Pages links and a Google
+Docs download/import route are implemented. OAuth Drive conversion is implemented
+and mock-tested; live Google verification awaits an owner-configured client.
+Pandoc was evaluated and deferred for download/offline cost; see
+[backend decision and evidence](design/exports.md) and [user guide](docs/exports.md).
+The original delivery gates below remain the broader roadmap: Hurmet formula
+translation, physical-mobile performance, full target-application layout checks
+and authenticated HashBin example publication are not yet complete.
 Export a Sheet to Word, Excel, Google Docs, plain text, Markdown, HTML, and
 [Pages Online](https://github.com/curtcox/pages). Reuse a small number of conversion
 backends so another supported writer usually needs metadata, options and fixtures,

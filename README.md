@@ -296,3 +296,20 @@ CIDs) and bundled PNG/JPEG/WebP attachments. CSV and clipboard tables can be ins
 as editable source or a picture. Portable projects, links, drafts and HashBin saves
 retain included pictures; plain source files contain references only. See
 [outside tables and pictures](docs/insert-content.md) for usage and limits.
+
+## Document and workbook exports
+
+**More → Download → Export to Word, Excel, Docs…** adds evaluated Word, Markdown,
+plain text, RTF, Excel/ODS workbooks and a Pages Online handoff. Excel's first
+release includes a bounded Org formula translator with editable inputs; other
+calculation engines require an explicit values-only choice. Google Docs supports
+Word download/import and OAuth Drive conversion when a web client is configured.
+Live Google creation still requires owner setup and verification. See
+[export support and setup](docs/exports.md) and [backend decisions](design/exports.md).
+
+Rebuild export libraries with `node scripts/vendor/exports.mjs`, then
+`npm run offline`. To retain browser-generated sample files while testing:
+
+```sh
+SHEETS_EXPORT_ARTIFACTS=/tmp/sheets-export-examples npx playwright test tests/browser/multi-export.spec.js --project=chromium
+```

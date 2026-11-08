@@ -42,7 +42,7 @@ export function parseTable(lines) {
 export function recalculateTable(
   table,
   formula,
-  { line = 1, bindings, profile, remote, sharedInput } = {},
+  { line = 1, bindings, profile, remote, sharedInput, onFormula } = {},
 ) {
   validateProfile(profile, "org");
   const diagnostics = [];
@@ -172,6 +172,7 @@ export function recalculateTable(
   };
   const apply = (assignment, row, col) => {
     const { target, expression, modes } = assignment;
+    onFormula?.({ row, col, expression, modes, line, lisp: assignment.lisp });
     if (assignment.lisp) {
       try {
         table.rows[row - 1][col - 1] = evaluateDraw(
@@ -305,6 +306,12 @@ export function recalculateOrg(src, { profile, inputs = new Map() } = {}) {
       constants: document.constants,
       diagnostics,
     });
+    table.export = { formulas: [], constants: {}, fields: Object.fromEntries(bindings.fields), columns: {}, shared: {} };
+    for (const name of new Set([...document.constants.keys(), ...table.rows.flatMap(row => row.slice(1).map(value => /^([A-Za-z][A-Za-z0-9_]*)\s*=/.exec(value)?.[1]).filter(Boolean))])) {
+      try { table.export.constants[name] = bindings.value(name); } catch { /* Invalid values remain render diagnostics. */ }
+    }
+    for (const row of table.rows) for (const name of row) if (bindings.column(name)) table.export.columns[name] = bindings.column(name);
+    for (const input of sharedInputs) for (const entry of input.entries || []) table.export.shared[`${input.alias}.${entry.name}`] = entry.value;
     let formulaIndex = end;
     if (profile === ORG_EMACS)
       while (formulaIndex < lines.length && !lines[formulaIndex].trim())
@@ -318,7 +325,7 @@ export function recalculateOrg(src, { profile, inputs = new Map() } = {}) {
         ...recalculateTable(
           table,
           formula,
-          { line: formulaIndex + 1, bindings, profile, remote, sharedInput },
+          { line: formulaIndex + 1, bindings, profile, remote, sharedInput, onFormula: formula => table.export.formulas.push(formula) },
         ),
       );
       if (document.precedenceHints)
@@ -337,6 +344,7 @@ export function recalculateOrg(src, { profile, inputs = new Map() } = {}) {
     sharedInputs,
     fileConstants: document.constantEntries,
     controls,
+    workbook: { tables: tables.map(({ start, table }, index) => ({ ...table, name: [...document.namedTables].find(([, value]) => value === start)?.[0] || `Table ${index + 1}`, line: start + 1 })), diagnostics },
     showConstants: document.showConstants,
   };
 }

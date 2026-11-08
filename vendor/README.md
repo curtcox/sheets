@@ -36,3 +36,14 @@ These runtime assets are downloaded from upstream and are not vendored or includ
 in the offline app cache. `src/webr-client.js` and its same-origin bootstrap
 `src/workers/webr-worker.js` pin the runtime URLs. The bootstrap creates webR’s
 own worker directly, so cancellation also stops its initial CDN download.
+
+## Export libraries
+
+Rebuild with `npm ci && node scripts/vendor/exports.mjs`. Exact versions and package
+integrities are pinned in `package-lock.json`; `exports.json` records the generated
+inventory. SheetJS CE 0.20.3 comes from its official CDN package, not the stale npm
+`xlsx` package. Word uses docx 9.15.3 (MIT); Markdown uses Turndown 7.2.5 and its
+GFM plugin 1.0.2 (MIT); workbooks use SheetJS CE 0.20.3 (Apache-2.0); app-owned
+OOXML package adjustments use fflate 0.8.3 (MIT). Original/transitive notices are
+in `export-licenses/` and linked bundle comments. Pandoc was evaluated but is not
+shipped. See `design/exports.md` for measured sizes and selection rationale.

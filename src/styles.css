@@ -1198,3 +1198,4 @@ dialog label {
 .import-preview table{border-collapse:collapse;font-size:.9em}
 .import-preview td,.import-preview th{border:1px solid #ccd8d2;padding:6px;white-space:pre-wrap;min-width:48px}
 #insert-dialog button,#insert-dialog select{min-height:44px}
+.export-dialog{max-width:min(38rem,calc(100vw - 2rem));max-height:calc(100dvh - 2rem);overflow:auto;border:1px solid #ccd8d4;border-radius:12px;padding:24px;color:#243b39;background:white}.export-dialog::backdrop{background:#10282588}.export-dialog header,.export-dialog footer{display:flex;align-items:center;justify-content:space-between;gap:12px}.export-dialog h2{margin:0}.export-dialog label{display:block;margin:14px 0}.export-dialog select,.export-dialog input[type=text]{display:block;max-width:100%;width:100%;padding:8px}.export-dialog #export-status{white-space:pre-wrap}.export-dialog #export-result{overflow-wrap:anywhere}.export-dialog [hidden]{display:none!important}

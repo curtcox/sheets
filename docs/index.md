@@ -104,3 +104,10 @@ Updates wait for Update and reload, preserving the full current document in its
 link. Repair checks corrupted or evicted assets. Removing offline files affects
 only Sheets caches. Python, R, exchange rates and external services still need
 a connection.
+
+## Other export formats
+
+**More → Download → Export to Word, Excel, Docs…** exports evaluated content as
+Word, Excel with supported working Org formulas, Google Docs, plain text,
+Markdown, HTML or an editable page in Pages Online. ODS and RTF are also available.
+See [Export support, formula limits and Google setup](exports.md).

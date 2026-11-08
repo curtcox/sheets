@@ -1,0 +1,11 @@
+
+## Export libraries
+
+Rebuild with `npm ci && node scripts/vendor/exports.mjs`. Exact versions and package
+integrities are pinned in `package-lock.json`; `exports.json` records the generated
+inventory. SheetJS CE 0.20.3 comes from its official CDN package, not the stale npm
+`xlsx` package. Word uses docx 9.15.3 (MIT); Markdown uses Turndown 7.2.5 and its
+GFM plugin 1.0.2 (MIT); workbooks use SheetJS CE 0.20.3 (Apache-2.0); app-owned
+OOXML package adjustments use fflate 0.8.3 (MIT). Original/transitive notices are
+in `export-licenses/` and linked bundle comments. Pandoc was evaluated but is not
+shipped. See `design/exports.md` for measured sizes and selection rationale.

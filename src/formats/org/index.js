@@ -182,6 +182,7 @@ export function renderOrg(src, options = {}) {
       '<button data-action="copy-org">Copy recalculated source</button>',
     diagnostics: [...result.diagnostics, ...plots.diagnostics],
     controls,
+    workbook: result.workbook,
     recalculatedSource: result.source,
     inputsReady: !result.sharedInputs.some((input) => input.error),
   };

@@ -48,6 +48,8 @@ export function htmlDownload(
   const html = sanitize(clone.innerHTML);
   const document = `<!doctype html>\n<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta http-equiv="Content-Security-Policy" content="default-src 'none'; img-src data: https: http:; style-src 'unsafe-inline'; base-uri 'none'; form-action 'none'"><title>${escapeHTML(title)}</title><style>${exportStyles}${CHART_STYLES}</style></head><body><article class="document">${html}</article></body></html>\n`;
   return {
+    html: document,
+    fragment: html,
     name: fileName(title, ".html"),
     blob: new Blob([document], { type: "text/html;charset=utf-8" }),
   };
