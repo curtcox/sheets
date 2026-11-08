@@ -1,4 +1,4 @@
-import {HashBinPanel as Panel} from '../vendor/fragment-kit-v0.3.4/src/index.js';
+import {HashBinPanel as Panel} from '../vendor/fragment-kit-v0.3.5/src/index.js';
 import{HashBinDocuments,readOverrides}from'./fragment-config.js';
 export class HashBinPanel extends Panel{
  constructor(options){

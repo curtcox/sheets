@@ -26,6 +26,6 @@ Review recorded conformance changes; do not blindly update expected results.
 Keep format guides candid about supported subsets and known differences.
 
 Shared URL, Publish, QR, drafts, mobile and offline contracts are documented in
-vendor/fragment-kit-v0.3.4/docs/contracts.md. Run node scripts/test-contracts.mjs
+vendor/fragment-kit-v0.3.5/docs/contracts.md. Run node scripts/test-contracts.mjs
 with the app server running; the opt-in offline contract uses its own process.
 Application calculation engines, sanitization, project schema and execution isolation remain app-owned.

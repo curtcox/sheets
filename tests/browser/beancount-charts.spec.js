@@ -10,7 +10,7 @@ const charts = (page) => page.locator("#report-charts figure.chart");
 test("the Charts tab draws the default ledger charts, sanitized and exported", async ({ page, context }) => {
   await page.goto(`${base}?example=beancount-household&view=preview`);
   await ready(page);
-  await expect(page.getByRole("tab")).toHaveText(["Diagnostics", "Balance sheet", "Income statement", "Trial balance", "Charts", "Account journal"]);
+  await expect(page.locator("#preview").getByRole("tab")).toHaveText(["Diagnostics", "Balance sheet", "Income statement", "Trial balance", "Charts", "Account journal"]);
   await expect(page.locator("#report-charts")).toBeHidden();
   await page.getByRole("tab", { name: "Charts", exact: true }).click();
   await expect(charts(page)).toHaveCount(3);

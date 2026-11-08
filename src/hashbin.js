@@ -1,4 +1,4 @@
-import {HashBinStore as Store,createDocuments} from '../vendor/fragment-kit-v0.3.4/src/index.js';
+import {HashBinStore as Store,createDocuments} from '../vendor/fragment-kit-v0.3.5/src/index.js';
 import{config,type,toDocument,normalizationMaxBytes,HashBinDocuments,serializeLegacy,fromDocument,publishTransactions}from'./fragment-config.js';
 export{HashBinDocuments};
 export class HashBinStore extends Store{

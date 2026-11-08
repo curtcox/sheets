@@ -1,6 +1,6 @@
 import test from'node:test';
 import assert from'node:assert/strict';
-import{computeCID}from'../../vendor/fragment-kit-v0.3.4/src/core/cid.js';
+import{computeCID}from'../../vendor/fragment-kit-v0.3.5/src/core/cid.js';
 import{serializeLegacy,urlState,readURL}from'../../src/fragment-config.js';
 import{HashBinStore}from'../../src/hashbin.js';
 const memory=()=>{const data=new Map();return{data,getItem:key=>data.get(key)??null,setItem:(key,value)=>data.set(key,value),removeItem:key=>data.delete(key)};};

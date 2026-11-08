@@ -19,4 +19,4 @@ jobs:
     with:
       stage-command: npm ci && node scripts/stage.mjs
       path: _site
-      verify-marker: sheets-fragment-kit-v0.3.4
+      verify-marker: sheets-fragment-kit-v0.3.5

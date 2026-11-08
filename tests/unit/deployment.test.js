@@ -17,11 +17,11 @@ test('Pages stage contains only public runtime assets and verifies the final com
   assert.ok(manifest.assets.includes('gallery/covers/gfm-basic.png'));
   for(const path of manifest.assets){
    assert.ok(!/[?#]|(?:^|\/)\.\.(?:\/|$)/.test(path));
-   assert.ok(!/vendor\/fragment-kit-v0\.3\.4\/(?:testing|tools|docs)\//.test(path));
+   assert.ok(!/vendor\/fragment-kit-v0\.3\.5\/(?:testing|tools|docs)\//.test(path));
    assert.equal(manifest.hashes[path],createHash('sha256').update(await readFile(directory+'/'+path)).digest('hex'));
   }
-  for(const path of ['tests','scripts','vendor/fragment-kit-v0.3.4/testing','vendor/fragment-kit-v0.3.4/tools'])assert.equal(await stat(directory+'/'+path).then(()=>true,()=>false),false);
-  assert.match(await readFile(directory+'/sw.js','utf8'),/fragment-kit-v0.3.4\/src\/offline\/sw-core.js/);
+  for(const path of ['tests','scripts','vendor/fragment-kit-v0.3.5/testing','vendor/fragment-kit-v0.3.5/tools'])assert.equal(await stat(directory+'/'+path).then(()=>true,()=>false),false);
+  assert.match(await readFile(directory+'/sw.js','utf8'),/fragment-kit-v0.3.5\/src\/offline\/sw-core.js/);
   await appendFile(directory+'/sw.js','\n// Worker-only release change.\n');assert.notEqual((await offlineManifest(directory)).version,manifest.version);
  }finally{await rm(directory,{recursive:true,force:true});}
 });

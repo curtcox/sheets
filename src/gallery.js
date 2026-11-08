@@ -1,5 +1,5 @@
 import{watchOfflineUpdates}from'./offline.js';
-import{mountGallery}from'../vendor/fragment-kit-v0.3.4/src/index.js';
+import{mountGallery}from'../vendor/fragment-kit-v0.3.5/src/index.js';
 import{catalog}from'./gallery-catalog.js';
 watchOfflineUpdates();
 const container=document.getElementById('gallery');

@@ -1,4 +1,4 @@
-import{openMore}from"./ui.js";
+import{openMore,closeMore}from"./ui.js";
 import { test, expect } from "@playwright/test";
 import { readFile } from "node:fs/promises";
 import { writeURL } from "../../src/url-state.js";
@@ -128,7 +128,7 @@ test("Calca profile migration preserves source, sharing, exports, view and forma
   await expect(page.locator("#profile-help")).toContainText(
     "Source files contain text only",
   );
-  await openMore(page);await page.getByRole("button", { name: "Preview", exact: true }).click();
+  await closeMore(page);await page.getByRole("tab", { name: "Preview", exact: true }).click();
   await page.getByRole("button", { name: "Share", exact: true }).click();
   const shared = await page.locator("#share-link").inputValue();
   expect(new URL(shared).searchParams.get("profile")).toBe(profile);
