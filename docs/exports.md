@@ -73,7 +73,10 @@ Sheets origin under authorized JavaScript origins (production is
 allowed test users if the consent screen is in testing. Request only
 `https://www.googleapis.com/auth/drive.file`.
 
-Enter the public client ID in the export dialog and choose **Create Google Doc**.
+Configure the public client ID in `index.html` as
+`<meta name="google-client-id" content="YOUR_ID.apps.googleusercontent.com">`
+so visitors can export directly, or enter it in the export dialog for a one-time
+check. Choose **Create Google Doc**.
 No client secret belongs in this static app. Tokens stay in memory and are not
 written to URLs, source, drafts or HashBin. Signing in does not upload anything
 until you choose that action. If an upload is interrupted or fails ambiguously,

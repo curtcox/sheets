@@ -7,6 +7,7 @@ export function numericCell(text) {
   return (
     numeric.test(s) &&
     Number.isFinite(Number(s)) &&
+    !(Number(s) === 0 && /[1-9]/.test(s.split(/[eE]/)[0])) &&
     s.replace(/^[+-]?0*|[.eE+-]/g, "").length <= 15
   );
 }
@@ -30,8 +31,8 @@ const functions = {
   sqrt: "SQRT",
   exp: "EXP",
   ln: "LN",
-  floor: "FLOOR.MATH",
-  ceil: "CEILING.MATH",
+  floor: "INT",
+  ceil: "INT",
   min: "MIN",
   max: "MAX",
 };
@@ -141,7 +142,7 @@ export function buildWorkbook(snapshot, { valuesOnly = false } = {}) {
         for (let row = first; row <= last; row++)
           for (let col = left; col <= right; col++)
             items.push({ type: "reference", sheet: owner.name, row, col });
-        return { type: "vector", items };
+        return { type: "vector", items, skipEmpty: true };
       }
       const [row, col] = coordinates[0];
       checkAddress(row, col, owner);
@@ -242,16 +243,35 @@ export function buildWorkbook(snapshot, { valuesOnly = false } = {}) {
   }
   const emit = (n) => {
     if (n.type === "reference")
-      return sheetRef(n.sheet) + cellName(n.row, n.col);
+      return `N(${sheetRef(n.sheet)}${cellName(n.row, n.col)})`;
     if (n.type === "number") return String(Number(n.value));
-    if (n.type === "vector") return n.items.map(emit).join(",");
+    if (n.type === "vector")
+      return n.items
+        .map((item) =>
+          n.skipEmpty && item.type === "reference"
+            ? sheetRef(item.sheet) + cellName(item.row, item.col)
+            : emit(item),
+        )
+        .join(",");
     if (n.type === "neg") return `(-${emit(n.arg)})`;
     if (n.type === "percent") return `(${emit(n.arg)}/100)`;
     if (n.type === "round") return `ROUND(${emit(n.arg)},${n.places})`;
     if (n.type === "binary")
       return `(${emit(n.args[0])}${n.op}${emit(n.args[1])})`;
-    if (n.type === "call")
-      return `${functions[n.name]}(${n.args.map(emit).join(",")})`;
+    if (n.type === "call") {
+      const args = n.args.flatMap((arg) =>
+        arg.type === "vector" ? arg.items : [arg],
+      );
+      if (args.length > 254)
+        throw Error(
+          "Excel functions accept at most 255 arguments. Use a smaller range.",
+        );
+      if (n.name === "ceil") return `(-INT(-(${emit(n.args[0])})))`;
+      // PRODUCT with no numeric values returns zero in Excel; Calc's empty
+      // product is one. The explicit identity preserves that behavior.
+      const argumentsText = n.args.map(emit).join(",");
+      return `${functions[n.name]}(${n.name === "vprod" ? "1" + (argumentsText ? "," : "") : ""}${argumentsText})`;
+    }
     if (n.type === "compare") {
       const pairs = [];
       for (let i = 1; i < n.args.length; i++)
@@ -353,8 +373,14 @@ export function buildWorkbook(snapshot, { valuesOnly = false } = {}) {
           ? "Explicit values-only snapshot"
           : "Org arithmetic, comparisons, IF and numeric aggregates; unsupported formulas block export",
       ],
-      ["Content", modelText(snapshot.model).slice(0, 30000)],
-      ["Source", snapshot.state.src.slice(0, 30000)],
+      [
+        "Content (first 30,000 characters)",
+        modelText(snapshot.model).slice(0, 30000),
+      ],
+      [
+        "Source (first 30,000 characters; download source for the complete document)",
+        snapshot.state.src.slice(0, 30000),
+      ],
       ...tables.map((t) => [
         t.name,
         `${t.originalName}; source line ${t.line || "unknown"}`,

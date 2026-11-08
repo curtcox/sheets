@@ -23,10 +23,13 @@ export function setupExports({
   dialog.innerHTML =
     '<form method="dialog"><header><h2 id="export-title">Export document</h2><button aria-label="Close exports">Close</button></header></form><p>Exports capture the current results. Keep a portable project to edit calculations again in Sheets.</p><label>Format <select id="export-target"></select></label><label id="export-values-label" hidden><input id="export-values" type="checkbox"> Values-only snapshot (no working formulas)</label><div id="export-google-settings" hidden><label>Google OAuth web client ID <input id="export-google-client" type="text" autocomplete="off" placeholder="…apps.googleusercontent.com"></label><p>A website owner must configure this client for the current website. <a href="docs.html?page=exports">Setup and import instructions</a>.</p></div><p id="export-fidelity"></p><p><a href="docs.html?page=exports">Export support and limitations</a></p><p id="export-status" role="status" aria-live="polite"></p><div id="export-result"></div><footer><button id="export-go">Download</button><button id="export-cancel" hidden>Cancel export</button></footer>';
   document.body.append(dialog);
+  const configuredClient =
+    document.querySelector('meta[name="google-client-id"]')?.content || "";
   const $ = (id) => dialog.querySelector("#" + id),
     target = $("export-target"),
     go = $("export-go"),
     status = $("export-status");
+  $("export-google-client").value = configuredClient;
   const targets = [
     { id: "html", label: "Rendered HTML" },
     ...exportTargets,
@@ -56,7 +59,7 @@ export function setupExports({
     const id = target.value,
       book = ["xlsx", "ods"].includes(id);
     $("export-values-label").hidden = !book;
-    $("export-google-settings").hidden = id !== "google";
+    $("export-google-settings").hidden = id !== "google" || !!configuredClient;
     go.textContent =
       id === "pages"
         ? "Open in Pages"
@@ -118,7 +121,7 @@ export function setupExports({
     controller = new AbortController();
     const signal = AbortSignal.any([
         controller.signal,
-        AbortSignal.timeout(30000),
+        AbortSignal.timeout(target.value === "google" ? 300000 : 30000),
       ]),
       before = identity();
     busy = true;

@@ -36,8 +36,17 @@ export function googleToken(clientId, { signal } = {}) {
       client_id: clientId,
       scope: GOOGLE_SCOPE,
       callback: (response) =>
-        response.error
-          ? finish(reject, Error(response.error_description || response.error))
+        response.error ||
+        !response.access_token ||
+        (response.scope && !response.scope.split(/\s+/).includes(GOOGLE_SCOPE))
+          ? finish(
+              reject,
+              Error(
+                response.error_description ||
+                  response.error ||
+                  "Google did not grant permission to create this document.",
+              ),
+            )
           : finish(resolve, response.access_token),
       error_callback: (error) =>
         finish(reject, Error(error.message || "Google sign-in was cancelled.")),

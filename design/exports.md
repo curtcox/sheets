@@ -68,18 +68,21 @@ XLSX formula/cached-value pairs. Microsoft Excel opened the generated XLSX witho
 repair and displayed the cross-sheet formula in D2. This installed Excel is in
 read-only mode, so it could not perform the edit-and-recalculate gate. Independently,
 Python `formulas` 1.3.4 loaded the exported workbook, calculated D2 as 24, then
-calculated 80 after changing B2 from 3 to 10. This validates actual dependency
-recalculation with a separate implementation, but is not a substitute for a final
-editable Excel/LibreOffice acceptance check.
+calculated 80 after changing B2 from 3 to 10. The new independent CI job also passed LibreOffice Calc: it changes B2 to 10,
+opens/recalculates the exported XLSX, and verifies D2 is 80 while D3 remains 60.
+The original export implementation passed this gate in GitHub Actions run
+42525405946. The check is retained in `scripts/export-reference.py`.
 
 Google upload uses `multipart/related` and Drive's conversion MIME type, with
 `drive.file` consent and no persisted tokens. Live creation/import verification
 still needs the owner's OAuth web client. Pages handoff uses the current v1 Pages
 envelope and Fragment Kit compression; its full payload, URL and 5 MiB envelope
-limits are checked. HashBin publication of sample exports needs a signed-in
+limits are checked. A live browser check at `pages.hashbin.page` accepted the
+exported `index.html`, kept automatic execution off on open, and rendered the
+verification table with total 24 after Run. HashBin publication of sample exports needs a signed-in
 session and the normal quoted save flow. Neither a generated CID nor a source URL
 alone proves that a file was uploaded.
 
-Physical-phone memory/performance, full Word/Google layout inspection, editable
-Excel/LibreOffice recalculation and broader Hurmet formula coverage remain release
+Physical-phone memory/performance, full Word/Google layout inspection and broader
+Hurmet formula coverage remain release
 follow-ups; do not describe those gates as passed by viewport or mocked tests.

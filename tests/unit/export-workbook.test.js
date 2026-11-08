@@ -51,3 +51,28 @@ test("formula-looking literals stay strings and precision-sensitive numeric stri
   const row = buildWorkbook(doc).sheets[0].rows[0];
   assert.ok(row.every((c) => !c.numeric && !c.formula));
 });
+
+test("Excel products preserve the empty-product identity and rounding functions handle negatives", () => {
+  const doc = snapshot(
+    "| A | Result |\n|---+---|\n|  | 0 |\n|  | 0 |\n#+TBLFM: @2$2=vprod(@2$1..@3$1)::@3$2=ceil(-2.3)",
+  );
+  const result = buildWorkbook(doc);
+  assert.match(result.sheets[0].rows[1][1].formula, /PRODUCT\(1,/);
+  assert.match(result.sheets[0].rows[2][1].formula, /-INT/);
+});
+
+test("scalar blank fields become numeric zero while Org ranges preserve skipped blanks", () => {
+  const doc = snapshot(
+    "|  |  |  |  |\n#+TBLFM: $2=vprod($1)::$3=vsum($1..$1)::$4=vprod()",
+  );
+  const row = buildWorkbook(doc).sheets[0].rows[0];
+  assert.equal(row[1].value, "0");
+  assert.match(row[1].formula, /PRODUCT\(1,N\(/);
+  assert.equal(row[3].formula, "PRODUCT(1)");
+});
+
+test("nonzero values below Excel range remain exact text instead of silently becoming zero", () => {
+  const row = buildWorkbook(snapshot("| 1e-400 | 0 |")).sheets[0].rows[0];
+  assert.equal(row[0].numeric, false);
+  assert.equal(row[0].value, "1e-400");
+});
