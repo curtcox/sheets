@@ -95,7 +95,7 @@ test("exported Org money tables retain readable values and local scrolling witho
   await expect(page.locator("#render-status")).toHaveText(/^Ready/);
   await openMore(page);await page.locator("#download-menu summary").click();
   const download = page.waitForEvent("download");
-  await page.locator("#download-html").click();
+  await page.locator("#download-html").click(); await page.locator("#export-go").click(); await page.getByRole("button", { name: "Close exports" }).click();
   const html = await readFile(await (await download).path(), "utf8");
   const saved = await context.newPage();
   await saved.setContent(html);

@@ -19,12 +19,14 @@ blockquote,.markdown-alert,.callout{border-left:3px solid #7cb99c;padding:4px 18
 .display-math{overflow:auto;padding:15px 0}math{font-size:1.1em}.asciimath-formula details{font-size:.8em;color:#6c7c77}
 .result-line{display:grid;grid-template-columns:28px minmax(0,1fr) minmax(0,1fr);gap:12px;border-bottom:1px solid #dfe5e0;padding:10px 0;font-family:monospace;font-size:.85em}.result-line code,.result-line output{white-space:pre-wrap}.result-line output{color:#176f61}.line-number{color:#6c7c77}
 .error,.math-error,.diagnostics{color:#a74438}.notice{background:#fff7e7;padding:12px}.success{color:#176f61}figure{margin:24px 0}figcaption{font-size:.9em;text-align:center}
+.export-qr{break-inside:avoid;border-top:1px solid #dfe5e0;padding-top:16px}.export-qr img{width:180px;height:180px;display:block}.export-qr a{overflow-wrap:anywhere}
+.document.screen-appearance tr:nth-child(2n){background:#fafbf8}.screen-appearance{print-color-adjust:exact;-webkit-print-color-adjust:exact}
 @page{margin:18mm}@media print{body{max-width:none;margin:0;padding:0;font-size:11pt}.org-table-scroll{overflow:visible}pre,figure,tr{break-inside:avoid}h1,h2,h3{break-after:avoid}}
 `;
 /** Capture the current, sanitized preview, including completed diagrams and the selected report. */
 export function htmlDownload(
   preview,
-  { title = "Sheet", baseURL = location.href } = {},
+  { title = "Sheet", baseURL = location.href, appearance = "screen" } = {},
 ) {
   const clone = preview.cloneNode(true);
   clone
@@ -46,7 +48,7 @@ export function htmlDownload(
     }
   }
   const html = sanitize(clone.innerHTML);
-  const document = `<!doctype html>\n<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta http-equiv="Content-Security-Policy" content="default-src 'none'; img-src data: https: http:; style-src 'unsafe-inline'; base-uri 'none'; form-action 'none'"><title>${escapeHTML(title)}</title><style>${exportStyles}${CHART_STYLES}</style></head><body><article class="document">${html}</article></body></html>\n`;
+  const document = `<!doctype html>\n<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta http-equiv="Content-Security-Policy" content="default-src 'none'; img-src data: https: http:; style-src 'unsafe-inline'; base-uri 'none'; form-action 'none'"><title>${escapeHTML(title)}</title><style>${exportStyles}${CHART_STYLES}</style></head><body><article class="document${appearance === "screen" ? " screen-appearance" : ""}">${html}</article></body></html>\n`;
   return {
     html: document,
     fragment: html,

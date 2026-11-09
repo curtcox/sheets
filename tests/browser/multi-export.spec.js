@@ -81,7 +81,8 @@ test("exports sanitized media, editable Word content, selected report and a vali
   );
   const file = await download(page, "docx");
   expect(file.bytes.length).toBeGreaterThan(5000);
-  await page.locator("#export-target").selectOption("pages");
+  await page.locator("#export-target").selectOption("html");
+  await page.locator("#export-destination").selectOption("pages");
   await page.locator("#export-go").click();
   await expect(page.locator("#export-result a")).toHaveAttribute(
     "href",
@@ -112,7 +113,8 @@ test("Google upload converts DOCX and returns a document link without persisting
     },
   );
   await open(page);
-  await page.locator("#export-target").selectOption("google");
+  await page.locator("#export-target").selectOption("docx");
+  await page.locator("#export-destination").selectOption("google");
   await expect(page.locator("#export-google-settings")).toBeHidden();
   await page.locator("#export-go").click();
   await expect(page.locator("#export-result a")).toHaveAttribute(

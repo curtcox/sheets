@@ -142,7 +142,7 @@ test("GFM alignment and filtered text survive rendered HTML export", async ({
   await expect(page.locator("#render-status")).toHaveText(/^Ready/);
   await openMore(page);await page.locator("#download-menu summary").click();
   const pending = page.waitForEvent("download");
-  await page.locator("#download-html").click();
+  await page.locator("#download-html").click(); await page.locator("#export-go").click(); await page.getByRole("button", { name: "Close exports" }).click();
   const downloaded = await pending;
   const saved = await context.newPage();
   await saved.setContent(await readFile(await downloaded.path(), "utf8"));

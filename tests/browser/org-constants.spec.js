@@ -40,7 +40,7 @@ test("constants summary shares exact source and survives reload, recalculated co
     expect(await readFile(await (await pending).path(), "utf8")).toBe(src);
     await openMore(page);await page.locator("#download-menu summary").click();
     pending = page.waitForEvent("download");
-    await page.locator("#download-html").click();
+    await page.locator("#download-html").click(); await page.locator("#export-go").click(); await page.getByRole("button", { name: "Close exports" }).click();
     const html = await readFile(await (await pending).path(), "utf8"), saved = await context.newPage();
     await saved.setContent(html);
     await saved.setViewportSize({ width: 390, height: 844 });

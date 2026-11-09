@@ -12,6 +12,7 @@ async function download(page, selector) {
   await openMore(page);await page.locator("#download-menu summary").click();
   const pending = page.waitForEvent("download");
   await page.locator(selector).click();
+  if (selector === "#download-html") await page.locator("#export-go").click();
   const file = await pending;
   return {
     name: file.suggestedFilename(),
@@ -108,7 +109,7 @@ test("download menu fits mobile and print shows the full preview from source vie
   page,
 }) => {
   await page.addInitScript(() => {
-    window.print = () =>
+    Window.prototype.print = () =>
       (globalThis.printCalls = (globalThis.printCalls || 0) + 1);
   });
   await page.setViewportSize({ width: 390, height: 844 });
@@ -133,7 +134,18 @@ test("download menu fits mobile and print shows the full preview from source vie
   await expect(page.locator("#download-menu summary")).toBeFocused();
   await openMore(page);await page.locator("#download-menu summary").click();
   await page.locator("#print-preview").click();
-  expect(await page.evaluate(() => globalThis.printCalls)).toBe(1);
+  await expect(page.locator("#export-destination")).toHaveValue("print");
+  // Inspect the isolated print document; no system dialog during browser tests.
+  await page.evaluate(() => { window.print = () => {}; });
+  // Stub the iframe print method before its prepared contents finish loading.
+  await page.evaluate(() => {
+    const append = document.body.append.bind(document.body);
+    document.body.append = (...nodes) => { append(...nodes); for (const node of nodes) if (node.className === "export-print-frame") node.addEventListener("load", () => { node.contentWindow.print = () => { globalThis.printCalls = 1; }; }); };
+  });
+  await page.locator("#export-go").click();
+  await expect.poll(() => page.evaluate(() => globalThis.printCalls)).toBe(1);
+  await expect(page.frameLocator(".export-print-frame").locator("body > article")).toContainText("Last paragraph.");
+  await page.getByRole("button", {name:"Close exports"}).click();
   await page.emulateMedia({ media: "print" });
   for (const selector of [
     "#source-pane",

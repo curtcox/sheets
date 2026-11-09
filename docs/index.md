@@ -107,7 +107,7 @@ a connection.
 
 ## Other export formats
 
-**More → Download → Export to Word, Excel, Docs…** exports evaluated content as
+**More → Download → Export / Save…** exports evaluated content as
 Word, Excel with supported working Org formulas, Google Docs, plain text,
 Markdown, HTML or an editable page in Pages Online. ODS and RTF are also available.
 See [Export support, formula limits and Google setup](exports.md).

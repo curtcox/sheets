@@ -38,7 +38,7 @@ test("precedence hints preserve arithmetic, source, modes, sharing, reload and e
     expect(await readFile(await (await pending).path(), "utf8")).toBe(src);
     await openMore(fresh);await fresh.locator("#download-menu summary").click();
     pending = fresh.waitForEvent("download");
-    await fresh.locator("#download-html").click();
+    await fresh.locator("#download-html").click(); await fresh.locator("#export-go").click(); await fresh.getByRole("button", { name: "Close exports" }).click();
     const html = await readFile(await (await pending).path(), "utf8"), saved = await context.newPage();
     await saved.setContent(html);
     await saved.emulateMedia({ media: "print" });

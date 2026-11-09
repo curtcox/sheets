@@ -1,3 +1,4 @@
+import { SheetShareClient } from "./share-links.js";
 import { setupExports } from './exports/ui.js';
 import { catalog, detect, loadFormat } from "./formats/registry.js";
 import {
@@ -26,10 +27,10 @@ import { loadExample } from "./examples.js";
 import { setupOffline } from "./offline.js";
 import { acePath } from "./ace-path.js";
 import { loadEditorMode } from "./editor-modes.js";
-import { sourceTitle, sourceDownload, projectDownload } from "./downloads.js";
+import { sourceDownload, projectDownload } from "./downloads.js";
 import { parseProjectFile } from "./project-state.js";
 import { verifyInputSnapshot, SNAPSHOT_LIMITS } from "./input-snapshot.js";
-import { htmlDownload, downloadFile } from "./export-document.js";
+import { downloadFile } from "./export-document.js";
 import { verifyAttachments, validateAttachments } from "./attachments.js";
 import { resolvePictures, resolveHostedPictures } from "./pictures.js";
 import { setupInsertion } from "./insert-content.js";
@@ -299,7 +300,7 @@ const scheduler = new RenderScheduler({
     }
   },
 });
-exportUI = setupExports({button: $('export-open'), getState: snapshot, getResult: () => currentResult, getRevision: () => scheduler.revision, preview, closeDrawer: () => shell.drawer.dialog.close()});
+exportUI = setupExports({button: $('export-open'), getState: snapshot, getResult: () => currentResult, getRevision: () => scheduler.revision, preview, closeDrawer: () => shell.drawer.dialog.close(), getLink: () => urlState.build(snapshot(), {run:autoRun}).href, getSavedLink: () => currentCID ? HashBinDocuments.link(location.href,currentCID) : null, saveToHashBin: () => panel.openSave()});
 setupInsertion({
   container: shell.toolbar, sourcePane: $('source-pane'), getFormat: selectedType, fingerprint,
   capture: () => editor ? editor.getSelectionRange().clone() : { start: $('source-fallback').selectionStart, end: $('source-fallback').selectionEnd },
@@ -347,10 +348,11 @@ const panel = new HashBinPanel({
   onSaved(cid) {
     currentCID = cid;
     persist();
+    if(exportUI?.awaitingSave){panel.dialog.close();exportUI.saved();}
     if(qrSave){qrSave=false;panel.dialog.close();qr.open(HashBinDocuments.link(location.href,cid));}
   },
 });
-panel.dialog.addEventListener('close',()=>{qrSave=false;});
+panel.dialog.addEventListener('close',()=>{qrSave=false;exportUI?.saveClosed();});
 for(const element of $('hashbin-panel').querySelectorAll('[id]'))elements.set(element.id,element);
 $("hashbin-save").disabled = false;
 $("hashbin-config").textContent = clientId
@@ -576,15 +578,13 @@ $("project-detach").onclick = () => {
 };
 $("download-html").onclick = () => {
   if ($("download-html").disabled) return;
-  const title =
-    preview.querySelector("h1")?.textContent || sourceTitle(getSource());
-  downloadFile(htmlDownload(preview, { title }));
   $("download-menu").open = false;
+  exportUI.open({target:"html", destination:"download", contents:"rendered"});
 };
 $("print-preview").onclick = () => {
   if ($("print-preview").disabled) return;
   $("download-menu").open = false;
-  window.print();
+  exportUI.open({target:"html", destination:"print", contents:"rendered"});
 };
 document.addEventListener("click", (event) => {
   if (!$("download-menu").contains(event.target))
@@ -597,7 +597,7 @@ $("download-menu").addEventListener("keydown", (event) => {
   }
 });
 for(const id of ['download-source','download-project','open-project','download-html','print-preview']){const button=$(id),action=button.onclick;button.onclick=event=>{shell.drawer.dialog.close();return action(event);};}
-const share=createShareDialog({urlState,getSnapshot:snapshot,onSave:()=>panel.openSave()});
+const share=createShareDialog({client:new SheetShareClient(),urlState,getSnapshot:snapshot,onSave:()=>panel.openSave()});
 shareButton.onclick=()=>{share.open();byId('share-run').checked=autoRun;byId('share-run').dispatchEvent(new Event('change'));};
 const qr=createQrDialog({config,urlState,onLoad:outcome=>openLinked(outcome.kind==='cid'?HashBinDocuments.link(location.href,outcome.cid):outcome.href),onSave:()=>{qrSave=true;qr.dialog.close();return panel.openSave();}});
 qrButton.onclick=()=>qr.open(urlState.build(snapshot(),{run:autoRun}).href);
@@ -640,6 +640,7 @@ async function restore() {
       updateProfileControls();
       currentCID = published.cid || null;
       persist();
+      exportUI.restoreAfterPublish(published.cid);
       if(autoRun)scheduler.schedule(getSource(), {}, true);
       return;
     }

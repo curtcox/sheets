@@ -79,7 +79,7 @@ test("controls recalculate live, write exact source, undo per gesture and surviv
 
     await openMore(page);await page.locator("#download-menu summary").click();
     const pending = page.waitForEvent("download");
-    await page.locator("#download-html").click();
+    await page.locator("#download-html").click(); await page.locator("#export-go").click(); await page.getByRole("button", { name: "Close exports" }).click();
     const html = await readFile(await (await pending).path(), "utf8"), saved = await context.newPage();
     await saved.setContent(html);
     await expect(saved.locator("input[data-control]")).toHaveCount(4);

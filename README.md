@@ -299,7 +299,8 @@ retain included pictures; plain source files contain references only. See
 
 ## Document and workbook exports
 
-**More → Download → Export to Word, Excel, Docs…** adds evaluated Word, Markdown,
+**More → Download → Export / Save…** separates format, contents and destination, with optional reload QR codes and
+screen shading for HTML/print and Word. It adds evaluated Word, Markdown,
 plain text, RTF, Excel/ODS workbooks and a Pages Online handoff. Excel's first
 release includes a bounded Org formula translator with editable inputs; other
 calculation engines require an explicit values-only choice. Google Docs supports

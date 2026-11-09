@@ -13,10 +13,10 @@ function freeze(value) {
   return value;
 }
 // Capture only once, after the app has completed its asynchronous post-passes.
-export function captureSnapshot(preview, state, result, revision) {
+export function captureSnapshot(preview, state, result, revision, options = {}) {
   const title =
     preview.querySelector("h1")?.textContent || sourceTitle(state.src);
-  const { html, fragment } = htmlDownload(preview, { title });
+  const { html, fragment } = htmlDownload(preview, { title, ...options });
   if (bytes(html) > EXPORT_LIMITS.document)
     throw Error("Export document exceeds 8 MiB.");
   const root = document.createElement("div");
@@ -106,6 +106,8 @@ export function captureSnapshot(preview, state, result, revision) {
       type: types[tag] || "group",
       ...(tag === "ol" ? { ordered: true } : {}),
       ...(tag === "th" ? { header: true } : {}),
+      ...(tag === "tr" && options.appearance !== "plain"
+        ? { shaded: [...node.parentElement.children].indexOf(node) % 2 === 1 } : {}),
       ...(tag === "td" || tag === "th"
         ? { colspan: node.colSpan, rowspan: node.rowSpan }
         : {}),

@@ -129,6 +129,7 @@ export async function word(snapshot) {
                       (c) =>
                         new D.TableCell({
                           columnSpan: c.colspan || 1,
+                          ...(row.shaded ? { shading: { fill: "FAFBF8" } } : {}),
                           children: [paragraph(c.children || [])],
                         }),
                     ),

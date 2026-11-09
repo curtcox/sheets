@@ -21,7 +21,7 @@ test("decimal ledger quantities survive reports, exports and shared links; tiny 
   );
   await openMore(page);await page.locator("#download-menu summary").click();
   const pending = page.waitForEvent("download");
-  await page.locator("#download-html").click();
+  await page.locator("#download-html").click(); await page.locator("#export-go").click(); await page.getByRole("button", { name: "Close exports" }).click();
   const exported = await pending;
   const saved = await context.newPage();
   await saved.setContent(await readFile(await exported.path(), "utf8"));

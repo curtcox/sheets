@@ -96,7 +96,7 @@ hiddenValue
   await expect(preview).toContainText("<img src=x onerror=");
   await openMore(page);await page.locator("#download-menu summary").click();
   const downloadEvent = page.waitForEvent("download");
-  await page.locator("#download-html").click();
+  await page.locator("#download-html").click(); await page.locator("#export-go").click(); await page.getByRole("button", { name: "Close exports" }).click();
   const download = await downloadEvent,
     html = await readFile(await download.path(), "utf8");
   expect(html).toContain("data:image/png;base64,");
