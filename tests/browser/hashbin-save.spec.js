@@ -18,22 +18,27 @@ test("canonical host uses its registered root callback for popup and redirect sa
     const response = await page.request.get(new URL(url.pathname + url.search, baseURL).href);
     await route.fulfill({response});
   });
-  const hashbin = await mockHashBin(page);
-  for (const mode of ["approve", "redirect", "redirect-cancel"]) {
-    await page.goto(writeURL("https://sheets.hashbin.page/", {src:"3+4 =>",format:"calca",view:"preview"}));
-    await ready(page);
-    await hashbin.mode(mode);
-    await page.locator("#more-toggle").click();
-    await page.locator("#hashbin-save").click();
-    await expect(page.locator("#hashbin-confirm")).toBeEnabled();
-    await page.locator("#hashbin-confirm").click();
-    await expect(page.locator("#hashbin-status")).toHaveText(mode === "redirect-cancel" ? "The save was cancelled on HashBin." : "Saved to HashBin.");
-    if (mode !== "approve") expect(new URL(page.url()).pathname).toBe("/");
-    expect(await page.evaluate(() => ace.edit("editor").getValue())).toBe("3+4 =>");
-    await expect(page.locator("#format")).toHaveValue("calca");
-    await expect(page.locator("#source-pane")).toBeHidden();
+  try {
+    const hashbin = await mockHashBin(page);
+    for (const mode of ["approve", "redirect", "redirect-cancel"]) {
+      await page.goto(writeURL("https://sheets.hashbin.page/", {src:"3+4 =>",format:"calca",view:"preview"}));
+      await ready(page);
+      await hashbin.mode(mode);
+      await page.locator("#more-toggle").click();
+      await page.locator("#hashbin-save").click();
+      await expect(page.locator("#hashbin-confirm")).toBeEnabled();
+      await page.locator("#hashbin-confirm").click();
+      await expect(page.locator("#hashbin-status")).toHaveText(mode === "redirect-cancel" ? "The save was cancelled on HashBin." : "Saved to HashBin.");
+      if (mode !== "approve") expect(new URL(page.url()).pathname).toBe("/");
+      expect(await page.evaluate(() => ace.edit("editor").getValue())).toBe("3+4 =>");
+      await expect(page.locator("#format")).toHaveValue("calca");
+      await expect(page.locator("#source-pane")).toBeHidden();
+    }
+    expect(hashbin.saves).toHaveLength(2);
+  } finally {
+    // Lazy module downloads can outlive the final save assertion.
+    await page.unrouteAll({ behavior: "wait" });
   }
-  expect(hashbin.saves).toHaveLength(2);
 });
 
 test("portable projects are approved as version 3 and reload with bundled inputs", async ({ page }) => {
