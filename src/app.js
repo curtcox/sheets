@@ -19,7 +19,7 @@ import { RenderScheduler } from "./render-scheduler.js";
 import { setPreview, updatePreview, sanitize } from "./sanitize.js";
 import { applyControlEdit, controlText, shiftControls } from "./controls.js";
 import { setupViews } from "./view-modes.js";
-import { HashBinDocuments, HashBinStore } from "./hashbin.js";
+import { HashBinDocuments, HashBinStore, publishRedirectUri } from "./hashbin.js";
 import { HashBinPanel } from "./hashbin-panel.js";
 import {config,urlState,type,toDocument} from './fragment-config.js';
 import {LocalDrafts,createStorage,compactShell,createShell,mountMobileTabs,createShareDialog,createQrDialog} from '../vendor/fragment-kit-v0.3.5/src/index.js';
@@ -322,7 +322,7 @@ setupInsertion({
 const clientId = document.querySelector("meta[name=hashbin-client-id]").content;
 const store = new HashBinStore({
   clientId,
-  redirectUri: new URL("index.html", location.href).href,
+  redirectUri: publishRedirectUri(location.href),
   storage: optionalStorage("localStorage"),
   transactionStorage: optionalStorage("sessionStorage"),
 });

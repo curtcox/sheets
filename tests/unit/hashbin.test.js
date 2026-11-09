@@ -1,9 +1,16 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
-import { HashBinDocuments as doc, HashBinStore } from "../../src/hashbin.js";
+import { HashBinDocuments as doc, HashBinStore, publishRedirectUri } from "../../src/hashbin.js";
 import { formats } from "../../src/url-state.js";
 import { createHash } from "node:crypto";
 import { readFileSync } from "node:fs";
+test("Publish callbacks match the exact hosted and legacy registrations", () => {
+  for (const path of ["", "index.html", "?format=calca#src=abc"])
+    assert.equal(publishRedirectUri("https://sheets.hashbin.page/" + path), "https://sheets.hashbin.page/");
+  for (const path of ["", "index.html", "?format=org#saved"])
+    assert.equal(publishRedirectUri("https://curtcox.github.io/sheets/" + path), "https://curtcox.github.io/sheets/index.html");
+  assert.equal(publishRedirectUri("http://127.0.0.1:4173/?compressed=abc"), "http://127.0.0.1:4173/index.html");
+});
 function fullCID(text) {
   const data = Buffer.from(text),
     size = Buffer.alloc(6);

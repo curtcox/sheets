@@ -1,6 +1,12 @@
 import {HashBinStore as Store,createDocuments} from '../vendor/fragment-kit-v0.3.5/src/index.js';
 import{config,type,toDocument,normalizationMaxBytes,HashBinDocuments,serializeLegacy,fromDocument,publishTransactions}from'./fragment-config.js';
 export{HashBinDocuments};
+// HashBin matches callbacks exactly: the hosted app registered its root,
+// while the original Pages registration uses index.html.
+export function publishRedirectUri(href){
+ const url=new URL(href),canonical=new URL(config.canonicalOrigin);
+ return url.origin===canonical.origin?canonical.href:new URL('index.html',url).href;
+}
 export class HashBinStore extends Store{
  constructor(options={}){
   const {storage,transactionStorage,...rest}=options;let session;try{session=globalThis.sessionStorage;}catch{}
