@@ -334,5 +334,61 @@
     "title": "Errors stay with their cells",
     "description": "Python errors appear in the preview and editor diagnostics.",
     "path": "examples/quarto/error.qmd"
+  },
+  {
+    "id": "org-csv-budget",
+    "format": "org",
+    "kind": "typical",
+    "title": "CSV budget to working table",
+    "description": "Import CSV values, then add a deliberate Org calculation.",
+    "path": "examples/org/csv-budget.org"
+  },
+  {
+    "id": "gfm-csv-report",
+    "format": "gfm",
+    "kind": "typical",
+    "title": "CSV table in a report",
+    "description": "Preserve quoted commas, leading zeros and decimal text when importing CSV.",
+    "path": "examples/gfm/csv-report.md"
+  },
+  {
+    "id": "gfm-csv-presentations",
+    "format": "gfm",
+    "kind": "typical",
+    "title": "One table, two presentations",
+    "description": "The same outside table as editable Markdown and a bundled picture.",
+    "path": "examples/gfm/csv-presentations.sheets.json"
+  },
+  {
+    "id": "gfm-spreadsheet-excerpt",
+    "format": "gfm",
+    "kind": "typical",
+    "title": "Excel or Google Sheets excerpt",
+    "description": "Copy cells, review values, and choose an editable table or picture.",
+    "path": "examples/gfm/spreadsheet-excerpt.md"
+  },
+  {
+    "id": "gfm-hashbin-picture",
+    "format": "gfm",
+    "kind": "typical",
+    "title": "A HashBin/256t picture link",
+    "description": "A verified inline CID chart: keep linked or include the bytes.",
+    "path": "examples/gfm/hashbin-picture.md"
+  },
+  {
+    "id": "org-outside-chart",
+    "format": "org",
+    "kind": "typical",
+    "title": "Outside chart beside a Sheets model",
+    "description": "Compare a fixed imported chart with a live Org chart.",
+    "path": "examples/org/outside-chart.sheets.json"
+  },
+  {
+    "id": "gfm-bundled-report",
+    "format": "gfm",
+    "kind": "typical",
+    "title": "A report you can take offline",
+    "description": "Bundled pictures survive project downloads, sharing and HTML export.",
+    "path": "examples/gfm/bundled-report.sheets.json"
   }
 ]

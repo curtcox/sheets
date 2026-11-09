@@ -42,8 +42,14 @@ function nodeHTML(node, context = {}) {
       return ["PROPERTIES", "LOGBOOK"].includes(node.name?.toUpperCase())
         ? ""
         : children();
-    case "paragraph":
+    case "paragraph": {
+      const links = (node.children || []).filter(n => !['newline','emptyLine'].includes(n.type) && !(n.type === 'text' && !n.value.trim()));
+      if (links.length === 1 && links[0].type === 'link' && ['sheets-asset','sheets-image'].includes(links[0].path?.protocol)) {
+        const { width, caption } = context.pictureOptions?.(node.position.start.line) || {};
+        return `<figure>${nodeHTML(links[0], { ...context, imageWidth: width })}${caption ? `<figcaption>${escapeHTML(caption)}</figcaption>` : ''}</figure>`;
+      }
       return `<p>${children()}</p>`;
+    }
     case "list": {
       const tag = node.ordered ? "ol" : "ul";
       return `<${tag}>${children()}</${tag}>`;
@@ -61,6 +67,13 @@ function nodeHTML(node, context = {}) {
       // A plot's file: link shows the chart there instead of after its table.
       const chart = node.path?.protocol === "file" && context.fileChart?.(node.path.value);
       if (chart) return chart;
+      const protocol = node.path?.protocol;
+      const imagePath = node.path?.value || node.url || "";
+      if (protocol === 'sheets-asset' || protocol === 'sheets-image') {
+        const alt = (node.children || []).filter(n => n.type === 'text').map(n => n.value).join('');
+        const src = protocol === 'sheets-asset' ? 'sheets-asset:' + imagePath : imagePath;
+        return `<img src="${escapeHTML(src)}" alt="${escapeHTML(alt)}" width="${context.imageWidth || 640}" referrerpolicy="no-referrer">`;
+      }
       const path = node.path?.value || node.url || "",
         label =
           (node.children || [])
@@ -117,6 +130,15 @@ export function renderOrg(src, options = {}) {
     controlLines = new Map(controls.map((control) => [control.line, controlHTML(control)])),
     prose = (from, to) => nodeHTML(orga.parse(src.split("\n").slice(from, to).join("\n")), {
       control: (line) => controlLines.get(from + line),
+      pictureOptions(line) {
+        const lines = src.split('\n'); let width, caption;
+        for (let i = from + line - 2; i >= from && /^#\+(?:CAPTION|ATTR_HTML):/i.test(lines[i]); i--) {
+          const size = /^#\+ATTR_HTML:\s*:width\s+(\d+)\s*$/i.exec(lines[i]);
+          if (size) width = Math.max(80, Math.min(1600, Number(size[1])));
+          const title = /^#\+CAPTION:\s*(.*)$/i.exec(lines[i]); if (title) caption = title[1];
+        }
+        return { width, caption };
+      },
       fileChart(name) {
         const chart = fileCharts.get(name);
         if (!chart || chart.placed) return undefined;
@@ -160,6 +182,7 @@ export function renderOrg(src, options = {}) {
       '<button data-action="copy-org">Copy recalculated source</button>',
     diagnostics: [...result.diagnostics, ...plots.diagnostics],
     controls,
+    workbook: result.workbook,
     recalculatedSource: result.source,
     inputsReady: !result.sharedInputs.some((input) => input.error),
   };

@@ -1,3 +1,4 @@
+import{openMore}from"./ui.js";
 import { test, expect } from "@playwright/test";
 import { readFile } from "node:fs/promises";
 import { writeURL } from "../../src/url-state.js";
@@ -66,6 +67,8 @@ test("Org money values stay on one line at 800 px Split and mobile; wide tables 
     await readable(page, table);
     for (const width of [800, 390]) {
       await page.setViewportSize({ width, height: 800 });
+      if (width < 768) await page.getByRole("tab", { name: "Preview", exact: true }).click();
+      await expect(table).toBeVisible();
       await readable(page, table);
       const scroll = page.locator("#preview .org-table-scroll");
       expect(await scroll.evaluate((el) => el.scrollWidth > el.clientWidth)).toBe(true);
@@ -90,9 +93,9 @@ test("exported Org money tables retain readable values and local scrolling witho
 }) => {
   await page.goto(writeURL("http://127.0.0.1:4173/", { src: source, format: "org" }));
   await expect(page.locator("#render-status")).toHaveText(/^Ready/);
-  await page.locator("#download-menu summary").click();
+  await openMore(page);await page.locator("#download-menu summary").click();
   const download = page.waitForEvent("download");
-  await page.locator("#download-html").click();
+  await page.locator("#download-html").click(); await page.locator("#export-go").click(); await page.getByRole("button", { name: "Close exports" }).click();
   const html = await readFile(await (await download).path(), "utf8");
   const saved = await context.newPage();
   await saved.setContent(html);

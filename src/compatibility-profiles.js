@@ -40,5 +40,6 @@ export function resolveDocument(doc, overrides = {}) {
     view: overrides.view ?? doc.view ?? "split",
     ...(profile ? { profile } : {}),
     ...(doc.inputSnapshot ? { format: "org", inputSnapshot: doc.inputSnapshot } : {}),
+    ...(doc.attachments ? { attachments: doc.attachments } : {}),
   };
 }

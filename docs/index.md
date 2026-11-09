@@ -42,6 +42,13 @@ definitions or surrounding document. Examples of errors keep their intentional
 errors. Use [Limitations and compatibility](limitations.md) for the known gaps
 collected from all format guides.
 
+## Insert outside content
+
+Use **Insert** to bring CSV, copied spreadsheet cells, screenshots and hosted pictures
+into Org or Markdown. Choose editable tables or pictures, and keep pictures linked
+or include their bytes. HashBin/256t image CIDs are supported. See
+[Outside tables and pictures](insert-content.md) for workflows, examples and limits.
+
 ## Save and share
 
 **Share** copies a complete source link. No account or server storage is required. Above 7,000 characters, generated links put source in the fragment so reloading does not send the long source to the server. Browser and messaging limits still vary; the notice recommends **Download → Source** or [HashBin](hashbin.md) for a separate copy. The app does not truncate your source. See [Sharing links](url-format.md).
@@ -76,3 +83,31 @@ cached currency rates may work with a stale-rate notice. Browser storage can be
 cleared or evicted. **Offline access** also lets you check for updates, apply a
 completed update, or remove the offline download. Updates wait until you choose
 **Use update and reload**, preserving current editor source first.
+
+
+## Shared controls and recovery
+
+Render, Share and QR are the primary actions. More contains HashBin, saved-work
+recovery, downloads, view options and offline controls. On a phone, Code and
+Preview tabs switch between full-size panels. Existing format, view, compatibility
+profiles and bundled Org inputs still travel with each link.
+
+Opening a link loads that document immediately. Earlier edited work stays in
+this browser under More → Resume saved work; it is never substituted for a link.
+Share snapshots the current document. Run on open can be disabled for a manual
+Render. QR accepts camera frames or an image file, offers SVG/PNG downloads and
+can use a verified HashBin CID when a source link is too large to scan.
+
+Offline files remain an explicit download. More → Download → Offline access
+opens the offline actions; Download offline files installs one verified release.
+Updates wait for Update and reload, preserving the full current document in its
+link. Repair checks corrupted or evicted assets. Removing offline files affects
+only Sheets caches. Python, R, exchange rates and external services still need
+a connection.
+
+## Other export formats
+
+**More → Download → Export / Save…** exports evaluated content as
+Word, Excel with supported working Org formulas, Google Docs, plain text,
+Markdown, HTML or an editable page in Pages Online. ODS and RTF are also available.
+See [Export support, formula limits and Google setup](exports.md).

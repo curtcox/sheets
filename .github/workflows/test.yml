@@ -1,12 +1,23 @@
 name: Test
 on:
-  push:
   pull_request:
   workflow_call:
 permissions:
   contents: read
 jobs:
-  test:
+  shared:
+    uses: curtcox/Tools-for-pages-with-state-in-URL-fragments/.github/workflows/test.yml@v2
+    with:
+      kit-path: vendor/fragment-kit-v0.3.5
+      base-url: http://127.0.0.1:4173/
+      server-command: node scripts/serve.mjs
+      browser-command: node scripts/test-contracts.mjs && npx playwright test --project="$BROWSER"
+      gallery-command: node scripts/render-kit-gallery.mjs --check
+  kit:
+    uses: curtcox/Tools-for-pages-with-state-in-URL-fragments/.github/workflows/kit-check.yml@v2
+    with:
+      kit-path: vendor/fragment-kit-v0.3.5
+  references:
     runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
@@ -15,14 +26,13 @@ jobs:
           node-version: 22
           cache: npm
       - run: npm ci
-      - run: npm run check
-      - run: npm test
       - run: npm run test:conformance
       - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
         with:
           python-version: "3.12"
       - name: Install reference engines
         run: |
+          sudo find /etc/apt -maxdepth 2 -type f \( -name "*.sources" -o -name "*.list" -o -name "*-mirrors.txt" \) -exec sed -i "s|https\?://azure\.archive\.ubuntu\.com/ubuntu|https://archive.ubuntu.com/ubuntu|g" {} +
           sudo apt-get update
           sudo apt-get install -y --no-install-recommends emacs-nox lzip r-base r-cran-knitr r-cran-rmarkdown
           python -m pip install beancount==3.2.0 beanquery==0.2.0
@@ -34,7 +44,7 @@ jobs:
         run: python scripts/quarto-reference.py --check
       - name: Install the Org release the fixtures were recorded with
         run: |
-          curl -sSfLo "$RUNNER_TEMP/org.tar.lz" https://elpa.gnu.org/packages/org-9.8.7.tar.lz
+          curl --retry 3 --retry-all-errors --retry-delay 2 --connect-timeout 20 --max-time 90 -sSfLo "$RUNNER_TEMP/org.tar.lz" https://elpa.gnu.org/packages/org-9.8.7.tar.lz
           echo "1a5d1efa34ff2bc110d6263aa4a86d5fe56668dfafc27082337f594d0e8151ec  $RUNNER_TEMP/org.tar.lz" | sha256sum -c
           tar --lzip -xf "$RUNNER_TEMP/org.tar.lz" -C "$RUNNER_TEMP"
           echo "SHEETS_ORG_LISP=$RUNNER_TEMP/org-9.8.7" >> "$GITHUB_ENV"
@@ -46,12 +56,25 @@ jobs:
         run: bash scripts/gfm-reference.sh --check
       - name: Check AsciiMath corpus against pinned upstream data
         run: node scripts/asciimath-reference.mjs
-      - run: npx playwright install --with-deps chromium firefox webkit
-      - run: npm run test:browser
-      - name: Retain failing browser traces
-        if: failure()
-        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+
+  exports:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
         with:
-          name: browser-results
-          path: test-results/
-          retention-days: 7
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
+        with:
+          python-version: "3.12"
+      - name: Install independent workbook tools
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y --no-install-recommends libreoffice-calc
+          python -m pip install openpyxl==3.1.5
+      - name: Verify actual workbook recalculation
+        run: |
+          node scripts/export-reference.mjs "$RUNNER_TEMP/exports"
+          python scripts/export-reference.py "$RUNNER_TEMP/exports"

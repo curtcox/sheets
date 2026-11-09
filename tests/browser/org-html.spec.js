@@ -1,3 +1,4 @@
+import{openMore}from"./ui.js";
 import { test, expect } from "@playwright/test";
 import { readFile } from "node:fs/promises";
 import { writeURL } from "../../src/url-state.js";
@@ -40,9 +41,9 @@ test("Org headers and alignment survive sanitized HTML download, mobile and prin
     expected = JSON.parse(await file("reference.json"))["cookies.org"];
   await page.goto(writeURL("http://127.0.0.1:4173/", { src, format: "org" }));
   await ready(page);
-  await page.locator("#download-menu summary").click();
+  await openMore(page);await page.locator("#download-menu summary").click();
   const pending = page.waitForEvent("download");
-  await page.locator("#download-html").click();
+  await page.locator("#download-html").click(); await page.locator("#export-go").click(); await page.getByRole("button", { name: "Close exports" }).click();
   const html = await readFile(await (await pending).path(), "utf8");
   const saved = await context.newPage();
   await saved.setContent(html);

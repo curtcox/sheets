@@ -1,3 +1,4 @@
+import{openMore,closeMore}from"./ui.js";
 import { test, expect } from "@playwright/test";
 import { readFile } from "node:fs/promises";
 import { writeURL } from "../../src/url-state.js";
@@ -33,13 +34,13 @@ test("AsciiMath explicit modes survive edits, sharing, exports, reloads and form
   await expect(page.locator("#preview math")).toHaveCount(4);
   await expect(page.locator("#profile")).toHaveValue(formulas);
   const exact = await text(page);
-  await page.locator("#download-menu summary").click();
+  await openMore(page);await page.locator("#download-menu summary").click();
   const download = page.waitForEvent("download");
   await page.locator("#download-source").click();
   expect(await readFile(await (await download).path(), "utf8")).toBe(exact);
-  await page.getByRole("button", { name: "Preview", exact: true }).click();
+  await closeMore(page);await page.getByRole("tab", { name: "Preview", exact: true }).click();
   await page.getByRole("button", { name: "Share", exact: true }).click();
-  const shared = await page.locator("#share-url").inputValue();
+  const shared = await page.locator("#share-link").inputValue();
   const fresh = await context.newPage();
   await fresh.goto(shared);
   await ready(fresh);
@@ -128,7 +129,7 @@ test("AsciiMath modes round-trip through mocked saves and CID overrides while le
       writeURL(base, { src: source, format: "asciimath", profile }),
     );
     await ready(page);
-    await page.getByRole("button", { name: "HashBin", exact: true }).click();
+    await page.locator("#more-toggle").click();
     await page.locator("#hashbin-save").click();
     await expect(page.locator("#hashbin-confirm")).toBeEnabled();
     await page.locator("#hashbin-confirm").click();
@@ -182,7 +183,7 @@ test("AsciiMath redirect saves retain modes and exact source after approval and 
       );
       await ready(page);
       await hashbin.mode(outcome);
-      await page.getByRole("button", { name: "HashBin", exact: true }).click();
+      await page.locator("#more-toggle").click();
       await page.locator("#hashbin-save").click();
       await expect(page.locator("#hashbin-confirm")).toBeEnabled();
       await Promise.all([

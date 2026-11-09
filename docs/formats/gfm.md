@@ -202,3 +202,10 @@ These entries share the [central limitations ledger](../limitations.md). “Need
 | GFM-05 | Intentional | Automatic link recognition has bounded candidates |
 | GFM-06 | Intentional | Email gaps are fixed; native autolink differences are intentional |
 <!-- compatibility:end -->
+
+## Outside tables and pictures
+
+**Insert** converts CSV and copied spreadsheet cells to Markdown tables, or inserts
+a static picture as an HTML figure. Included image bytes live in a portable project;
+plain source downloads contain `sheets-asset:` references only. See
+[outside content](../insert-content.md) for HashBin/256t images, examples and limits.

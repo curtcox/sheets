@@ -1,3 +1,4 @@
+import{openMore}from"./ui.js";
 import { test, expect } from "@playwright/test";
 import { readFile } from "node:fs/promises";
 import { readURL, writeURL } from "../../src/url-state.js";
@@ -27,15 +28,15 @@ test("total costs and FIFO reductions survive reports, exports and shares", asyn
   await expect(sale).toHaveCount(3); // Two booked stock lots and one inferred cash leg.
   await expect(sale.filter({ hasText: "Assets:Cash" })).toContainText("40 USD");
   await page.getByRole("button", { name: "Share", exact: true }).click();
-  const shared = await page.locator("#share-url").inputValue();
+  const shared = await page.locator("#share-link").inputValue();
   expect(readURL(shared)).toMatchObject({ src: source, format: "beancount" });
   await page.goto(shared);
   await expect(page.locator("#render-status")).toHaveText(/^Ready/);
   expect(await page.evaluate(() => ace.edit("editor").getValue())).toBe(source);
   await page.getByRole("tab", { name: "Trial balance", exact: true }).click();
-  await page.locator("#download-menu summary").click();
+  await openMore(page);await page.locator("#download-menu summary").click();
   const pending = page.waitForEvent("download");
-  await page.locator("#download-html").click();
+  await page.locator("#download-html").click(); await page.locator("#export-go").click(); await page.getByRole("button", { name: "Close exports" }).click();
   const download = await pending,
     exported = await context.newPage();
   await exported.setContent(await readFile(await download.path(), "utf8"));

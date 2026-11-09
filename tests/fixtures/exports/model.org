@@ -1,0 +1,10 @@
+#+TITLE: Export model
+#+CONSTANTS: rate=2
+
+Editable report. Change Qty or rate in the workbook to recalculate Total.
+
+| Item | Qty | Price | Total |
+|------+-----+-------+-------|
+| A    | 3   | 4     | 0     |
+| B    | 5   | 6     | 0     |
+#+TBLFM: $4=$2*$3*$rate

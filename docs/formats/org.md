@@ -755,3 +755,11 @@ These entries share the [central limitations ledger](../limitations.md). “Need
 | ORG-16 | Known gap | 3D plots, gnuplot scripts and custom time formats are not drawn |
 | ORG-17 | Resolved | In-cell bars from orgtbl-ascii-draw and its Unicode variants |
 <!-- compatibility:end -->
+
+## Outside tables and pictures
+
+**Insert** converts CSV and copied spreadsheet cells to Org table source, or inserts
+a static picture. Included pictures use Sheets-specific `sheets-asset:` links;
+linked pictures use `sheets-image:`. Captions and display widths use `#+CAPTION:`
+and `#+ATTR_HTML: :width`. Native Org image-export parity is not claimed. See
+[outside content](../insert-content.md) for supported inputs and limitations.

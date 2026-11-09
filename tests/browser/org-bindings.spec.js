@@ -1,3 +1,4 @@
+import{openMore}from"./ui.js";
 import { test, expect } from "@playwright/test";
 import { readFile } from "node:fs/promises";
 import { writeURL } from "../../src/url-state.js";
@@ -51,7 +52,7 @@ test("Org named inputs survive source sharing, reload, copy and rendered exports
   expect(html).not.toContain("<script");
   await page.getByRole("button", { name: "Share", exact: true }).click();
   const fresh = await context.newPage();
-  await fresh.goto(await page.locator("#share-url").inputValue());
+  await fresh.goto(await page.locator("#share-link").inputValue());
   await ready(fresh);
   await fresh.reload();
   await ready(fresh);
@@ -59,7 +60,7 @@ test("Org named inputs survive source sharing, reload, copy and rendered exports
     source,
   );
   await expect(fresh.locator("#preview")).toContainText("14.40");
-  await fresh.locator("#download-menu summary").click();
+  await openMore(fresh);await fresh.locator("#download-menu summary").click();
   const download = fresh.waitForEvent("download");
   await fresh.locator("#download-source").click();
   expect(await readFile(await (await download).path(), "utf8")).toBe(source);
@@ -207,12 +208,12 @@ test("Org conditional pricing works in both modes, shares exact source, and keep
     await expect(page.locator("#preview tr").last()).toHaveText("5000125.00");
     await page.locator("#share").click();
     const fresh = await context.newPage();
-    await fresh.goto(await page.locator("#share-url").inputValue());
+    await fresh.goto(await page.locator("#share-link").inputValue());
     await ready(fresh);
     expect(await fresh.evaluate(() => ace.edit("editor").getValue())).toBe(source);
     await expect(fresh.locator("#preview tr").last()).toHaveText("5000125.00");
     await fresh.close();
-    await page.locator("#share-close").click();
+    await page.locator("#share-dialog .fk-close").click();
     const changed = source.replace("50001", "50000");
     await page.evaluate((src) => ace.edit("editor").setValue(src, -1), changed);
     await expect(page.locator("#preview tr").last()).toHaveText("500000.00");

@@ -1,3 +1,5 @@
+import { SheetShareClient } from "./share-links.js";
+import { setupExports } from './exports/ui.js';
 import { catalog, detect, loadFormat } from "./formats/registry.js";
 import {
   readURL,
@@ -19,16 +21,34 @@ import { applyControlEdit, controlText, shiftControls } from "./controls.js";
 import { setupViews } from "./view-modes.js";
 import { HashBinDocuments, HashBinStore } from "./hashbin.js";
 import { HashBinPanel } from "./hashbin-panel.js";
-import { ShareClient } from "./share-links.js";
+import {config,urlState,type,toDocument} from './fragment-config.js';
+import {LocalDrafts,createStorage,compactShell,createShell,mountMobileTabs,createShareDialog,createQrDialog} from '../vendor/fragment-kit-v0.3.5/src/index.js';
 import { loadExample } from "./examples.js";
 import { setupOffline } from "./offline.js";
 import { acePath } from "./ace-path.js";
 import { loadEditorMode } from "./editor-modes.js";
-import { sourceTitle, sourceDownload, projectDownload } from "./downloads.js";
+import { sourceDownload, projectDownload } from "./downloads.js";
 import { parseProjectFile } from "./project-state.js";
 import { verifyInputSnapshot, SNAPSHOT_LIMITS } from "./input-snapshot.js";
-import { htmlDownload, downloadFile } from "./export-document.js";
+import { downloadFile } from "./export-document.js";
+import { verifyAttachments, validateAttachments } from "./attachments.js";
+import { resolvePictures, resolveHostedPictures } from "./pictures.js";
+import { setupInsertion } from "./insert-content.js";
 import { optionalStorage } from "./util.js";
+const byId=id=>document.getElementById(id);
+const oldHeader=document.querySelector('.site-header'),brand=oldHeader.querySelector('.brand'),shareButton=byId('share');
+const shell=createShell({config});shell.header.querySelector('.fk-brand').replaceChildren(...brand.childNodes);
+shell.header.querySelector('.fk-more').id='more-toggle';
+const renderButton=document.createElement('button');renderButton.id='render-now';renderButton.textContent='Render once';renderButton.hidden=true;shell.drawer.body.append(renderButton);
+const qrButton=document.createElement('button');qrButton.id='qr';qrButton.textContent='QR';
+shareButton.textContent='Share';shell.toolbar.append(shareButton,qrButton,document.querySelector('.format-control'));
+shell.drawer.body.append(document.querySelector('.view-toggle'),byId('download-menu'),byId('hashbin-panel'));document.querySelector('.view-toggle').hidden=true;
+oldHeader.remove();document.querySelector('.toolbar').remove();
+byId('render-status').setAttribute('data-fk-primary-status','');compactShell({header:shell.header,status:document.querySelector('.statusbar')});
+for(const id of ['hashbin-cid','hashbin-load','hashbin-save','hashbin-status','hashbin-dialog','share-dialog','offline-dialog'])byId(id)?.remove();
+byId('hashbin-panel').hidden=false;byId('hashbin-panel-close').remove();
+const drafts=new LocalDrafts({storage:createStorage({prefix:config.storagePrefix}),key:'draft',serialize:value=>JSON.stringify(toDocument(value)),parse:text=>type.normalize(JSON.parse(text))});
+let autoRun=true,mobileTabs,qrSave=false,workspaceReady=false;
 const elements = new Map(
   [...document.querySelectorAll("[id]")].map((element) => [
     element.id,
@@ -54,6 +74,7 @@ let editor,
   currentType = "gfm",
   currentProfile,
   currentInputSnapshot,
+  currentAttachments,
   projectOpenController,
   renderController,
   currentControls = [],
@@ -78,6 +99,7 @@ if (globalThis.ace) {
   $("editor").hidden = true;
   $("source-fallback").style.display = "block";
 }
+document.body.append($('project-file'));
 const getSource = () =>
   editor ? editor.getValue() : $("source-fallback").value;
 const setSource = (src) => {
@@ -89,9 +111,11 @@ const setSource = (src) => {
 const view = setupViews({
   workspace: $("workspace"),
   divider: $("divider"),
-  onChange: () => persist(),
+  onChange: mode => {mobileTabs?.select(mode==='split'?'split':mode==='preview'?1:0);if(!setting)saveDraft(true);persist();},
   onResize: () => editor?.resize(),
 });
+function applyView(mode,notify=true){view.setView(mode,notify);mobileTabs?.select(mode==='split'?'split':mode==='preview'?1:0);}
+for(const button of document.querySelectorAll('button[data-view]')){const action=button.onclick;button.onclick=event=>{shell.drawer.dialog.close();const result=action(event);mobileTabs?.select(button.dataset.view==='split'?'split':button.dataset.view==='preview'?1:0);return result;};}
 const selectedType = (src = getSource()) =>
   format.value === "auto"
     ? profiles.find((item) => item.id === currentProfile)?.format || detect(src)
@@ -144,17 +168,21 @@ const snapshot = () => ({
   view: view.getView(),
   ...(currentProfile ? { profile: currentProfile } : {}),
   ...(currentInputSnapshot ? { inputSnapshot: currentInputSnapshot } : {}),
+  ...(currentAttachments ? { attachments: currentAttachments.filter(entry => getSource().includes("sheets-asset:" + entry.id)) } : {}),
 });
+function saveDraft(edit=false){drafts.attempt(snapshot(),edit);}
 const fingerprint = () => JSON.stringify(snapshot());
+let exportUI;
 function updateDownloadOptions(ready = false) {
+  exportUI?.update(ready);
   const extension =
     catalog.find((item) => item.id === selectedType())?.extensions[0] || ".txt";
   $("download-source").textContent = `Source (${extension})`;
   $("download-html").disabled = !ready;
   $("print-preview").disabled = !ready;
-  $("download-project").hidden = selectedType() !== "org";
-  $("project-download-help").hidden = selectedType() !== "org";
-  $("download-project").disabled = !ready || !currentResult?.inputsReady || !currentResult?.inputPayloads;
+  $("download-project").hidden = selectedType() !== "org" && !currentAttachments;
+  $("project-download-help").hidden = selectedType() !== "org" && !currentAttachments;
+  $("download-project").disabled = !ready || (selectedType() === "org" && (!currentResult?.inputsReady || !currentResult?.inputPayloads));
   preview.querySelectorAll("[data-action=copy-org]").forEach((button) => {
     button.disabled = !ready;
   });
@@ -164,8 +192,8 @@ function persist() {
   $("source-size").textContent = `${getSource().length.toLocaleString()} characters`;
   let url;
   try {
-    url = writeURL(location.href, { ...snapshot(), cid: currentCID });
-    if (currentInputSnapshot) readURL(url);
+    url = writeURL(location.href, { ...snapshot(), cid: currentCID, run:autoRun });
+    if (currentInputSnapshot || currentAttachments) readURL(url);
   } catch (error) {
     $("url-notice").textContent = `Current edits cannot be shared: ${error.message} Download source before reloading.`;
     $("share").disabled = true;
@@ -174,7 +202,7 @@ function persist() {
   $("share").disabled = false;
   history.replaceState(null, "", url);
   navigationURL = url;
-  const backup = currentInputSnapshot ? "Portable project" : "Source";
+  const backup = currentInputSnapshot || currentAttachments ? "Portable project" : "Source";
   $("url-notice").textContent =
     url.split("#", 1)[0].length > SOURCE_FRAGMENT_THRESHOLD
       ? `Long address · remove extra query parameters; use Download → ${backup} for a separate copy.`
@@ -192,6 +220,7 @@ const scheduler = new RenderScheduler({
     const combined = AbortSignal.any([signal, renderController.signal]);
     const profile = currentProfile;
     const inputSnapshot = currentInputSnapshot;
+    const attachments = snapshot().attachments;
     currentType = selectedType(src);
     validateProfile(profile, currentType);
     updateProfileControls();
@@ -206,15 +235,13 @@ const scheduler = new RenderScheduler({
       combined.throwIfAborted();
       editor.session.setMode(mode);
     }
-    return {
-      ...(await plugin.render(src, {
+    const result = await plugin.render(src, {
         signal: combined,
         onProgress,
         profile,
         inputSnapshot,
-      })),
-      signal: combined,
-    };
+      });
+    return { ...result, html: await resolvePictures(result.html, attachments, combined), signal: combined };
   },
   async onResult(result) {
     currentResult = result;
@@ -229,6 +256,8 @@ const scheduler = new RenderScheduler({
           (input === document.activeElement && input.type === "text"),
       );
     else setPreview(preview, result.html);
+    await resolveHostedPictures(preview, result.signal);
+    result.signal.throwIfAborted();
     editor?.session.setAnnotations(
       (result.diagnostics || []).map((d) => ({
         row: Math.max(0, d.line - 1),
@@ -272,6 +301,25 @@ const scheduler = new RenderScheduler({
     }
   },
 });
+exportUI = setupExports({button: $('export-open'), getState: snapshot, getResult: () => currentResult, getRevision: () => scheduler.revision, preview, closeDrawer: () => shell.drawer.dialog.close(), getLink: () => urlState.build(snapshot(), {run:autoRun}).href, getSavedLink: () => currentCID ? HashBinDocuments.link(location.href,currentCID) : null, saveToHashBin: () => panel.openSave()});
+setupInsertion({
+  container: shell.toolbar, sourcePane: $('source-pane'), getFormat: selectedType, fingerprint,
+  capture: () => editor ? editor.getSelectionRange().clone() : { start: $('source-fallback').selectionStart, end: $('source-fallback').selectionEnd },
+  insert(text, position, additions = []) {
+    const attachments = additions.length ? [...(currentAttachments || []), ...additions.filter(entry => !currentAttachments?.some(item => item.id === entry.id))] : currentAttachments;
+    const source = getSource();
+    const start = editor ? editor.session.doc.positionToIndex(position.start) : position.start;
+    const end = editor ? editor.session.doc.positionToIndex(position.end) : position.end;
+    const next = source.slice(0,start) + text + source.slice(end);
+    const included = attachments?.filter(entry => next.includes("sheets-asset:" + entry.id));
+    if (included) validateAttachments(included);
+    readURL(writeURL(location.href, { ...snapshot(), cid: null, format: selectedType(), src: next, attachments: included }));
+    currentAttachments = attachments;
+    if (additions.length && format.value === "auto") format.value = selectedType();
+    if (editor) { editor.session.markUndoGroup(); editor.session.replace(position, text); editor.session.markUndoGroup(); editor.focus(); }
+    else { $('source-fallback').setRangeText(text, position.start, position.end, 'end'); changed(); }
+  },
+});
 const clientId = document.querySelector("meta[name=hashbin-client-id]").content;
 const store = new HashBinStore({
   clientId,
@@ -281,46 +329,44 @@ const store = new HashBinStore({
 });
 const panel = new HashBinPanel({
   store,
+  container: $('hashbin-panel'),
   getSnapshot: snapshot,
   getFingerprint: fingerprint,
   onLoad(doc, cid, overrides = {}) {
     const resolved = resolveDocument(doc, overrides);
-    sourceRevision++;
+    sourceRevision++;drafts.opened();
     currentCID = cid;
     setSource(doc.src);
     format.value = resolved.format;
     currentProfile = resolved.profile;
     currentInputSnapshot = resolved.inputSnapshot;
-    view.setView(resolved.view, false);
+    currentAttachments = resolved.attachments;
+    applyView(resolved.view, false);
     updateProfileControls();
     persist();
-    scheduler.schedule(getSource(), {}, true);
+    if(autoRun)scheduler.schedule(getSource(), {}, true);
   },
   onSaved(cid) {
     currentCID = cid;
     persist();
+    if(exportUI?.awaitingSave){panel.dialog.close();exportUI.saved();}
+    if(qrSave){qrSave=false;panel.dialog.close();qr.open(HashBinDocuments.link(location.href,cid));}
   },
 });
-$("hashbin-save").disabled = !clientId;
+panel.dialog.addEventListener('close',()=>{qrSave=false;exportUI?.saveClosed();});
+for(const element of $('hashbin-panel').querySelectorAll('[id]'))elements.set(element.id,element);
+$("hashbin-save").disabled = false;
 $("hashbin-config").textContent = clientId
   ? "Public documents load without signing in."
   : "Saving needs a registered HashBin client ID. Public CIDs can still be loaded.";
-$("hashbin-open").onclick = () => {
-  $("hashbin-panel").hidden = !$("hashbin-panel").hidden;
-  editor?.resize();
-};
-$("hashbin-panel-close").onclick = () => {
-  $("hashbin-panel").hidden = true;
-  editor?.resize();
-};
 function changed() {
   if (setting) return;
-  sourceRevision++;
+  saveDraft(true);sourceRevision++;
   projectOpenController?.abort();
   currentCID = null;
   panel.cancelLoad();
   renderController?.abort();
-  scheduler.schedule(getSource(), {}, controlEditing);
+  if(autoRun)scheduler.schedule(getSource(), {}, controlEditing);else{scheduler.cancel();$('render-status').textContent='Edited — press Render.';}
   $("source-size").textContent =
     `${getSource().length.toLocaleString()} characters`;
   clearTimeout(persistTimer);
@@ -329,6 +375,10 @@ function changed() {
 if (editor) editor.session.on("change", changed);
 else $("source-fallback").addEventListener("input", changed);
 format.onchange = () => {
+  if (currentAttachments && !["org", "gfm"].includes(selectedType())) {
+    if (snapshot().attachments.length) { format.value = currentType; $("render-status").textContent = "Pictures require Org or Markdown. Remove included pictures before switching formats."; return; }
+    currentAttachments = undefined;
+  }
   currentProfile = undefined;
   updateProfileControls();
   changed();
@@ -499,18 +549,20 @@ $("project-file").onchange = async () => {
     const bytes = await file.slice(0, SNAPSHOT_LIMITS.document + 1).arrayBuffer();
     controller.signal.throwIfAborted();
     const doc = parseProjectFile(new TextDecoder("utf-8", { fatal: true, ignoreBOM: true }).decode(bytes));
-    await verifyInputSnapshot(doc.inputSnapshot, doc.src, controller.signal);
+    if (doc.inputSnapshot) await verifyInputSnapshot(doc.inputSnapshot, doc.src, controller.signal);
+    await verifyAttachments(doc.attachments, controller.signal);
     controller.signal.throwIfAborted();
     if (before !== fingerprint()) throw new Error("Document changed while opening the snapshot; choose the file again.");
-    const url = writeURL(location.href, { ...doc, format: "org" });
+    const url = writeURL(location.href, { ...doc, format: doc.type });
     readURL(url); // Reject a file that cannot survive the editor's URL round-trip.
     panel.cancelLoad(); scheduler.cancel(); renderController?.abort();
     sourceRevision++;
     history.pushState(null, "", url);
     currentInputSnapshot = doc.inputSnapshot;
-    currentCID = null; currentProfile = doc.profile; format.value = "org";
-    setSource(doc.src); view.setView(doc.view, false);
-    updateProfileControls(); persist(); scheduler.schedule(getSource(), {}, true);
+    currentAttachments = doc.attachments;
+    currentCID = null; currentProfile = doc.profile; format.value = doc.type;
+    setSource(doc.src); applyView(doc.view, false);
+    updateProfileControls(); persist(); if(autoRun)scheduler.schedule(getSource(), {}, true);
     $("project-status").textContent = "Project snapshot opened. Back restores the previous document.";
     $("download-menu").open = false;
   } catch (error) {
@@ -527,60 +579,38 @@ $("project-detach").onclick = () => {
 };
 $("download-html").onclick = () => {
   if ($("download-html").disabled) return;
-  const title =
-    preview.querySelector("h1")?.textContent || sourceTitle(getSource());
-  downloadFile(htmlDownload(preview, { title }));
   $("download-menu").open = false;
+  exportUI.open({target:"html", destination:"download", contents:"rendered"});
 };
 $("print-preview").onclick = () => {
   if ($("print-preview").disabled) return;
   $("download-menu").open = false;
-  window.print();
+  exportUI.open({target:"html", destination:"print", contents:"rendered"});
 };
 document.addEventListener("click", (event) => {
   if (!$("download-menu").contains(event.target))
     $("download-menu").open = false;
 });
 $("download-menu").addEventListener("keydown", (event) => {
-  if (event.key === "Escape") {
-    $("download-menu").open = false;
+  if (event.key === "Escape" && $("download-menu").open) {
+    event.preventDefault();event.stopPropagation();$("download-menu").open = false;
     $("download-menu").querySelector("summary").focus();
   }
 });
-const share = new ShareClient();
-$("share").onclick = () => {
-  if (!persist()) return;
-  $("share-url").value = location.href;
-  $("share-status").textContent = "";
-  $("share-dialog").showModal();
-};
-$("share-close").onclick = () => $("share-dialog").close();
-$("share-dialog").addEventListener("close", () => {
-  share.cancel();
-  $("shorten-link").disabled = false;
-});
-$("copy-link").onclick = async () => {
-  try {
-    await navigator.clipboard.writeText($("share-url").value);
-    $("share-status").textContent = "Link copied.";
-  } catch {
-    $("share-url").select();
-    $("share-status").textContent =
-      "Press Ctrl+C or ⌘C to copy the selected link.";
-  }
-};
-$("shorten-link").onclick = async () => {
-  $("shorten-link").disabled = true;
-  $("share-status").textContent = "Shortening…";
-  const url = $("share-url").value,
-    result = await share.shorten({ long: url, fallback: url });
-  if (result) {
-    $("share-url").value = result.url;
-    $("share-status").textContent =
-      result.error?.message || "Short link ready.";
-  }
-  $("shorten-link").disabled = false;
-};
+for(const id of ['download-source','download-project','open-project','download-html','print-preview']){const button=$(id),action=button.onclick;button.onclick=event=>{shell.drawer.dialog.close();return action(event);};}
+const share=createShareDialog({client:new SheetShareClient(),urlState,getSnapshot:snapshot,onSave:()=>panel.openSave()});
+shareButton.onclick=()=>{share.open();byId('share-run').checked=autoRun;byId('share-run').dispatchEvent(new Event('change'));};
+const qr=createQrDialog({config,urlState,onLoad:outcome=>openLinked(outcome.kind==='cid'?HashBinDocuments.link(location.href,outcome.cid):outcome.href),onSave:()=>{qrSave=true;qr.dialog.close();return panel.openSave();}});
+qrButton.onclick=()=>qr.open(urlState.build(snapshot(),{run:autoRun}).href);
+renderButton.onclick=()=>scheduler.schedule(getSource(),{},true);
+mobileTabs=mountMobileTabs({desktop:true,container:document.querySelector('.fk-toolbar'),panels:[{label:'Code',panel:$('source-pane')},{label:'Preview',panel:$('preview-pane')}],onChange:index=>{const next=index===-1?'split':index===1?'preview':'source';if(next!==view.getView())view.setView(next,workspaceReady);editor?.resize();}});
+mobileTabs.select(view.getView()==='split'?'split':view.getView()==='preview'?1:0);
+drafts.mount(shell.drawer.body,async doc=>{
+ const checked=type.normalize(doc),state=checked.sheets,revision=sourceRevision;if(state.inputSnapshot)await verifyInputSnapshot(state.inputSnapshot,checked.src);await verifyAttachments(state.attachments);if(revision!==sourceRevision)throw Error('Document changed while checking this draft. Resume it again.');panel.cancelLoad();scheduler.cancel();renderController?.abort();sourceRevision++;
+ currentCID=null;currentProfile=state.profile;currentInputSnapshot=state.inputSnapshot;currentAttachments=state.attachments;format.value=state.format;setSource(checked.src);setting=true;applyView(state.view,false);setting=false;
+ updateProfileControls();persist();if(autoRun)scheduler.schedule(getSource(),{},true);
+},doc=>doc.src);
+function openLinked(href){panel.cancelLoad();scheduler.cancel();renderController?.abort();const incoming=new URL(href),local=new URL(location.href);local.search=incoming.search;local.hash=incoming.hash;history.pushState(null,'',local);return restore();}
 $("commit").textContent = $("commit").textContent.startsWith("__")
   ? "local"
   : $("commit").textContent;
@@ -590,13 +620,13 @@ async function restore() {
   projectOpenController?.abort();
   navigationURL = location.href;
   updateDownloadOptions(false);
-  const revision = ++sourceRevision;
+  const revision = ++sourceRevision;drafts.opened();autoRun=new URL(location.href).searchParams.get('run')!=='0';renderButton.hidden=autoRun;
   try {
     // A redirect save returns here; its snapshot restores the document either way.
     const published = await store.published(location.hash);
     if (revision !== sourceRevision) return;
     if (published) {
-      $("hashbin-panel").hidden = false;
+      $("hashbin-panel").hidden = false;shell.drawer.open();
       $("hashbin-status").textContent = published.error || "Saved to HashBin.";
       history.replaceState(null, "", location.pathname + location.search);
     }
@@ -606,18 +636,21 @@ async function restore() {
       format.value = doc.format || doc.type || "auto";
       currentProfile = validateProfile(doc.profile, format.value);
       currentInputSnapshot = doc.inputSnapshot;
-      view.setView(doc.view, false);
+      currentAttachments = doc.attachments;
+      applyView(doc.view, false);
       updateProfileControls();
       currentCID = published.cid || null;
       persist();
-      scheduler.schedule(getSource(), {}, true);
+      exportUI.restoreAfterPublish(published.cid);
+      if(autoRun)scheduler.schedule(getSource(), {}, true);
       return;
     }
     const state = readURL(location.href);
     format.value = state.format;
     currentProfile = state.profile;
     currentInputSnapshot = state.inputSnapshot;
-    view.setView(state.view, false);
+    currentAttachments = state.attachments;
+    applyView(state.kind==='empty'&&!new URL(location.href).searchParams.has('view')&&matchMedia('(max-width:767px)').matches?'source':state.view, false);
     if (state.kind === "hashbin") {
       await panel.load(state.cid, readOverrides(location.href));
       return;
@@ -626,6 +659,7 @@ async function restore() {
       const example = await loadExample(state.example);
       if (revision !== sourceRevision) return;
       setSource(example.src);
+      currentAttachments = example.attachments;
       if (state.format === "auto" && !state.profile)
         format.value = example.format;
       if (!state.profile)
@@ -637,23 +671,17 @@ async function restore() {
     updateProfileControls();
     currentCID = null;
     persist();
-    scheduler.schedule(getSource(), {}, true);
+    if(autoRun)scheduler.schedule(getSource(), {}, true);
   } catch (error) {
     if (revision === sourceRevision) {
-      $("render-status").textContent = error.message;
+      $("render-status").textContent = error.message;$("hashbin-status").textContent=error.message;
       preview.textContent = error.message;
     }
   }
 }
 // Document anchors (footnotes and Quarto figures) do not reload interpreters.
 function navigateFromURL() {
-  if (
-    location.hash &&
-    !location.hash.startsWith("#src=") &&
-    !location.hash.startsWith("#project=") &&
-    !HashBinDocuments.cid(location.hash)
-  )
-    return;
+  if(location.hash&&preview.querySelector('a[href="'+CSS.escape(location.hash)+'"]')&&!location.hash.startsWith('#src=')&&!location.hash.startsWith('#project=')&&!HashBinDocuments.cid(location.hash))return;
   if (navigationURL === location.href) return;
   panel.cancelLoad();
   scheduler.cancel();
@@ -666,4 +694,6 @@ store.retireLegacyTokens().catch(() => {
   /* Retried on the next load. */
 });
 await restore();
-setupOffline({ beforeReload: persist });
+workspaceReady=true;document.body.dataset.ready='true';
+globalThis.SheetsOnline={editor,getSource,snapshot,setSource:src=>{setSource(src);changed();},openURL:openLinked,panel};
+setupOffline({beforeReload:persist,container:shell.drawer.body,status:shell.offlineStatus});

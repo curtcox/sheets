@@ -1,0 +1,4 @@
+import { parseProjectFile } from './src/project-state.js';
+import fs from'node:fs';
+const examples=JSON.parse(fs.readFileSync('examples/catalog.json'));
+export default{catalog:examples.map(example=>({...example,cover:'examples/covers/'+example.id+'.png',document:{...(example.path.endsWith('.sheets.json') ? parseProjectFile(fs.readFileSync(example.path,'utf8')) : {src:fs.readFileSync(example.path,'utf8')}),format:example.format,...example.profile?{profile:example.profile}:{}}})),output:'gallery/covers',dependencies:['src/fragment-config.js','src/sheets-document.js','scripts/render-gallery.mjs','examples/catalog.json',...examples.flatMap(example=>[example.path,'examples/covers/'+example.id+'.png'])],async renderCover(page,example){await page.goto(new URL(example.cover,process.env.GALLERY_BASE_URL??'http://127.0.0.1:8011/').href);return page.locator('img');}};

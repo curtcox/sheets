@@ -1,3 +1,4 @@
+import { parseProjectFile } from "../../src/project-state.js";
 import { test } from "node:test";
 import assert from "node:assert/strict";
 import { readFile } from "node:fs/promises";
@@ -22,8 +23,10 @@ import init from "../../vendor/numbat@1.24.0/numbat_wasm.js";
 const examples = JSON.parse(
   await readFile(new URL("../../examples/catalog.json", import.meta.url)),
 );
-const read = (path) =>
-  readFile(new URL("../../" + path, import.meta.url), "utf8");
+const read = async (path) => {
+  const text = await readFile(new URL("../../" + path, import.meta.url), "utf8");
+  return path.endsWith(".sheets.json") ? parseProjectFile(text).src : text;
+};
 await init({
   module_or_path: await readFile(
     new URL("../../vendor/numbat@1.24.0/numbat_wasm_bg.wasm", import.meta.url),

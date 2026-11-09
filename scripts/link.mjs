@@ -1,3 +1,4 @@
+import { verifyAttachments } from "../src/attachments.js";
 import { open, stat } from "node:fs/promises";
 import { resolve } from "node:path";
 import { fileURLToPath } from "node:url";
@@ -30,7 +31,7 @@ Requires Node 22 or newer and a UTF-8 source file.
 Values also accept --option=value. Formats: auto, ${formats.join(", ")}.
 Profiles: ${profiles.map((p) => p.id).join(", ")}.
 Known extensions select their format; unknown extensions use Auto.
-Portable .sheets.json projects preserve their source, mode, view and bundled inputs.
+Portable .sheets.json projects preserve their source, mode, view and bundled inputs and pictures.
 Only the URL goes to stdout. Long-link warnings and errors go to stderr.
 `;
 
@@ -103,7 +104,8 @@ export async function linkFromFile(filename, options = {}) {
   }
   if (filename.toLowerCase().endsWith(".sheets.json") || candidate?.format === "sheets-project") {
     project = parseProjectFile(original);
-    await verifyInputSnapshot(project.inputSnapshot, project.src);
+    if (project.inputSnapshot) await verifyInputSnapshot(project.inputSnapshot, project.src);
+    await verifyAttachments(project.attachments);
   }
   const format = options.format ?? project?.type ?? fromExtension(filename),
     view = options.view ?? project?.view ?? "split",
@@ -119,7 +121,7 @@ export async function linkFromFile(filename, options = {}) {
   if (!base || !["http:", "https:"].includes(base.protocol) || base.username || base.password)
     throw new Error("--base must be an absolute HTTP(S) editor URL without credentials.");
   const src = project?.src ?? original,
-    url = writeURL(base, { src, format, view, profile, ...(project ? { inputSnapshot: project.inputSnapshot } : {}) });
+    url = writeURL(base, { src, format, view, profile, ...(project?.inputSnapshot ? { inputSnapshot: project.inputSnapshot } : {}), ...(project?.attachments ? { attachments: project.attachments } : {}) });
   // Use the reader's canonical checks and both encoded/decoded size limits.
   try {
     if (readURL(url).src !== src) throw new Error("Source did not round-trip.");

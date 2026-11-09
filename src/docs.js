@@ -7,6 +7,7 @@ import { setPreview, sanitize } from "./sanitize.js";
 const pages = [
   ["index", "Getting started"],
   ["url-format", "Sharing links"],
+  ["insert-content", "Outside tables and pictures"],
   ["hashbin", "HashBin storage"],
   ["format-comparison", "Compare formats & glossary"],
   ["function-comparison", "Built-in & custom functions"],

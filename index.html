@@ -5,9 +5,9 @@
     <!-- Scripts only from this site and pinned runtime paths; keep in step with new hosts. -->
     <meta
       http-equiv="Content-Security-Policy"
-      content="default-src 'self'; script-src 'self' 'sha256-IMEqdP+AkCKdxhM3X7mQM4pV/chykJXPvdtndD+XeH8=' https://hashbin.org/sdk/v0.4.0/ https://cdn.jsdelivr.net/pyodide/v0.27.7/full/ https://webr.r-wasm.org/v0.6.0/ 'wasm-unsafe-eval'; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob: https:; font-src 'self' data:; connect-src 'self' https://256t.us https://hashbin.org https://api.allorigins.win https://data-api.ecb.europa.eu https://webr.r-wasm.org https://cdn.jsdelivr.net; worker-src 'self' blob:; frame-src 'self'; object-src 'none'; base-uri 'self'; form-action 'none'"
+      content="default-src 'self'; script-src 'self' 'sha256-IMEqdP+AkCKdxhM3X7mQM4pV/chykJXPvdtndD+XeH8=' https://accounts.google.com/gsi/client https://hashbin.org/sdk/v0.4.0/ https://cdn.jsdelivr.net/pyodide/v0.27.7/full/ https://webr.r-wasm.org/v0.6.0/ 'wasm-unsafe-eval'; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob: https:; font-src 'self' data:; connect-src 'self' https: https://256t.us https://hashbin.org https://api.allorigins.win https://is.gd https://data-api.ecb.europa.eu https://webr.r-wasm.org https://cdn.jsdelivr.net; worker-src 'self' blob:; media-src blob:; frame-src 'self' https://accounts.google.com; object-src 'none'; base-uri 'self'; form-action 'none'"
     />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
     <meta
       name="description"
       content="Notes that do the math. Edit, calculate, and share a whole document in one link."
@@ -17,7 +17,9 @@
       name="hashbin-client-id"
       content="app_8e03e133-83b4-4ee2-b3d5-39397f573879"
     />
-    <title>Sheets · Notes that do the math</title>
+    <!-- Public browser OAuth identifier; no client secret is used by Sheets. -->
+    <meta name="google-client-id" content="83017003333-ii7c6n3ejg3k3f9iat26g5m24er9uefd.apps.googleusercontent.com" />
+    <meta name="fragment-kit-release" content="sheets-fragment-kit-v0.3.5"><meta name="theme-color" content="#176f61"><link rel="manifest" href="manifest.webmanifest"><link rel="stylesheet" href="vendor/fragment-kit-v0.3.5/src/ui/kit.css"><link rel="stylesheet" href="src/fragment-ui.css"><title>Sheets · Notes that do the math</title>
     <link rel="icon" href="src/icon.svg" type="image/svg+xml" />
     <link rel="stylesheet" href="src/styles.css" />
     <link rel="stylesheet" href="vendor/temml.css" />
@@ -72,9 +74,10 @@
             <button id="open-project">Open project snapshot…</button>
             <input id="project-file" type="file" accept=".sheets.json,.json,application/json" hidden aria-label="Project snapshot file">
             <button id="download-html" disabled>Rendered HTML</button>
+            <button id="export-open" disabled>Export / Save…</button>
             <button id="print-preview" disabled>Print / PDF</button>
             <button id="offline-open">Offline access…</button>
-            <p id="project-download-help" class="subtle" hidden>Portable projects include Org source, calculation mode and input bytes.</p>
+            <p id="project-download-help" class="subtle" hidden>Portable projects include source, calculation mode, bundled inputs and pictures. Plain source downloads contain picture references only.</p>
             <p class="subtle">
               Rendered exports become available when the preview is ready.
             </p>

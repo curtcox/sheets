@@ -1,0 +1,44 @@
+[
+  {
+    "name": "docx",
+    "version": "9.15.3",
+    "license": "MIT",
+    "source": {
+      "type": "git",
+      "url": "git+https://github.com/dolanmiu/docx.git"
+    }
+  },
+  {
+    "name": "turndown",
+    "version": "7.2.5",
+    "license": "MIT",
+    "source": {
+      "type": "git",
+      "url": "https://github.com/mixmark-io/turndown.git"
+    }
+  },
+  {
+    "name": "turndown-plugin-gfm",
+    "version": "1.0.2",
+    "license": "MIT",
+    "source": {
+      "type": "git",
+      "url": "https://github.com/domchristie/turndown-plugin-gfm.git"
+    }
+  },
+  {
+    "name": "xlsx",
+    "version": "0.20.3",
+    "license": "Apache-2.0",
+    "source": {
+      "type": "git",
+      "url": "https://git.sheetjs.com/SheetJS/sheetjs"
+    }
+  },
+  {
+    "name": "fflate",
+    "version": "0.8.3",
+    "license": "MIT",
+    "source": "https://github.com/101arrowz/fflate"
+  }
+]

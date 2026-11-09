@@ -8,7 +8,7 @@ avoiding host request-line limits on reload; short query links remain readable.
 
 Supports GitHub Markdown, AsciiMath, Numbat, CalcFile, Org tables, a Calca-compatible
 subset, Hurmet, a Beancount core subset with default ledger charts, and Quarto notebooks with Python and R. Includes
-41 gallery examples with rendered previews, format guides, diagnostics, responsive
+48 gallery examples with rendered previews, format guides, diagnostics, responsive
 split views, ACE, and
 sanitized HTML/MathML/SVG output. Download source files, export the finished preview
 as standalone HTML, or print it to PDF. Beancount, Org, Numbat, and Hurmet have
@@ -85,7 +85,7 @@ Unit tests run real Numbat WASM and Hurmet, all 37 required CalcFile conformance
 cases, URL/detection/HashBin/sharing tests, and the recorded GFM corpus (672/672
 raw exact HTML matches, 601/672 production HTML; every deviation classified in
 the format guide). Browser tests render
-all 41 examples in Chromium, Firefox, and WebKit, including real Python and R, and check
+all 48 examples in Chromium, Firefox, and WebKit, including real Python and R, and check
 sharing, cancellation, XSS boundaries, mobile layouts, docs, gallery and reports.
 
 The GFM browser suite separately checks 627/672 final DOM matches, including
@@ -170,7 +170,7 @@ npm run gallery:covers
 node scripts/render-gallery.mjs --only=calcfile-edge --rates-fixture=tests/fixtures/exchange-rates/ecb-api-2026-10-16.csv
 ```
 
-The script starts and stops its own temporary local server, renders all 41
+The script starts and stops its own temporary local server, renders all 48
 examples through the editor, and updates `examples/covers/`. Python examples need
 jsDelivr access; R examples need webr.r-wasm.org. Covers use a 640 × 400 viewport; Beancount examples show the trial
 balance, except the error example, which shows diagnostics. Unit tests check
@@ -257,3 +257,61 @@ Apache-2.0 license. Diagnostic warnings leave permissive translated output intac
 ## Canonical HashBin address
 
 The production app is [https://sheets.hashbin.page/](https://sheets.hashbin.page/). The GitHub Pages copy is kept for moving old drafts through **Move saved work** or **Download backup**. Transfers copy only this app's documents and public settings, keep the old copy, and never copy HashBin credentials or Python filesystem permissions. Deployment is managed by [HashBin's first-party deployment tool](https://github.com/curtcox/hashbin.org/blob/main/scripts/deploy-owned-apps.mjs).
+
+
+## Fragment Kit
+
+The shared editor controls, Share/QR, explicit draft recovery, URL codec,
+HashBin transport and atomic offline cache are pinned to Fragment Kit v0.3.4.
+Sheets retains its v1/v2/v3 schemas, compressed/source/project writers, 5 MiB
+source and payload limits, compatibility profiles and verified portable Org inputs.
+Its calculation engines, sanitization, cancellation and interpreter isolation
+remain app-owned. New saves retain legacy schemas while carrying the Auto selection
+as optional metadata that older readers ignore.
+
+The original vendor LZ pin remains a compatibility-test reference and is excluded
+from staged production assets. Kit tools and tests are also excluded. Original
+real-engine gallery screenshots feed the shared cover producer. After changing
+public assets, run npm run gallery:kit and npm run offline, then npm run check.
+
+## Compact interface
+
+This app uses released Fragment Kit v0.3.5 for compact controls, readable dialogs,
+and individual-pane or split workspace views. On phones, primary feedback stays
+visible while status details are available in More.
+Current deployment evidence is recorded in the [shared rollout status](https://github.com/curtcox/Tools-for-pages-with-state-in-URL-fragments/blob/main/todo/rollout-status.md).
+
+## Insert outside tables
+
+Choose **Insert** to load a UTF-8 CSV/TSV file or paste delimited rows. Preview
+values, choose comma/semicolon/tab and select whether the first row is a header,
+then insert an editable Org or Markdown table at the source selection. Copied
+multiline tab-separated spreadsheet cells also open this preview on paste.
+Numbers, dates and identifiers stay as text; formulas and live connections are
+not imported. Org joins multiline cells with spaces. Markdown supplies an empty
+header when needed. Limits are 512 KiB, 1,000 rows, 100 columns and 20,000 cells.
+
+Picture insertion supports linked HTTPS images (including verified HashBin/256t image
+CIDs) and bundled PNG/JPEG/WebP attachments. CSV and clipboard tables can be inserted
+as editable source or a picture. Portable projects, links, drafts and HashBin saves
+retain included pictures; plain source files contain references only. See
+[outside tables and pictures](docs/insert-content.md) for usage and limits.
+
+## Document and workbook exports
+
+**More → Download → Export / Save…** separates format, contents and destination, with optional reload QR codes and
+screen shading for HTML/print and Word. It adds evaluated Word, Markdown,
+plain text, RTF, Excel/ODS workbooks and a Pages Online handoff. Excel's first
+release includes a bounded Org formula translator with editable inputs; other
+calculation engines require an explicit values-only choice. Google Docs supports
+Word download/import and OAuth Drive conversion. The deployed public client is
+configured; live creation was verified with the owner’s approved Google test
+account. The Google project remains in testing mode. See
+[export support and setup](docs/exports.md) and [backend decisions](design/exports.md).
+
+Rebuild export libraries with `node scripts/vendor/exports.mjs`, then
+`npm run offline`. To retain browser-generated sample files while testing:
+
+```sh
+SHEETS_EXPORT_ARTIFACTS=/tmp/sheets-export-examples npx playwright test tests/browser/multi-export.spec.js --project=chromium
+```

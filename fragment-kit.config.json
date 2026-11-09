@@ -1,0 +1,13 @@
+{
+  "slug": "sheets",
+  "name": "Sheets",
+  "storagePrefix": "sheets",
+  "cachePrefix": "sheets-offline",
+  "canonicalOrigin": "https://sheets.hashbin.page/",
+  "recoveryOrigin": "https://curtcox.github.io/sheets/",
+  "documentType": "sheets",
+  "maxBytes": 5242880,
+  "repo": "curtcox/sheets",
+  "docs": "https://sheets.hashbin.page/docs.html",
+  "gallery": "https://sheets.hashbin.page/gallery.html"
+}

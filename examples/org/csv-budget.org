@@ -1,0 +1,27 @@
+#+TITLE: CSV budget to working table
+
+* Imported budget
+
+These values came from CSV. The total formula was added deliberately in Sheets.
+
+| Item       | Quantity | Unit cost | Total |
+|------------+----------+-----------+-------|
+| Notebooks  |       12 |         4 |     0 |
+| Pencils    |       24 |         1 |     0 |
+| Folders    |        8 |         3 |     0 |
+#+TBLFM: $4=$2*$3
+
+* Try it
+
+Choose *Insert*, paste the CSV below, and inspect the preview. Choose comma as
+the separator and keep the first row as a header. Insert the editable table.
+Then add a TBLFM line yourself to calculate with the imported values.
+
+#+BEGIN_EXAMPLE
+Item,Quantity,Unit cost
+Notebooks,12,4
+Pencils,24,1
+Folders,8,3
+#+END_EXAMPLE
+
+Insertion preserves values. It does not import spreadsheet formulas or connections.

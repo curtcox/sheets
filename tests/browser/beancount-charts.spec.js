@@ -1,3 +1,4 @@
+import{openMore}from"./ui.js";
 import { test, expect } from "@playwright/test";
 import { readFile } from "node:fs/promises";
 import { writeURL } from "../../src/url-state.js";
@@ -9,7 +10,7 @@ const charts = (page) => page.locator("#report-charts figure.chart");
 test("the Charts tab draws the default ledger charts, sanitized and exported", async ({ page, context }) => {
   await page.goto(`${base}?example=beancount-household&view=preview`);
   await ready(page);
-  await expect(page.getByRole("tab")).toHaveText(["Diagnostics", "Balance sheet", "Income statement", "Trial balance", "Charts", "Account journal"]);
+  await expect(page.locator("#preview").getByRole("tab")).toHaveText(["Diagnostics", "Balance sheet", "Income statement", "Trial balance", "Charts", "Account journal"]);
   await expect(page.locator("#report-charts")).toBeHidden();
   await page.getByRole("tab", { name: "Charts", exact: true }).click();
   await expect(charts(page)).toHaveCount(3);
@@ -28,9 +29,9 @@ test("the Charts tab draws the default ledger charts, sanitized and exported", a
   });
   expect(unchanged).toBe(true);
   // The selected tab is what export captures.
-  await page.locator("#download-menu summary").click();
+  await openMore(page);await page.locator("#download-menu summary").click();
   const pending = page.waitForEvent("download");
-  await page.locator("#download-html").click();
+  await page.locator("#download-html").click(); await page.locator("#export-go").click(); await page.getByRole("button", { name: "Close exports" }).click();
   const html = await readFile(await (await pending).path(), "utf8"), saved = await context.newPage();
   await saved.setContent(html);
   await expect(saved.locator("figure.chart svg")).toHaveCount(3);

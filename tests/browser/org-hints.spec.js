@@ -1,3 +1,4 @@
+import{openMore}from"./ui.js";
 import { test, expect } from "@playwright/test";
 import { readFile } from "node:fs/promises";
 import { writeURL } from "../../src/url-state.js";
@@ -22,7 +23,7 @@ test("precedence hints preserve arithmetic, source, modes, sharing, reload and e
     expect(await source(page)).toBe(src);
     await page.getByRole("button", { name: "Share", exact: true }).click();
     const fresh = await context.newPage();
-    await fresh.goto(await page.locator("#share-url").inputValue());
+    await fresh.goto(await page.locator("#share-link").inputValue());
     await ready(fresh);
     await fresh.reload();
     await ready(fresh);
@@ -31,13 +32,13 @@ test("precedence hints preserve arithmetic, source, modes, sharing, reload and e
     await expect(fresh.locator('#preview aside li')).toHaveText("Line 4: " + PRECEDENCE_HINT);
     await fresh.setViewportSize({ width: 390, height: 844 });
     expect(await fresh.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
-    await fresh.locator("#download-menu summary").click();
+    await openMore(fresh);await fresh.locator("#download-menu summary").click();
     let pending = fresh.waitForEvent("download");
     await fresh.locator("#download-source").click();
     expect(await readFile(await (await pending).path(), "utf8")).toBe(src);
-    await fresh.locator("#download-menu summary").click();
+    await openMore(fresh);await fresh.locator("#download-menu summary").click();
     pending = fresh.waitForEvent("download");
-    await fresh.locator("#download-html").click();
+    await fresh.locator("#download-html").click(); await fresh.locator("#export-go").click(); await fresh.getByRole("button", { name: "Close exports" }).click();
     const html = await readFile(await (await pending).path(), "utf8"), saved = await context.newPage();
     await saved.setContent(html);
     await saved.emulateMedia({ media: "print" });
@@ -46,7 +47,7 @@ test("precedence hints preserve arithmetic, source, modes, sharing, reload and e
     await expect(saved.locator("script,button")).toHaveCount(0);
     await saved.close();
     await fresh.close();
-    await page.locator("#share-close").click();
+    await page.locator("#share-dialog .fk-close").click();
     await setSource(page, src.replace("10/4*2", "(10/4)*2"));
     await expect(page.locator('#preview aside[aria-label="Formula hints"]')).toHaveCount(0);
     await expect(page.locator("#render-status")).toHaveText(/^Ready/);

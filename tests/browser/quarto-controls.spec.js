@@ -192,7 +192,7 @@ test("Quarto control and figure documentation opens complete examples and preser
   const source = await page.evaluate(() => ace.edit("editor").getValue());
   await page.getByRole("button", { name: "Share", exact: true }).click();
   const fresh = await context.newPage();
-  await fresh.goto(await page.locator("#share-url").inputValue());
+  await fresh.goto(await page.locator("#share-link").inputValue());
   await ready(fresh);
   expect(await fresh.evaluate(() => ace.edit("editor").getValue())).toBe(
     source,

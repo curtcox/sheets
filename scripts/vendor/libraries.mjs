@@ -157,6 +157,6 @@ await licenses("node_modules");
 inventory += `| ace-builds | ${ace.version} | BSD-3-Clause | https://github.com/ajaxorg/ace | npm run vendor |\n`;
 await writeFile(
   "vendor/README.md",
-  inventory +
+  inventory + (await readFile(new URL("./exports-notes.txt", import.meta.url), "utf8")) +
     "\nNumbat and Hurmet retain dependency notices in their own `licenses/` directories. Hurmet includes a small build wrapper to expose AST diagnostics and initialize its own Temml global; its source is in `scripts/vendor/build-hurmet.mjs`.\n\nNumbat applies `scripts/vendor/numbat.patch` before building. The bridge exposes parser statement ranges and structured diagnostic labels; the interpreter rules are unchanged.\n\nSource-built engines are documented in `engines.json`; rebuild with `scripts/vendor/{numbat,calcfile,hurmet}.sh`. Pyodide 0.27.7 (MPL-2.0) is loaded on demand from https://cdn.jsdelivr.net/pyodide/v0.27.7/full/.\n\nR is loaded on demand from https://webr.r-wasm.org/v0.6.0/ (webR 0.6.0).\nThe JavaScript loader is MIT; the R/webR distribution binaries are GPL-3.0.\nSee the [upstream licenses](https://github.com/r-wasm/webr/blob/v0.6.0/LICENSE.md)\nand [release sources](https://github.com/r-wasm/webr/releases/tag/v0.6.0).\nThese runtime assets are downloaded from upstream and are not vendored or included\nin the offline app cache. `src/webr-client.js` and its same-origin bootstrap\n`src/workers/webr-worker.js` pin the runtime URLs. The bootstrap creates webR’s\nown worker directly, so cancellation also stops its initial CDN download.\n",
 );

@@ -140,3 +140,12 @@ Raw-URL loading and general recursive projects remain unsupported (SHARED-07).
 Choose **Shorten with is.gd** in the Share dialog. This explicitly sends the complete source link through AllOrigins to is.gd. The app validates the returned HTTPS is.gd URL. If shortening fails, the original source link remains ready to copy. HashBin provides a separate content-storage option for large documents.
 
 References and footnotes inside the preview scroll to their targets without changing the document URL. This preserves saved CIDs and avoids rerunning notebook cells.
+
+## Picture projects
+
+Version-2 portable projects add `attachments` for Org and Markdown; version-4
+HashBin envelopes preserve the same collection. Each entry is `{id,mime,data}`
+with a content CID and canonical base64url bytes. These project links also use
+`#project=…` and preserve existing precedence and bounds. Existing versions keep
+their behavior. See [outside content](insert-content.md) for image limits, linked
+versus bundled behavior, source-only downloads and offline use.

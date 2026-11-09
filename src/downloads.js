@@ -30,7 +30,7 @@ export function sourceDownload(source, format) {
   };
 }
 export function projectDownload(document, payloads) {
-  const inputSnapshot = snapshotFromPayloads(payloads, document.src),
-    text = serializeProjectFile({ ...document, type: "org", inputSnapshot });
+  const inputSnapshot = document.type === "org" && payloads ? snapshotFromPayloads(payloads, document.src) : document.inputSnapshot,
+    text = serializeProjectFile({ ...document, inputSnapshot });
   return { name: fileName(sourceTitle(document.src), ".sheets.json"), blob: new Blob([text], { type: "application/json;charset=utf-8" }) };
 }
