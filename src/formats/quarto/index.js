@@ -6,7 +6,7 @@ import { escapeHTML as e } from "../../util.js";
 import { cellOptions } from "./cell-options.js";
 export async function renderQuarto(
   src,
-  { signal, executePython, executeR } = {},
+  { signal, onProgress, executePython, executeR } = {},
 ) {
   const parsed = parseQuarto(src),
     { metadata, parts, diagnostics } = parsed;
@@ -29,9 +29,9 @@ export async function renderQuarto(
       [
         "python",
         executePython ||
-          ((cells) => runPython(cells, { signal, timeout: 90000 })),
+          ((cells) => runPython(cells, { signal, onProgress, timeout: 90000 })),
       ],
-      ["r", executeR || ((cells) => runR(cells, { signal, timeout: 90000 }))],
+      ["r", executeR || ((cells) => runR(cells, { signal, onProgress, timeout: 90000 }))],
     ].map(async ([language, execute]) => {
       const cells = executable.filter((p) => p.language === language);
       if (!cells.length) return;

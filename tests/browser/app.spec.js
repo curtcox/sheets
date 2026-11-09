@@ -79,6 +79,12 @@ for (const format of [...new Set(examples.map((s) => s.format))])
         await expect(page.locator("#preview")).toContainText(
           "The next cell still runs",
         );
+      if (sample.id === "quarto-edge") {
+        const plot = page.locator("#fig-measurements img");
+        await expect(plot).toBeVisible();
+        expect(await plot.evaluate((image) => image.complete && image.naturalWidth > 0)).toBe(true);
+        await expect(page.locator('a[href="#fig-measurements"]')).toHaveText("Figure 1");
+      }
     }
     expect(errors).toEqual([]);
   });

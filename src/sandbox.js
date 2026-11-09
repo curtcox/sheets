@@ -15,44 +15,60 @@ const workers = new URL("./workers/", import.meta.url);
 
 // A same-origin host page with its own policy creates the sandbox and relays its messages.
 // Removing the host frame ends the sandbox and its worker.
-function hostedSandbox(source) {
-  const frame = document.createElement("iframe");
-  const channel = new MessageChannel();
-  const worker = {
-    onmessage: null,
-    onerror: null,
-    postMessage: (data, transfer = []) =>
-      channel.port1.postMessage(data, transfer),
-    terminate() {
+function hostedSandbox(source, { signal, readyTimeout = 15000 } = {}) {
+  signal?.throwIfAborted();
+  return new Promise((resolve, reject) => {
+    const frame = document.createElement("iframe");
+    const channel = new MessageChannel();
+    const worker = {
+      onmessage: null,
+      onerror: null,
+      postMessage: (data, transfer = []) =>
+        channel.port1.postMessage(data, transfer),
+      terminate() {
+        clearTimeout(timer);
+        signal?.removeEventListener("abort", abort);
+        removeEventListener("message", ready);
+        channel.port1.close();
+        frame.remove();
+      },
+    };
+    const fail = (error) => {
+      worker.terminate();
+      reject(error);
+    };
+    const abort = () => fail(new DOMException("Rendering cancelled", "AbortError"));
+    const timer = setTimeout(() => fail(new Error(
+      `R sandbox host did not become ready within ${readyTimeout / 1000} seconds. It may be blocked by the site's security policy or a failed download. Reload to retry; if it persists, report this startup failure.`,
+    )), readyTimeout);
+    signal?.addEventListener("abort", abort, { once: true });
+    channel.port1.onmessage = (event) =>
+      event.data?.type === "sheets:sandbox:error"
+        ? worker.onerror?.({ message: event.data.message, preventDefault() {} })
+        : worker.onmessage?.(event);
+    frame.hidden = true;
+    frame.title = "Code sandbox host";
+    frame.src = new URL("sandbox-host.html", workers).href;
+    // WebKit can fire the frame's load event before its module script listens, so wait for it.
+    const ready = (event) => {
+      if (
+        event.source !== frame.contentWindow ||
+        event.data?.type !== "sheets:sandbox:ready"
+      )
+        return;
       removeEventListener("message", ready);
-      channel.port1.close();
-      frame.remove();
-    },
-  };
-  channel.port1.onmessage = (event) =>
-    event.data?.type === "sheets:sandbox:error"
-      ? worker.onerror?.({ message: event.data.message, preventDefault() {} })
-      : worker.onmessage?.(event);
-  frame.hidden = true;
-  frame.title = "Code sandbox host";
-  frame.src = new URL("sandbox-host.html", workers).href;
-  // WebKit can fire the frame's load event before its module script listens, so wait for it.
-  const ready = (event) => {
-    if (
-      event.source !== frame.contentWindow ||
-      event.data?.type !== "sheets:sandbox:ready"
-    )
-      return;
-    removeEventListener("message", ready);
-    frame.contentWindow.postMessage(
-      { type: "sheets:sandbox:start", source, base: workers.href },
-      location.origin,
-      [channel.port2],
-    );
-  };
-  addEventListener("message", ready);
-  document.body.append(frame);
-  return worker;
+      clearTimeout(timer);
+      signal?.removeEventListener("abort", abort);
+      frame.contentWindow.postMessage(
+        { type: "sheets:sandbox:start", source, base: workers.href },
+        location.origin,
+        [channel.port2],
+      );
+      resolve(worker);
+    };
+    addEventListener("message", ready);
+    document.body.append(frame);
+  });
 }
 
 /**
@@ -61,7 +77,7 @@ function hostedSandbox(source) {
  */
 export async function startSandbox(
   name,
-  { prefix = "", signal, allowEval = false, loadSDK = loadHashBinSDK } = {},
+  { prefix = "", signal, allowEval = false, readyTimeout, loadSDK = loadHashBinSDK } = {},
 ) {
   const [sdk, source] = await Promise.all([
     allowEval ? null : loadSDK(),
@@ -71,6 +87,6 @@ export async function startSandbox(
     }),
   ]);
   signal?.throwIfAborted();
-  if (allowEval) return hostedSandbox(prefix + source);
+  if (allowEval) return hostedSandbox(prefix + source, { signal, readyTimeout });
   return sdk.createSandbox({ source: prefix + source, base: workers.href });
 }

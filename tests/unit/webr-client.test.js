@@ -179,3 +179,32 @@ test("R sandbox passes webR's own messages but drops requests to act on this ori
   assert.deepEqual(sandbox.posted, [{ type: "init" }]);
   assert.ok(sandbox.terminated);
 });
+
+test("R reports startup, cell progress and the stalled stage on timeout", async () => {
+  const messages = [], mock = runtime();
+  await runR([{ source: "1", line: 7 }, { source: "2", line: 11 }], {
+    ...mock, onProgress: (message) => messages.push(message),
+  });
+  assert.match(messages[0], /R: Starting sandbox.*90s until timeout/);
+  assert.ok(messages.some((message) => /Initializing R/.test(message)));
+  assert.ok(messages.some((message) => /Running cell 2 of 2 \(line 11\)/.test(message)));
+
+  const blocked = runtime({ init: () => new Promise(() => {}) });
+  await assert.rejects(runR([{ source: "never run" }], { ...blocked, timeout: 20 }), /exceeded 0.02 seconds while R: Initializing R/);
+  assert.deepEqual(blocked.log.sources, []);
+  assert.ok(blocked.log.sandboxes[0].terminated);
+});
+
+test("R sandbox startup errors reject immediately rather than waiting for timeout", async () => {
+  const initializing = deferred();
+  const mock = runtime({ init: () => {
+    initializing.resolve();
+    return new Promise(() => {});
+  } });
+  const result = runR([{ source: "never run" }], mock);
+  await initializing.promise;
+  mock.log.sandboxes[0].onerror({ message: "SDK download failed" });
+  await assert.rejects(result, /R sandbox failed: SDK download failed/);
+  assert.ok(mock.log.sandboxes[0].terminated);
+  assert.deepEqual(mock.log.sources, []);
+});

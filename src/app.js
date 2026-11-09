@@ -186,7 +186,7 @@ function persist() {
   return url;
 }
 const scheduler = new RenderScheduler({
-  async render(src, { signal }) {
+  async render(src, { signal, onProgress }) {
     renderController?.abort();
     renderController = new AbortController();
     const combined = AbortSignal.any([signal, renderController.signal]);
@@ -209,6 +209,7 @@ const scheduler = new RenderScheduler({
     return {
       ...(await plugin.render(src, {
         signal: combined,
+        onProgress,
         profile,
         inputSnapshot,
       })),
@@ -258,7 +259,7 @@ const scheduler = new RenderScheduler({
         status === "waiting"
           ? "Waiting for edits…"
           : busy
-            ? "Rendering…"
+            ? detail || "Rendering…"
             : detail?.length
               ? `${detail.length} diagnostic${detail.length === 1 ? "" : "s"} · ${catalog.find((f) => f.id === currentType)?.label}`
               : `Ready · ${catalog.find((f) => f.id === currentType)?.label}`;

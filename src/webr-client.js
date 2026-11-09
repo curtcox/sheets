@@ -1,4 +1,5 @@
 import { startSandbox } from "./sandbox.js";
+import { executionProgress } from "./execution-progress.js";
 // R code runs in webR's worker, inside a HashBin SDK sandbox. Keep its controller
 // outside the sandbox: this also lets cancellation close the interpreter directly.
 const base = "https://webr.r-wasm.org/v0.6.0/";
@@ -12,7 +13,7 @@ const SYSTEM_REQUESTS = new Set([
   "console.error",
   "close",
 ]);
-export function guardWorker(sandbox) {
+export function guardWorker(sandbox, onError = () => {}) {
   const worker = {
     onmessage: null,
     onerror: null,
@@ -25,7 +26,10 @@ export function guardWorker(sandbox) {
       return;
     worker.onmessage?.(event);
   };
-  sandbox.onerror = (event) => worker.onerror?.(event);
+  sandbox.onerror = (event) => {
+    onError(event);
+    worker.onerror?.(event);
+  };
   return worker;
 }
 // WebR constructs its worker synchronously with `new Worker()`; give it the sandbox.
@@ -61,12 +65,18 @@ export function runR(
   {
     signal,
     timeout = 90000,
+    onProgress,
     loadRuntime = () => import(base + "webr.mjs"),
     start = startSandbox,
   } = {},
 ) {
   signal?.throwIfAborted();
   return new Promise((resolve, reject) => {
+    const startup = new AbortController();
+    const progress = executionProgress({
+      label: "R", timeout, onProgress,
+      initial: "Starting sandbox and loading R runtime",
+    });
     let webR,
       sandbox,
       settled = false,
@@ -74,7 +84,9 @@ export function runR(
     const finish = (fn, value) => {
       if (settled) return;
       settled = true;
+      startup.abort();
       clearTimeout(timer);
+      progress.stop();
       signal?.removeEventListener("abort", abort);
       webR?.close();
       sandbox?.terminate();
@@ -83,20 +95,11 @@ export function runR(
     const abort = () =>
       finish(reject, new DOMException("Rendering cancelled", "AbortError"));
     signal?.addEventListener("abort", abort, { once: true });
-    timer = setTimeout(
-      () =>
-        finish(
-          reject,
-          new Error(
-            `Calculation exceeded ${timeout / 1000} seconds. Edit the source to try again.`,
-          ),
-        ),
-      timeout,
-    );
+    timer = setTimeout(() => finish(reject, progress.error()), timeout);
     void (async () => {
       try {
         const started = start("webr-worker.js", {
-          signal,
+          signal: startup.signal,
           allowEval: true,
         }).then((worker) => {
           sandbox = worker;
@@ -108,8 +111,11 @@ export function runR(
           started,
         ]);
         if (settled) return;
+        progress.update("Initializing R (runtime files download on first use)");
         webR = withWorker(
-          guardWorker(worker),
+          guardWorker(worker, (event) =>
+            finish(reject, new Error(`R sandbox failed: ${event.message || "Worker failed to start"}`)),
+          ),
           () =>
             new WebR({
               baseUrl: new URL("./workers/", import.meta.url).href,
@@ -121,8 +127,9 @@ export function runR(
         if (settled) return;
         const shelter = await new webR.Shelter(),
           outputs = [];
-        for (const cell of cells) {
+        for (const [index, cell] of cells.entries()) {
           if (settled) return;
+          progress.update(`Running cell ${index + 1} of ${cells.length}${cell.line ? ` (line ${cell.line})` : ""}`);
           try {
             const size = cell.execution?.figureSize;
             const capture = await shelter.captureR(cell.source, {
@@ -152,6 +159,7 @@ export function runR(
               }
             }
             const images = [];
+            if (capture.images.length) progress.update(`Preparing plots for cell ${index + 1} of ${cells.length}`);
             for (const image of capture.images) images.push(await png(image));
             outputs.push({
               stdout: stdout.join("\n"),
