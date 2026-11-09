@@ -13,6 +13,27 @@ supports a different set of formats.
 
 ## Implementation status
 
+**Quarto R gallery startup and progress (2026-11-08).** Reproduced the canonical
+site's R gallery failure: the deployment's blanket `frame-ancestors 'none'`
+blocks `src/workers/sandbox-host.html` (redirected to its extensionless path).
+The same unmodified example executes locally. The companion HashBin hosting fix
+allows same-origin framing only at those two host URLs, retaining the editor's
+framing denial and opaque SDK execution boundary. Sheets now bounds the host
+handshake to 15 seconds, cleans up cancelled startup, and reports runtime/cell
+stages, elapsed time and time left until the existing deadline. Timeout messages
+identify the stalled stage. Progress ignores superseded and completed renders.
+Gallery coverage checks the loaded R plot and figure reference; the reported
+older gallery source also checks its mean output. Browser
+regressions cover production framing, blocked startup and timeout feedback.
+Production remains unfixed until both prepared changes are deployed and the live
+R gallery check passes.
+Validation: 457 unit tests, syntax checks and recorded conformance pass; 30
+affected Chromium/WebKit browser checks pass, including both gallery sources,
+startup failure, timeout progress, cancellation, controls, isolation and exports.
+The staged Cloudflare assets run the R gallery with the final header rules.
+Local Firefox fails at browser launch (`Could not find profile folder`), before
+opening a page; Linux CI remains the Firefox acceptance gate.
+
 Phases 0–10 are implemented and deployed on GitHub Pages, with the supported
 subsets and compatibility gaps recorded in the format guides. Source downloads,
 standalone rendered HTML exports, preview printing/PDF, and dedicated ACE modes

@@ -22,12 +22,17 @@ export class RenderScheduler {
     this.onStatus("waiting");
     this.timer = this.timers.setTimeout(
       async () => {
+        let finished = false;
         this.onStatus("rendering");
         try {
           const result = await this.render(source, {
             ...context,
             signal: controller.signal,
             revision,
+            onProgress: (message) => {
+              if (!finished && revision === this.revision && !controller.signal.aborted)
+                this.onStatus("rendering", message);
+            },
           });
           if (revision !== this.revision || controller.signal.aborted) return;
           await this.onResult(result, revision);
@@ -36,6 +41,8 @@ export class RenderScheduler {
         } catch (error) {
           if (revision === this.revision && error.name !== "AbortError")
             this.onStatus("error", error);
+        } finally {
+          finished = true;
         }
       },
       immediate ? 0 : this.delay,

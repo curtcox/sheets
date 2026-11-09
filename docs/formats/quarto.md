@@ -309,6 +309,13 @@ guides and [Pandoc fenced div syntax](https://pandoc.org/MANUAL.html#extension-f
 
 Each language has a **90-second deadline**, including runtime and package loading. Cancel or edit to terminate the worker. The initial download needs a network connection; subsequent loads benefit from the browser cache. Auto recognizes executable fences and Quarto-specific YAML keys. Code in a shared document runs in disposable workers inside HashBin SDK sandboxes, frames with an opaque origin, so it cannot reach the editor DOM or this site's storage, cookies or service worker. Starting a sandbox loads the pinned SDK from hashbin.org. Python and R execution require a connection and are not included in the optional offline download.
 
+While rendering, the status shows runtime startup, package loading or the active
+cell, with elapsed seconds and time remaining. **Cancel** stays available. A
+timeout names the stage that did not finish. R checks that its sandbox host is
+ready within **15 seconds**, so a blocked host reports a startup failure instead
+of waiting for the calculation deadline. A first download can take longer than
+later runs; check your connection if startup or package loading stalls.
+
 If a later cell reports a missing name, check whether the defining cell was skipped
 or failed, and whether the name belongs to the other language. A first run can take
 longer while runtimes/packages download. Use **Cancel** for a long-running render;

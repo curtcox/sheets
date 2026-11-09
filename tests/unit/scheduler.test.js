@@ -86,3 +86,43 @@ test("worker termination on success, error, timeout, and cancellation", async ()
   await assert.rejects(task, { name: "AbortError" });
   assert.equal(instances.at(-1).terminated, true);
 });
+
+test("only the active render can report progress, including after completion", async () => {
+  const jobs = [], statuses = [];
+  const scheduler = new RenderScheduler({
+    delay: 0,
+    render: (source, { onProgress }) => new Promise((resolve) => jobs.push({ source, onProgress, resolve })),
+    onStatus: (status, detail) => statuses.push([status, detail]),
+    onResult() {},
+  });
+  scheduler.schedule("old");
+  await pause(5);
+  scheduler.schedule("new");
+  await pause(5);
+  jobs[0].onProgress("stale");
+  jobs[1].onProgress("Running R cell");
+  assert.equal(statuses.some(([, detail]) => detail === "stale"), false);
+  assert.deepEqual(statuses.at(-1), ["rendering", "Running R cell"]);
+  jobs[1].resolve({});
+  await pause(5);
+  jobs[1].onProgress("too late");
+  assert.equal(statuses.at(-1)[0], "done");
+  jobs[0].resolve({});
+});
+
+test("worker progress does not finish a job and timeout identifies its active stage", async () => {
+  let worker;
+  const messages = [];
+  const result = runWorker(null, {}, {
+    timeout: 20, label: "Python", onProgress: (message) => messages.push(message),
+    createWorker: () => (worker = { postMessage() {}, terminate() { this.terminated = true; } }),
+  });
+  worker.onmessage({ data: { type: "sheets:progress", stage: "Loading packages for cell 1 of 2" } });
+  assert.equal(worker.terminated, undefined);
+  assert.match(messages.at(-1), /Python: Loading packages for cell 1 of 2/);
+  await assert.rejects(result, /exceeded 0.02 seconds while Python: Loading packages for cell 1 of 2/);
+  assert.equal(worker.terminated, true);
+  const count = messages.length;
+  worker.onmessage({ data: { type: "sheets:progress", stage: "late" } });
+  assert.equal(messages.length, count);
+});
