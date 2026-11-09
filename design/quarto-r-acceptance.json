@@ -1,0 +1,85 @@
+{
+  "checkedAt": "2026-11-09T01:31:57.244Z",
+  "origin": "https://sheets.hashbin.page",
+  "revision": "e40a42eceff6a3b2be4d6ef8056747aef0774bdc",
+  "dirty": false,
+  "browsers": [
+    {
+      "name": "chromium",
+      "checks": [
+        {
+          "case": "reported-link",
+          "status": "Ready \u00b7 Quarto",
+          "elapsedMs": 2759,
+          "plotLoaded": true,
+          "figureReference": "Figure 1"
+        },
+        {
+          "case": "current-gallery",
+          "status": "Ready \u00b7 Quarto",
+          "elapsedMs": 2790,
+          "plotLoaded": true,
+          "figureReference": "Figure 1"
+        },
+        {
+          "case": "visible-setup-variant",
+          "status": "Ready \u00b7 Quarto",
+          "elapsedMs": 2493,
+          "plotLoaded": true,
+          "figureReference": "Figure 1"
+        },
+        {
+          "case": "delayed-startup-feedback-and-cancel",
+          "status": "R: Starting sandbox and loading R runtime \u00b7 60s elapsed \u00b7 30s until timeout. Cancel or edit to stop.",
+          "passed": true
+        },
+        {
+          "case": "blocked-host-startup-deadline",
+          "passed": true,
+          "deadlineSeconds": 15
+        }
+      ]
+    },
+    {
+      "name": "webkit",
+      "checks": [
+        {
+          "case": "reported-link",
+          "status": "Ready \u00b7 Quarto",
+          "elapsedMs": 2971,
+          "plotLoaded": true,
+          "figureReference": "Figure 1"
+        },
+        {
+          "case": "current-gallery",
+          "status": "Ready \u00b7 Quarto",
+          "elapsedMs": 2531,
+          "plotLoaded": true,
+          "figureReference": "Figure 1"
+        },
+        {
+          "case": "visible-setup-variant",
+          "status": "Ready \u00b7 Quarto",
+          "elapsedMs": 2451,
+          "plotLoaded": true,
+          "figureReference": "Figure 1"
+        },
+        {
+          "case": "delayed-startup-feedback-and-cancel",
+          "status": "R: Starting sandbox and loading R runtime \u00b7 60s elapsed \u00b7 30s until timeout. Cancel or edit to stop.",
+          "passed": true
+        },
+        {
+          "case": "blocked-host-startup-deadline",
+          "passed": true,
+          "deadlineSeconds": 15
+        }
+      ]
+    }
+  ],
+  "offlineVersion": "sheets-offline-70f307f99b513a16",
+  "responsePolicyIncludedInOfflineVersion": true,
+  "ci": "https://github.com/curtcox/sheets/actions/runs/42544788635",
+  "deployment": "https://github.com/curtcox/hashbin.org/actions/runs/42545731930",
+  "hostingRevision": "1707eb42d47eabbc705e41c364bf64a2763b07d1"
+}

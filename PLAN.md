@@ -25,14 +25,23 @@ identify the stalled stage. Progress ignores superseded and completed renders.
 Gallery coverage checks the loaded R plot and figure reference; the reported
 older gallery source also checks its mean output. Browser
 regressions cover production framing, blocked startup and timeout feedback.
-Production remains unfixed until both prepared changes are deployed and the live
-R gallery check passes.
+Deployed and live-verified on 2026-11-08 (America/Chicago). Published Sheets
+source `e40a42eceff6a3b2be4d6ef8056747aef0774bdc` with hosting revision
+`1707eb42d47eabbc705e41c364bf64a2763b07d1` through the
+[successful canonical deployment](https://github.com/curtcox/hashbin.org/actions/runs/42545731930).
+The exact reported URL and current gallery render loaded R plots and Figure 1
+references in about 2.5–3 seconds in live Chromium/WebKit. Hidden setup output
+remains hidden; the additional visible-output fixture returns `[1] 7`. Live
+countdown/cancellation and blocked-host startup checks pass. Release revision,
+asset hashes, scoped response policies and the policy-sensitive offline version
+are verified in `design/quarto-r-acceptance.json`.
 Validation: 457 unit tests, syntax checks and recorded conformance pass; 30
 affected Chromium/WebKit browser checks pass, including both gallery sources,
 startup failure, timeout progress, cancellation, controls, isolation and exports.
 The staged Cloudflare assets run the R gallery with the final header rules.
 Local Firefox fails at browser launch (`Could not find profile folder`), before
-opening a page; Linux CI remains the Firefox acceptance gate.
+opening a page. The final [Linux CI run](https://github.com/curtcox/sheets/actions/runs/42544788635)
+passed Chromium, Firefox and WebKit, unit, reference, kit and export gates.
 
 Phases 0–10 are implemented and deployed on GitHub Pages, with the supported
 subsets and compatibility gaps recorded in the format guides. Source downloads,
