@@ -17,7 +17,10 @@ export function cidFor(text) {
 // Stands in for the pinned SDK. localStorage "test-hashbin-publish" chooses approve (popup),
 // cancel, redirect (a blocked popup) or redirect-cancel. Saved bytes are served from 256t.us.
 const sdk = `export class HashBinClient {
- constructor(options){this.options=options;}
+ constructor(options){
+  this.options=options;
+  if(location.origin==="https://sheets.hashbin.page"&&options.redirectUri!=="https://sheets.hashbin.page/")throw new Error("This app or redirect URI is not registered.");
+ }
  publish(content,{contentType,clientState}){
   if(contentType!=="application/json")return Promise.reject(new Error("Unexpected content type"));
   const mode=localStorage.getItem("test-hashbin-publish")||"approve";

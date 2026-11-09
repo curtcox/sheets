@@ -42,7 +42,7 @@ If the popup is blocked, documents up to 512 KiB go through a redirect that retu
 
 ## Operator setup
 
-The deployed Sheets registration uses public client ID `app_8e03e133-83b4-4ee2-b3d5-39397f573879` and redirect URI `https://curtcox.github.io/sheets/index.html`. HashBin has accepted a real PKCE authorization request for this combination and rejects an unregistered redirect.
+The deployed Sheets registration uses public client ID `app_8e03e133-83b4-4ee2-b3d5-39397f573879` and production redirect URI `https://sheets.hashbin.page/`. The legacy Pages copy retains `https://curtcox.github.io/sheets/index.html`. Callbacks must match exactly, including the path: `https://sheets.hashbin.page/index.html` is not registered. Public callback validation on 2026-11-08 confirmed that the production root is accepted and the production `/index.html` callback returns `invalid_client`.
 
 For another deployment, register its exact callback URI and set its public client ID in the `hashbin-client-id` meta tag in `index.html`. The ID is public configuration; no client secret belongs in this repository. Removing the ID disables saving while preserving public loads. Automated tests cover popup and redirect saves, cancellation, legacy token revocation and source round-trips with a controlled SDK.
 

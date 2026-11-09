@@ -27,7 +27,7 @@ older gallery source also checks its mean output. Browser
 regressions cover production framing, blocked startup and timeout feedback.
 Production remains unfixed until both prepared changes are deployed and the live
 R gallery check passes.
-Validation: 456 unit tests, syntax checks and recorded conformance pass; 30
+Validation: 457 unit tests, syntax checks and recorded conformance pass; 30
 affected Chromium/WebKit browser checks pass, including both gallery sources,
 startup failure, timeout progress, cancellation, controls, isolation and exports.
 The staged Cloudflare assets run the R gallery with the final header rules.

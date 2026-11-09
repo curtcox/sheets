@@ -190,9 +190,10 @@ Deployment runs only after the complete test workflow succeeds.
 ## HashBin setup
 
 Sheets is registered with public client ID
-`app_8e03e133-83b4-4ee2-b3d5-39397f573879`. Its redirect URI is
-`https://curtcox.github.io/sheets/index.html`. HashBin Publish accepts this
-registration. Saving is enabled through the toolbar panel.
+`app_8e03e133-83b4-4ee2-b3d5-39397f573879`. Its production redirect URI is
+`https://sheets.hashbin.page/`; the legacy Pages copy uses
+`https://curtcox.github.io/sheets/index.html`. HashBin matches these callbacks
+exactly: the production `/index.html` URI is not registered. Saving is enabled through the toolbar panel.
 
 Public CIDs load without sign-in and are verified against their CID. Saves use
 HashBin Publish through the pinned SDK (`/sdk/v0.4.0/`): hashbin.org shows the
