@@ -26,7 +26,7 @@ blockquote,.markdown-alert,.callout{border-left:3px solid #7cb99c;padding:4px 18
 /** Capture the current, sanitized preview, including completed diagrams and the selected report. */
 export function htmlDownload(
   preview,
-  { title = "Sheet", baseURL = location.href, appearance = "screen" } = {},
+  { title = "Sheet", baseURL = location.href, appearance = "screen", printTimestamp = true } = {},
 ) {
   const clone = preview.cloneNode(true);
   clone
@@ -48,7 +48,10 @@ export function htmlDownload(
     }
   }
   const html = sanitize(clone.innerHTML);
-  const document = `<!doctype html>\n<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta http-equiv="Content-Security-Policy" content="default-src 'none'; img-src data: https: http:; style-src 'unsafe-inline'; base-uri 'none'; form-action 'none'"><title>${escapeHTML(title)}</title><style>${exportStyles}${CHART_STYLES}</style></head><body><article class="document${appearance === "screen" ? " screen-appearance" : ""}">${html}</article></body></html>\n`;
+  // An empty margin box replaces Chromium's automatic timestamp. `none` would
+  // restore the browser header. Other browsers may require their print setting.
+  const printStyles = printTimestamp ? "" : '@page{@top-left{content:""}}';
+  const document = `<!doctype html>\n<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta http-equiv="Content-Security-Policy" content="default-src 'none'; img-src data: https: http:; style-src 'unsafe-inline'; base-uri 'none'; form-action 'none'"><title>${escapeHTML(title)}</title><style>${exportStyles}${CHART_STYLES}${printStyles}</style></head><body><article class="document${appearance === "screen" ? " screen-appearance" : ""}">${html}</article></body></html>\n`;
   return {
     html: document,
     fragment: html,

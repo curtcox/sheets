@@ -46,6 +46,46 @@ test('contents, format and destination are independent and invalid combinations 
   await page.locator('#export-contents').selectOption('source');
   expect((await download(page)).toString()).toBe(source);
 });
+test('print timestamp is optional, retained on reopen, and does not affect HTML downloads', async ({page}) => {
+  await open(page);
+  const timestamp = page.getByRole('checkbox', {name:'Include timestamp in print header'});
+  await expect(timestamp).toBeHidden();
+  await page.locator('#export-destination').selectOption('print');
+  await expect(timestamp).toBeChecked();
+  // Replace the iframe's native print method before its srcdoc finishes loading.
+  await page.evaluate(() => {
+    const append = document.body.append.bind(document.body);
+    globalThis.printCalls = 0;
+    document.body.append = (...nodes) => {
+      append(...nodes);
+      for (const node of nodes) if (node.className === 'export-print-frame') {
+        node.addEventListener('load', () => {
+          node.contentWindow.print = () => { globalThis.printCalls++; };
+        });
+      }
+    };
+  });
+  for (const [checked, calls] of [[true, 1], [false, 2], [true, 3]]) {
+    await timestamp.setChecked(checked);
+    await page.locator('#export-go').click();
+    await expect.poll(() => page.evaluate(() => globalThis.printCalls)).toBe(calls);
+    const frame = page.frameLocator('.export-print-frame');
+    await expect(frame.locator('article')).toContainText('Export options');
+    const css = await frame.locator('style').textContent();
+    expect(css.includes('@top-left{content:""}')).toBe(!checked);
+  }
+  await timestamp.uncheck();
+  await page.getByRole('button', {name:'Close exports'}).click();
+  await openMore(page);
+  await page.locator('#download-menu summary').click();
+  await page.locator('#print-preview').click();
+  await expect(timestamp).not.toBeChecked();
+  await page.locator('#export-destination').selectOption('download');
+  await expect(timestamp).toBeHidden();
+  expect((await download(page)).toString()).not.toContain('@top-left{content:""}');
+  await page.locator('#export-destination').selectOption('print');
+  await expect(timestamp).not.toBeChecked();
+});
 test('shortening is prompted, QR decodes correctly, and appearance is optional in HTML and Word', async ({page, context}) => {
   await page.route('https://api.allorigins.win/get?*', route => route.fulfill({json:{contents:'https://is.gd/exportTest'}}));
   await open(page);

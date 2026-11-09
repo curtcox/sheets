@@ -15,6 +15,14 @@ into Google Docs manually, download Word and upload it to Drive.
 
 **Rendered HTML** and **Print / PDF** in the Download menu open this same dialog
 with the corresponding format and destination selected.
+For **Print / Save as PDF**, **Include timestamp in print header** is checked by
+default. Uncheck it to suppress Chromium's automatic date/time header while
+keeping the document margins and footer. The choice is retained while the page
+is open. Browsers that do not support this print styling require turning off
+**Headers and footers** in their print dialog; that setting also removes other
+browser headers and footers. To include a timestamp, the browser's **Headers and
+footers** setting must be enabled. Browser print settings can override page styles
+(see [Chrome's print margin documentation](https://developer.chrome.com/blog/print-margins)).
 Exports use the current calculated results and selected Beancount report. Editing,
 changing format or cancelling a render invalidates pending conversions.
 

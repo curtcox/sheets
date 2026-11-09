@@ -54,6 +54,10 @@ export function setupExports({
     </label>
     <p id="export-combination" role="status">
     </p>
+    <div id="export-print-settings" hidden>
+    <label><input id="export-print-timestamp" type="checkbox" checked aria-describedby="export-print-help"> Include timestamp in print header</label>
+    <p id="export-print-help">Your browser's Headers and footers setting must be enabled to include the timestamp. If a date remains after unchecking this option, turn off Headers and footers in the print dialog.</p>
+    </div>
     <label id="export-appearance-label">
     <input id="export-appearance" type="checkbox" checked> Preserve screen appearance, including alternating row shading</label>
     <p id="export-appearance-help">HTML and print preserve preview styling; Word preserves alternating table shading. QR images are supported in HTML, print/PDF, Word, Markdown, Google Docs and Pages. Other conversions have their own formatting. Print background colors may also need enabling in your browser.</p>
@@ -116,7 +120,7 @@ export function setupExports({
   const shortener = new SheetShareClient();
   let returningFromSave = false, restoreWhenReady = false;
   const restoreKey = "sheets:export-after-publish";
-  const preferenceIds = ["export-target", "export-contents", "export-destination", "export-qr", "export-qr-link", "export-long", "export-appearance", "export-values"];
+  const preferenceIds = ["export-target", "export-contents", "export-destination", "export-print-timestamp", "export-qr", "export-qr-link", "export-long", "export-appearance", "export-values"];
   const forgetSave = () => { try { sessionStorage.removeItem(restoreKey); } catch {} };
   const qrLink = () => $("export-qr-link").value === "saved" ? getSavedLink() : knownShortLink(getLink()) || getSavedLink() || getLink();
   const qrAllowed = () => !["native", "project", "xlsx", "ods", "txt", "rtf"].includes(target.value) && !["hashbin"].includes(destination.value);
@@ -147,6 +151,7 @@ export function setupExports({
       book = ["xlsx", "ods"].includes(id);
     $("export-values-label").hidden = !book;
     $("export-google-settings").hidden = dest !== "google" || !!configuredClient;
+    $("export-print-settings").hidden = dest !== "print";
     go.textContent = ({ print: "Print / Save as PDF", pages: "Open in Pages", google: "Create Google Doc", hashbin: "Save to HashBin" })[dest] || "Download";
     $("export-combination").textContent = combination();
     $("export-qr-label").hidden = !qrAllowed();
@@ -270,7 +275,10 @@ export function setupExports({
       tokenPromise?.catch(() => {});
       const root = await exportContents(preview, state, { contents: contents.value, qrURL: useQR ? qrLink() : null, signal });
       check();
-      snapshot = captureSnapshot(root, state, result, getRevision(), { appearance: $("export-appearance").checked ? "screen" : "plain" });
+      snapshot = captureSnapshot(root, state, result, getRevision(), {
+        appearance: $("export-appearance").checked ? "screen" : "plain",
+        printTimestamp: dest !== "print" || $("export-print-timestamp").checked,
+      });
       if (dest === "print") {
         document.querySelectorAll(".export-print-frame").forEach(frame => frame.remove());
         const frame = printFrame = document.createElement("iframe");
