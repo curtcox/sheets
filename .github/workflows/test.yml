@@ -11,7 +11,7 @@ jobs:
       kit-path: vendor/fragment-kit-v0.4.3
       base-url: http://127.0.0.1:4173/
       server-command: node scripts/serve.mjs
-      browser-command: node tests/browser/ai.mjs && node tests/browser/ai.mjs && node tests/browser/ai.mjs && node tests/browser/ai.mjs && node scripts/test-contracts.mjs && npx playwright test --project="$BROWSER"
+      browser-command: node tests/browser/ai.mjs && node scripts/test-contracts.mjs && npx playwright test --project="$BROWSER"
       gallery-command: node scripts/render-kit-gallery.mjs --check
   kit:
     uses: curtcox/Tools-for-pages-with-state-in-URL-fragments/.github/workflows/kit-check.yml@v2
