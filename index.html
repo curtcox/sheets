@@ -5,7 +5,7 @@
     <!-- Scripts only from this site and pinned runtime paths; keep in step with new hosts. -->
     <meta
       http-equiv="Content-Security-Policy"
-      content="default-src 'self'; script-src 'self' 'sha256-IMEqdP+AkCKdxhM3X7mQM4pV/chykJXPvdtndD+XeH8=' https://accounts.google.com/gsi/client https://hashbin.org/sdk/v0.4.0/ https://cdn.jsdelivr.net/pyodide/v0.27.7/full/ https://webr.r-wasm.org/v0.6.0/ 'wasm-unsafe-eval'; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob: https:; font-src 'self' data:; connect-src 'self' https: https://256t.us https://hashbin.org https://api.allorigins.win https://is.gd https://data-api.ecb.europa.eu https://webr.r-wasm.org https://cdn.jsdelivr.net; worker-src 'self' blob:; media-src blob:; frame-src 'self' https://accounts.google.com; object-src 'none'; base-uri 'self'; form-action 'none'"
+      content="default-src 'self'; script-src 'self' 'sha256-IMEqdP+AkCKdxhM3X7mQM4pV/chykJXPvdtndD+XeH8=' https://accounts.google.com/gsi/client https://hashbin.org/sdk/v0.4.0/ https://cdn.jsdelivr.net/pyodide/v0.27.7/full/ https://webr.r-wasm.org/v0.6.0/ 'wasm-unsafe-eval'; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob: https:; font-src 'self' data:; connect-src 'self' https: https://256t.us https://hashbin.org https://api.allorigins.win https://is.gd https://data-api.ecb.europa.eu https://webr.r-wasm.org https://cdn.jsdelivr.net; worker-src 'self' blob:; media-src blob:; frame-src 'self' https://ai.hashbin.page https://accounts.google.com; object-src 'none'; base-uri 'self'; form-action 'none'"
     />
     <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
     <meta
@@ -19,7 +19,7 @@
     />
     <!-- Public browser OAuth identifier; no client secret is used by Sheets. -->
     <meta name="google-client-id" content="83017003333-ii7c6n3ejg3k3f9iat26g5m24er9uefd.apps.googleusercontent.com" />
-    <meta name="fragment-kit-release" content="sheets-fragment-kit-v0.3.5"><meta name="theme-color" content="#176f61"><link rel="manifest" href="manifest.webmanifest"><link rel="stylesheet" href="vendor/fragment-kit-v0.3.5/src/ui/kit.css"><link rel="stylesheet" href="src/fragment-ui.css"><title>Sheets · Notes that do the math</title>
+    <meta name="fragment-kit-release" content="sheets-fragment-kit-v0.4.3"><meta name="theme-color" content="#176f61"><link rel="manifest" href="manifest.webmanifest"><link rel="stylesheet" href="vendor/fragment-kit-v0.4.3/src/ui/kit.css"><link rel="stylesheet" href="src/fragment-ui.css"><title>Sheets · Notes that do the math</title>
     <link rel="icon" href="src/icon.svg" type="image/svg+xml" />
     <link rel="stylesheet" href="src/styles.css" />
     <link rel="stylesheet" href="vendor/temml.css" />
@@ -27,7 +27,8 @@
     <link rel="stylesheet" href="vendor/hurmet/style.css" />
     <script src="vendor/ace-builds@1.45.0/ace.js" defer></script>
     <script type="module" src="src/app.js"></script>
-  </head>
+  <link rel="stylesheet" href="vendor/fragment-kit-v0.4.3/src/ai/ui/ai.css">
+</head>
   <body class="editor-page">
     <header class="site-header">
       <a class="brand" href="index.html"

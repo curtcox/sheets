@@ -8,15 +8,15 @@ jobs:
   shared:
     uses: curtcox/Tools-for-pages-with-state-in-URL-fragments/.github/workflows/test.yml@v2
     with:
-      kit-path: vendor/fragment-kit-v0.3.5
+      kit-path: vendor/fragment-kit-v0.4.3
       base-url: http://127.0.0.1:4173/
       server-command: node scripts/serve.mjs
-      browser-command: node scripts/test-contracts.mjs && npx playwright test --project="$BROWSER"
+      browser-command: node tests/browser/ai.mjs && node tests/browser/ai.mjs && node tests/browser/ai.mjs && node tests/browser/ai.mjs && node scripts/test-contracts.mjs && npx playwright test --project="$BROWSER"
       gallery-command: node scripts/render-kit-gallery.mjs --check
   kit:
     uses: curtcox/Tools-for-pages-with-state-in-URL-fragments/.github/workflows/kit-check.yml@v2
     with:
-      kit-path: vendor/fragment-kit-v0.3.5
+      kit-path: vendor/fragment-kit-v0.4.3
   references:
     runs-on: ubuntu-24.04
     steps:

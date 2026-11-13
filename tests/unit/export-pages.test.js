@@ -2,7 +2,7 @@ import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { createHash } from 'node:crypto';
 import { pagesLink } from '../../src/exports/pages.js';
-import { decompress } from '../../vendor/fragment-kit-v0.3.5/src/index.js';
+import { decompress } from '../../vendor/fragment-kit-v0.4.3/src/index.js';
 const varied = Array.from({ length: 1000 }, (_, i) => createHash('sha256').update(String(i)).digest('hex')).join('');
 
 test('Pages handoff round-trips both query and fragment envelopes', () => {

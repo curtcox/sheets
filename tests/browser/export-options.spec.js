@@ -22,7 +22,7 @@ async function decode(page, html) {
   return page.evaluate(async html => {
     const root = new DOMParser().parseFromString(html, 'text/html');
     const src = root.querySelector('.export-qr img').src;
-    const { QrScanner } = await import('/vendor/fragment-kit-v0.3.5/src/index.js');
+    const { QrScanner } = await import('/vendor/fragment-kit-v0.4.3/src/index.js');
     return new QrScanner({BarcodeDetector:null}).fromImage(new Blob([Uint8Array.from(atob(src.split(",")[1]), c => c.charCodeAt(0))], {type:"image/png"}));
   }, html);
 }

@@ -133,7 +133,7 @@ test('Pages handoff contains the sanitized document and disables scripts', async
   const link = page.locator('#export-result a');
   await expect(link).toHaveAttribute('href', /^https:\/\/pages.hashbin.page\/\?run=0/);
   const href = await link.getAttribute('href');
-  const { decompress } = await import('../../vendor/fragment-kit-v0.3.5/src/index.js');
+  const { decompress } = await import('../../vendor/fragment-kit-v0.4.3/src/index.js');
   const url = new URL(href);
   const envelope = JSON.parse(url.searchParams.has('doc') ? decompress(url.searchParams.get('doc')) : decodeURIComponent(url.hash.slice(1)));
   expect(envelope.pages.entry).toBe('index.html');

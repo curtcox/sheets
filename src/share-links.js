@@ -1,8 +1,8 @@
 import{writeURL}from'./fragment-config.js';
 export const buildShareLink=(url,snapshot)=>writeURL(url,snapshot);
-export{ShareClient,ShareError}from'../vendor/fragment-kit-v0.3.5/src/index.js';
+export{ShareClient,ShareError}from'../vendor/fragment-kit-v0.4.3/src/index.js';
 
-import { ShareClient as KitShareClient } from '../vendor/fragment-kit-v0.3.5/src/index.js';
+import { ShareClient as KitShareClient } from '../vendor/fragment-kit-v0.4.3/src/index.js';
 const shortLinks = new Map();
 export const knownShortLink = href => shortLinks.get(href) || null;
 export class SheetShareClient extends KitShareClient {

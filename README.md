@@ -316,3 +316,5 @@ Rebuild export libraries with `node scripts/vendor/exports.mjs`, then
 ```sh
 SHEETS_EXPORT_ARTIFACTS=/tmp/sheets-export-examples npx playwright test tests/browser/multi-export.spec.js --project=chromium
 ```
+
+Optional AI: Ask/review/undo, gallery suggestions and model comparison use the published Fragment Kit 0.4.3 entry point. See [AI guidance](docs/ai.md). Budgets start at zero; accepted source waits for explicit Run, Render or Check. The bundled synthetic [suite](ai-suite.json) and [75-result report](ai-comparison.json) measure source assertions and document invariants, not runtime quality or a model winner.

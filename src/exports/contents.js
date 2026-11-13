@@ -1,4 +1,4 @@
-import { encodeQr, qrPng } from '../../vendor/fragment-kit-v0.3.5/src/index.js';
+import { encodeQr, qrPng } from '../../vendor/fragment-kit-v0.4.3/src/index.js';
 import { sanitize } from '../sanitize.js';
 
 // Compose in a detached tree, then let captureSnapshot sanitize every output.

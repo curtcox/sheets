@@ -1,0 +1,2789 @@
+{
+  "format": "fragment-kit-eval-report",
+  "version": 1,
+  "suiteCID": "AAAAADXQOId_9BIvrTf2HhBqyxvSQOw2EwXKOkWPqz4ceklg2UjS1JL9l4xoy_2WJRL3HtN58r-CQistkys-BHlNx-isFA",
+  "kitVersion": "0.4.3",
+  "engineVersion": null,
+  "date": "2026-11-13T00:58:21.561Z",
+  "parameters": {
+    "maxTokens": 512,
+    "repeats": 1
+  },
+  "results": [
+    {
+      "case": "edit-1-1",
+      "requestedModel": "openai:gpt-4.1-mini-2025-04-14",
+      "repeat": 0,
+      "promptHash": "ac46de9dd8b7070fd6c3ac4bdb3b873933a7b83f7ef54dda1a8ce7df1ef82da2",
+      "private": false,
+      "success": true,
+      "valid": true,
+      "cost": 0.0001408,
+      "model": "openai:gpt-4.1-mini-2025-04-14",
+      "provider": "openai",
+      "usage": {
+        "inputTokens": 208,
+        "outputTokens": 36
+      },
+      "timing": {
+        "totalMs": 973.851250000007,
+        "firstMs": null
+      },
+      "checks": [
+        {
+          "type": "valid",
+          "pass": true
+        },
+        {
+          "type": "contains",
+          "pass": true
+        },
+        {
+          "type": "notContains",
+          "pass": true
+        },
+        {
+          "type": "unchangedFields",
+          "pass": true
+        }
+      ],
+      "changedRatio": 0.1935483870967742,
+      "outputHash": "50955cec6c46663a7ae3521c626bd5265daec5a215ffaa3f7269d081c1609fca"
+    },
+    {
+      "case": "edit-2-1",
+      "requestedModel": "openai:gpt-4.1-mini-2025-04-14",
+      "repeat": 0,
+      "promptHash": "ac46de9dd8b7070fd6c3ac4bdb3b873933a7b83f7ef54dda1a8ce7df1ef82da2",
+      "private": false,
+      "success": true,
+      "valid": true,
+      "cost": 0.0001392,
+      "model": "openai:gpt-4.1-mini-2025-04-14",
+      "provider": "openai",
+      "usage": {
+        "inputTokens": 208,
+        "outputTokens": 35
+      },
+      "timing": {
+        "totalMs": 730.6645840000128,
+        "firstMs": null
+      },
+      "checks": [
+        {
+          "type": "valid",
+          "pass": true
+        },
+        {
+          "type": "contains",
+          "pass": true
+        },
+        {
+          "type": "notContains",
+          "pass": true
+        },
+        {
+          "type": "unchangedFields",
+          "pass": true
+        }
+      ],
+      "changedRatio": 0.35135135135135137,
+      "outputHash": "8670f6be2825fe18495066dd30e0a266074880c479ee4fcd9187d69ed22168d2"
+    },
+    {
+      "case": "edit-3-1",
+      "requestedModel": "openai:gpt-4.1-mini-2025-04-14",
+      "repeat": 0,
+      "promptHash": "ac46de9dd8b7070fd6c3ac4bdb3b873933a7b83f7ef54dda1a8ce7df1ef82da2",
+      "private": false,
+      "success": true,
+      "valid": true,
+      "cost": 0.00014,
+      "model": "openai:gpt-4.1-mini-2025-04-14",
+      "provider": "openai",
+      "usage": {
+        "inputTokens": 218,
+        "outputTokens": 33
+      },
+      "timing": {
+        "totalMs": 793.3997080000117,
+        "firstMs": null
+      },
+      "checks": [
+        {
+          "type": "valid",
+          "pass": true
+        },
+        {
+          "type": "contains",
+          "pass": true
+        },
+        {
+          "type": "notContains",
+          "pass": true
+        },
+        {
+          "type": "unchangedFields",
+          "pass": true
+        }
+      ],
+      "changedRatio": 0.13043478260869565,
+      "outputHash": "d21922b9ae21b9c3b801cc83dc502044373164f995052051d8ed66146998f5cb"
+    },
+    {
+      "case": "edit-4-1",
+      "requestedModel": "openai:gpt-4.1-mini-2025-04-14",
+      "repeat": 0,
+      "promptHash": "ac46de9dd8b7070fd6c3ac4bdb3b873933a7b83f7ef54dda1a8ce7df1ef82da2",
+      "private": false,
+      "success": true,
+      "valid": true,
+      "cost": 0.0001384,
+      "model": "openai:gpt-4.1-mini-2025-04-14",
+      "provider": "openai",
+      "usage": {
+        "inputTokens": 210,
+        "outputTokens": 34
+      },
+      "timing": {
+        "totalMs": 816.1142499999842,
+        "firstMs": null
+      },
+      "checks": [
+        {
+          "type": "valid",
+          "pass": true
+        },
+        {
+          "type": "contains",
+          "pass": true
+        },
+        {
+          "type": "notContains",
+          "pass": true
+        },
+        {
+          "type": "unchangedFields",
+          "pass": true
+        }
+      ],
+      "changedRatio": 0.25,
+      "outputHash": "5da94c3b73e13f544690ff75a1f0fd29bedc8d3e082b7e652c336e5f7703bb2e"
+    },
+    {
+      "case": "edit-1-2",
+      "requestedModel": "openai:gpt-4.1-mini-2025-04-14",
+      "repeat": 0,
+      "promptHash": "ac46de9dd8b7070fd6c3ac4bdb3b873933a7b83f7ef54dda1a8ce7df1ef82da2",
+      "private": false,
+      "success": true,
+      "valid": true,
+      "cost": 0.00013960000000000003,
+      "model": "openai:gpt-4.1-mini-2025-04-14",
+      "provider": "openai",
+      "usage": {
+        "inputTokens": 209,
+        "outputTokens": 35
+      },
+      "timing": {
+        "totalMs": 1001.4094589999877,
+        "firstMs": null
+      },
+      "checks": [
+        {
+          "type": "valid",
+          "pass": true
+        },
+        {
+          "type": "contains",
+          "pass": true
+        },
+        {
+          "type": "notContains",
+          "pass": true
+        },
+        {
+          "type": "unchangedFields",
+          "pass": true
+        }
+      ],
+      "changedRatio": 0.23529411764705882,
+      "outputHash": "cb4b1a8bc7667a52186850dd376ec81e702302fa5ad957e4db0a865f39dcd98e"
+    },
+    {
+      "case": "edit-2-2",
+      "requestedModel": "openai:gpt-4.1-mini-2025-04-14",
+      "repeat": 0,
+      "promptHash": "ac46de9dd8b7070fd6c3ac4bdb3b873933a7b83f7ef54dda1a8ce7df1ef82da2",
+      "private": false,
+      "success": true,
+      "valid": true,
+      "cost": 0.00014120000000000002,
+      "model": "openai:gpt-4.1-mini-2025-04-14",
+      "provider": "openai",
+      "usage": {
+        "inputTokens": 209,
+        "outputTokens": 36
+      },
+      "timing": {
+        "totalMs": 730.5564589999849,
+        "firstMs": null
+      },
+      "checks": [
+        {
+          "type": "valid",
+          "pass": true
+        },
+        {
+          "type": "contains",
+          "pass": true
+        },
+        {
+          "type": "notContains",
+          "pass": true
+        },
+        {
+          "type": "unchangedFields",
+          "pass": true
+        }
+      ],
+      "changedRatio": 0.3902439024390244,
+      "outputHash": "b540c263b610bfb098fed221d5e0366f57e8930d34f1047e59f8573d2ff5ec08"
+    },
+    {
+      "case": "edit-3-2",
+      "requestedModel": "openai:gpt-4.1-mini-2025-04-14",
+      "repeat": 0,
+      "promptHash": "ac46de9dd8b7070fd6c3ac4bdb3b873933a7b83f7ef54dda1a8ce7df1ef82da2",
+      "private": false,
+      "success": true,
+      "valid": true,
+      "cost": 0.00014360000000000002,
+      "model": "openai:gpt-4.1-mini-2025-04-14",
+      "provider": "openai",
+      "usage": {
+        "inputTokens": 219,
+        "outputTokens": 35
+      },
+      "timing": {
+        "totalMs": 910.7700830000103,
+        "firstMs": null
+      },
+      "checks": [
+        {
+          "type": "valid",
+          "pass": true
+        },
+        {
+          "type": "contains",
+          "pass": true
+        },
+        {
+          "type": "notContains",
+          "pass": true
+        },
+        {
+          "type": "unchangedFields",
+          "pass": true
+        }
+      ],
+      "changedRatio": 0.16326530612244897,
+      "outputHash": "9d1793453141d942e5ead2cd304bf5602ee245e395af295338d11f7fea7a9c67"
+    },
+    {
+      "case": "edit-4-2",
+      "requestedModel": "openai:gpt-4.1-mini-2025-04-14",
+      "repeat": 0,
+      "promptHash": "ac46de9dd8b7070fd6c3ac4bdb3b873933a7b83f7ef54dda1a8ce7df1ef82da2",
+      "private": false,
+      "success": true,
+      "valid": true,
+      "cost": 0.0001404,
+      "model": "openai:gpt-4.1-mini-2025-04-14",
+      "provider": "openai",
+      "usage": {
+        "inputTokens": 211,
+        "outputTokens": 35
+      },
+      "timing": {
+        "totalMs": 915.5284579999861,
+        "firstMs": null
+      },
+      "checks": [
+        {
+          "type": "valid",
+          "pass": true
+        },
+        {
+          "type": "contains",
+          "pass": true
+        },
+        {
+          "type": "notContains",
+          "pass": true
+        },
+        {
+          "type": "unchangedFields",
+          "pass": true
+        }
+      ],
+      "changedRatio": 0.32142857142857145,
+      "outputHash": "2041c24d71d00f47d7f8c652a011fd1f44e89f62f3aa1400aff7091e479c1e01"
+    },
+    {
+      "case": "edit-1-3",
+      "requestedModel": "openai:gpt-4.1-mini-2025-04-14",
+      "repeat": 0,
+      "promptHash": "ac46de9dd8b7070fd6c3ac4bdb3b873933a7b83f7ef54dda1a8ce7df1ef82da2",
+      "private": false,
+      "success": true,
+      "valid": true,
+      "cost": 0.00014120000000000002,
+      "model": "openai:gpt-4.1-mini-2025-04-14",
+      "provider": "openai",
+      "usage": {
+        "inputTokens": 209,
+        "outputTokens": 36
+      },
+      "timing": {
+        "totalMs": 767.5170410000137,
+        "firstMs": null
+      },
+      "checks": [
+        {
+          "type": "valid",
+          "pass": true
+        },
+        {
+          "type": "contains",
+          "pass": true
+        },
+        {
+          "type": "notContains",
+          "pass": true
+        },
+        {
+          "type": "unchangedFields",
+          "pass": true
+        }
+      ],
+      "changedRatio": 0.2647058823529412,
+      "outputHash": "ffa0654998bf4bcb55c90a2ce46684d54d2cccd9e5258416c983e83b781c47ea"
+    },
+    {
+      "case": "edit-2-3",
+      "requestedModel": "openai:gpt-4.1-mini-2025-04-14",
+      "repeat": 0,
+      "promptHash": "ac46de9dd8b7070fd6c3ac4bdb3b873933a7b83f7ef54dda1a8ce7df1ef82da2",
+      "private": false,
+      "success": true,
+      "valid": true,
+      "cost": 0.00013480000000000002,
+      "model": "openai:gpt-4.1-mini-2025-04-14",
+      "provider": "openai",
+      "usage": {
+        "inputTokens": 209,
+        "outputTokens": 32
+      },
+      "timing": {
+        "totalMs": 755.981792000006,
+        "firstMs": null
+      },
+      "checks": [
+        {
+          "type": "valid",
+          "pass": true
+        },
+        {
+          "type": "contains",
+          "pass": true
+        },
+        {
+          "type": "notContains",
+          "pass": true
+        },
+        {
+          "type": "unchangedFields",
+          "pass": true
+        }
+      ],
+      "changedRatio": 0.4146341463414634,
+      "outputHash": "4b452df435b219a5e2f7966514313a1d62d43132c728187ab2cac05d6941fc68"
+    },
+    {
+      "case": "edit-3-3",
+      "requestedModel": "openai:gpt-4.1-mini-2025-04-14",
+      "repeat": 0,
+      "promptHash": "ac46de9dd8b7070fd6c3ac4bdb3b873933a7b83f7ef54dda1a8ce7df1ef82da2",
+      "private": false,
+      "success": true,
+      "valid": true,
+      "cost": 0.0001404,
+      "model": "openai:gpt-4.1-mini-2025-04-14",
+      "provider": "openai",
+      "usage": {
+        "inputTokens": 219,
+        "outputTokens": 33
+      },
+      "timing": {
+        "totalMs": 820.4107499999809,
+        "firstMs": null
+      },
+      "checks": [
+        {
+          "type": "valid",
+          "pass": true
+        },
+        {
+          "type": "contains",
+          "pass": true
+        },
+        {
+          "type": "notContains",
+          "pass": true
+        },
+        {
+          "type": "unchangedFields",
+          "pass": true
+        }
+      ],
+      "changedRatio": 0.1836734693877551,
+      "outputHash": "cb7a5983c289cc789dd6a1952e2df8be2ae410ebb7daa4cdc5a170b5bad9dfde"
+    },
+    {
+      "case": "edit-4-3",
+      "requestedModel": "openai:gpt-4.1-mini-2025-04-14",
+      "repeat": 0,
+      "promptHash": "ac46de9dd8b7070fd6c3ac4bdb3b873933a7b83f7ef54dda1a8ce7df1ef82da2",
+      "private": false,
+      "success": true,
+      "valid": true,
+      "cost": 0.0001404,
+      "model": "openai:gpt-4.1-mini-2025-04-14",
+      "provider": "openai",
+      "usage": {
+        "inputTokens": 211,
+        "outputTokens": 35
+      },
+      "timing": {
+        "totalMs": 739.7091669999645,
+        "firstMs": null
+      },
+      "checks": [
+        {
+          "type": "valid",
+          "pass": true
+        },
+        {
+          "type": "contains",
+          "pass": true
+        },
+        {
+          "type": "notContains",
+          "pass": true
+        },
+        {
+          "type": "unchangedFields",
+          "pass": true
+        }
+      ],
+      "changedRatio": 0.35714285714285715,
+      "outputHash": "d47a249e1edac08c0cb2267e082c620d45935428cd26f05578e5f8cb76dbc171"
+    },
+    {
+      "case": "edit-1-4",
+      "requestedModel": "openai:gpt-4.1-mini-2025-04-14",
+      "repeat": 0,
+      "promptHash": "ac46de9dd8b7070fd6c3ac4bdb3b873933a7b83f7ef54dda1a8ce7df1ef82da2",
+      "private": false,
+      "success": true,
+      "valid": true,
+      "cost": 0.00014120000000000002,
+      "model": "openai:gpt-4.1-mini-2025-04-14",
+      "provider": "openai",
+      "usage": {
+        "inputTokens": 209,
+        "outputTokens": 36
+      },
+      "timing": {
+        "totalMs": 775.7642909999704,
+        "firstMs": null
+      },
+      "checks": [
+        {
+          "type": "valid",
+          "pass": true
+        },
+        {
+          "type": "contains",
+          "pass": true
+        },
+        {
+          "type": "notContains",
+          "pass": true
+        },
+        {
+          "type": "unchangedFields",
+          "pass": true
+        }
+      ],
+      "changedRatio": 0.2777777777777778,
+      "outputHash": "1ddc4c4d50a2e999988a9425e359cfe600ff4830b577836c123fae9831faaed4"
+    },
+    {
+      "case": "edit-2-4",
+      "requestedModel": "openai:gpt-4.1-mini-2025-04-14",
+      "repeat": 0,
+      "promptHash": "ac46de9dd8b7070fd6c3ac4bdb3b873933a7b83f7ef54dda1a8ce7df1ef82da2",
+      "private": false,
+      "success": true,
+      "valid": true,
+      "cost": 0.0001428,
+      "model": "openai:gpt-4.1-mini-2025-04-14",
+      "provider": "openai",
+      "usage": {
+        "inputTokens": 209,
+        "outputTokens": 37
+      },
+      "timing": {
+        "totalMs": 737.1018330000225,
+        "firstMs": null
+      },
+      "checks": [
+        {
+          "type": "valid",
+          "pass": true
+        },
+        {
+          "type": "contains",
+          "pass": true
+        },
+        {
+          "type": "notContains",
+          "pass": true
+        },
+        {
+          "type": "unchangedFields",
+          "pass": true
+        }
+      ],
+      "changedRatio": 0.4186046511627907,
+      "outputHash": "086aeb3b306296f7019ffb6c438e78859cf174a7f43311c6d2ca3d4a202a63d0"
+    },
+    {
+      "case": "edit-3-4",
+      "requestedModel": "openai:gpt-4.1-mini-2025-04-14",
+      "repeat": 0,
+      "promptHash": "ac46de9dd8b7070fd6c3ac4bdb3b873933a7b83f7ef54dda1a8ce7df1ef82da2",
+      "private": false,
+      "success": true,
+      "valid": true,
+      "cost": 0.0001452,
+      "model": "openai:gpt-4.1-mini-2025-04-14",
+      "provider": "openai",
+      "usage": {
+        "inputTokens": 219,
+        "outputTokens": 36
+      },
+      "timing": {
+        "totalMs": 911.2327500000247,
+        "firstMs": null
+      },
+      "checks": [
+        {
+          "type": "valid",
+          "pass": true
+        },
+        {
+          "type": "contains",
+          "pass": true
+        },
+        {
+          "type": "notContains",
+          "pass": true
+        },
+        {
+          "type": "unchangedFields",
+          "pass": true
+        }
+      ],
+      "changedRatio": 0.19607843137254902,
+      "outputHash": "31f33bd0ee74282636aa09d3c8e61327ee4897c9ec9a51dece960fb044845edb"
+    },
+    {
+      "case": "edit-4-4",
+      "requestedModel": "openai:gpt-4.1-mini-2025-04-14",
+      "repeat": 0,
+      "promptHash": "ac46de9dd8b7070fd6c3ac4bdb3b873933a7b83f7ef54dda1a8ce7df1ef82da2",
+      "private": false,
+      "success": true,
+      "valid": true,
+      "cost": 0.000142,
+      "model": "openai:gpt-4.1-mini-2025-04-14",
+      "provider": "openai",
+      "usage": {
+        "inputTokens": 211,
+        "outputTokens": 36
+      },
+      "timing": {
+        "totalMs": 791.2035840000026,
+        "firstMs": null
+      },
+      "checks": [
+        {
+          "type": "valid",
+          "pass": true
+        },
+        {
+          "type": "contains",
+          "pass": true
+        },
+        {
+          "type": "notContains",
+          "pass": true
+        },
+        {
+          "type": "unchangedFields",
+          "pass": true
+        }
+      ],
+      "changedRatio": 0.36666666666666664,
+      "outputHash": "480a2baa3d5842a326ac93e529303d4d4c79f4121afe16602ab7d70ff59947ce"
+    },
+    {
+      "case": "edit-1-5",
+      "requestedModel": "openai:gpt-4.1-mini-2025-04-14",
+      "repeat": 0,
+      "promptHash": "ac46de9dd8b7070fd6c3ac4bdb3b873933a7b83f7ef54dda1a8ce7df1ef82da2",
+      "private": false,
+      "success": true,
+      "valid": true,
+      "cost": 0.0001428,
+      "model": "openai:gpt-4.1-mini-2025-04-14",
+      "provider": "openai",
+      "usage": {
+        "inputTokens": 209,
+        "outputTokens": 37
+      },
+      "timing": {
+        "totalMs": 851.7317079999484,
+        "firstMs": null
+      },
+      "checks": [
+        {
+          "type": "valid",
+          "pass": true
+        },
+        {
+          "type": "contains",
+          "pass": true
+        },
+        {
+          "type": "notContains",
+          "pass": true
+        },
+        {
+          "type": "unchangedFields",
+          "pass": true
+        }
+      ],
+      "changedRatio": 0.2857142857142857,
+      "outputHash": "635e645b0a4b55d120535025164fa0158c7afdfbc04784033069470e36328f95"
+    },
+    {
+      "case": "edit-2-5",
+      "requestedModel": "openai:gpt-4.1-mini-2025-04-14",
+      "repeat": 0,
+      "promptHash": "ac46de9dd8b7070fd6c3ac4bdb3b873933a7b83f7ef54dda1a8ce7df1ef82da2",
+      "private": false,
+      "success": true,
+      "valid": true,
+      "cost": 0.0001364,
+      "model": "openai:gpt-4.1-mini-2025-04-14",
+      "provider": "openai",
+      "usage": {
+        "inputTokens": 209,
+        "outputTokens": 33
+      },
+      "timing": {
+        "totalMs": 776.6634170000325,
+        "firstMs": null
+      },
+      "checks": [
+        {
+          "type": "valid",
+          "pass": true
+        },
+        {
+          "type": "contains",
+          "pass": true
+        },
+        {
+          "type": "notContains",
+          "pass": true
+        },
+        {
+          "type": "unchangedFields",
+          "pass": true
+        }
+      ],
+      "changedRatio": 0.42857142857142855,
+      "outputHash": "ced5229be29dc27bce8146cf3ac86a6cdecb91404e613c13fbc86272db3483c4"
+    },
+    {
+      "case": "edit-3-5",
+      "requestedModel": "openai:gpt-4.1-mini-2025-04-14",
+      "repeat": 0,
+      "promptHash": "ac46de9dd8b7070fd6c3ac4bdb3b873933a7b83f7ef54dda1a8ce7df1ef82da2",
+      "private": false,
+      "success": true,
+      "valid": true,
+      "cost": 0.00014360000000000002,
+      "model": "openai:gpt-4.1-mini-2025-04-14",
+      "provider": "openai",
+      "usage": {
+        "inputTokens": 219,
+        "outputTokens": 35
+      },
+      "timing": {
+        "totalMs": 727.9890420000302,
+        "firstMs": null
+      },
+      "checks": [
+        {
+          "type": "valid",
+          "pass": true
+        },
+        {
+          "type": "contains",
+          "pass": true
+        },
+        {
+          "type": "notContains",
+          "pass": true
+        },
+        {
+          "type": "unchangedFields",
+          "pass": true
+        }
+      ],
+      "changedRatio": 0.2,
+      "outputHash": "a05197a23b228c482499620c40b40dd92492087a734a8b79abd294c483ebfc2c"
+    },
+    {
+      "case": "edit-4-5",
+      "requestedModel": "openai:gpt-4.1-mini-2025-04-14",
+      "repeat": 0,
+      "promptHash": "ac46de9dd8b7070fd6c3ac4bdb3b873933a7b83f7ef54dda1a8ce7df1ef82da2",
+      "private": false,
+      "success": true,
+      "valid": true,
+      "cost": 0.00015319999999999998,
+      "model": "openai:gpt-4.1-mini-2025-04-14",
+      "provider": "openai",
+      "usage": {
+        "inputTokens": 211,
+        "outputTokens": 43
+      },
+      "timing": {
+        "totalMs": 825.4897920000367,
+        "firstMs": null
+      },
+      "checks": [
+        {
+          "type": "valid",
+          "pass": true
+        },
+        {
+          "type": "contains",
+          "pass": true
+        },
+        {
+          "type": "notContains",
+          "pass": true
+        },
+        {
+          "type": "unchangedFields",
+          "pass": true
+        }
+      ],
+      "changedRatio": 0.3793103448275862,
+      "outputHash": "8a59e28bf773ebc3419614c3cf0cfb6bd7e7b1513db32dcf913fd08ef5309932"
+    },
+    {
+      "case": "decision-1",
+      "requestedModel": "openai:gpt-4.1-mini-2025-04-14",
+      "repeat": 0,
+      "promptHash": "51f047c360b969db317ecbb498083fde87f55da16662dccebd8de966dffbe7f0",
+      "private": false,
+      "success": true,
+      "valid": true,
+      "cost": 0.0000932,
+      "model": "openai:gpt-4.1-mini-2025-04-14",
+      "provider": "openai",
+      "usage": {
+        "inputTokens": 157,
+        "outputTokens": 19
+      },
+      "timing": {
+        "totalMs": 525.931500000006,
+        "firstMs": null
+      },
+      "source": "emulated",
+      "answer": "safe",
+      "top2": null,
+      "brier": null,
+      "logLoss": null
+    },
+    {
+      "case": "decision-2",
+      "requestedModel": "openai:gpt-4.1-mini-2025-04-14",
+      "repeat": 0,
+      "promptHash": "51f047c360b969db317ecbb498083fde87f55da16662dccebd8de966dffbe7f0",
+      "private": false,
+      "success": true,
+      "valid": true,
+      "cost": 0.0000932,
+      "model": "openai:gpt-4.1-mini-2025-04-14",
+      "provider": "openai",
+      "usage": {
+        "inputTokens": 157,
+        "outputTokens": 19
+      },
+      "timing": {
+        "totalMs": 863.308834000025,
+        "firstMs": null
+      },
+      "source": "emulated",
+      "answer": "safe",
+      "top2": null,
+      "brier": null,
+      "logLoss": null
+    },
+    {
+      "case": "decision-3",
+      "requestedModel": "openai:gpt-4.1-mini-2025-04-14",
+      "repeat": 0,
+      "promptHash": "51f047c360b969db317ecbb498083fde87f55da16662dccebd8de966dffbe7f0",
+      "private": false,
+      "success": true,
+      "valid": true,
+      "cost": 0.0000952,
+      "model": "openai:gpt-4.1-mini-2025-04-14",
+      "provider": "openai",
+      "usage": {
+        "inputTokens": 162,
+        "outputTokens": 19
+      },
+      "timing": {
+        "totalMs": 709.8757500000065,
+        "firstMs": null
+      },
+      "source": "emulated",
+      "answer": "safe",
+      "top2": null,
+      "brier": null,
+      "logLoss": null
+    },
+    {
+      "case": "decision-4",
+      "requestedModel": "openai:gpt-4.1-mini-2025-04-14",
+      "repeat": 0,
+      "promptHash": "51f047c360b969db317ecbb498083fde87f55da16662dccebd8de966dffbe7f0",
+      "private": false,
+      "success": true,
+      "valid": true,
+      "cost": 0.0000956,
+      "model": "openai:gpt-4.1-mini-2025-04-14",
+      "provider": "openai",
+      "usage": {
+        "inputTokens": 163,
+        "outputTokens": 19
+      },
+      "timing": {
+        "totalMs": 521.4164999999921,
+        "firstMs": null
+      },
+      "source": "emulated",
+      "answer": "safe",
+      "top2": null,
+      "brier": null,
+      "logLoss": null
+    },
+    {
+      "case": "decision-5",
+      "requestedModel": "openai:gpt-4.1-mini-2025-04-14",
+      "repeat": 0,
+      "promptHash": "51f047c360b969db317ecbb498083fde87f55da16662dccebd8de966dffbe7f0",
+      "private": false,
+      "success": true,
+      "valid": true,
+      "cost": 0.00009680000000000001,
+      "model": "openai:gpt-4.1-mini-2025-04-14",
+      "provider": "openai",
+      "usage": {
+        "inputTokens": 166,
+        "outputTokens": 19
+      },
+      "timing": {
+        "totalMs": 478.70979200000875,
+        "firstMs": null
+      },
+      "source": "emulated",
+      "answer": "safe",
+      "top2": null,
+      "brier": null,
+      "logLoss": null
+    },
+    {
+      "case": "edit-1-1",
+      "requestedModel": "openai:gpt-4.1-2025-04-14",
+      "repeat": 0,
+      "promptHash": "ac46de9dd8b7070fd6c3ac4bdb3b873933a7b83f7ef54dda1a8ce7df1ef82da2",
+      "private": false,
+      "success": true,
+      "valid": true,
+      "cost": 0.000696,
+      "model": "openai:gpt-4.1-2025-04-14",
+      "provider": "openai",
+      "usage": {
+        "inputTokens": 208,
+        "outputTokens": 35
+      },
+      "timing": {
+        "totalMs": 801.8205000000307,
+        "firstMs": null
+      },
+      "checks": [
+        {
+          "type": "valid",
+          "pass": true
+        },
+        {
+          "type": "contains",
+          "pass": true
+        },
+        {
+          "type": "notContains",
+          "pass": true
+        },
+        {
+          "type": "unchangedFields",
+          "pass": true
+        }
+      ],
+      "changedRatio": 0.1935483870967742,
+      "outputHash": "50955cec6c46663a7ae3521c626bd5265daec5a215ffaa3f7269d081c1609fca"
+    },
+    {
+      "case": "edit-2-1",
+      "requestedModel": "openai:gpt-4.1-2025-04-14",
+      "repeat": 0,
+      "promptHash": "ac46de9dd8b7070fd6c3ac4bdb3b873933a7b83f7ef54dda1a8ce7df1ef82da2",
+      "private": false,
+      "success": true,
+      "valid": true,
+      "cost": 0.000696,
+      "model": "openai:gpt-4.1-2025-04-14",
+      "provider": "openai",
+      "usage": {
+        "inputTokens": 208,
+        "outputTokens": 35
+      },
+      "timing": {
+        "totalMs": 731.7157499999739,
+        "firstMs": null
+      },
+      "checks": [
+        {
+          "type": "valid",
+          "pass": true
+        },
+        {
+          "type": "contains",
+          "pass": true
+        },
+        {
+          "type": "notContains",
+          "pass": true
+        },
+        {
+          "type": "unchangedFields",
+          "pass": true
+        }
+      ],
+      "changedRatio": 0.35135135135135137,
+      "outputHash": "8670f6be2825fe18495066dd30e0a266074880c479ee4fcd9187d69ed22168d2"
+    },
+    {
+      "case": "edit-3-1",
+      "requestedModel": "openai:gpt-4.1-2025-04-14",
+      "repeat": 0,
+      "promptHash": "ac46de9dd8b7070fd6c3ac4bdb3b873933a7b83f7ef54dda1a8ce7df1ef82da2",
+      "private": false,
+      "success": true,
+      "valid": true,
+      "cost": 0.000708,
+      "model": "openai:gpt-4.1-2025-04-14",
+      "provider": "openai",
+      "usage": {
+        "inputTokens": 218,
+        "outputTokens": 34
+      },
+      "timing": {
+        "totalMs": 764.2285419999971,
+        "firstMs": null
+      },
+      "checks": [
+        {
+          "type": "valid",
+          "pass": true
+        },
+        {
+          "type": "contains",
+          "pass": true
+        },
+        {
+          "type": "notContains",
+          "pass": true
+        },
+        {
+          "type": "unchangedFields",
+          "pass": true
+        }
+      ],
+      "changedRatio": 0.13043478260869565,
+      "outputHash": "d21922b9ae21b9c3b801cc83dc502044373164f995052051d8ed66146998f5cb"
+    },
+    {
+      "case": "edit-4-1",
+      "requestedModel": "openai:gpt-4.1-2025-04-14",
+      "repeat": 0,
+      "promptHash": "ac46de9dd8b7070fd6c3ac4bdb3b873933a7b83f7ef54dda1a8ce7df1ef82da2",
+      "private": false,
+      "success": true,
+      "valid": true,
+      "cost": 0.00074,
+      "model": "openai:gpt-4.1-2025-04-14",
+      "provider": "openai",
+      "usage": {
+        "inputTokens": 210,
+        "outputTokens": 40
+      },
+      "timing": {
+        "totalMs": 825.0748330000206,
+        "firstMs": null
+      },
+      "checks": [
+        {
+          "type": "valid",
+          "pass": true
+        },
+        {
+          "type": "contains",
+          "pass": true
+        },
+        {
+          "type": "notContains",
+          "pass": true
+        },
+        {
+          "type": "unchangedFields",
+          "pass": true
+        }
+      ],
+      "changedRatio": 0.25,
+      "outputHash": "5da94c3b73e13f544690ff75a1f0fd29bedc8d3e082b7e652c336e5f7703bb2e"
+    },
+    {
+      "case": "edit-1-2",
+      "requestedModel": "openai:gpt-4.1-2025-04-14",
+      "repeat": 0,
+      "promptHash": "ac46de9dd8b7070fd6c3ac4bdb3b873933a7b83f7ef54dda1a8ce7df1ef82da2",
+      "private": false,
+      "success": true,
+      "valid": true,
+      "cost": 0.000722,
+      "model": "openai:gpt-4.1-2025-04-14",
+      "provider": "openai",
+      "usage": {
+        "inputTokens": 209,
+        "outputTokens": 38
+      },
+      "timing": {
+        "totalMs": 750.2777079999796,
+        "firstMs": null
+      },
+      "checks": [
+        {
+          "type": "valid",
+          "pass": true
+        },
+        {
+          "type": "contains",
+          "pass": true
+        },
+        {
+          "type": "notContains",
+          "pass": true
+        },
+        {
+          "type": "unchangedFields",
+          "pass": true
+        }
+      ],
+      "changedRatio": 0.23529411764705882,
+      "outputHash": "cb4b1a8bc7667a52186850dd376ec81e702302fa5ad957e4db0a865f39dcd98e"
+    },
+    {
+      "case": "edit-2-2",
+      "requestedModel": "openai:gpt-4.1-2025-04-14",
+      "repeat": 0,
+      "promptHash": "ac46de9dd8b7070fd6c3ac4bdb3b873933a7b83f7ef54dda1a8ce7df1ef82da2",
+      "private": false,
+      "success": true,
+      "valid": true,
+      "cost": 0.000706,
+      "model": "openai:gpt-4.1-2025-04-14",
+      "provider": "openai",
+      "usage": {
+        "inputTokens": 209,
+        "outputTokens": 36
+      },
+      "timing": {
+        "totalMs": 837.7676670000073,
+        "firstMs": null
+      },
+      "checks": [
+        {
+          "type": "valid",
+          "pass": true
+        },
+        {
+          "type": "contains",
+          "pass": true
+        },
+        {
+          "type": "notContains",
+          "pass": true
+        },
+        {
+          "type": "unchangedFields",
+          "pass": true
+        }
+      ],
+      "changedRatio": 0.3902439024390244,
+      "outputHash": "b540c263b610bfb098fed221d5e0366f57e8930d34f1047e59f8573d2ff5ec08"
+    },
+    {
+      "case": "edit-3-2",
+      "requestedModel": "openai:gpt-4.1-2025-04-14",
+      "repeat": 0,
+      "promptHash": "ac46de9dd8b7070fd6c3ac4bdb3b873933a7b83f7ef54dda1a8ce7df1ef82da2",
+      "private": false,
+      "success": true,
+      "valid": true,
+      "cost": 0.000726,
+      "model": "openai:gpt-4.1-2025-04-14",
+      "provider": "openai",
+      "usage": {
+        "inputTokens": 219,
+        "outputTokens": 36
+      },
+      "timing": {
+        "totalMs": 752.0659590000287,
+        "firstMs": null
+      },
+      "checks": [
+        {
+          "type": "valid",
+          "pass": true
+        },
+        {
+          "type": "contains",
+          "pass": true
+        },
+        {
+          "type": "notContains",
+          "pass": true
+        },
+        {
+          "type": "unchangedFields",
+          "pass": true
+        }
+      ],
+      "changedRatio": 0.16326530612244897,
+      "outputHash": "9d1793453141d942e5ead2cd304bf5602ee245e395af295338d11f7fea7a9c67"
+    },
+    {
+      "case": "edit-4-2",
+      "requestedModel": "openai:gpt-4.1-2025-04-14",
+      "repeat": 0,
+      "promptHash": "ac46de9dd8b7070fd6c3ac4bdb3b873933a7b83f7ef54dda1a8ce7df1ef82da2",
+      "private": false,
+      "success": true,
+      "valid": true,
+      "cost": 0.000702,
+      "model": "openai:gpt-4.1-2025-04-14",
+      "provider": "openai",
+      "usage": {
+        "inputTokens": 211,
+        "outputTokens": 35
+      },
+      "timing": {
+        "totalMs": 704.0790840000263,
+        "firstMs": null
+      },
+      "checks": [
+        {
+          "type": "valid",
+          "pass": true
+        },
+        {
+          "type": "contains",
+          "pass": true
+        },
+        {
+          "type": "notContains",
+          "pass": true
+        },
+        {
+          "type": "unchangedFields",
+          "pass": true
+        }
+      ],
+      "changedRatio": 0.32142857142857145,
+      "outputHash": "2041c24d71d00f47d7f8c652a011fd1f44e89f62f3aa1400aff7091e479c1e01"
+    },
+    {
+      "case": "edit-1-3",
+      "requestedModel": "openai:gpt-4.1-2025-04-14",
+      "repeat": 0,
+      "promptHash": "ac46de9dd8b7070fd6c3ac4bdb3b873933a7b83f7ef54dda1a8ce7df1ef82da2",
+      "private": false,
+      "success": true,
+      "valid": true,
+      "cost": 0.000714,
+      "model": "openai:gpt-4.1-2025-04-14",
+      "provider": "openai",
+      "usage": {
+        "inputTokens": 209,
+        "outputTokens": 37
+      },
+      "timing": {
+        "totalMs": 691.7777920000372,
+        "firstMs": null
+      },
+      "checks": [
+        {
+          "type": "valid",
+          "pass": true
+        },
+        {
+          "type": "contains",
+          "pass": true
+        },
+        {
+          "type": "notContains",
+          "pass": true
+        },
+        {
+          "type": "unchangedFields",
+          "pass": true
+        }
+      ],
+      "changedRatio": 0.2647058823529412,
+      "outputHash": "ffa0654998bf4bcb55c90a2ce46684d54d2cccd9e5258416c983e83b781c47ea"
+    },
+    {
+      "case": "edit-2-3",
+      "requestedModel": "openai:gpt-4.1-2025-04-14",
+      "repeat": 0,
+      "promptHash": "ac46de9dd8b7070fd6c3ac4bdb3b873933a7b83f7ef54dda1a8ce7df1ef82da2",
+      "private": false,
+      "success": true,
+      "valid": true,
+      "cost": 0.000722,
+      "model": "openai:gpt-4.1-2025-04-14",
+      "provider": "openai",
+      "usage": {
+        "inputTokens": 209,
+        "outputTokens": 38
+      },
+      "timing": {
+        "totalMs": 712.8755840000231,
+        "firstMs": null
+      },
+      "checks": [
+        {
+          "type": "valid",
+          "pass": true
+        },
+        {
+          "type": "contains",
+          "pass": true
+        },
+        {
+          "type": "notContains",
+          "pass": true
+        },
+        {
+          "type": "unchangedFields",
+          "pass": true
+        }
+      ],
+      "changedRatio": 0.4146341463414634,
+      "outputHash": "4b452df435b219a5e2f7966514313a1d62d43132c728187ab2cac05d6941fc68"
+    },
+    {
+      "case": "edit-3-3",
+      "requestedModel": "openai:gpt-4.1-2025-04-14",
+      "repeat": 0,
+      "promptHash": "ac46de9dd8b7070fd6c3ac4bdb3b873933a7b83f7ef54dda1a8ce7df1ef82da2",
+      "private": false,
+      "success": true,
+      "valid": true,
+      "cost": 0.000726,
+      "model": "openai:gpt-4.1-2025-04-14",
+      "provider": "openai",
+      "usage": {
+        "inputTokens": 219,
+        "outputTokens": 36
+      },
+      "timing": {
+        "totalMs": 937.0473749999655,
+        "firstMs": null
+      },
+      "checks": [
+        {
+          "type": "valid",
+          "pass": true
+        },
+        {
+          "type": "contains",
+          "pass": true
+        },
+        {
+          "type": "notContains",
+          "pass": true
+        },
+        {
+          "type": "unchangedFields",
+          "pass": true
+        }
+      ],
+      "changedRatio": 0.1836734693877551,
+      "outputHash": "cb7a5983c289cc789dd6a1952e2df8be2ae410ebb7daa4cdc5a170b5bad9dfde"
+    },
+    {
+      "case": "edit-4-3",
+      "requestedModel": "openai:gpt-4.1-2025-04-14",
+      "repeat": 0,
+      "promptHash": "ac46de9dd8b7070fd6c3ac4bdb3b873933a7b83f7ef54dda1a8ce7df1ef82da2",
+      "private": false,
+      "success": true,
+      "valid": true,
+      "cost": 0.000686,
+      "model": "openai:gpt-4.1-2025-04-14",
+      "provider": "openai",
+      "usage": {
+        "inputTokens": 211,
+        "outputTokens": 33
+      },
+      "timing": {
+        "totalMs": 1054.07241600001,
+        "firstMs": null
+      },
+      "checks": [
+        {
+          "type": "valid",
+          "pass": true
+        },
+        {
+          "type": "contains",
+          "pass": true
+        },
+        {
+          "type": "notContains",
+          "pass": true
+        },
+        {
+          "type": "unchangedFields",
+          "pass": true
+        }
+      ],
+      "changedRatio": 0.35714285714285715,
+      "outputHash": "d47a249e1edac08c0cb2267e082c620d45935428cd26f05578e5f8cb76dbc171"
+    },
+    {
+      "case": "edit-1-4",
+      "requestedModel": "openai:gpt-4.1-2025-04-14",
+      "repeat": 0,
+      "promptHash": "ac46de9dd8b7070fd6c3ac4bdb3b873933a7b83f7ef54dda1a8ce7df1ef82da2",
+      "private": false,
+      "success": true,
+      "valid": true,
+      "cost": 0.000698,
+      "model": "openai:gpt-4.1-2025-04-14",
+      "provider": "openai",
+      "usage": {
+        "inputTokens": 209,
+        "outputTokens": 35
+      },
+      "timing": {
+        "totalMs": 676.5810419999762,
+        "firstMs": null
+      },
+      "checks": [
+        {
+          "type": "valid",
+          "pass": true
+        },
+        {
+          "type": "contains",
+          "pass": true
+        },
+        {
+          "type": "notContains",
+          "pass": true
+        },
+        {
+          "type": "unchangedFields",
+          "pass": true
+        }
+      ],
+      "changedRatio": 0.2777777777777778,
+      "outputHash": "1ddc4c4d50a2e999988a9425e359cfe600ff4830b577836c123fae9831faaed4"
+    },
+    {
+      "case": "edit-2-4",
+      "requestedModel": "openai:gpt-4.1-2025-04-14",
+      "repeat": 0,
+      "promptHash": "ac46de9dd8b7070fd6c3ac4bdb3b873933a7b83f7ef54dda1a8ce7df1ef82da2",
+      "private": false,
+      "success": true,
+      "valid": true,
+      "cost": 0.000714,
+      "model": "openai:gpt-4.1-2025-04-14",
+      "provider": "openai",
+      "usage": {
+        "inputTokens": 209,
+        "outputTokens": 37
+      },
+      "timing": {
+        "totalMs": 793.5761659999844,
+        "firstMs": null
+      },
+      "checks": [
+        {
+          "type": "valid",
+          "pass": true
+        },
+        {
+          "type": "contains",
+          "pass": true
+        },
+        {
+          "type": "notContains",
+          "pass": true
+        },
+        {
+          "type": "unchangedFields",
+          "pass": true
+        }
+      ],
+      "changedRatio": 0.4186046511627907,
+      "outputHash": "086aeb3b306296f7019ffb6c438e78859cf174a7f43311c6d2ca3d4a202a63d0"
+    },
+    {
+      "case": "edit-3-4",
+      "requestedModel": "openai:gpt-4.1-2025-04-14",
+      "repeat": 0,
+      "promptHash": "ac46de9dd8b7070fd6c3ac4bdb3b873933a7b83f7ef54dda1a8ce7df1ef82da2",
+      "private": false,
+      "success": true,
+      "valid": true,
+      "cost": 0.000734,
+      "model": "openai:gpt-4.1-2025-04-14",
+      "provider": "openai",
+      "usage": {
+        "inputTokens": 219,
+        "outputTokens": 37
+      },
+      "timing": {
+        "totalMs": 804.3198339999653,
+        "firstMs": null
+      },
+      "checks": [
+        {
+          "type": "valid",
+          "pass": true
+        },
+        {
+          "type": "contains",
+          "pass": true
+        },
+        {
+          "type": "notContains",
+          "pass": true
+        },
+        {
+          "type": "unchangedFields",
+          "pass": true
+        }
+      ],
+      "changedRatio": 0.19607843137254902,
+      "outputHash": "31f33bd0ee74282636aa09d3c8e61327ee4897c9ec9a51dece960fb044845edb"
+    },
+    {
+      "case": "edit-4-4",
+      "requestedModel": "openai:gpt-4.1-2025-04-14",
+      "repeat": 0,
+      "promptHash": "ac46de9dd8b7070fd6c3ac4bdb3b873933a7b83f7ef54dda1a8ce7df1ef82da2",
+      "private": false,
+      "success": true,
+      "valid": true,
+      "cost": 0.000702,
+      "model": "openai:gpt-4.1-2025-04-14",
+      "provider": "openai",
+      "usage": {
+        "inputTokens": 211,
+        "outputTokens": 35
+      },
+      "timing": {
+        "totalMs": 620.0535830000299,
+        "firstMs": null
+      },
+      "checks": [
+        {
+          "type": "valid",
+          "pass": true
+        },
+        {
+          "type": "contains",
+          "pass": true
+        },
+        {
+          "type": "notContains",
+          "pass": true
+        },
+        {
+          "type": "unchangedFields",
+          "pass": true
+        }
+      ],
+      "changedRatio": 0.36666666666666664,
+      "outputHash": "480a2baa3d5842a326ac93e529303d4d4c79f4121afe16602ab7d70ff59947ce"
+    },
+    {
+      "case": "edit-1-5",
+      "requestedModel": "openai:gpt-4.1-2025-04-14",
+      "repeat": 0,
+      "promptHash": "ac46de9dd8b7070fd6c3ac4bdb3b873933a7b83f7ef54dda1a8ce7df1ef82da2",
+      "private": false,
+      "success": true,
+      "valid": true,
+      "cost": 0.000714,
+      "model": "openai:gpt-4.1-2025-04-14",
+      "provider": "openai",
+      "usage": {
+        "inputTokens": 209,
+        "outputTokens": 37
+      },
+      "timing": {
+        "totalMs": 766.0648330000113,
+        "firstMs": null
+      },
+      "checks": [
+        {
+          "type": "valid",
+          "pass": true
+        },
+        {
+          "type": "contains",
+          "pass": true
+        },
+        {
+          "type": "notContains",
+          "pass": true
+        },
+        {
+          "type": "unchangedFields",
+          "pass": true
+        }
+      ],
+      "changedRatio": 0.2857142857142857,
+      "outputHash": "635e645b0a4b55d120535025164fa0158c7afdfbc04784033069470e36328f95"
+    },
+    {
+      "case": "edit-2-5",
+      "requestedModel": "openai:gpt-4.1-2025-04-14",
+      "repeat": 0,
+      "promptHash": "ac46de9dd8b7070fd6c3ac4bdb3b873933a7b83f7ef54dda1a8ce7df1ef82da2",
+      "private": false,
+      "success": true,
+      "valid": true,
+      "cost": 0.000674,
+      "model": "openai:gpt-4.1-2025-04-14",
+      "provider": "openai",
+      "usage": {
+        "inputTokens": 209,
+        "outputTokens": 32
+      },
+      "timing": {
+        "totalMs": 807.3621249999851,
+        "firstMs": null
+      },
+      "checks": [
+        {
+          "type": "valid",
+          "pass": true
+        },
+        {
+          "type": "contains",
+          "pass": true
+        },
+        {
+          "type": "notContains",
+          "pass": true
+        },
+        {
+          "type": "unchangedFields",
+          "pass": true
+        }
+      ],
+      "changedRatio": 0.42857142857142855,
+      "outputHash": "ced5229be29dc27bce8146cf3ac86a6cdecb91404e613c13fbc86272db3483c4"
+    },
+    {
+      "case": "edit-3-5",
+      "requestedModel": "openai:gpt-4.1-2025-04-14",
+      "repeat": 0,
+      "promptHash": "ac46de9dd8b7070fd6c3ac4bdb3b873933a7b83f7ef54dda1a8ce7df1ef82da2",
+      "private": false,
+      "success": true,
+      "valid": true,
+      "cost": 0.000718,
+      "model": "openai:gpt-4.1-2025-04-14",
+      "provider": "openai",
+      "usage": {
+        "inputTokens": 219,
+        "outputTokens": 35
+      },
+      "timing": {
+        "totalMs": 740.1557499999763,
+        "firstMs": null
+      },
+      "checks": [
+        {
+          "type": "valid",
+          "pass": true
+        },
+        {
+          "type": "contains",
+          "pass": true
+        },
+        {
+          "type": "notContains",
+          "pass": true
+        },
+        {
+          "type": "unchangedFields",
+          "pass": true
+        }
+      ],
+      "changedRatio": 0.2,
+      "outputHash": "a05197a23b228c482499620c40b40dd92492087a734a8b79abd294c483ebfc2c"
+    },
+    {
+      "case": "edit-4-5",
+      "requestedModel": "openai:gpt-4.1-2025-04-14",
+      "repeat": 0,
+      "promptHash": "ac46de9dd8b7070fd6c3ac4bdb3b873933a7b83f7ef54dda1a8ce7df1ef82da2",
+      "private": false,
+      "success": true,
+      "valid": true,
+      "cost": 0.000702,
+      "model": "openai:gpt-4.1-2025-04-14",
+      "provider": "openai",
+      "usage": {
+        "inputTokens": 211,
+        "outputTokens": 35
+      },
+      "timing": {
+        "totalMs": 988.3222500000265,
+        "firstMs": null
+      },
+      "checks": [
+        {
+          "type": "valid",
+          "pass": true
+        },
+        {
+          "type": "contains",
+          "pass": true
+        },
+        {
+          "type": "notContains",
+          "pass": true
+        },
+        {
+          "type": "unchangedFields",
+          "pass": true
+        }
+      ],
+      "changedRatio": 0.3793103448275862,
+      "outputHash": "8a59e28bf773ebc3419614c3cf0cfb6bd7e7b1513db32dcf913fd08ef5309932"
+    },
+    {
+      "case": "decision-1",
+      "requestedModel": "openai:gpt-4.1-2025-04-14",
+      "repeat": 0,
+      "promptHash": "51f047c360b969db317ecbb498083fde87f55da16662dccebd8de966dffbe7f0",
+      "private": false,
+      "success": true,
+      "valid": true,
+      "cost": 0.000466,
+      "model": "openai:gpt-4.1-2025-04-14",
+      "provider": "openai",
+      "usage": {
+        "inputTokens": 157,
+        "outputTokens": 19
+      },
+      "timing": {
+        "totalMs": 604.4151670000283,
+        "firstMs": null
+      },
+      "source": "emulated",
+      "answer": "safe",
+      "top2": null,
+      "brier": null,
+      "logLoss": null
+    },
+    {
+      "case": "decision-2",
+      "requestedModel": "openai:gpt-4.1-2025-04-14",
+      "repeat": 0,
+      "promptHash": "51f047c360b969db317ecbb498083fde87f55da16662dccebd8de966dffbe7f0",
+      "private": false,
+      "success": true,
+      "valid": true,
+      "cost": 0.000466,
+      "model": "openai:gpt-4.1-2025-04-14",
+      "provider": "openai",
+      "usage": {
+        "inputTokens": 157,
+        "outputTokens": 19
+      },
+      "timing": {
+        "totalMs": 714.3950829999521,
+        "firstMs": null
+      },
+      "source": "emulated",
+      "answer": "safe",
+      "top2": null,
+      "brier": null,
+      "logLoss": null
+    },
+    {
+      "case": "decision-3",
+      "requestedModel": "openai:gpt-4.1-2025-04-14",
+      "repeat": 0,
+      "promptHash": "51f047c360b969db317ecbb498083fde87f55da16662dccebd8de966dffbe7f0",
+      "private": false,
+      "success": true,
+      "valid": true,
+      "cost": 0.000476,
+      "model": "openai:gpt-4.1-2025-04-14",
+      "provider": "openai",
+      "usage": {
+        "inputTokens": 162,
+        "outputTokens": 19
+      },
+      "timing": {
+        "totalMs": 575.2536669999827,
+        "firstMs": null
+      },
+      "source": "emulated",
+      "answer": "safe",
+      "top2": null,
+      "brier": null,
+      "logLoss": null
+    },
+    {
+      "case": "decision-4",
+      "requestedModel": "openai:gpt-4.1-2025-04-14",
+      "repeat": 0,
+      "promptHash": "51f047c360b969db317ecbb498083fde87f55da16662dccebd8de966dffbe7f0",
+      "private": false,
+      "success": true,
+      "valid": true,
+      "cost": 0.000478,
+      "model": "openai:gpt-4.1-2025-04-14",
+      "provider": "openai",
+      "usage": {
+        "inputTokens": 163,
+        "outputTokens": 19
+      },
+      "timing": {
+        "totalMs": 543.8561249999912,
+        "firstMs": null
+      },
+      "source": "emulated",
+      "answer": "safe",
+      "top2": null,
+      "brier": null,
+      "logLoss": null
+    },
+    {
+      "case": "decision-5",
+      "requestedModel": "openai:gpt-4.1-2025-04-14",
+      "repeat": 0,
+      "promptHash": "51f047c360b969db317ecbb498083fde87f55da16662dccebd8de966dffbe7f0",
+      "private": false,
+      "success": true,
+      "valid": true,
+      "cost": 0.000484,
+      "model": "openai:gpt-4.1-2025-04-14",
+      "provider": "openai",
+      "usage": {
+        "inputTokens": 166,
+        "outputTokens": 19
+      },
+      "timing": {
+        "totalMs": 915.2564999999595,
+        "firstMs": null
+      },
+      "source": "emulated",
+      "answer": "safe",
+      "top2": null,
+      "brier": null,
+      "logLoss": null
+    },
+    {
+      "case": "edit-1-1",
+      "requestedModel": "openai:gpt-4o-mini-2024-07-18",
+      "repeat": 0,
+      "promptHash": "ac46de9dd8b7070fd6c3ac4bdb3b873933a7b83f7ef54dda1a8ce7df1ef82da2",
+      "private": false,
+      "success": true,
+      "valid": true,
+      "cost": 0.000051,
+      "model": "openai:gpt-4o-mini-2024-07-18",
+      "provider": "openai",
+      "usage": {
+        "inputTokens": 208,
+        "outputTokens": 33
+      },
+      "timing": {
+        "totalMs": 1426.9116669999785,
+        "firstMs": null
+      },
+      "checks": [
+        {
+          "type": "valid",
+          "pass": true
+        },
+        {
+          "type": "contains",
+          "pass": true
+        },
+        {
+          "type": "notContains",
+          "pass": true
+        },
+        {
+          "type": "unchangedFields",
+          "pass": true
+        }
+      ],
+      "changedRatio": 0.1935483870967742,
+      "outputHash": "50955cec6c46663a7ae3521c626bd5265daec5a215ffaa3f7269d081c1609fca"
+    },
+    {
+      "case": "edit-2-1",
+      "requestedModel": "openai:gpt-4o-mini-2024-07-18",
+      "repeat": 0,
+      "promptHash": "ac46de9dd8b7070fd6c3ac4bdb3b873933a7b83f7ef54dda1a8ce7df1ef82da2",
+      "private": false,
+      "success": true,
+      "valid": true,
+      "cost": 0.000051599999999999994,
+      "model": "openai:gpt-4o-mini-2024-07-18",
+      "provider": "openai",
+      "usage": {
+        "inputTokens": 208,
+        "outputTokens": 34
+      },
+      "timing": {
+        "totalMs": 1279.3223749999888,
+        "firstMs": null
+      },
+      "checks": [
+        {
+          "type": "valid",
+          "pass": true
+        },
+        {
+          "type": "contains",
+          "pass": true
+        },
+        {
+          "type": "notContains",
+          "pass": true
+        },
+        {
+          "type": "unchangedFields",
+          "pass": true
+        }
+      ],
+      "changedRatio": 0.35135135135135137,
+      "outputHash": "8670f6be2825fe18495066dd30e0a266074880c479ee4fcd9187d69ed22168d2"
+    },
+    {
+      "case": "edit-3-1",
+      "requestedModel": "openai:gpt-4o-mini-2024-07-18",
+      "repeat": 0,
+      "promptHash": "ac46de9dd8b7070fd6c3ac4bdb3b873933a7b83f7ef54dda1a8ce7df1ef82da2",
+      "private": false,
+      "success": true,
+      "valid": true,
+      "cost": 0.0000525,
+      "model": "openai:gpt-4o-mini-2024-07-18",
+      "provider": "openai",
+      "usage": {
+        "inputTokens": 218,
+        "outputTokens": 33
+      },
+      "timing": {
+        "totalMs": 981.0129159999778,
+        "firstMs": null
+      },
+      "checks": [
+        {
+          "type": "valid",
+          "pass": true
+        },
+        {
+          "type": "contains",
+          "pass": true
+        },
+        {
+          "type": "notContains",
+          "pass": true
+        },
+        {
+          "type": "unchangedFields",
+          "pass": true
+        }
+      ],
+      "changedRatio": 0.13043478260869565,
+      "outputHash": "d21922b9ae21b9c3b801cc83dc502044373164f995052051d8ed66146998f5cb"
+    },
+    {
+      "case": "edit-4-1",
+      "requestedModel": "openai:gpt-4o-mini-2024-07-18",
+      "repeat": 0,
+      "promptHash": "ac46de9dd8b7070fd6c3ac4bdb3b873933a7b83f7ef54dda1a8ce7df1ef82da2",
+      "private": false,
+      "success": true,
+      "valid": true,
+      "cost": 0.0000513,
+      "model": "openai:gpt-4o-mini-2024-07-18",
+      "provider": "openai",
+      "usage": {
+        "inputTokens": 210,
+        "outputTokens": 33
+      },
+      "timing": {
+        "totalMs": 1041.1910409999546,
+        "firstMs": null
+      },
+      "checks": [
+        {
+          "type": "valid",
+          "pass": true
+        },
+        {
+          "type": "contains",
+          "pass": true
+        },
+        {
+          "type": "notContains",
+          "pass": true
+        },
+        {
+          "type": "unchangedFields",
+          "pass": true
+        }
+      ],
+      "changedRatio": 0.25,
+      "outputHash": "5da94c3b73e13f544690ff75a1f0fd29bedc8d3e082b7e652c336e5f7703bb2e"
+    },
+    {
+      "case": "edit-1-2",
+      "requestedModel": "openai:gpt-4o-mini-2024-07-18",
+      "repeat": 0,
+      "promptHash": "ac46de9dd8b7070fd6c3ac4bdb3b873933a7b83f7ef54dda1a8ce7df1ef82da2",
+      "private": false,
+      "success": true,
+      "valid": true,
+      "cost": 0.00005234999999999999,
+      "model": "openai:gpt-4o-mini-2024-07-18",
+      "provider": "openai",
+      "usage": {
+        "inputTokens": 209,
+        "outputTokens": 35
+      },
+      "timing": {
+        "totalMs": 1076.7839169999934,
+        "firstMs": null
+      },
+      "checks": [
+        {
+          "type": "valid",
+          "pass": true
+        },
+        {
+          "type": "contains",
+          "pass": true
+        },
+        {
+          "type": "notContains",
+          "pass": true
+        },
+        {
+          "type": "unchangedFields",
+          "pass": true
+        }
+      ],
+      "changedRatio": 0.23529411764705882,
+      "outputHash": "cb4b1a8bc7667a52186850dd376ec81e702302fa5ad957e4db0a865f39dcd98e"
+    },
+    {
+      "case": "edit-2-2",
+      "requestedModel": "openai:gpt-4o-mini-2024-07-18",
+      "repeat": 0,
+      "promptHash": "ac46de9dd8b7070fd6c3ac4bdb3b873933a7b83f7ef54dda1a8ce7df1ef82da2",
+      "private": false,
+      "success": true,
+      "valid": true,
+      "cost": 0.00005294999999999999,
+      "model": "openai:gpt-4o-mini-2024-07-18",
+      "provider": "openai",
+      "usage": {
+        "inputTokens": 209,
+        "outputTokens": 36
+      },
+      "timing": {
+        "totalMs": 1196.7900839999784,
+        "firstMs": null
+      },
+      "checks": [
+        {
+          "type": "valid",
+          "pass": true
+        },
+        {
+          "type": "contains",
+          "pass": true
+        },
+        {
+          "type": "notContains",
+          "pass": true
+        },
+        {
+          "type": "unchangedFields",
+          "pass": true
+        }
+      ],
+      "changedRatio": 0.3902439024390244,
+      "outputHash": "b540c263b610bfb098fed221d5e0366f57e8930d34f1047e59f8573d2ff5ec08"
+    },
+    {
+      "case": "edit-3-2",
+      "requestedModel": "openai:gpt-4o-mini-2024-07-18",
+      "repeat": 0,
+      "promptHash": "ac46de9dd8b7070fd6c3ac4bdb3b873933a7b83f7ef54dda1a8ce7df1ef82da2",
+      "private": false,
+      "success": true,
+      "valid": true,
+      "cost": 0.00005385,
+      "model": "openai:gpt-4o-mini-2024-07-18",
+      "provider": "openai",
+      "usage": {
+        "inputTokens": 219,
+        "outputTokens": 35
+      },
+      "timing": {
+        "totalMs": 1186.834084000031,
+        "firstMs": null
+      },
+      "checks": [
+        {
+          "type": "valid",
+          "pass": true
+        },
+        {
+          "type": "contains",
+          "pass": true
+        },
+        {
+          "type": "notContains",
+          "pass": true
+        },
+        {
+          "type": "unchangedFields",
+          "pass": true
+        }
+      ],
+      "changedRatio": 0.16326530612244897,
+      "outputHash": "9d1793453141d942e5ead2cd304bf5602ee245e395af295338d11f7fea7a9c67"
+    },
+    {
+      "case": "edit-4-2",
+      "requestedModel": "openai:gpt-4o-mini-2024-07-18",
+      "repeat": 0,
+      "promptHash": "ac46de9dd8b7070fd6c3ac4bdb3b873933a7b83f7ef54dda1a8ce7df1ef82da2",
+      "private": false,
+      "success": true,
+      "valid": true,
+      "cost": 0.00005325,
+      "model": "openai:gpt-4o-mini-2024-07-18",
+      "provider": "openai",
+      "usage": {
+        "inputTokens": 211,
+        "outputTokens": 36
+      },
+      "timing": {
+        "totalMs": 975.0804580000113,
+        "firstMs": null
+      },
+      "checks": [
+        {
+          "type": "valid",
+          "pass": true
+        },
+        {
+          "type": "contains",
+          "pass": true
+        },
+        {
+          "type": "notContains",
+          "pass": true
+        },
+        {
+          "type": "unchangedFields",
+          "pass": true
+        }
+      ],
+      "changedRatio": 0.32142857142857145,
+      "outputHash": "2041c24d71d00f47d7f8c652a011fd1f44e89f62f3aa1400aff7091e479c1e01"
+    },
+    {
+      "case": "edit-1-3",
+      "requestedModel": "openai:gpt-4o-mini-2024-07-18",
+      "repeat": 0,
+      "promptHash": "ac46de9dd8b7070fd6c3ac4bdb3b873933a7b83f7ef54dda1a8ce7df1ef82da2",
+      "private": false,
+      "success": true,
+      "valid": true,
+      "cost": 0.00005234999999999999,
+      "model": "openai:gpt-4o-mini-2024-07-18",
+      "provider": "openai",
+      "usage": {
+        "inputTokens": 209,
+        "outputTokens": 35
+      },
+      "timing": {
+        "totalMs": 1325.9461250000168,
+        "firstMs": null
+      },
+      "checks": [
+        {
+          "type": "valid",
+          "pass": true
+        },
+        {
+          "type": "contains",
+          "pass": true
+        },
+        {
+          "type": "notContains",
+          "pass": true
+        },
+        {
+          "type": "unchangedFields",
+          "pass": true
+        }
+      ],
+      "changedRatio": 0.2647058823529412,
+      "outputHash": "ffa0654998bf4bcb55c90a2ce46684d54d2cccd9e5258416c983e83b781c47ea"
+    },
+    {
+      "case": "edit-2-3",
+      "requestedModel": "openai:gpt-4o-mini-2024-07-18",
+      "repeat": 0,
+      "promptHash": "ac46de9dd8b7070fd6c3ac4bdb3b873933a7b83f7ef54dda1a8ce7df1ef82da2",
+      "private": false,
+      "success": true,
+      "valid": true,
+      "cost": 0.00005234999999999999,
+      "model": "openai:gpt-4o-mini-2024-07-18",
+      "provider": "openai",
+      "usage": {
+        "inputTokens": 209,
+        "outputTokens": 35
+      },
+      "timing": {
+        "totalMs": 1217.9747080000234,
+        "firstMs": null
+      },
+      "checks": [
+        {
+          "type": "valid",
+          "pass": true
+        },
+        {
+          "type": "contains",
+          "pass": true
+        },
+        {
+          "type": "notContains",
+          "pass": true
+        },
+        {
+          "type": "unchangedFields",
+          "pass": true
+        }
+      ],
+      "changedRatio": 0.4146341463414634,
+      "outputHash": "4b452df435b219a5e2f7966514313a1d62d43132c728187ab2cac05d6941fc68"
+    },
+    {
+      "case": "edit-3-3",
+      "requestedModel": "openai:gpt-4o-mini-2024-07-18",
+      "repeat": 0,
+      "promptHash": "ac46de9dd8b7070fd6c3ac4bdb3b873933a7b83f7ef54dda1a8ce7df1ef82da2",
+      "private": false,
+      "success": true,
+      "valid": true,
+      "cost": 0.00005445,
+      "model": "openai:gpt-4o-mini-2024-07-18",
+      "provider": "openai",
+      "usage": {
+        "inputTokens": 219,
+        "outputTokens": 36
+      },
+      "timing": {
+        "totalMs": 1126.9932499999995,
+        "firstMs": null
+      },
+      "checks": [
+        {
+          "type": "valid",
+          "pass": true
+        },
+        {
+          "type": "contains",
+          "pass": true
+        },
+        {
+          "type": "notContains",
+          "pass": true
+        },
+        {
+          "type": "unchangedFields",
+          "pass": true
+        }
+      ],
+      "changedRatio": 0.1836734693877551,
+      "outputHash": "cb7a5983c289cc789dd6a1952e2df8be2ae410ebb7daa4cdc5a170b5bad9dfde"
+    },
+    {
+      "case": "edit-4-3",
+      "requestedModel": "openai:gpt-4o-mini-2024-07-18",
+      "repeat": 0,
+      "promptHash": "ac46de9dd8b7070fd6c3ac4bdb3b873933a7b83f7ef54dda1a8ce7df1ef82da2",
+      "private": false,
+      "success": true,
+      "valid": true,
+      "cost": 0.00005265,
+      "model": "openai:gpt-4o-mini-2024-07-18",
+      "provider": "openai",
+      "usage": {
+        "inputTokens": 211,
+        "outputTokens": 35
+      },
+      "timing": {
+        "totalMs": 1220.924457999994,
+        "firstMs": null
+      },
+      "checks": [
+        {
+          "type": "valid",
+          "pass": true
+        },
+        {
+          "type": "contains",
+          "pass": true
+        },
+        {
+          "type": "notContains",
+          "pass": true
+        },
+        {
+          "type": "unchangedFields",
+          "pass": true
+        }
+      ],
+      "changedRatio": 0.35714285714285715,
+      "outputHash": "d47a249e1edac08c0cb2267e082c620d45935428cd26f05578e5f8cb76dbc171"
+    },
+    {
+      "case": "edit-1-4",
+      "requestedModel": "openai:gpt-4o-mini-2024-07-18",
+      "repeat": 0,
+      "promptHash": "ac46de9dd8b7070fd6c3ac4bdb3b873933a7b83f7ef54dda1a8ce7df1ef82da2",
+      "private": false,
+      "success": true,
+      "valid": true,
+      "cost": 0.000050549999999999995,
+      "model": "openai:gpt-4o-mini-2024-07-18",
+      "provider": "openai",
+      "usage": {
+        "inputTokens": 209,
+        "outputTokens": 32
+      },
+      "timing": {
+        "totalMs": 1370.3740420000395,
+        "firstMs": null
+      },
+      "checks": [
+        {
+          "type": "valid",
+          "pass": true
+        },
+        {
+          "type": "contains",
+          "pass": true
+        },
+        {
+          "type": "notContains",
+          "pass": true
+        },
+        {
+          "type": "unchangedFields",
+          "pass": true
+        }
+      ],
+      "changedRatio": 0.2777777777777778,
+      "outputHash": "1ddc4c4d50a2e999988a9425e359cfe600ff4830b577836c123fae9831faaed4"
+    },
+    {
+      "case": "edit-2-4",
+      "requestedModel": "openai:gpt-4o-mini-2024-07-18",
+      "repeat": 0,
+      "promptHash": "ac46de9dd8b7070fd6c3ac4bdb3b873933a7b83f7ef54dda1a8ce7df1ef82da2",
+      "private": false,
+      "success": true,
+      "valid": true,
+      "cost": 0.00005294999999999999,
+      "model": "openai:gpt-4o-mini-2024-07-18",
+      "provider": "openai",
+      "usage": {
+        "inputTokens": 209,
+        "outputTokens": 36
+      },
+      "timing": {
+        "totalMs": 1175.900874999992,
+        "firstMs": null
+      },
+      "checks": [
+        {
+          "type": "valid",
+          "pass": true
+        },
+        {
+          "type": "contains",
+          "pass": true
+        },
+        {
+          "type": "notContains",
+          "pass": true
+        },
+        {
+          "type": "unchangedFields",
+          "pass": true
+        }
+      ],
+      "changedRatio": 0.4186046511627907,
+      "outputHash": "086aeb3b306296f7019ffb6c438e78859cf174a7f43311c6d2ca3d4a202a63d0"
+    },
+    {
+      "case": "edit-3-4",
+      "requestedModel": "openai:gpt-4o-mini-2024-07-18",
+      "repeat": 0,
+      "promptHash": "ac46de9dd8b7070fd6c3ac4bdb3b873933a7b83f7ef54dda1a8ce7df1ef82da2",
+      "private": false,
+      "success": true,
+      "valid": true,
+      "cost": 0.00005385,
+      "model": "openai:gpt-4o-mini-2024-07-18",
+      "provider": "openai",
+      "usage": {
+        "inputTokens": 219,
+        "outputTokens": 35
+      },
+      "timing": {
+        "totalMs": 1217.6837079999968,
+        "firstMs": null
+      },
+      "checks": [
+        {
+          "type": "valid",
+          "pass": true
+        },
+        {
+          "type": "contains",
+          "pass": true
+        },
+        {
+          "type": "notContains",
+          "pass": true
+        },
+        {
+          "type": "unchangedFields",
+          "pass": true
+        }
+      ],
+      "changedRatio": 0.19607843137254902,
+      "outputHash": "31f33bd0ee74282636aa09d3c8e61327ee4897c9ec9a51dece960fb044845edb"
+    },
+    {
+      "case": "edit-4-4",
+      "requestedModel": "openai:gpt-4o-mini-2024-07-18",
+      "repeat": 0,
+      "promptHash": "ac46de9dd8b7070fd6c3ac4bdb3b873933a7b83f7ef54dda1a8ce7df1ef82da2",
+      "private": false,
+      "success": true,
+      "valid": true,
+      "cost": 0.00005325,
+      "model": "openai:gpt-4o-mini-2024-07-18",
+      "provider": "openai",
+      "usage": {
+        "inputTokens": 211,
+        "outputTokens": 36
+      },
+      "timing": {
+        "totalMs": 1230.6685419999994,
+        "firstMs": null
+      },
+      "checks": [
+        {
+          "type": "valid",
+          "pass": true
+        },
+        {
+          "type": "contains",
+          "pass": true
+        },
+        {
+          "type": "notContains",
+          "pass": true
+        },
+        {
+          "type": "unchangedFields",
+          "pass": true
+        }
+      ],
+      "changedRatio": 0.36666666666666664,
+      "outputHash": "480a2baa3d5842a326ac93e529303d4d4c79f4121afe16602ab7d70ff59947ce"
+    },
+    {
+      "case": "edit-1-5",
+      "requestedModel": "openai:gpt-4o-mini-2024-07-18",
+      "repeat": 0,
+      "promptHash": "ac46de9dd8b7070fd6c3ac4bdb3b873933a7b83f7ef54dda1a8ce7df1ef82da2",
+      "private": false,
+      "success": true,
+      "valid": true,
+      "cost": 0.000050549999999999995,
+      "model": "openai:gpt-4o-mini-2024-07-18",
+      "provider": "openai",
+      "usage": {
+        "inputTokens": 209,
+        "outputTokens": 32
+      },
+      "timing": {
+        "totalMs": 1119.6923750000424,
+        "firstMs": null
+      },
+      "checks": [
+        {
+          "type": "valid",
+          "pass": true
+        },
+        {
+          "type": "contains",
+          "pass": true
+        },
+        {
+          "type": "notContains",
+          "pass": true
+        },
+        {
+          "type": "unchangedFields",
+          "pass": true
+        }
+      ],
+      "changedRatio": 0.2857142857142857,
+      "outputHash": "635e645b0a4b55d120535025164fa0158c7afdfbc04784033069470e36328f95"
+    },
+    {
+      "case": "edit-2-5",
+      "requestedModel": "openai:gpt-4o-mini-2024-07-18",
+      "repeat": 0,
+      "promptHash": "ac46de9dd8b7070fd6c3ac4bdb3b873933a7b83f7ef54dda1a8ce7df1ef82da2",
+      "private": false,
+      "success": true,
+      "valid": true,
+      "cost": 0.00005294999999999999,
+      "model": "openai:gpt-4o-mini-2024-07-18",
+      "provider": "openai",
+      "usage": {
+        "inputTokens": 209,
+        "outputTokens": 36
+      },
+      "timing": {
+        "totalMs": 1530.8267500000075,
+        "firstMs": null
+      },
+      "checks": [
+        {
+          "type": "valid",
+          "pass": true
+        },
+        {
+          "type": "contains",
+          "pass": true
+        },
+        {
+          "type": "notContains",
+          "pass": true
+        },
+        {
+          "type": "unchangedFields",
+          "pass": true
+        }
+      ],
+      "changedRatio": 0.42857142857142855,
+      "outputHash": "ced5229be29dc27bce8146cf3ac86a6cdecb91404e613c13fbc86272db3483c4"
+    },
+    {
+      "case": "edit-3-5",
+      "requestedModel": "openai:gpt-4o-mini-2024-07-18",
+      "repeat": 0,
+      "promptHash": "ac46de9dd8b7070fd6c3ac4bdb3b873933a7b83f7ef54dda1a8ce7df1ef82da2",
+      "private": false,
+      "success": true,
+      "valid": true,
+      "cost": 0.00005385,
+      "model": "openai:gpt-4o-mini-2024-07-18",
+      "provider": "openai",
+      "usage": {
+        "inputTokens": 219,
+        "outputTokens": 35
+      },
+      "timing": {
+        "totalMs": 888.3007499999949,
+        "firstMs": null
+      },
+      "checks": [
+        {
+          "type": "valid",
+          "pass": true
+        },
+        {
+          "type": "contains",
+          "pass": true
+        },
+        {
+          "type": "notContains",
+          "pass": true
+        },
+        {
+          "type": "unchangedFields",
+          "pass": true
+        }
+      ],
+      "changedRatio": 0.2,
+      "outputHash": "a05197a23b228c482499620c40b40dd92492087a734a8b79abd294c483ebfc2c"
+    },
+    {
+      "case": "edit-4-5",
+      "requestedModel": "openai:gpt-4o-mini-2024-07-18",
+      "repeat": 0,
+      "promptHash": "ac46de9dd8b7070fd6c3ac4bdb3b873933a7b83f7ef54dda1a8ce7df1ef82da2",
+      "private": false,
+      "success": true,
+      "valid": true,
+      "cost": 0.00005265,
+      "model": "openai:gpt-4o-mini-2024-07-18",
+      "provider": "openai",
+      "usage": {
+        "inputTokens": 211,
+        "outputTokens": 35
+      },
+      "timing": {
+        "totalMs": 1015.8379589999677,
+        "firstMs": null
+      },
+      "checks": [
+        {
+          "type": "valid",
+          "pass": true
+        },
+        {
+          "type": "contains",
+          "pass": true
+        },
+        {
+          "type": "notContains",
+          "pass": true
+        },
+        {
+          "type": "unchangedFields",
+          "pass": true
+        }
+      ],
+      "changedRatio": 0.3793103448275862,
+      "outputHash": "8a59e28bf773ebc3419614c3cf0cfb6bd7e7b1513db32dcf913fd08ef5309932"
+    },
+    {
+      "case": "decision-1",
+      "requestedModel": "openai:gpt-4o-mini-2024-07-18",
+      "repeat": 0,
+      "promptHash": "51f047c360b969db317ecbb498083fde87f55da16662dccebd8de966dffbe7f0",
+      "private": false,
+      "success": true,
+      "valid": true,
+      "cost": 0.00003495,
+      "model": "openai:gpt-4o-mini-2024-07-18",
+      "provider": "openai",
+      "usage": {
+        "inputTokens": 157,
+        "outputTokens": 19
+      },
+      "timing": {
+        "totalMs": 933.3198749999865,
+        "firstMs": null
+      },
+      "source": "emulated",
+      "answer": "safe",
+      "top2": null,
+      "brier": null,
+      "logLoss": null
+    },
+    {
+      "case": "decision-2",
+      "requestedModel": "openai:gpt-4o-mini-2024-07-18",
+      "repeat": 0,
+      "promptHash": "51f047c360b969db317ecbb498083fde87f55da16662dccebd8de966dffbe7f0",
+      "private": false,
+      "success": true,
+      "valid": true,
+      "cost": 0.00003495,
+      "model": "openai:gpt-4o-mini-2024-07-18",
+      "provider": "openai",
+      "usage": {
+        "inputTokens": 157,
+        "outputTokens": 19
+      },
+      "timing": {
+        "totalMs": 898.7583330000052,
+        "firstMs": null
+      },
+      "source": "emulated",
+      "answer": "safe",
+      "top2": null,
+      "brier": null,
+      "logLoss": null
+    },
+    {
+      "case": "decision-3",
+      "requestedModel": "openai:gpt-4o-mini-2024-07-18",
+      "repeat": 0,
+      "promptHash": "51f047c360b969db317ecbb498083fde87f55da16662dccebd8de966dffbe7f0",
+      "private": false,
+      "success": true,
+      "valid": true,
+      "cost": 0.0000357,
+      "model": "openai:gpt-4o-mini-2024-07-18",
+      "provider": "openai",
+      "usage": {
+        "inputTokens": 162,
+        "outputTokens": 19
+      },
+      "timing": {
+        "totalMs": 830.6444579999661,
+        "firstMs": null
+      },
+      "source": "emulated",
+      "answer": "safe",
+      "top2": null,
+      "brier": null,
+      "logLoss": null
+    },
+    {
+      "case": "decision-4",
+      "requestedModel": "openai:gpt-4o-mini-2024-07-18",
+      "repeat": 0,
+      "promptHash": "51f047c360b969db317ecbb498083fde87f55da16662dccebd8de966dffbe7f0",
+      "private": false,
+      "success": true,
+      "valid": true,
+      "cost": 0.000035850000000000004,
+      "model": "openai:gpt-4o-mini-2024-07-18",
+      "provider": "openai",
+      "usage": {
+        "inputTokens": 163,
+        "outputTokens": 19
+      },
+      "timing": {
+        "totalMs": 711.7679590000189,
+        "firstMs": null
+      },
+      "source": "emulated",
+      "answer": "safe",
+      "top2": null,
+      "brier": null,
+      "logLoss": null
+    },
+    {
+      "case": "decision-5",
+      "requestedModel": "openai:gpt-4o-mini-2024-07-18",
+      "repeat": 0,
+      "promptHash": "51f047c360b969db317ecbb498083fde87f55da16662dccebd8de966dffbe7f0",
+      "private": false,
+      "success": true,
+      "valid": true,
+      "cost": 0.000036299999999999995,
+      "model": "openai:gpt-4o-mini-2024-07-18",
+      "provider": "openai",
+      "usage": {
+        "inputTokens": 166,
+        "outputTokens": 19
+      },
+      "timing": {
+        "totalMs": 814.9613329999847,
+        "firstMs": null
+      },
+      "source": "emulated",
+      "answer": "safe",
+      "top2": null,
+      "brier": null,
+      "logLoss": null
+    }
+  ]
+}

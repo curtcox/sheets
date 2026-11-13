@@ -1,5 +1,5 @@
 // Sheets keeps offline downloads opt-in; the kit owns verification and atomic updates.
-import{OfflineClient}from'../vendor/fragment-kit-v0.3.5/src/index.js';
+import{OfflineClient}from'../vendor/fragment-kit-v0.4.3/src/index.js';
 const base=new URL('../',import.meta.url),workerURL=new URL('sw.js',base);
 let watching=false;
 export function watchOfflineUpdates(beforeReload=()=>{}){

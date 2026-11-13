@@ -1,7 +1,7 @@
 // Reproducible, synthetic outside-app report fixtures. No network services or uploads.
 import fs from 'node:fs/promises';
 import { chromium } from 'playwright';
-import { computeCID } from '../vendor/fragment-kit-v0.3.5/src/core/cid.js';
+import { computeCID } from '../vendor/fragment-kit-v0.4.3/src/core/cid.js';
 import { decode64 } from '../src/cid.js';
 import { serializeProjectFile } from '../src/project-state.js';
 const browser = await chromium.launch();

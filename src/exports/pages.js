@@ -1,4 +1,4 @@
-import { compress } from "../../vendor/fragment-kit-v0.3.5/src/index.js";
+import { compress } from "../../vendor/fragment-kit-v0.4.3/src/index.js";
 // Match Pages' legacy envelope, accepted by its current Fragment Kit reader.
 export function pagesLink(snapshot) {
   const text = snapshot.html;

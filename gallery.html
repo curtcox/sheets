@@ -5,14 +5,15 @@
     <!-- Scripts only from this site and pinned runtime paths; keep in step with new hosts. -->
     <meta
       http-equiv="Content-Security-Policy"
-      content="default-src 'self'; script-src 'self' 'sha256-IMEqdP+AkCKdxhM3X7mQM4pV/chykJXPvdtndD+XeH8=' https://hashbin.org/sdk/v0.4.0/ https://cdn.jsdelivr.net/pyodide/v0.27.7/full/ https://webr.r-wasm.org/v0.6.0/ 'wasm-unsafe-eval'; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob: https:; font-src 'self' data:; connect-src 'self' https://256t.us https://hashbin.org https://api.allorigins.win https://data-api.ecb.europa.eu https://webr.r-wasm.org https://cdn.jsdelivr.net; worker-src 'self' blob:; frame-src 'self'; object-src 'none'; base-uri 'self'; form-action 'none'"
+      content="default-src 'self'; script-src 'self' 'sha256-IMEqdP+AkCKdxhM3X7mQM4pV/chykJXPvdtndD+XeH8=' https://hashbin.org/sdk/v0.4.0/ https://cdn.jsdelivr.net/pyodide/v0.27.7/full/ https://webr.r-wasm.org/v0.6.0/ 'wasm-unsafe-eval'; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob: https:; font-src 'self' data:; connect-src 'self' https://256t.us https://hashbin.org https://api.allorigins.win https://data-api.ecb.europa.eu https://webr.r-wasm.org https://cdn.jsdelivr.net https://api.openai.com https://openrouter.ai https://api.anthropic.com https://generativelanguage.googleapis.com; worker-src 'self' blob:; frame-src 'self' https://ai.hashbin.page; object-src 'none'; base-uri 'self'; form-action 'none'"
     />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>Gallery · Sheets</title>
     <link rel="icon" href="src/icon.svg" />
-    <link rel="stylesheet" href="src/styles.css" /><link rel="stylesheet" href="vendor/fragment-kit-v0.3.5/src/ui/kit.css" /><link rel="stylesheet" href="src/gallery-kit.css" />
+    <link rel="stylesheet" href="src/styles.css" /><link rel="stylesheet" href="vendor/fragment-kit-v0.4.3/src/ui/kit.css" /><link rel="stylesheet" href="src/gallery-kit.css" />
     <script type="module" src="src/gallery.js"></script>
-  </head>
+  <link rel="stylesheet" href="vendor/fragment-kit-v0.4.3/src/ai/ui/ai.css">
+</head>
   <body>
     <header class="site-header">
       <a class="brand" href="index.html"

@@ -1,3 +1,5 @@
+import {mountClientAi,aiCallback} from './ai-client.js';
+if(aiCallback()) await new Promise(()=>{});
 import { SheetShareClient } from "./share-links.js";
 import { setupExports } from './exports/ui.js';
 import { catalog, detect, loadFormat } from "./formats/registry.js";
@@ -22,7 +24,7 @@ import { setupViews } from "./view-modes.js";
 import { HashBinDocuments, HashBinStore, publishRedirectUri } from "./hashbin.js";
 import { HashBinPanel } from "./hashbin-panel.js";
 import {config,urlState,type,toDocument} from './fragment-config.js';
-import {LocalDrafts,createStorage,compactShell,createShell,mountMobileTabs,createShareDialog,createQrDialog} from '../vendor/fragment-kit-v0.3.5/src/index.js';
+import {LocalDrafts,createStorage,compactShell,createShell,mountMobileTabs,createShareDialog,createQrDialog} from '../vendor/fragment-kit-v0.4.3/src/index.js';
 import { loadExample } from "./examples.js";
 import { setupOffline } from "./offline.js";
 import { acePath } from "./ace-path.js";
@@ -48,6 +50,7 @@ byId('render-status').setAttribute('data-fk-primary-status','');compactShell({he
 for(const id of ['hashbin-cid','hashbin-load','hashbin-save','hashbin-status','hashbin-dialog','share-dialog','offline-dialog'])byId(id)?.remove();
 byId('hashbin-panel').hidden=false;byId('hashbin-panel-close').remove();
 const drafts=new LocalDrafts({storage:createStorage({prefix:config.storagePrefix}),key:'draft',serialize:value=>JSON.stringify(toDocument(value)),parse:text=>type.normalize(JSON.parse(text))});
+let aiUI=null,aiHold=false;
 let autoRun=true,mobileTabs,qrSave=false,workspaceReady=false;
 const elements = new Map(
   [...document.querySelectorAll("[id]")].map((element) => [
@@ -192,7 +195,7 @@ function persist() {
   $("source-size").textContent = `${getSource().length.toLocaleString()} characters`;
   let url;
   try {
-    url = writeURL(location.href, { ...snapshot(), cid: currentCID, run:autoRun });
+    url = writeURL(location.href, { ...snapshot(), cid: currentCID, run:autoRun&&!aiHold });
     if (currentInputSnapshot || currentAttachments) readURL(url);
   } catch (error) {
     $("url-notice").textContent = `Current edits cannot be shared: ${error.message} Download source before reloading.`;
@@ -301,7 +304,7 @@ const scheduler = new RenderScheduler({
     }
   },
 });
-exportUI = setupExports({button: $('export-open'), getState: snapshot, getResult: () => currentResult, getRevision: () => scheduler.revision, preview, closeDrawer: () => shell.drawer.dialog.close(), getLink: () => urlState.build(snapshot(), {run:autoRun}).href, getSavedLink: () => currentCID ? HashBinDocuments.link(location.href,currentCID) : null, saveToHashBin: () => panel.openSave()});
+exportUI = setupExports({button: $('export-open'), getState: snapshot, getResult: () => currentResult, getRevision: () => scheduler.revision, preview, closeDrawer: () => shell.drawer.dialog.close(), getLink: () => urlState.build(snapshot(), {run:autoRun&&!aiHold}).href, getSavedLink: () => currentCID ? HashBinDocuments.link(location.href,currentCID) : null, saveToHashBin: () => panel.openSave()});
 setupInsertion({
   container: shell.toolbar, sourcePane: $('source-pane'), getFormat: selectedType, fingerprint,
   capture: () => editor ? editor.getSelectionRange().clone() : { start: $('source-fallback').selectionStart, end: $('source-fallback').selectionEnd },
@@ -344,7 +347,7 @@ const panel = new HashBinPanel({
     applyView(resolved.view, false);
     updateProfileControls();
     persist();
-    if(autoRun)scheduler.schedule(getSource(), {}, true);
+    if(autoRun&&!aiHold)scheduler.schedule(getSource(), {}, true);
   },
   onSaved(cid) {
     currentCID = cid;
@@ -366,7 +369,7 @@ function changed() {
   currentCID = null;
   panel.cancelLoad();
   renderController?.abort();
-  if(autoRun)scheduler.schedule(getSource(), {}, controlEditing);else{scheduler.cancel();$('render-status').textContent='Edited — press Render.';}
+  if(autoRun&&!aiHold)scheduler.schedule(getSource(), {}, controlEditing);else{scheduler.cancel();$('render-status').textContent='Edited — press Render.';}
   $("source-size").textContent =
     `${getSource().length.toLocaleString()} characters`;
   clearTimeout(persistTimer);
@@ -562,7 +565,7 @@ $("project-file").onchange = async () => {
     currentAttachments = doc.attachments;
     currentCID = null; currentProfile = doc.profile; format.value = doc.type;
     setSource(doc.src); applyView(doc.view, false);
-    updateProfileControls(); persist(); if(autoRun)scheduler.schedule(getSource(), {}, true);
+    updateProfileControls(); persist(); if(autoRun&&!aiHold)scheduler.schedule(getSource(), {}, true);
     $("project-status").textContent = "Project snapshot opened. Back restores the previous document.";
     $("download-menu").open = false;
   } catch (error) {
@@ -601,14 +604,15 @@ for(const id of ['download-source','download-project','open-project','download-h
 const share=createShareDialog({client:new SheetShareClient(),urlState,getSnapshot:snapshot,onSave:()=>panel.openSave()});
 shareButton.onclick=()=>{share.open();byId('share-run').checked=autoRun;byId('share-run').dispatchEvent(new Event('change'));};
 const qr=createQrDialog({config,urlState,onLoad:outcome=>openLinked(outcome.kind==='cid'?HashBinDocuments.link(location.href,outcome.cid):outcome.href),onSave:()=>{qrSave=true;qr.dialog.close();return panel.openSave();}});
-qrButton.onclick=()=>qr.open(urlState.build(snapshot(),{run:autoRun}).href);
-renderButton.onclick=()=>scheduler.schedule(getSource(),{},true);
+qrButton.onclick=()=>qr.open(urlState.build(snapshot(),{run:autoRun&&!aiHold}).href);
+renderButton.onclick=()=>{aiHold=false;renderButton.hidden=autoRun;scheduler.schedule(getSource(),{},true);};
 mobileTabs=mountMobileTabs({desktop:true,container:document.querySelector('.fk-toolbar'),panels:[{label:'Code',panel:$('source-pane')},{label:'Preview',panel:$('preview-pane')}],onChange:index=>{const next=index===-1?'split':index===1?'preview':'source';if(next!==view.getView())view.setView(next,workspaceReady);editor?.resize();}});
 mobileTabs.select(view.getView()==='split'?'split':view.getView()==='preview'?1:0);
 drafts.mount(shell.drawer.body,async doc=>{
+ aiUI?.cancel();
  const checked=type.normalize(doc),state=checked.sheets,revision=sourceRevision;if(state.inputSnapshot)await verifyInputSnapshot(state.inputSnapshot,checked.src);await verifyAttachments(state.attachments);if(revision!==sourceRevision)throw Error('Document changed while checking this draft. Resume it again.');panel.cancelLoad();scheduler.cancel();renderController?.abort();sourceRevision++;
  currentCID=null;currentProfile=state.profile;currentInputSnapshot=state.inputSnapshot;currentAttachments=state.attachments;format.value=state.format;setSource(checked.src);setting=true;applyView(state.view,false);setting=false;
- updateProfileControls();persist();if(autoRun)scheduler.schedule(getSource(),{},true);
+ updateProfileControls();persist();if(autoRun&&!aiHold)scheduler.schedule(getSource(),{},true);
 },doc=>doc.src);
 function openLinked(href){panel.cancelLoad();scheduler.cancel();renderController?.abort();const incoming=new URL(href),local=new URL(location.href);local.search=incoming.search;local.hash=incoming.hash;history.pushState(null,'',local);return restore();}
 $("commit").textContent = $("commit").textContent.startsWith("__")
@@ -617,6 +621,7 @@ $("commit").textContent = $("commit").textContent.startsWith("__")
 const starter =
   "# Notes that do the math\n\nA sheet is a small document with a little more power. Write on the left; see the result on the right.\n\n## Start with an idea\n\n| Item | Quantity | Unit cost |\n| :--- | ---: | ---: |\n| Notebooks | 12 | $4 |\n| Pencils | 24 | $1 |\n| Good ideas | ∞ | Free |\n\nThe area of a circle is $A = \\pi r^2$.\n\n> [!TIP]\n> Choose a calculation format above to turn expressions into answers. Visit the **[gallery](gallery.html)** for examples in all nine formats.\n\n- [x] Write something useful\n- [ ] Make it calculate\n- [ ] Share the link\n";
 async function restore() {
+  aiUI?.cancel();aiHold=false;
   projectOpenController?.abort();
   navigationURL = location.href;
   updateDownloadOptions(false);
@@ -642,7 +647,7 @@ async function restore() {
       currentCID = published.cid || null;
       persist();
       exportUI.restoreAfterPublish(published.cid);
-      if(autoRun)scheduler.schedule(getSource(), {}, true);
+      if(autoRun&&!aiHold)scheduler.schedule(getSource(), {}, true);
       return;
     }
     const state = readURL(location.href);
@@ -671,7 +676,7 @@ async function restore() {
     updateProfileControls();
     currentCID = null;
     persist();
-    if(autoRun)scheduler.schedule(getSource(), {}, true);
+    if(autoRun&&!aiHold)scheduler.schedule(getSource(), {}, true);
   } catch (error) {
     if (revision === sourceRevision) {
       $("render-status").textContent = error.message;$("hashbin-status").textContent=error.message;
@@ -696,4 +701,5 @@ store.retireLegacyTokens().catch(() => {
 await restore();
 workspaceReady=true;document.body.dataset.ready='true';
 globalThis.SheetsOnline={editor,getSource,snapshot,setSource:src=>{setSource(src);changed();},openURL:openLinked,panel};
+aiUI=await mountClientAi({config,type,urlState,getSnapshot:()=>toDocument(snapshot()),getFingerprint:()=>JSON.stringify(toDocument(snapshot())),container:shell.drawer.body,toolbar:shell.toolbar,status:message=>$('render-status').textContent=message,onApply:doc=>{aiHold=true;projectOpenController?.abort();scheduler.cancel();renderController?.abort();setSource(doc.src);changed();persist();renderButton.hidden=false;$('render-status').textContent='Change accepted — press Render once in More.';}});
 setupOffline({beforeReload:persist,container:shell.drawer.body,status:shell.offlineStatus});

@@ -1,5 +1,5 @@
 // Complete deployment allowlist. Development tools and tests are never public assets.
-export const publicAssets = [
+export const publicAssets=["ai-comparison.json","ai-suite.json",
   "index.html",
   "gallery.html",
   "docs.html",

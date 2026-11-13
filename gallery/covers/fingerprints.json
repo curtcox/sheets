@@ -1,7 +1,7 @@
 {
   "dependencies": {
-    "src/fragment-config.js": "eb3c3f70d621b48711649a178472815044d29e74efec52b46f8a250105b9d568",
-    "src/sheets-document.js": "95f159a53a6dd74e0846a0c940ed6e5039f4c0ca9158112c693b258a02e61ae7",
+    "src/fragment-config.js": "3fea0fe4845efedca9e4aea2365b8291577b991fc3221d09ef8389d7477c5cec",
+    "src/sheets-document.js": "1d941a27fc62a04f4ca801342bc2c47d9209a2f730687c7643d5da36357dc0aa",
     "scripts/render-gallery.mjs": "25adf5f39c3d4b80a900dcc2067290f51a1da50ba361e4c5b36a1e08e1dc766f",
     "examples/catalog.json": "d762151fd6de393c630d0a84970aa84af29ff26d4ff7cb0a2b28d37994cb069d",
     "examples/gfm/basic.md": "819a01622ca86c3f10b64f4cf6a30883d7ef51db5598c572684f882ed1fc827d",

@@ -1,6 +1,6 @@
 import { encode64, decode64, isCID, cidLength, verifyCIDBytes } from './cid.js';
-import { computeCID, cid } from '../vendor/fragment-kit-v0.3.5/src/core/cid.js';
-import { readResponse } from '../vendor/fragment-kit-v0.3.5/src/core/bytes.js';
+import { computeCID, cid } from '../vendor/fragment-kit-v0.4.3/src/core/cid.js';
+import { readResponse } from '../vendor/fragment-kit-v0.4.3/src/core/bytes.js';
 export const ATTACHMENT_LIMITS = Object.freeze({ count: 8, bytes: 256 * 1024, total: 512 * 1024, pixels: 16_000_000 });
 export function imageMime(bytes) {
   if (bytes[0] === 137 && String.fromCharCode(...bytes.slice(1,8)) === 'PNG\r\n\x1a\n') return 'image/png';

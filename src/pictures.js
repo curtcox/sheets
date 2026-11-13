@@ -1,5 +1,5 @@
 import { verifyAttachments, imageDataURL, fetchPicture, makeAttachment } from './attachments.js';
-import { cid } from '../vendor/fragment-kit-v0.3.5/src/core/cid.js';
+import { cid } from '../vendor/fragment-kit-v0.4.3/src/core/cid.js';
 import { sanitize } from './sanitize.js';
 
 // Resolve app-owned references before the final sanitization boundary. No raw HTML insertion.
