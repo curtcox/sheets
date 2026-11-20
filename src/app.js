@@ -24,7 +24,7 @@ import { setupViews } from "./view-modes.js";
 import { HashBinDocuments, HashBinStore, publishRedirectUri } from "./hashbin.js";
 import { HashBinPanel } from "./hashbin-panel.js";
 import {config,urlState,type,toDocument} from './fragment-config.js';
-import {LocalDrafts,createStorage,compactShell,createShell,mountMobileTabs,createShareDialog,createQrDialog} from '../vendor/fragment-kit-v0.4.3/src/index.js';
+import {LocalDrafts,createStorage,compactShell,createShell,mountMobileTabs,createShareDialog,createQrDialog,openLibrary,createLibraryPanel} from '../vendor/fragment-kit-v0.5.0/src/index.js';
 import { loadExample } from "./examples.js";
 import { setupOffline } from "./offline.js";
 import { acePath } from "./ace-path.js";
@@ -50,7 +50,7 @@ byId('render-status').setAttribute('data-fk-primary-status','');compactShell({he
 for(const id of ['hashbin-cid','hashbin-load','hashbin-save','hashbin-status','hashbin-dialog','share-dialog','offline-dialog'])byId(id)?.remove();
 byId('hashbin-panel').hidden=false;byId('hashbin-panel-close').remove();
 const drafts=new LocalDrafts({storage:createStorage({prefix:config.storagePrefix}),key:'draft',serialize:value=>JSON.stringify(toDocument(value)),parse:text=>type.normalize(JSON.parse(text))});
-let aiUI=null,aiHold=false;
+let aiUI=null,aiHold=false,libraryPanel=null;
 let autoRun=true,mobileTabs,qrSave=false,workspaceReady=false;
 const elements = new Map(
   [...document.querySelectorAll("[id]")].map((element) => [
@@ -335,7 +335,7 @@ const panel = new HashBinPanel({
   container: $('hashbin-panel'),
   getSnapshot: snapshot,
   getFingerprint: fingerprint,
-  onLoad(doc, cid, overrides = {}) {
+  async onLoad(doc, cid, overrides = {}) {
     const resolved = resolveDocument(doc, overrides);
     sourceRevision++;drafts.opened();
     currentCID = cid;
@@ -348,7 +348,9 @@ const panel = new HashBinPanel({
     updateProfileControls();
     persist();
     if(autoRun&&!aiHold)scheduler.schedule(getSource(), {}, true);
+    await libraryPanel?.opened(doc,cid?{kind:'cid',source:cid}:{record:false});
   },
+  onDetached(result){void libraryPanel?.published(result);},
   onSaved(cid) {
     currentCID = cid;
     persist();
@@ -368,6 +370,7 @@ function changed() {
   projectOpenController?.abort();
   currentCID = null;
   panel.cancelLoad();
+  libraryPanel?.cancelLoad();libraryPanel?.changed();
   renderController?.abort();
   if(autoRun&&!aiHold)scheduler.schedule(getSource(), {}, controlEditing);else{scheduler.cancel();$('render-status').textContent='Edited — press Render.';}
   $("source-size").textContent =
@@ -565,7 +568,7 @@ $("project-file").onchange = async () => {
     currentAttachments = doc.attachments;
     currentCID = null; currentProfile = doc.profile; format.value = doc.type;
     setSource(doc.src); applyView(doc.view, false);
-    updateProfileControls(); persist(); if(autoRun&&!aiHold)scheduler.schedule(getSource(), {}, true);
+    updateProfileControls(); persist(); void libraryPanel?.opened(toDocument(snapshot()),{record:false});if(autoRun&&!aiHold)scheduler.schedule(getSource(), {}, true);
     $("project-status").textContent = "Project snapshot opened. Back restores the previous document.";
     $("download-menu").open = false;
   } catch (error) {
@@ -608,13 +611,19 @@ qrButton.onclick=()=>qr.open(urlState.build(snapshot(),{run:autoRun&&!aiHold}).h
 renderButton.onclick=()=>{aiHold=false;renderButton.hidden=autoRun;scheduler.schedule(getSource(),{},true);};
 mobileTabs=mountMobileTabs({desktop:true,container:document.querySelector('.fk-toolbar'),panels:[{label:'Code',panel:$('source-pane')},{label:'Preview',panel:$('preview-pane')}],onChange:index=>{const next=index===-1?'split':index===1?'preview':'source';if(next!==view.getView())view.setView(next,workspaceReady);editor?.resize();}});
 mobileTabs.select(view.getView()==='split'?'split':view.getView()==='preview'?1:0);
-drafts.mount(shell.drawer.body,async doc=>{
- aiUI?.cancel();
- const checked=type.normalize(doc),state=checked.sheets,revision=sourceRevision;if(state.inputSnapshot)await verifyInputSnapshot(state.inputSnapshot,checked.src);await verifyAttachments(state.attachments);if(revision!==sourceRevision)throw Error('Document changed while checking this draft. Resume it again.');panel.cancelLoad();scheduler.cancel();renderController?.abort();sourceRevision++;
+const library=await openLibrary({config,type}).catch(error=>{$('render-status').textContent=error.message;return null;});
+async function applyStoredDoc(doc){
+ const checked=type.normalize(doc),state=checked.sheets,revision=sourceRevision;if(state.inputSnapshot)await verifyInputSnapshot(state.inputSnapshot,checked.src);await verifyAttachments(state.attachments);if(revision!==sourceRevision)throw Error('Document changed while checking this document. Open it again.');panel.cancelLoad();scheduler.cancel();renderController?.abort();sourceRevision++;
  currentCID=null;currentProfile=state.profile;currentInputSnapshot=state.inputSnapshot;currentAttachments=state.attachments;format.value=state.format;setSource(checked.src);setting=true;applyView(state.view,false);setting=false;
  updateProfileControls();persist();if(autoRun&&!aiHold)scheduler.schedule(getSource(),{},true);
+}
+if(library)libraryPanel=createLibraryPanel({library,store,urlState,getSnapshot:()=>toDocument(snapshot()),getFingerprint:fingerprint,container:shell.toolbar,drafts,
+ onLoad:async doc=>{aiUI?.cancel();await applyStoredDoc(doc);$('render-status').textContent='Library revision loaded — press Render.';}});
+drafts.mount(shell.drawer.body,async doc=>{
+ aiUI?.cancel();
+ await applyStoredDoc(doc);void libraryPanel?.opened(doc,{record:false});
 },doc=>doc.src);
-function openLinked(href){panel.cancelLoad();scheduler.cancel();renderController?.abort();const incoming=new URL(href),local=new URL(location.href);local.search=incoming.search;local.hash=incoming.hash;history.pushState(null,'',local);return restore();}
+function openLinked(href){panel.cancelLoad();libraryPanel?.cancelLoad();scheduler.cancel();renderController?.abort();const incoming=new URL(href),local=new URL(location.href);local.search=incoming.search;local.hash=incoming.hash;history.pushState(null,'',local);return restore();}
 $("commit").textContent = $("commit").textContent.startsWith("__")
   ? "local"
   : $("commit").textContent;
@@ -636,7 +645,7 @@ async function restore() {
       history.replaceState(null, "", location.pathname + location.search);
     }
     if (published?.snapshot) {
-      const doc = published.snapshot;
+      const doc = published.snapshot,detached=published.kind;
       setSource(doc.src);
       format.value = doc.format || doc.type || "auto";
       currentProfile = validateProfile(doc.profile, format.value);
@@ -644,9 +653,15 @@ async function restore() {
       currentAttachments = doc.attachments;
       applyView(doc.view, false);
       updateProfileControls();
-      currentCID = published.cid || null;
+      currentCID = detached ? null : published.cid || null;
       persist();
-      exportUI.restoreAfterPublish(published.cid);
+      if(detached){ // The export CID belongs to the catalog/revision, not this document.
+        void libraryPanel?.published(published);
+        $("hashbin-status").textContent=published.kind==='library'?'Library exported to HashBin.':'Revision saved to HashBin.';
+      }else{
+        exportUI.restoreAfterPublish(published.cid);
+        void libraryPanel?.opened(doc,{record:false});
+      }
       if(autoRun&&!aiHold)scheduler.schedule(getSource(), {}, true);
       return;
     }
@@ -676,6 +691,7 @@ async function restore() {
     updateProfileControls();
     currentCID = null;
     persist();
+    void libraryPanel?.opened(toDocument(snapshot()),state.kind==='source'||state.kind==='project'?{kind:'link'}:{record:false});
     if(autoRun&&!aiHold)scheduler.schedule(getSource(), {}, true);
   } catch (error) {
     if (revision === sourceRevision) {
@@ -689,6 +705,7 @@ function navigateFromURL() {
   if(location.hash&&preview.querySelector('a[href="'+CSS.escape(location.hash)+'"]')&&!location.hash.startsWith('#src=')&&!location.hash.startsWith('#project=')&&!HashBinDocuments.cid(location.hash))return;
   if (navigationURL === location.href) return;
   panel.cancelLoad();
+  libraryPanel?.cancelLoad();
   scheduler.cancel();
   renderController?.abort();
   restore();
@@ -701,5 +718,5 @@ store.retireLegacyTokens().catch(() => {
 await restore();
 workspaceReady=true;document.body.dataset.ready='true';
 globalThis.SheetsOnline={editor,getSource,snapshot,setSource:src=>{setSource(src);changed();},openURL:openLinked,panel};
-aiUI=await mountClientAi({config,type,urlState,getSnapshot:()=>toDocument(snapshot()),getFingerprint:()=>JSON.stringify(toDocument(snapshot())),container:shell.drawer.body,toolbar:shell.toolbar,status:message=>$('render-status').textContent=message,onApply:doc=>{aiHold=true;projectOpenController?.abort();scheduler.cancel();renderController?.abort();setSource(doc.src);changed();persist();renderButton.hidden=false;$('render-status').textContent='Change accepted — press Render once in More.';}});
+aiUI=await mountClientAi({config,type,urlState,getSnapshot:()=>toDocument(snapshot()),getFingerprint:()=>JSON.stringify(toDocument(snapshot())),container:shell.drawer.body,toolbar:shell.toolbar,status:message=>$('render-status').textContent=message,onApply:doc=>{aiHold=true;projectOpenController?.abort();scheduler.cancel();renderController?.abort();setSource(doc.src);changed();persist();renderButton.hidden=false;$('render-status').textContent='Change accepted — press Render once in More.';void libraryPanel?.opened(doc,{record:false});}});
 setupOffline({beforeReload:persist,container:shell.drawer.body,status:shell.offlineStatus});

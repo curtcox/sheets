@@ -1,4 +1,4 @@
-import {HashBinStore as Store,createDocuments} from '../vendor/fragment-kit-v0.4.3/src/index.js';
+import {HashBinStore as Store,createDocuments} from '../vendor/fragment-kit-v0.5.0/src/index.js';
 import{config,type,toDocument,normalizationMaxBytes,HashBinDocuments,serializeLegacy,fromDocument,publishTransactions}from'./fragment-config.js';
 export{HashBinDocuments};
 // HashBin matches callbacks exactly: the hosted app registered its root,
@@ -13,7 +13,7 @@ export class HashBinStore extends Store{
   super({config,type,legacyStorage:storage,...rest,transactionStorage:publishTransactions(transactionStorage??session,options.clientId??config.hashbinClientId)});
   this.documents={...createDocuments(type,normalizationMaxBytes),serialize:serializeLegacy};
  }
- publish(payload,snapshot){const doc=toDocument(snapshot);return super.publish(payload,{...snapshot,sheets:snapshot.sheets?doc.sheets:{format:doc.sheets.format}});}
+ publish(payload,snapshot,options){const doc=toDocument(snapshot);return super.publish(payload,{...snapshot,sheets:snapshot.sheets?doc.sheets:{format:doc.sheets.format}},options);}
  load=async input=>fromDocument(await super.load(input));
  async published(hash){
   const result=await super.published(hash);if(!result?.snapshot?.sheets)return result;
