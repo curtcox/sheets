@@ -8,17 +8,13 @@ import {
   dataRows,
   dumpTSV,
   emulateOrgPlot,
-  gridData,
-  gridDump,
-  lispJSON,
   plotSets,
-  radarAxes,
   orgPlot,
   pastedOrgPlots,
   plotKeywords,
-  readLisp,
-  sym,
 } from "../../src/formats/org/plot.js";
+import { lispJSON, readLisp, sym } from "../../src/formats/org/plot-lisp.js";
+import { gridData, gridDump, radarAxes } from "../../src/formats/org/plot-ticks.js";
 
 const directory = new URL("../fixtures/org-plot/", import.meta.url);
 const reference = JSON.parse(await readFile(new URL("reference.json", directory), "utf8"));

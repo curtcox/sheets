@@ -3,7 +3,6 @@
   "files": {
     "PLAN.md": 97105,
     "src/charts.js": 39296,
-    "src/formats/org/calc.js": 47693,
-    "src/formats/org/plot.js": 32956
+    "src/formats/org/calc.js": 47693
   }
 }
