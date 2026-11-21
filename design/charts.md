@@ -185,7 +185,9 @@ balance.
 
 ## Shared renderer
 
-`src/charts.js` is DOM-free and takes a normalized spec:
+`src/charts.js` is DOM-free and takes a normalized spec. It draws axis charts
+itself, takes pie, radar and heatmap bodies from `src/chart-shapes.js`, and
+shares scales, text and legend helpers through `src/chart-parts.js`:
 
 ```js
 chartSVG({
