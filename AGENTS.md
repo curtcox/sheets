@@ -1,7 +1,8 @@
 # Project map
 
-Sheets is a buildless static ES-module app. Read PLAN.md for scope and README.md
-for commands. Keep served code browser-native and engines free of DOM APIs.
+Sheets is a buildless static ES-module app. Read PLAN.md and plan/ for scope
+and README.md for commands. Keep served code browser-native and engines free of
+DOM APIs.
 
 - `src/app.js` wires ACE, URL state, scheduler, view modes, sharing and HashBin.
 - `src/formats/registry.js` owns metadata and dependency-free detection. Register
