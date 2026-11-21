@@ -43,3 +43,34 @@ export function resolveDocument(doc, overrides = {}) {
     ...(doc.attachments ? { attachments: doc.attachments } : {}),
   };
 }
+const SAVED = "Links and saved documents preserve this mode; source files contain text only.";
+const TEXT_ONLY = "Source files contain text only; reselect this mode when reusing them.";
+/** Label and explanation shown beside the profile selector for a format. */
+export function profileCopy(format, profile) {
+  if (format === "org")
+    return {
+      label: "Org calculation",
+      help: profile
+        ? `Columns calculate row by row before protected field formulas, using Emacs target order. ${SAVED}`
+        : "Legacy applies assignments in source order. Choose Emacs order explicitly to migrate; the source stays unchanged.",
+    };
+  if (format === "asciimath")
+    return {
+      label: "AsciiMath mode",
+      help:
+        profile === ASCIIMATH_FORMULAS
+          ? `Each nonempty line is a formula, even when it resembles Markdown. ${SAVED}`
+          : profile === ASCIIMATH_PROSE
+            ? `Prose stays prose. Mark formulas with dollar delimiters or asciimath fences. ${SAVED}`
+            : "Auto chooses formula lines or mixed prose from the document's structure. Select an explicit mode to keep that choice while editing.",
+    };
+  return {
+    label: "Calca blocks",
+    help:
+      profile === CALCA_SCOPES
+        ? `Definitions belong to headings and descendants; repeated definitions become constraints. ${TEXT_ONLY}`
+        : profile
+          ? `Calca fences, indented code, and standalone arrows calculate. ${TEXT_ONLY}`
+          : "Legacy evaluates every code fence. Structured blocks keep other languages, formulas, and diagrams literal.",
+  };
+}

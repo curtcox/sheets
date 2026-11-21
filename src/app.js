@@ -11,11 +11,9 @@ import {
 } from "./url-state.js";
 import {
   profiles,
-  CALCA_SCOPES,
-  ASCIIMATH_FORMULAS,
-  ASCIIMATH_PROSE,
   validateProfile,
   resolveDocument,
+  profileCopy,
 } from "./compatibility-profiles.js";
 import { RenderScheduler } from "./render-scheduler.js";
 import { setPreview, updatePreview, sanitize } from "./sanitize.js";
@@ -25,7 +23,8 @@ import { HashBinDocuments, HashBinStore, publishRedirectUri } from "./hashbin.js
 import { HashBinPanel } from "./hashbin-panel.js";
 import {config,urlState,type,toDocument} from './fragment-config.js';
 import {LocalDrafts,createStorage,compactShell,createShell,mountMobileTabs,createShareDialog,createQrDialog,openLibrary,createLibraryPanel} from '../vendor/fragment-kit-v0.5.0/src/index.js';
-import { loadExample } from "./examples.js";
+import { loadExample, starter } from "./examples.js";
+import { setupPreviewNavigation } from "./preview-navigation.js";
 import { setupOffline } from "./offline.js";
 import { acePath } from "./ace-path.js";
 import { loadEditorMode } from "./editor-modes.js";
@@ -127,16 +126,11 @@ function updateProfileControls() {
   format.disabled = !!currentInputSnapshot;
   $("project-controls").hidden = !currentInputSnapshot;
   const type = selectedType(),
-    ascii = type === "asciimath",
-    org = type === "org";
+    copy = profileCopy(type, currentProfile);
   $("profile-controls").hidden = !profiles.some((item) => item.format === type);
-  $("profile-label").textContent = org
-    ? "Org calculation"
-    : ascii
-      ? "AsciiMath mode"
-      : "Calca blocks";
+  $("profile-label").textContent = copy.label;
   const choices = [
-    { id: "", label: ascii ? "Auto" : "Legacy" },
+    { id: "", label: type === "asciimath" ? "Auto" : "Legacy" },
     ...profiles.filter((item) => item.format === type),
   ];
   $("profile").replaceChildren(
@@ -148,21 +142,7 @@ function updateProfileControls() {
     }),
   );
   $("profile").value = currentProfile || "";
-  $("profile-help").textContent = org
-    ? currentProfile
-      ? "Columns calculate row by row before protected field formulas, using Emacs target order. Links and saved documents preserve this mode; source files contain text only."
-      : "Legacy applies assignments in source order. Choose Emacs order explicitly to migrate; the source stays unchanged."
-    : ascii
-      ? currentProfile === ASCIIMATH_FORMULAS
-        ? "Each nonempty line is a formula, even when it resembles Markdown. Links and saved documents preserve this mode; source files contain text only."
-        : currentProfile === ASCIIMATH_PROSE
-          ? "Prose stays prose. Mark formulas with dollar delimiters or asciimath fences. Links and saved documents preserve this mode; source files contain text only."
-          : "Auto chooses formula lines or mixed prose from the document's structure. Select an explicit mode to keep that choice while editing."
-      : currentProfile === CALCA_SCOPES
-        ? "Definitions belong to headings and descendants; repeated definitions become constraints. Source files contain text only; reselect this mode when reusing them."
-        : currentProfile
-          ? "Calca fences, indented code, and standalone arrows calculate. Source files contain text only; reselect this mode when reusing them."
-          : "Legacy evaluates every code fence. Structured blocks keep other languages, formulas, and diagrams literal.";
+  $("profile-help").textContent = copy.help;
 }
 const snapshot = () => ({
   src: getSource(),
@@ -471,53 +451,15 @@ $("cancel-render").onclick = () => {
   $("cancel-render").hidden = true;
   preview.setAttribute("aria-busy", "false");
 };
+setupPreviewNavigation(preview);
 preview.addEventListener("keydown", (event) => {
   const field = event.target.closest?.("input[data-control][type=text]");
   if (field && event.key === "Enter") {
     event.preventDefault();
     writeControl(field, false);
-    return;
   }
-  const area = event.target.closest(".org-table-scroll, .chart-scroll");
-  if (
-    event.target !== area ||
-    !["ArrowLeft", "ArrowRight"].includes(event.key) ||
-    event.altKey ||
-    event.ctrlKey ||
-    event.metaKey ||
-    event.shiftKey ||
-    area.scrollWidth <= area.clientWidth
-  )
-    return;
-  // Native horizontal keyboard scrolling varies across browser engines.
-  event.preventDefault();
-  area.scrollLeft += event.key === "ArrowRight" ? 40 : -40;
 });
 preview.addEventListener("click", async (event) => {
-  const reference = event.target.closest('a[href^="#"]');
-  if (reference) {
-    // The fragment can hold a CID or source. References scroll within the preview
-    // without replacing any part of the document address.
-    event.preventDefault();
-    try {
-      const id = decodeURIComponent(reference.getAttribute("href").slice(1));
-      preview
-        .querySelector(`#${CSS.escape(id)}`)
-        ?.scrollIntoView({ block: "start" });
-    } catch {
-      /* Malformed references leave the document address intact. */
-    }
-    return;
-  }
-  const report = event.target.closest("[data-report]");
-  if (report) {
-    preview
-      .querySelectorAll("[role=tab]")
-      .forEach((b) => b.setAttribute("aria-selected", b === report));
-    preview
-      .querySelectorAll("[role=tabpanel]")
-      .forEach((p) => (p.hidden = p.id !== `report-${report.dataset.report}`));
-  }
   if (event.target.closest("[data-action=copy-org]"))
     try {
       await navigator.clipboard.writeText(currentResult.recalculatedSource);
@@ -627,8 +569,6 @@ function openLinked(href){panel.cancelLoad();libraryPanel?.cancelLoad();schedule
 $("commit").textContent = $("commit").textContent.startsWith("__")
   ? "local"
   : $("commit").textContent;
-const starter =
-  "# Notes that do the math\n\nA sheet is a small document with a little more power. Write on the left; see the result on the right.\n\n## Start with an idea\n\n| Item | Quantity | Unit cost |\n| :--- | ---: | ---: |\n| Notebooks | 12 | $4 |\n| Pencils | 24 | $1 |\n| Good ideas | ∞ | Free |\n\nThe area of a circle is $A = \\pi r^2$.\n\n> [!TIP]\n> Choose a calculation format above to turn expressions into answers. Visit the **[gallery](gallery.html)** for examples in all nine formats.\n\n- [x] Write something useful\n- [ ] Make it calculate\n- [ ] Share the link\n";
 async function restore() {
   aiUI?.cancel();aiHold=false;
   projectOpenController?.abort();
