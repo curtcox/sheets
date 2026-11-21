@@ -19,6 +19,11 @@ for commands. Keep served code browser-native and engines free of DOM APIs.
 - `scripts/stage.mjs` defines the complete Pages deployment allowlist. Tests and
   scripts must not become public deployment assets.
 
+File sizes are limited per type in `scripts/file-size-limits.mjs`. Split
+oversized files rather than raising the limits or recording them in the ratchet
+baseline. After you shrink a baselined file, run
+`node scripts/check-file-sizes.mjs --tighten`.
+
 Run `npm run check`, `npm test`, `npm run test:conformance`, and browser tests
 appropriate to changes. Real Python tests need network access to jsDelivr.
 For Org/Beancount changes, run the independent reference checks in README.md.

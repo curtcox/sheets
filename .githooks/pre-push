@@ -1,0 +1,4 @@
+#!/bin/sh
+# Rejects pushes that add files over the limits in scripts/file-size-limits.mjs.
+# Enabled by `npm install` (scripts/install-hooks.mjs sets core.hooksPath).
+exec node scripts/check-file-sizes.mjs --pre-push "$@"

@@ -22,6 +22,9 @@ for (const file of files) {
 }
 if (!process.exitCode) console.log(`Syntax checked ${files.length} scripts.`);
 
+const sizes = spawnSync(process.execPath, ["scripts/check-file-sizes.mjs"], { stdio: "inherit" });
+if (sizes.status) process.exitCode = 1;
+
 if(!process.exitCode){
  const{verifyManifest}=await import('../vendor/fragment-kit-v0.5.0/tools/vendor-sync.mjs');
  const{offlineManifest}=await import('./offline-assets.mjs');

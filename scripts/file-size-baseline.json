@@ -1,0 +1,10 @@
+{
+  "description": "Size ratchet for files over their limit in scripts/file-size-limits.mjs. Entries may only shrink; run node scripts/check-file-sizes.mjs --tighten after shrinking a file.",
+  "files": {
+    "PLAN.md": 97105,
+    "src/app.js": 35152,
+    "src/charts.js": 39296,
+    "src/formats/org/calc.js": 47693,
+    "src/formats/org/plot.js": 32956
+  }
+}

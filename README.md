@@ -75,6 +75,23 @@ npx playwright install --with-deps chromium firefox webkit
 npm run test:browser
 ```
 
+### File size limits
+
+`npm install` enables the tracked `.githooks/pre-push` hook, which rejects a push
+if any file it sends, including files added and then removed in intermediate
+commits, is over its per-type limit in `scripts/file-size-limits.mjs`. For
+example, hand-written source is limited to 32 KiB, prose to 48 KiB, and data to
+64 KiB. Generated and vendored files have looser limits, and every file has a
+50 MiB hard cap. `npm run check` and CI run the same check on the working tree.
+
+Files that were already over their limit are listed in
+`scripts/file-size-baseline.json`, which acts as a ratchet. These files may
+shrink but never grow. After you shrink one, run
+`node scripts/check-file-sizes.mjs --tighten` and commit the baseline. The check
+fails until you do, so a file can't grow back. For a deliberate new exception,
+`--record` adds every current violation to the baseline, where it shows up in
+review.
+
 Compatibility disclosures are tracked in `docs/compatibility.json`. Run
 `node scripts/compatibility-docs.mjs` after editing the ledger to regenerate the
 central limitations page and the status tables in format guides. Unit tests check
