@@ -37,8 +37,8 @@ test("link CLI preserves UTF-8 BOM, CRLF, whitespace and settings without changi
     src, format: "org", view: "source", profile: "org-emacs-v1", kind: "source",
   });
   assert.equal(result.stderr, "");
-  assert.equal(new URL(url).origin, "https://curtcox.github.io");
-  assert.equal(new URL(url).pathname, "/sheets/index.html");
+  assert.equal(new URL(url).origin, "https://sheets.hashbin.page");
+  assert.equal(new URL(url).pathname, "/");
   assert.equal(await readFile(path, "utf8"), src);
   assert.ok(!url.includes("private"));
 });

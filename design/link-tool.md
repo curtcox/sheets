@@ -2,7 +2,7 @@
 
 `node scripts/link.mjs <file>` addresses field-report item 9 and resolves
 SHARED-06. It runs from a checkout on Node 22 or newer and emits a source snapshot
-for the Pages editor, or a compatible editor supplied through `--base`.
+for the production editor at `https://sheets.hashbin.page/`, or a compatible editor supplied through `--base`.
 
 ## Contract
 

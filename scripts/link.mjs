@@ -15,7 +15,7 @@ import {
   SOURCE_FRAGMENT_THRESHOLD,
 } from "../src/url-state.js";
 
-const defaultBase = "https://curtcox.github.io/sheets/index.html";
+const defaultBase = "https://sheets.hashbin.page/";
 const help = `Usage: node scripts/link.mjs <file> [options]
 
 Print a source link without uploading, modifying or executing the file.

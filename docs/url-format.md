@@ -71,7 +71,7 @@ node scripts/link.mjs path/to/model.org --base=http://127.0.0.1:4173/index.html
 by a newline to stdout. Warnings and errors go to stderr. Errors exit with status
 1 and produce no URL. The command does not execute source, upload it, or modify
 the file. The filename is not embedded. The default editor is
-`https://curtcox.github.io/sheets/index.html`.
+`https://sheets.hashbin.page/`.
 
 - `--format <id>` overrides the filename extension. Known extensions select their
   registered format; unknown extensions use Auto. Use `--format auto` to request

@@ -54,5 +54,4 @@ shipped. See `design/exports.md` for measured sizes and selection rationale.
 [curtcox/Tools-for-pages-with-state-in-URL-fragments](https://github.com/curtcox/Tools-for-pages-with-state-in-URL-fragments),
 synced with its `tools/vendor-sync.mjs` and verified against `manifest.json` file
 hashes by `npm run check`. Its `docs/`, `testing/`, `tools/`, `package.json` and
-`CHANGELOG.md` are excluded from staged deployments. `fragment-kit-v0.3.5/` and
-`fragment-kit-v0.4.3/` are earlier pins that the app no longer imports.
+`CHANGELOG.md` are excluded from staged deployments.
