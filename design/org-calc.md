@@ -57,7 +57,7 @@ it skipped nonnumeric range entries. The ORG-09 reproducer, checked with Emacs
   argument is required.
 
 The calculation applies to Legacy and `org-emacs-v1` alike. Profiles preserve
-scheduling semantics, not incorrect arithmetic (plan/compatibility-roadmap.md, Phase 11 item 5).
+scheduling semantics, not incorrect arithmetic (`design/compatibility-profiles.md`).
 
 ## Evidence
 

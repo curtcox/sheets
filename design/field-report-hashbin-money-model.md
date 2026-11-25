@@ -10,7 +10,7 @@ Org engine in Node (`recalculateOrg`), with zero diagnostics.
 semantics, file-to-link tooling, optional constants display, precedence hints
 and pinned shared numeric inputs are implemented;
 other issues remain open.** Triaged on 2026-10-25 into
-`docs/compatibility.json` and the active field-report priorities in [the compatibility roadmap](../plan/compatibility-roadmap.md#field-report-priorities--active-order-from-2026-10-25).
+`docs/compatibility.json` and the active field-report priorities in [the compatibility roadmap](../plan/compatibility-roadmap.md#open-queue).
 The missing disclosures are now in the generated limitations page and Org guide;
 SHARE-1 subsequently reproduced old reload loss end to end against an enforcing
 server and protects generated long-source links with fragments. See
