@@ -4,11 +4,15 @@ Sheets has a registered public client ID and saving is enabled. Public documents
 
 [HashBin](https://hashbin.org) is optional content-addressed storage. Open **HashBin** in the toolbar and paste a CID or saved link to load a document.
 
-Accepted saved-link hosts are `hashbin.org`, `256t.us`, and `curtcox.github.io`, using HTTPS. CIDs containing at most 64 bytes are decoded locally. Larger payloads load from `https://256t.us/<cid>`. The editor accepts plain text and this JSON envelope:
+Accepted saved-link hosts are `hashbin.org`, `256t.us`, `sheets.hashbin.page` and the legacy `curtcox.github.io` copy, using HTTPS. CIDs containing at most 64 bytes are decoded locally. Larger payloads load from `https://256t.us/<cid>`. The editor accepts plain text and this JSON envelope:
 
 ```json
 {"format":"sheets-document","version":1,"type":"numbat","src":"2 + 2","view":"split"}
 ```
+
+Saves use the lowest version that holds the document: 1 for plain documents, 2
+with a compatibility profile, 3 with a portable Org project, and 4 with included
+pictures. Each version keeps its meaning; the sections below describe them.
 
 Format IDs match the [URL format](url-format.md). Plain text uses Auto detection. The editor limits payloads to 5 MiB and rejects unsupported envelope versions. Unit tests round-trip every supported format through this envelope.
 
@@ -36,17 +40,15 @@ reusing downloaded text.
 
 ## Save a document
 
-Choose **HashBin → Save to HashBin**, then **Review on HashBin**. HashBin Publish opens on hashbin.org, where you sign in if needed and see the size, retention, exact price and your balance. Nothing is charged until you approve there. Sheets never holds a HashBin credential: every app under `curtcox.github.io` shares this origin's storage, so tokens kept here could be read by the others.
+Choose **HashBin → Save to HashBin**, then **Review on HashBin**. HashBin Publish opens on hashbin.org, where you sign in if needed and see the size, retention, exact price and your balance. Nothing is charged until you approve there. Sheets never holds a HashBin credential, so no other page sharing an origin with it can read one.
 
 If the popup is blocked, documents up to 512 KiB go through a redirect that returns to `index.html` with the source, format, view, profile and project inputs restored, also after a cancelled save. The SDK is pinned to `https://hashbin.org/sdk/v0.4.0/hashbin.js`, and returned CIDs are verified against the saved bytes. Tokens left by the earlier OAuth flow are revoked on the next load. If you edit while the dialog is open, it prepares the new snapshot before anything is sent. Failed or timed-out requests show a message. Editing during a load prevents its older result from replacing your document.
 
 ## Operator setup
 
-The deployed Sheets registration uses public client ID `app_8e03e133-83b4-4ee2-b3d5-39397f573879` and production redirect URI `https://sheets.hashbin.page/`. The legacy Pages copy retains `https://curtcox.github.io/sheets/index.html`. Callbacks must match exactly, including the path: `https://sheets.hashbin.page/index.html` is not registered. Public callback validation on 2026-11-08 confirmed that the production root is accepted and the production `/index.html` callback returns `invalid_client`.
+The deployed Sheets registration uses public client ID `app_8e03e133-83b4-4ee2-b3d5-39397f573879` and production redirect URI `https://sheets.hashbin.page/`. The legacy Pages copy retains `https://curtcox.github.io/sheets/index.html`. Callbacks must match exactly, including the path: `https://sheets.hashbin.page/index.html` is not registered.
 
 For another deployment, register its exact callback URI and set its public client ID in the `hashbin-client-id` meta tag in `index.html`. The ID is public configuration; no client secret belongs in this repository. Removing the ID disables saving while preserving public loads. Automated tests cover popup and redirect saves, cancellation, legacy token revocation and source round-trips with a controlled SDK.
-
-Live verification on 2026-10-18 completed account authorization and an explicitly approved $0.01 save of the public Calca gallery example for 12 months. A fresh browser loaded its CID link without signing in and restored the exact source, Calca format, Split view, and calculated answers.
 
 The client and save panel are adapted from [ManimOnline](https://github.com/curtcox/ManimOnline).
 
@@ -67,6 +69,12 @@ containing canonical CID/base64url payloads. Source, view, optional Org profile 
 input bytes survive save/load and redirect restoration. Versions 1/2 remain unchanged.
 The price HashBin Publish shows includes the bundled bytes in the saved size. No save or charge happens merely by opening/downloading a snapshot.
 
-Bundled dependencies no longer need separate retention when the root project is
+Bundled dependencies do not need separate retention when the root project is
 available; a root CID still needs to be retrieved. Missing/altered bundled bytes
 fail without fetching replacements. See [portable snapshots](url-format.md#portable-project-snapshots).
+
+## Picture saves
+
+Documents with included pictures use envelope version 4, which adds a separate
+attachment collection of content-addressed images. Unused images are dropped
+before saving. See [Outside tables and pictures](insert-content.md#keep-and-share-pictures).

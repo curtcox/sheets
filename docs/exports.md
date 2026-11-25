@@ -132,8 +132,7 @@ Word, Markdown or text export.
 The public Sheets client is configured for `https://sheets.hashbin.page`,
 `https://curtcox.github.io` and local testing at `http://127.0.0.1:4173`. The Google
 project is currently in **Testing**: only approved test accounts can use direct
-creation, and Google displays the project name **Hashbin** during consent. The
-owner’s account completed a live conversion on 2026-11-08. Download/import is
+creation, and Google displays the project name **Hashbin** during consent. Download/import is
 available to everyone without Google sign-in in Sheets.
 
 For another deployment, a website owner needs a Google Cloud project with the **Drive API** enabled, an
@@ -219,19 +218,3 @@ The command reports asset HTTP status, downloads and inspects the available
 document/workbook artifacts, and verifies the Pages import with auto-run disabled.
 It exits unsuccessfully if a deployment is missing the current export UI.
 It does not perform live Google consent/conversion or paid HashBin saves.
-
-Deployment audit on **2026-11-08**:
-
-- `https://sheets.hashbin.page/` renders calculations but has only legacy download
-  actions: the export dialog, `src/exports/ui.js` and `docs/exports.md` are absent
-  (the two files return HTTP 404).
-- `https://curtcox.github.io/sheets/` has the older export dialog. Text, Markdown,
-  RTF, Word, XLSX, ODS and Word-for-Google-import downloads passed content checks;
-  workbook formulas, editable inputs and cached results were verified. The newer
-  independent contents/destination controls, export QR and appearance controls
-  are not deployed there.
-- `https://pages.hashbin.page/` accepted the exported HTML from both the local
-  current app and the GitHub Pages copy, preserving source with auto-run disabled.
-
-These are observed deployment differences, not claims that the current checkout
-has been published.

@@ -4,7 +4,7 @@ Notes that do the math. Sheets is a buildless editor for calculation documents. 
 
 ## Start a sheet
 
-Choose a format or leave **Auto detect** selected. Auto recognizes strong language signals and falls back to GitHub Markdown. CalcFile has deliberately low confidence; select it explicitly. The [gallery](../gallery.html) contains four examples for each format, including edge and error cases. Each card includes a preview of the rendered document; examples run only when opened in the editor.
+Choose a format or leave **Auto detect** selected. Auto recognizes strong language signals and falls back to GitHub Markdown. CalcFile has deliberately low confidence; select it explicitly. The [gallery](../gallery.html) contains at least four examples for each calculation and markup format, including edge and error cases, plus larger Org, Markdown and Beancount models. Each card includes a preview of the rendered document; examples run only when opened in the editor.
 
 - **Source**, **Split**, and **Preview** control the workspace. Use **Ctrl+Alt+1**, **Ctrl+Alt+2**, and **Ctrl+Alt+3** respectively.
 - Drag the divider to resize. Focus it and use the arrow keys, Home, or End for keyboard resizing.
@@ -51,9 +51,9 @@ or include their bytes. HashBin/256t image CIDs are supported. See
 
 ## Save and share
 
-**Share** copies a complete source link. No account or server storage is required. Above 7,000 characters, generated links put source in the fragment so reloading does not send the long source to the server. Browser and messaging limits still vary; the notice recommends **Download → Source** or [HashBin](hashbin.md) for a separate copy. The app does not truncate your source. See [Sharing links](url-format.md).
+**Share** copies a complete source link. No account or server storage is required. Above 7,000 characters, generated links put source in the fragment so reloading does not send the long source to the server. Browser and messaging limits still vary; the notice recommends **More → Download → Source** or [HashBin](hashbin.md) for a separate copy. The app does not truncate your source. See [Sharing links](url-format.md).
 
-**Download → Source** saves the exact current source with the selected or detected
+**More → Download → Source** saves the exact current source with the selected or detected
 format’s file extension. **Rendered HTML** saves the finished preview with embedded
 styles, MathML, and completed SVG diagrams and embedded R plot images. For Beancount, choose a report first;
 only that report is exported. HTML files need no JavaScript, but external images
@@ -62,17 +62,17 @@ Source view; choose your browser’s **Save as PDF** destination to keep a PDF.
 Rendered exports become available after rendering finishes and stay disabled while
 new edits are pending or after cancellation.
 
-[HashBin](hashbin.md) saving is enabled on this deployment. Public CIDs load without
-signing in. Saving connects your HashBin account and displays the price, retention,
-and balance before you confirm.
+[HashBin](hashbin.md) saving is enabled. Public CIDs load without signing in. Each
+save opens HashBin Publish on hashbin.org, which shows the price, retention and
+balance and takes your approval; Sheets never holds a HashBin credential.
 
 Python loads Pyodide and imported packages from jsDelivr on first use; R loads webR from webr.r-wasm.org. Numbat and Hurmet are vendored locally. ECB currency rates are requested only for documents that use currencies and cached for one day. Ordinary source links stay in your browser; optional shortening sends the link to is.gd through AllOrigins. Documents can contain external image links, and executable Python, R, or Hurmet fetches can make network requests.
 
-All generated HTML, MathML, and SVG pass through DOMPurify. Source in a shared link is untrusted. Numbat, Hurmet, Python, and R execute in disposable workers with deadlines; a new render gets a fresh interpreter. Quarto cells within a single render share the interpreter for their language; Python and R have independent state.
+All generated HTML, MathML, and SVG pass through DOMPurify. Source in a shared link is untrusted. Numbat, Hurmet, Python, and R execute in disposable workers with deadlines, and Python and R additionally run in opaque-origin HashBin SDK sandboxes; a new render gets a fresh interpreter. Quarto cells within a single render share the interpreter for their language; Python and R have independent state.
 
 ## Work offline
 
-Choose **Download → Offline access → Download offline files** while connected. The app
+Choose **More → Download → Offline access → Download offline files** while connected. The app
 reloads when ready and preserves your current source link. Vendored formats, math,
 diagrams, docs, and gallery examples then work offline, including newly opened
 source links. The cache contains static app files; it does not save your document
@@ -82,7 +82,8 @@ Python/R execution and external images or services still need a connection. Exis
 cached currency rates may work with a stale-rate notice. Browser storage can be
 cleared or evicted. **Offline access** also lets you check for updates, apply a
 completed update, or remove the offline download. Updates wait until you choose
-**Use update and reload**, preserving current editor source first.
+**Update and reload**, preserving current editor source first. **Repair offline copy** checks
+for corrupted or evicted files. Removing offline files affects only Sheets caches.
 
 
 ## Shared controls and recovery
@@ -97,13 +98,6 @@ this browser under More → Resume saved work; it is never substituted for a lin
 Share snapshots the current document. Run on open can be disabled for a manual
 Render. QR accepts camera frames or an image file, offers SVG/PNG downloads and
 can use a verified HashBin CID when a source link is too large to scan.
-
-Offline files remain an explicit download. More → Download → Offline access
-opens the offline actions; Download offline files installs one verified release.
-Updates wait for Update and reload, preserving the full current document in its
-link. Repair checks corrupted or evicted assets. Removing offline files affects
-only Sheets caches. Python, R, exchange rates and external services still need
-a connection.
 
 ## Other export formats
 

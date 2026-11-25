@@ -152,12 +152,8 @@ unknown names, `pi` and unknown functions), complex numbers, infinities, units,
 dates and strings report source-line diagnostics and retain the cell, where Emacs
 would write symbolic text or `#ERROR`.
 
-**Changed results.** Earlier releases used JavaScript numbers in radians, with 12
-display digits and ordinary precedence, and skipped nonnumeric range entries. All
-links, in both calculation modes, now show the Emacs values. For example,
-`sin(30)` changes from `-0.988031624093` to `0.5`, `1/3` from `0.333333333333`
-to `0.33333333`, and `10/4*2` from `5` to `1.25`. Source text is unchanged. This
-is an arithmetic correction rather than a new profile; see ORG-09.
+Old links that relied on JavaScript arithmetic (radians, ordinary precedence)
+now show these Emacs values; the source is unchanged (ORG-09).
 
 ## Optional precedence hints
 
@@ -563,7 +559,7 @@ not cache these payloads, so hashed inputs still need a connection and available
 content on reload. Inline CIDs work offline. HTML exports/printing include the
 visible values and provenance as a separate static copy. Arbitrary raw `?url=`
 loading remains FILE-1 work (SHARED-07). [Portable Org snapshots](../url-format.md#portable-project-snapshots)
-now bundle verified bytes with source, calculation mode and view. Opened snapshots
+bundle verified bytes with source, calculation mode and view. Opened snapshots
 share and save those bytes and never fetch a missing replacement.
 
 ## Financial-model workflow limits
@@ -585,7 +581,7 @@ share and save those bytes and never fetch a missing replacement.
   cells cannot be edited, marked as inputs, or given per-cell notes. Put input
   instructions and source notes in the document. Org has no goal seek (ORG-04);
   Calca's scalar solver works in its own format.
-- Generated long source links now use fragments to avoid the host’s request-line
+- Generated long source links use fragments to avoid the host’s request-line
   limit on reload (SHARED-05). Other apps can still truncate complete links;
   download source or save to HashBin for a separate copy. Offline app files are
   not a document backup. The [file-to-link CLI](../url-format.md#links-from-source-files)
@@ -742,7 +738,7 @@ These entries share the [central limitations ledger](../limitations.md). “Need
 | ORG-03 | Needs detailed audit | Surrounding prose supports basic headings, lists, emphasis, and links, rather than the full Org… |
 | ORG-04 | Needs detailed audit | Recalculation updates the preview |
 | ORG-05 | Resolved | Numeric named bindings and marked-row selection match Emacs fixtures |
-| ORG-06 | Resolved | Literal Org blocks no longer run formulas or install constants |
+| ORG-06 | Resolved | Literal Org blocks do not run formulas or install constants |
 | ORG-07 | Resolved | Explicit Emacs order matches supported native scheduling and duplicate-target rejection |
 | ORG-08 | Resolved | Same-document remote references read current pass state without recursive evaluation |
 | ORG-09 | Resolved | Formulas use Emacs Calc default modes, exact integers and Calc display |

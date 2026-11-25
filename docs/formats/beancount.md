@@ -174,12 +174,9 @@ can still appear in the partial report. Multiple reductions in one transaction
 reserve the available lots, while acquisitions become candidates only after that
 transaction. Correct every diagnostic before relying on a report.
 
-**Compatibility change:** older Sheets versions silently used FIFO regardless of
-booking declarations, and could misread `{{total cost}}` as a per-unit cost.
-Omitted methods now use Beancount's STRICT default. Specify FIFO explicitly if
-that is the intended policy; a newly rejected ambiguous entry needs an explicit
-method or a more precise selector. Existing unambiguous per-unit ledgers retain
-their balances.
+Omitted booking methods use Beancount's STRICT default. Specify FIFO explicitly if
+that is the intended policy; an ambiguous reduction needs an explicit method or a
+more precise selector.
 
 ## Remaining inventory limits
 

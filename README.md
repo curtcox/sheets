@@ -190,7 +190,7 @@ document URLs, OAuth callbacks, CID payloads, and external responses are never
 added to them. Your source remains in your link and browser history as before.
 
 Reopen **Offline access** to check for updates or remove offline files. An update
-is verified in a separate cache and waits for **Use update and reload**; current
+is verified in a separate cache and waits for **Update and reload**; current
 editor source is preserved before open pages reload. A failed download leaves
 the prior release intact. Removing offline files also unregisters this app's
 service worker without touching other apps' caches.

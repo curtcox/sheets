@@ -81,7 +81,7 @@ These entries share the [central limitations ledger](../limitations.md). “Need
 | ID | Status | Area |
 | --- | --- | --- |
 | AM-01 | Known gap | Pinned translator and Temml retain audited notation gaps |
-| AM-02 | Resolved | Detectable incomplete formulas now have source-line diagnostics |
+| AM-02 | Resolved | Detectable incomplete formulas have source-line diagnostics |
 | AM-03 | Resolved | Formula list and Mixed prose modes are explicit and shareable |
 | AM-04 | Intentional | Mixed prose inherits the Markdown rendering and sanitization limits above. |
 | AM-05 | Intentional | Incomplete-input warnings are advisory and preserve permissive notation |

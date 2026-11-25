@@ -222,7 +222,7 @@
     {
       "id": "AM-02",
       "format": "asciimath",
-      "title": "Detectable incomplete formulas now have source-line diagnostics",
+      "title": "Detectable incomplete formulas have source-line diagnostics",
       "kind": "gap",
       "status": "resolved",
       "priority": "P1",
@@ -545,7 +545,7 @@
     {
       "id": "ORG-06",
       "format": "org",
-      "title": "Literal Org blocks no longer run formulas or install constants",
+      "title": "Literal Org blocks do not run formulas or install constants",
       "kind": "gap",
       "status": "resolved",
       "priority": "P1",

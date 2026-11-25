@@ -109,11 +109,11 @@ The committed **github/cmark-gfm 0.29.0.gfm.13** specification has **672 example
 
 The final DOM still preserves text, whitespace, attributes, and element structure: it does not flatten nested markup or remove task classes to inflate the count. Of its 45 differences, 32 are **solely intentional sanitization**: applying the same sanitizer to the reference produces the same DOM. The corpus has no Mermaid post-pass cases; separate browser/export tests cover diagrams and math.
 
-There are **no remaining raw HTML differences in this corpus**. The original URL/email path cases, empty-blockquote newlines, and canonical task serialization now match. The reader also preserves genuinely empty expected output: two former reference-definition mismatches came from an invented newline, not parser behavior. The two task examples marked disabled upstream remain included using their published HTML expectations.
+There are **no raw HTML differences in this corpus**. The reader preserves genuinely empty expected output. The two task examples marked disabled upstream remain included using their published HTML expectations.
 
 Production retains 71 exact-string differences: 58 HTML5 void-tag spellings, two highlighted fences, two task-list CSS-class differences, and nine extension-mode differences. The last nine are CommonMark examples without autolink/tagfilter flags; production consistently enables those GFM extensions. All remaining corpus differences are presentation, extension mode, or sanitization; none are unexplained.
 
-The shared renderer now preserves left/center/right table alignment in previews and HTML exports, collapses redundant nested bold delimiters, recognizes common `www.` links, and escapes GFM-disallowed raw-text tags. Try these behaviors together:
+The shared renderer preserves left/center/right table alignment in previews and HTML exports, collapses redundant nested bold delimiters, recognizes common `www.` links, and escapes GFM-disallowed raw-text tags. Try these behaviors together:
 
 ```text
 # Aligned notes
@@ -148,7 +148,7 @@ For descriptive labels or addresses outside automatic recognition, use explicit 
 
 ## Autolink limits beyond the corpus
 
-Corpus conformance does not imply complete native-engine parity. The separate audit against **native cmark-gfm 0.29.0.gfm.13** now has **57 fixtures: 53 match and four differences are intentional**. Email-domain underscores and valid prefixes before a plus sign are supported. URL-host underscores may appear before the last two segments, as in the reference.
+Corpus conformance does not imply complete native-engine parity. The separate audit against **native cmark-gfm 0.29.0.gfm.13** has **57 fixtures: 53 match and four differences are intentional**. Email-domain underscores and valid prefixes before a plus sign are supported. URL-host underscores may appear before the last two segments, as in the reference.
 
 ```text
 # Email links
