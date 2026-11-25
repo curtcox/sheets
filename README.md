@@ -7,7 +7,8 @@ Generated links above 7,000 characters keep compressed source in the fragment,
 avoiding host request-line limits on reload; short query links remain readable.
 
 Supports GitHub Markdown, AsciiMath, Numbat, CalcFile, Org tables, a Calca-compatible
-subset, Hurmet, a Beancount core subset with default ledger charts, and Quarto notebooks with Python and R. Includes
+subset, Hurmet, a Beancount core subset with default ledger charts, Quarto notebooks
+with Python and R, and plain text. Includes
 48 gallery examples with rendered previews, format guides, diagnostics, responsive
 split views, ACE, and
 sanitized HTML/MathML/SVG output. Download source files, export the finished preview
@@ -74,6 +75,10 @@ npm run test:conformance
 npx playwright install --with-deps chromium firefox webkit
 npm run test:browser
 ```
+
+With `npm run dev` running in another terminal, `node scripts/test-contracts.mjs`
+checks the shared Fragment Kit contracts (URL, Publish, QR, drafts, mobile and
+offline). Real Python tests need network access to jsDelivr.
 
 ### File size limits
 
@@ -148,6 +153,27 @@ and alignment; it requires an Emacs build with libxml2 support. It also runs
 org-plot itself, without gnuplot, on the chart fixtures and on copies with
 Sheets' inferred options pasted in, recording options, plot lines and data.
 
+### Numbat and AsciiMath reference records
+
+Numbat statement/diagnostic fixtures retain whole-document output captured from
+the original unmodified 1.24.0 WASM. To independently check those records, build
+commit `79046422203060e296da41c8c762c506200d2c93` with the upstream
+`numbat-wasm/build.sh` **without** the Sheets patch, then run
+`node scripts/numbat-expected.mjs /absolute/path/to/numbat-wasm/www/pkg`.
+The normal vendoring script applies `scripts/vendor/numbat.patch` to expose parser
+ranges and diagnostic labels; `npm test` also checks that the patched interpreter
+retains all recorded original output. See `tests/fixtures/numbat/statements.json`.
+
+AsciiMath's upstream corpus is pinned to npm 1.5.0's source commit
+`4f4be2ca744afe0a82c2a24d559aee86688c570e`. After checking out that commit from
+`christianp/asciimath2tex`, run
+`node scripts/asciimath-reference.mjs /absolute/path/to/test.js` to verify the
+436 imported records. With no path, the script downloads that pinned test file;
+CI runs this check. It checks the reviewed file's SHA-256 first.
+`npm test` preserves current translations and rejects unclassified discrepancies;
+the fixture records six existing reference differences and retains upstream's
+Apache-2.0 license. Diagnostic warnings leave permissive translated output intact.
+
 ## Offline access
 
 Choose **Download → Offline access → Download offline files** while connected.
@@ -196,13 +222,18 @@ stale images. The application and Pages deployment still need no build.
 
 ## Deployment
 
-GitHub Pages is configured with **GitHub Actions** as its source. Push to `main`
-or dispatch the deployment workflow to run tests, stage only public assets,
-publish, and check the deployed page's marker. `tests/`, `scripts/`, package
-metadata, and development files are excluded. The editor footer gets the commit
-SHA during staging. The intended URL is <https://curtcox.github.io/sheets/>.
+The production app is <https://sheets.hashbin.page/>, deployed by
+[HashBin's first-party deployment tool](https://github.com/curtcox/hashbin.org/blob/main/scripts/deploy-owned-apps.mjs).
+A GitHub Pages copy at <https://curtcox.github.io/sheets/> remains for moving old
+drafts through **Move saved work** or **Download backup**. Transfers copy only this
+app's documents and public settings, keep the old copy, and never copy HashBin
+credentials or Python filesystem permissions.
 
-Deployment runs only after the complete test workflow succeeds.
+Pushing to `main` runs the shared test workflow; the Pages deployment runs only
+after it succeeds. `scripts/stage.mjs` copies only the public allowlist in
+`scripts/public-assets.mjs`: `tests/`, `scripts/`, package metadata, Fragment Kit
+tools/tests and development files are excluded. The editor footer gets the commit
+SHA during staging.
 
 ## HashBin setup
 
@@ -229,11 +260,18 @@ account and approval on hashbin.org. See the
 
 - `src/app.js`: shell, editor, diagnostics, startup and sharing.
 - `src/editor-modes.js`: project-owned ACE highlighting, including Hurmet cells in Markdown.
-- `src/formats/`: lazy plugins and DOM-free engines.
+- `src/formats/`: the format registry, lazy plugins and DOM-free engines.
+- `src/charts.js`, `chart-*.js`: the shared sanitized SVG chart renderer.
+- `src/controls.js`: source-backed preview controls.
+- `src/exports/`: export dialog, snapshots and document/workbook backends.
+- `src/insert-content.js`, `import-table.js`, `picture*.js`: outside tables and pictures.
 - `src/workers/`: disposable Numbat, Hurmet, Python and R interpreters.
-- `src/url-state.js`, `render-scheduler.js`, `hashbin*.js`: state and persistence.
-- `examples/`: four examples per format (plus Org what-if models) and the gallery catalog.
-- `docs/`: supported subsets, gaps, sharing and storage guides.
+- `src/url-state.js`, `project-state.js`, `sheets-document.js`, `render-scheduler.js`,
+  `hashbin*.js`, `offline.js`: state, saved documents, scheduling and persistence.
+- `examples/`: at least four examples per executable format, extra Org, GFM and
+  Beancount models, the gallery catalog and committed covers.
+- `docs/`: user guides; `docs/compatibility.json` is the limitation ledger.
+- `design/`: feature designs and decisions; `PLAN.md` and `plan/`: scope and open work.
 - `vendor/`: pinned, licensed browser assets. See `vendor/README.md` and `engines.json`.
 - `scripts/vendor/`: one-time dependency builds; never part of deployment.
 - `tests/`: unit, conformance, reference fixtures and Playwright browser tests.
@@ -246,58 +284,20 @@ quadratic equations, with limits described in its guide. Quarto R execution uses
 webR 0.6.0 with console output, PNG plots, per-language state, cancellation and
 deadlines.
 
-## License
-
-MIT for project code, as proposed in PLAN.md. Vendored code retains its own
-licenses. The GFM spec fixture is separately CC-BY-SA 4.0 and is not deployed.
-HashBin and sharing code are adapted from
-[ManimOnline](https://github.com/curtcox/ManimOnline).
-
-Numbat statement/diagnostic fixtures retain whole-document output captured from
-the original unmodified 1.24.0 WASM. To independently check those records, build
-commit `79046422203060e296da41c8c762c506200d2c93` with the upstream
-`numbat-wasm/build.sh` **without** the Sheets patch, then run
-`node scripts/numbat-expected.mjs /absolute/path/to/numbat-wasm/www/pkg`.
-The normal vendoring script applies `scripts/vendor/numbat.patch` to expose parser
-ranges and diagnostic labels; `npm test` also checks that the patched interpreter
-retains all recorded original output. See `tests/fixtures/numbat/statements.json`.
-
-AsciiMath's upstream corpus is pinned to npm 1.5.0's source commit
-`4f4be2ca744afe0a82c2a24d559aee86688c570e`. After checking out that commit from
-`christianp/asciimath2tex`, run
-`node scripts/asciimath-reference.mjs /absolute/path/to/test.js` to verify the
-436 imported records. With no path, the script downloads that pinned test file;
-CI runs this check. It checks the reviewed file's SHA-256 first.
-`npm test` preserves current translations and rejects unclassified discrepancies;
-the fixture records six existing reference differences and retains upstream's
-Apache-2.0 license. Diagnostic warnings leave permissive translated output intact.
-
-## Canonical HashBin address
-
-The production app is [https://sheets.hashbin.page/](https://sheets.hashbin.page/). The GitHub Pages copy is kept for moving old drafts through **Move saved work** or **Download backup**. Transfers copy only this app's documents and public settings, keep the old copy, and never copy HashBin credentials or Python filesystem permissions. Deployment is managed by [HashBin's first-party deployment tool](https://github.com/curtcox/hashbin.org/blob/main/scripts/deploy-owned-apps.mjs).
-
-
 ## Fragment Kit
 
-The shared editor controls, Share/QR, explicit draft recovery, URL codec,
-HashBin transport and atomic offline cache are pinned to Fragment Kit v0.3.4.
-Sheets retains its v1/v2/v3 schemas, compressed/source/project writers, 5 MiB
-source and payload limits, compatibility profiles and verified portable Org inputs.
-Its calculation engines, sanitization, cancellation and interpreter isolation
-remain app-owned. New saves retain legacy schemas while carrying the Auto selection
-as optional metadata that older readers ignore.
+Shared editor controls, compact layout, Share/QR, explicit draft recovery, the URL
+codec, HashBin transport, the atomic offline cache, the gallery shell and optional
+AI come from Fragment Kit **v0.5.0** in `vendor/fragment-kit-v0.5.0/`. Its
+contracts are in `vendor/fragment-kit-v0.5.0/docs/contracts.md`; with the dev
+server running, check them with `node scripts/test-contracts.mjs`.
 
-The original vendor LZ pin remains a compatibility-test reference and is excluded
-from staged production assets. Kit tools and tests are also excluded. Original
-real-engine gallery screenshots feed the shared cover producer. After changing
-public assets, run npm run gallery:kit and npm run offline, then npm run check.
-
-## Compact interface
-
-This app uses released Fragment Kit v0.3.5 for compact controls, readable dialogs,
-and individual-pane or split workspace views. On phones, primary feedback stays
-visible while status details are available in More.
-Current deployment evidence is recorded in the [shared rollout status](https://github.com/curtcox/Tools-for-pages-with-state-in-URL-fragments/blob/main/todo/rollout-status.md).
+Sheets keeps its own v1–v4 document schemas, compressed/source/project writers,
+5 MiB source and payload limits, compatibility profiles, verified portable Org
+inputs, calculation engines, sanitization, cancellation and interpreter isolation.
+The original vendored LZ build remains only as a compatibility-test reference and
+is not staged. After changing public assets, run `npm run gallery:kit` and
+`npm run offline`, then `npm run check`.
 
 ## Insert outside tables
 
@@ -334,4 +334,12 @@ Rebuild export libraries with `node scripts/vendor/exports.mjs`, then
 SHEETS_EXPORT_ARTIFACTS=/tmp/sheets-export-examples npx playwright test tests/browser/multi-export.spec.js --project=chromium
 ```
 
-Optional AI: Ask/review/undo, gallery suggestions and model comparison use the published Fragment Kit 0.4.3 entry point. See [AI guidance](docs/ai.md). Budgets start at zero; accepted source waits for explicit Run, Render or Check. The bundled synthetic [suite](ai-suite.json) and [75-result report](ai-comparison.json) measure source assertions and document invariants, not runtime quality or a model winner.
+## Optional AI
+
+Ask/review/undo, gallery suggestions and model comparison use Fragment Kit's AI entry point and the fleet AI host. See [AI guidance](docs/ai.md). Budgets start at zero; accepted source waits for explicit Run, Render or Check. The bundled synthetic [suite](ai-suite.json) and [75-result report](ai-comparison.json) measure source assertions and document invariants, not runtime quality or a model winner.
+
+## License
+
+MIT for project code (see `LICENSE`). Vendored code retains its own licenses. The
+GFM spec fixture is separately CC-BY-SA 4.0 and is not deployed. HashBin and
+sharing code are adapted from [ManimOnline](https://github.com/curtcox/ManimOnline).
