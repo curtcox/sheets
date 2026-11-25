@@ -36,7 +36,7 @@ overrides remain explicit; non-Org formats are rejected. Org stays selected
 until Use live inputs detaches bundled data. Back can restore the prior snapshot.
 
 HashBin version 3 carries inputSnapshot and requires Org; profile is optional for
-Legacy. Versions 1/2 retain their behavior. Quoting, confirmation, OAuth snapshots
+Legacy. Versions 1/2 retain their behavior. Quoting, confirmation, Publish return snapshots
 and anonymous loads preserve the bundle. The CLI verifies project files and emits
 complete links. Import/export performs no upload; save/shorten retain the existing
 explicit user actions. Source downloads do not include dependency bytes.

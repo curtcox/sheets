@@ -12,7 +12,7 @@ subset; SHARED-07 remains open for mutable raw-URL loading.
 `#+SHEETS_INPUT: v1 prices <cid>` declares a case-sensitive namespace, referenced
 as `$prices.storagePrice` in Calc expressions. The explicit v1 token versions the
 import semantics inside source. Existing compressed links, source fragments,
-HashBin envelopes, OAuth snapshots, downloads and the CLI preserve it without a
+HashBin envelopes, Publish return snapshots, downloads and the CLI preserve it without a
 new envelope/profile. Old single-document sources still take their original path.
 
 Keywords are case-insensitive; namespaces and constant names are ASCII names,

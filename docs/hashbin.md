@@ -32,7 +32,7 @@ AsciiMath supports Formula list (`asciimath-formulas-v1`) and Mixed prose
 (`asciimath-prose-v1`). These profiles use the same version-2 envelope; version-1
 AsciiMath documents retain Auto's original document-structure heuristic.
 
-Shared links and sign-in snapshots preserve the profile. Query parameters can
+Shared links and HashBin Publish returns preserve the profile. Query parameters can
 override it explicitly; a format override to a different format drops the stored
 profile. Choosing a different mode creates a new source link and leaves the saved
 content intact. Source downloads contain text only, so reselect the mode when

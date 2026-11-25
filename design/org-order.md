@@ -3,7 +3,7 @@
 The compatibility target is the supported numeric subset of Emacs Org's global
 single-pass recalculation. The native oracle uses the installed Org implementation,
 not JavaScript-produced expected values. Local review used Emacs 31.1 / Org 9.8.7;
-CI independently runs its installed Org 9.6.15. Original successful reference
+CI installs the same Org 9.8.7 release. Original successful reference
 values remain unchanged. The expanded oracle checks 20 successful documents and
 four documents that must raise native user-error before table writes. Error
 wording is not compared across versions; the rejection class and retained rows are.

@@ -635,7 +635,7 @@ tables keep the scrolling/printing limits above.
 Choose **Emacs order** in the editor, or open a link carrying
 `?profile=org-emacs-v1`. Existing links and version-1 saved documents without a
 profile retain **Legacy** rules. Selecting a mode keeps the exact source and
-creates a new source link; sharing, version-2 saves, OAuth returns, view changes
+creates a new source link; sharing, version-2 saves, HashBin Publish returns, view changes
 and offline reloads retain it. Source downloads contain text alone, so select the
 mode again when reusing a source file.
 

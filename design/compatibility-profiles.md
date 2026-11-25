@@ -1,10 +1,11 @@
 # Compatibility profile contract
 
-Status: `calca-blocks-v1` changes Markdown block classification only.
-`calca-scopes-v1` adds heading scopes and immutable definitions with a bounded
-numeric constraint policy. The first Beancount numeric fixes do
-not require a profile: correcting arithmetic does not retain a known wrong result
-as a dialect.
+Profiles in use: `calca-blocks-v1` (Markdown block classification),
+`calca-scopes-v1` (heading scopes, immutable definitions and a bounded numeric
+constraint policy), `asciimath-formulas-v1` and `asciimath-prose-v1` (document
+model) and `org-emacs-v1` (Emacs calculation order). Numeric correctness fixes,
+such as Beancount decimals and Org Calc arithmetic, do not use a profile:
+correcting arithmetic does not retain a known wrong result as a dialect.
 
 - An existing source URL without a profile and a version-1 HashBin envelope keep
   the current format's language rules. Source, selected format, view, CID priority,
@@ -18,7 +19,7 @@ as a dialect.
   Version 1 remains readable. Never mutate or reinterpret immutable saved content.
   Format/view query overrides continue to work; a format override cannot carry a
   profile from the previously stored format into a different language.
-- Editing, sharing, OAuth return snapshots, and source-link reloads retain the
+- Editing, sharing, HashBin Publish return snapshots, and source-link reloads retain the
   selected profile. Changing formats chooses that format's compatible default
   explicitly. Rendered downloads preserve the finished result. Ordinary source
   downloads include the source alone; the UI discloses when behavior depends on a

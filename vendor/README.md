@@ -47,3 +47,12 @@ GFM plugin 1.0.2 (MIT); workbooks use SheetJS CE 0.20.3 (Apache-2.0); app-owned
 OOXML package adjustments use fflate 0.8.3 (MIT). Original/transitive notices are
 in `export-licenses/` and linked bundle comments. Pandoc was evaluated but is not
 shipped. See `design/exports.md` for measured sizes and selection rationale.
+
+## Fragment Kit
+
+`fragment-kit-v0.5.0/` is the published Fragment Kit 0.5.0 (MIT) from
+[curtcox/Tools-for-pages-with-state-in-URL-fragments](https://github.com/curtcox/Tools-for-pages-with-state-in-URL-fragments),
+synced with its `tools/vendor-sync.mjs` and verified against `manifest.json` file
+hashes by `npm run check`. Its `docs/`, `testing/`, `tools/`, `package.json` and
+`CHANGELOG.md` are excluded from staged deployments. `fragment-kit-v0.3.5/` and
+`fragment-kit-v0.4.3/` are earlier pins that the app no longer imports.
